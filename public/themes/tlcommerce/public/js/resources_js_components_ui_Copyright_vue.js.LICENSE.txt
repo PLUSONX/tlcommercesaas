@@ -1,0 +1,31 @@
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Copyright.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Copyright.vue?vue&type=template&id=06f797b7 */
+
+/*! ./Copyright.vue?vue&type=script&lang=js */
+
+/*! ./Copyright.vue?vue&type=template&id=06f797b7 */
+
+/*! ./node_modules/vue-loader/dist/exportHelper.js */
+
+/*! vue */
+
+/*!**************************************************!*\
+  !*** ./resources/js/components/ui/Copyright.vue ***!
+  \**************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./resources/js/components/ui/Copyright.vue?vue&type=script&lang=js ***!
+  \**************************************************************************/
+
+/*!********************************************************************************!*\
+  !*** ./resources/js/components/ui/Copyright.vue?vue&type=template&id=06f797b7 ***!
+  \********************************************************************************/
+
+/*!******************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/Copyright.vue?vue&type=script&lang=js ***!
+  \******************************************************************************************************************************************************************************************************/
+
+/*!**********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/Copyright.vue?vue&type=template&id=06f797b7 ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************/

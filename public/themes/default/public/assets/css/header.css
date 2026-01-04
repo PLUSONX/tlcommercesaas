@@ -1,0 +1,89 @@
+.header .header-fixed {
+    background-color: #ffffff !important;
+    /* background-color: #ff5722 !important; */
+    /* background-image: url('themes/default/Gradients-Lab-1') !important;
+    z-index: 1000 !important; */
+    /* background-color:#4b32a5!important; */
+}
+
+.btn-crs.plug.reg {
+    color: #ffffff !important;
+}
+
+.btn-crs.plug.reg:hover {
+    color: #ffffff !important;
+}
+
+.is-sticky .btn-crs.plug.reg {
+    color: #ffffff !important;
+}
+
+.is-sticky .btn-crs.plug.reg:hover {
+    color: #ffffff !important;
+}
+
+.mobile .btn-crs.plug.reg {
+    color: #ffffff !important;
+}
+
+.mobile .btn-crs.plug.reg:hover {
+    color: #ffffff !important;
+}
+
+.btn-crs.plug.login {
+    color: #ffffff !important;
+    background: #ff5A1f !important;
+    /* color: #ffffff !important; */
+}
+
+.btn-crs.plug.login:hover {
+    /* color: #ffffff !important; */
+    background: #fff !important;
+    border: 1px solid #ff6030;
+    /* background: #fff; */
+    /* color: #ffffff !important; */
+    color: #ff6030 !important;
+}
+
+.is-sticky .btn-crs.plug.login {
+    /* color: #ff6030 !important; */
+    color: #ffffff !important;
+}
+
+.is-sticky .btn-crs.plug.login:hover {
+    color: #ff6030 !important;
+    /* color: #ffffff !important; */
+}
+
+.mobile .btn-crs.plug.login {
+    color: #ffffff !important;
+}
+
+.mobile .btn-crs.plug.login:hover {
+    color: #ff6030 !important;
+    /* color: #ffffff !important; */
+}
+
+.btn-crs.plug.dash {
+    color: #ffffff !important;
+}
+
+.btn-crs.plug.dash:hover {
+    color: #ffffff !important;
+}
+
+.is-sticky .btn-crs.plug.dash {
+    color: #ffffff !important;
+}
+
+.is-sticky .btn-crs.plug.dash:hover {
+    color: #ffffff !important;
+}
+
+.mobile .btn-crs.plug.dash {
+    color: #ffffff !important;
+}
+
+.mobile .btn-crs.plug.dash:hover {
+    color: #ffffff !important;
+}

@@ -1,0 +1,35 @@
+# =========================
+# Node / Frontend
+# =========================
+/node_modules
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+**/node_modules/
+# =========================
+# Laravel / Backend
+# =========================
+/vendor
+.env
+.phpunit.result.cache
+
+/storage/*.key
+/storage/logs
+/storage/framework
+/public/storage
+
+# =========================
+# Build artifacts
+# =========================
+/public/hot
+/public/build
+/public/mix-manifest.json
+
+# =========================
+# IDE / OS
+# =========================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

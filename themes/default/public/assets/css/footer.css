@@ -1,0 +1,15 @@
+.footer-container {
+    background-image: url("http://127.0.0.1:8000/themes/default/Footer_1.png") !important;
+    /* background-color: #ff5722 !important; */
+    /* background-color:#4b32a5!important; */
+    padding-top: 80px !important;
+}
+
+.newsletter-cover .nl-bg-ol {
+    background-color: #ff5722 !important;
+    /* background-color:#4b32a5!important; */
+}
+
+.footer-container .copyright {
+    background-color: #6653ac !important;
+}

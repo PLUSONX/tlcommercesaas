@@ -1,0 +1,1074 @@
+/*!
+  * core-base v9.2.2
+  * (c) 2022 kazuya kawaguchi
+  * Released under the MIT License.
+  */
+
+/*!
+  * devtools-if v9.2.2
+  * (c) 2022 kazuya kawaguchi
+  * Released under the MIT License.
+  */
+
+/*!
+  * message-compiler v9.2.2
+  * (c) 2022 kazuya kawaguchi
+  * Released under the MIT License.
+  */
+
+/*!
+  * shared v9.2.2
+  * (c) 2022 kazuya kawaguchi
+  * Released under the MIT License.
+  */
+
+/*!
+  * vue-devtools v9.2.2
+  * (c) 2022 kazuya kawaguchi
+  * Released under the MIT License.
+  */
+
+/*!
+  * vue-i18n v9.2.2
+  * (c) 2022 kazuya kawaguchi
+  * Released under the MIT License.
+  */
+
+/*!
+  * vue-router v4.0.0
+  * (c) 2020 Eduardo San Martin Morote
+  * @license MIT
+  */
+
+/*!
+ * is-plain-object <https://github.com/jonschlinkert/is-plain-object>
+ *
+ * Copyright (c) 2014-2017, Jon Schlinkert.
+ * Released under the MIT License.
+ */
+
+/*! !!../../../../css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../../postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./coreui.min.css */
+
+/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./app.scss */
+
+/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Skeleton.vue?vue&type=style&index=0&id=382eb9b4&lang=scss&scoped=true */
+
+/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./google-icons.css */
+
+/*! !!../../../css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./bootstrap.css */
+
+/*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MainLayout.vue?vue&type=style&index=0&id=5a6a1827&scoped=true&lang=scss */
+
+/*! !!../../css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./theme-sugar.css */
+
+/*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */
+
+/*! !../../../../style-loader/dist/runtime/injectStylesIntoStyleTag.js */
+
+/*! !../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */
+
+/*! !../../../style-loader/dist/runtime/injectStylesIntoStyleTag.js */
+
+/*! !../../style-loader/dist/runtime/injectStylesIntoStyleTag.js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./BaseFileInput.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./BaseIconSvg.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Currency.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./NotFound.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SectionTitle.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Skeleton.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./TheLogo.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./BaseFileInput.vue?vue&type=template&id=c731e2c8 */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./BaseIconSvg.vue?vue&type=template&id=b69a1dce */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Currency.vue?vue&type=template&id=6a5ef1bc */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./NotFound.vue?vue&type=template&id=bcc9ff00 */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SectionTitle.vue?vue&type=template&id=a774a7f8 */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Skeleton.vue?vue&type=template&id=382eb9b4&scoped=true */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./TheLogo.vue?vue&type=template&id=840f138a */
+
+/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Skeleton.vue?vue&type=style&index=0&id=382eb9b4&lang=scss&scoped=true */
+
+/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MainLayout.vue?vue&type=script&lang=js */
+
+/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MainLayout.vue?vue&type=template&id=5a6a1827&scoped=true */
+
+/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MainLayout.vue?vue&type=style&index=0&id=5a6a1827&scoped=true&lang=scss */
+
+/*! -!../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./App.vue?vue&type=script&lang=js */
+
+/*! -!../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./App.vue?vue&type=template&id=f348271a */
+
+/*! ../../../../css-loader/dist/runtime/api.js */
+
+/*! ../../../../node_modules/css-loader/dist/runtime/api.js */
+
+/*! ../../../css-loader/dist/runtime/api.js */
+
+/*! ../../../node_modules/css-loader/dist/runtime/api.js */
+
+/*! ../../css-loader/dist/runtime/api.js */
+
+/*! ../cancel/Cancel */
+
+/*! ../cancel/isCancel */
+
+/*! ../config.js */
+
+/*! ../core/buildFullPath */
+
+/*! ../core/createError */
+
+/*! ../defaults */
+
+/*! ../env/data */
+
+/*! ../helpers/buildURL */
+
+/*! ../helpers/combineURLs */
+
+/*! ../helpers/isAbsoluteURL */
+
+/*! ../helpers/validator */
+
+/*! ../i18n_setup */
+
+/*! ../router/index */
+
+/*! ../shop/views/all_shops.vue */
+
+/*! ../shop/views/shop_page.vue */
+
+/*! ../store */
+
+/*! ../utils */
+
+/*! ../views/Error.vue */
+
+/*! ../views/auth/forgotPassword.vue */
+
+/*! ../views/auth/login.vue */
+
+/*! ../views/auth/register.vue */
+
+/*! ../views/auth/resetEmail.vue */
+
+/*! ../views/auth/resetPassword.vue */
+
+/*! ../views/auth/verification.vue */
+
+/*! ../views/blog-preview/index.vue */
+
+/*! ../views/blog/_id/index.vue */
+
+/*! ../views/blog/category/_id/index.vue */
+
+/*! ../views/blog/index.vue */
+
+/*! ../views/blog/search/index.vue */
+
+/*! ../views/blog/tag/_id/index.vue */
+
+/*! ../views/cart/index.vue */
+
+/*! ../views/category/index.vue */
+
+/*! ../views/checkout/confirm-order/index.vue */
+
+/*! ../views/checkout/index.vue */
+
+/*! ../views/compare/index.vue */
+
+/*! ../views/dashboard/address/index.vue */
+
+/*! ../views/dashboard/index.vue */
+
+/*! ../views/dashboard/manage-account/index.vue */
+
+/*! ../views/dashboard/my-wallet/index.vue */
+
+/*! ../views/dashboard/order-details/index.vue */
+
+/*! ../views/dashboard/purchase-history/index.vue */
+
+/*! ../views/dashboard/refund-details/index.vue */
+
+/*! ../views/dashboard/refunds/index.vue */
+
+/*! ../views/dashboard/wishlist/index.vue */
+
+/*! ../views/deals/index.vue */
+
+/*! ../views/index.vue */
+
+/*! ../views/multivendor/auth/register.vue */
+
+/*! ../views/page-preview/_id/index.vue */
+
+/*! ../views/page/_id/index.vue */
+
+/*! ../views/products/_id/index.vue */
+
+/*! ../views/products/category/_id/index.vue */
+
+/*! ../views/products/collection/CollectionProducts.vue */
+
+/*! ../views/products/index.vue */
+
+/*! ./../core/settle */
+
+/*! ./../defaults */
+
+/*! ./../helpers/buildURL */
+
+/*! ./../helpers/cookies */
+
+/*! ./../helpers/isURLSameOrigin */
+
+/*! ./../helpers/parseHeaders */
+
+/*! ./../utils */
+
+/*! ./../views/products/search/index.vue */
+
+/*! ./App.vue */
+
+/*! ./App.vue?vue&type=script&lang=js */
+
+/*! ./App.vue?vue&type=template&id=f348271a */
+
+/*! ./BaseFileInput.vue?vue&type=script&lang=js */
+
+/*! ./BaseFileInput.vue?vue&type=template&id=c731e2c8 */
+
+/*! ./BaseIconSvg.vue?vue&type=script&lang=js */
+
+/*! ./BaseIconSvg.vue?vue&type=template&id=b69a1dce */
+
+/*! ./Cancel */
+
+/*! ./Currency.vue?vue&type=script&lang=js */
+
+/*! ./Currency.vue?vue&type=template&id=6a5ef1bc */
+
+/*! ./InterceptorManager */
+
+/*! ./MainLayout.vue?vue&type=script&lang=js */
+
+/*! ./MainLayout.vue?vue&type=style&index=0&id=5a6a1827&scoped=true&lang=scss */
+
+/*! ./MainLayout.vue?vue&type=template&id=5a6a1827&scoped=true */
+
+/*! ./NotFound.vue?vue&type=script&lang=js */
+
+/*! ./NotFound.vue?vue&type=template&id=bcc9ff00 */
+
+/*! ./SectionTitle.vue?vue&type=script&lang=js */
+
+/*! ./SectionTitle.vue?vue&type=template&id=a774a7f8 */
+
+/*! ./Skeleton.vue?vue&type=script&lang=js */
+
+/*! ./Skeleton.vue?vue&type=style&index=0&id=382eb9b4&lang=scss&scoped=true */
+
+/*! ./Skeleton.vue?vue&type=template&id=382eb9b4&scoped=true */
+
+/*! ./TheLogo.vue?vue&type=script&lang=js */
+
+/*! ./TheLogo.vue?vue&type=template&id=840f138a */
+
+/*! ./actions.js */
+
+/*! ./adapters/xhr */
+
+/*! ./assets/css/google-icons.css */
+
+/*! ./assets/sass/app.scss */
+
+/*! ./cancel/Cancel */
+
+/*! ./cancel/CancelToken */
+
+/*! ./cancel/isCancel */
+
+/*! ./components/global/BaseFileInput.vue */
+
+/*! ./components/global/BaseIconSvg.vue */
+
+/*! ./components/global/Currency.vue */
+
+/*! ./components/global/NotFound.vue */
+
+/*! ./components/global/SectionTitle.vue */
+
+/*! ./components/global/TheLogo.vue */
+
+/*! ./components/skeleton/Skeleton.vue */
+
+/*! ./const.js */
+
+/*! ./core/Axios */
+
+/*! ./core/enhanceError */
+
+/*! ./core/mergeConfig */
+
+/*! ./createError */
+
+/*! ./defaults */
+
+/*! ./dispatchRequest */
+
+/*! ./enhanceError */
+
+/*! ./env.js */
+
+/*! ./env/data */
+
+/*! ./getters.js */
+
+/*! ./helpers/bind */
+
+/*! ./helpers/isAxiosError */
+
+/*! ./helpers/normalizeHeaderName */
+
+/*! ./helpers/spread */
+
+/*! ./i18n_setup */
+
+/*! ./layouts/MainLayout.vue */
+
+/*! ./lib/axios */
+
+/*! ./mergeConfig */
+
+/*! ./mutations.js */
+
+/*! ./node_modules/vue-loader/dist/exportHelper.js */
+
+/*! ./proxy.js */
+
+/*! ./router */
+
+/*! ./store */
+
+/*! ./time.js */
+
+/*! ./transformData */
+
+/*! ./utils */
+
+/*! @/components/pageheader/HeaderBottom.vue */
+
+/*! @/components/pageheader/HeaderMiddle.vue */
+
+/*! @/components/pageheader/HeaderTop.vue */
+
+/*! @/components/pageheader/MobileHeader.vue */
+
+/*! @/components/ui/BackToTop.vue */
+
+/*! @/components/ui/Copyright.vue */
+
+/*! @/components/ui/Gdpr.vue */
+
+/*! @/components/ui/Preloader.vue */
+
+/*! @/components/ui/StickyFooter.vue */
+
+/*! @/components/ui/TopBarBanner.vue */
+
+/*! @/components/widget/SubscribeForm.vue */
+
+/*! @/components/widget/address_widget.vue */
+
+/*! @/components/widget/featured_blog_widget.vue */
+
+/*! @/components/widget/footer_left_menu.vue */
+
+/*! @/components/widget/footer_right_menu.vue */
+
+/*! @/components/widget/newsletter_widget.vue */
+
+/*! @/components/widget/recent_blog_widget.vue */
+
+/*! @/components/widget/social_links.vue */
+
+/*! @coreui/coreui/dist/css/coreui.min.css */
+
+/*! @coreui/vue */
+
+/*! @intlify/core-base */
+
+/*! @intlify/devtools-if */
+
+/*! @intlify/message-compiler */
+
+/*! @intlify/shared */
+
+/*! @intlify/vue-devtools */
+
+/*! @vue/compiler-core */
+
+/*! @vue/compiler-dom */
+
+/*! @vue/devtools-api */
+
+/*! @vue/reactivity */
+
+/*! @vue/runtime-core */
+
+/*! @vue/runtime-dom */
+
+/*! @vue/shared */
+
+/*! axios */
+
+/*! bootstrap/dist/css/bootstrap.css */
+
+/*! dot-object */
+
+/*! import() */
+
+/*! import() | AllShops */
+
+/*! import() | CategoryBlogPage */
+
+/*! import() | CategoryProducts */
+
+/*! import() | CollectionPage */
+
+/*! import() | CustomerAddress */
+
+/*! import() | CustomerCheckout */
+
+/*! import() | CustomerDashboard */
+
+/*! import() | CustomerEmailReset */
+
+/*! import() | CustomerEmailVerification */
+
+/*! import() | CustomerForgotPassword */
+
+/*! import() | CustomerLogin */
+
+/*! import() | CustomerManageAccount */
+
+/*! import() | CustomerOrderDetails */
+
+/*! import() | CustomerOrderRefundList */
+
+/*! import() | CustomerPasswordReset */
+
+/*! import() | CustomerPurchaseHistory */
+
+/*! import() | CustomerRefundDetails */
+
+/*! import() | CustomerRegistration */
+
+/*! import() | CustomerWallet */
+
+/*! import() | CustomerWishlist */
+
+/*! import() | DealPage */
+
+/*! import() | ErrorPage */
+
+/*! import() | Home */
+
+/*! import() | ListBlogs */
+
+/*! import() | OrderSuccess */
+
+/*! import() | PagePreview */
+
+/*! import() | PreviewBlog */
+
+/*! import() | ProductCategories */
+
+/*! import() | ProductCompare */
+
+/*! import() | ProductDetails */
+
+/*! import() | ProductPage */
+
+/*! import() | SearchBlogs */
+
+/*! import() | SearchResult */
+
+/*! import() | SellerRegistration */
+
+/*! import() | ShippingCart */
+
+/*! import() | ShopPage */
+
+/*! import() | SingleBlog */
+
+/*! import() | SinglePage */
+
+/*! import() | TagBlogs */
+
+/*! process/browser.js */
+
+/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
+
+/*! vue */
+
+/*! vue-i18n */
+
+/*! vue-router */
+
+/*! vue-select */
+
+/*! vue-social-sharing */
+
+/*! vue-toast-notification */
+
+/*! vue-toast-notification/dist/theme-sugar.css */
+
+/*! vue3-runtime-template */
+
+/*! vuex */
+
+/*! vuex-multi-tab-state */
+
+/*!******************************!*\
+  !*** ./resources/js/App.vue ***!
+  \******************************/
+
+/*!******************************!*\
+  !*** ./resources/js/main.js ***!
+  \******************************/
+
+/*!********************************!*\
+  !*** ./resources/js/config.js ***!
+  \********************************/
+
+/*!************************************!*\
+  !*** ./resources/js/i18n_setup.js ***!
+  \************************************/
+
+/*!*************************************!*\
+  !*** ./node_modules/axios/index.js ***!
+  \*************************************/
+
+/*!*************************************!*\
+  !*** ./resources/js/store/index.js ***!
+  \*************************************/
+
+/*!**************************************!*\
+  !*** ./resources/js/router/index.js ***!
+  \**************************************/
+
+/*!***************************************!*\
+  !*** ./resources/js/store/actions.js ***!
+  \***************************************/
+
+/*!***************************************!*\
+  !*** ./resources/js/store/getters.js ***!
+  \***************************************/
+
+/*!*****************************************!*\
+  !*** ./node_modules/axios/lib/axios.js ***!
+  \*****************************************/
+
+/*!*****************************************!*\
+  !*** ./node_modules/axios/lib/utils.js ***!
+  \*****************************************/
+
+/*!*****************************************!*\
+  !*** ./node_modules/process/browser.js ***!
+  \*****************************************/
+
+/*!*****************************************!*\
+  !*** ./resources/js/store/mutations.js ***!
+  \*****************************************/
+
+/*!******************************************!*\
+  !*** ./node_modules/dot-object/index.js ***!
+  \******************************************/
+
+/*!*******************************************!*\
+  !*** ./resources/js/assets/sass/app.scss ***!
+  \*******************************************/
+
+/*!********************************************!*\
+  !*** ./node_modules/axios/lib/defaults.js ***!
+  \********************************************/
+
+/*!********************************************!*\
+  !*** ./node_modules/axios/lib/env/data.js ***!
+  \********************************************/
+
+/*!*********************************************!*\
+  !*** ./resources/js/layouts/MainLayout.vue ***!
+  \*********************************************/
+
+/*!**********************************************!*\
+  !*** ./node_modules/axios/lib/core/Axios.js ***!
+  \**********************************************/
+
+/*!***********************************************!*\
+  !*** ./node_modules/axios/lib/core/settle.js ***!
+  \***********************************************/
+
+/*!************************************************!*\
+  !*** ./node_modules/axios/lib/adapters/xhr.js ***!
+  \************************************************/
+
+/*!************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/bind.js ***!
+  \************************************************/
+
+/*!*************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/Cancel.js ***!
+  \*************************************************/
+
+/*!**************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/spread.js ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./node_modules/vue/dist/vue.esm-bundler.js ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./resources/js/assets/css/google-icons.css ***!
+  \**************************************************/
+
+/*!***************************************************!*\
+  !*** ./node_modules/@coreui/vue/dist/index.es.js ***!
+  \***************************************************/
+
+/*!***************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/isCancel.js ***!
+  \***************************************************/
+
+/*!***************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/cookies.js ***!
+  \***************************************************/
+
+/*!****************************************************!*\
+  !*** ./node_modules/axios/lib/core/createError.js ***!
+  \****************************************************/
+
+/*!****************************************************!*\
+  !*** ./node_modules/axios/lib/core/mergeConfig.js ***!
+  \****************************************************/
+
+/*!****************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/buildURL.js ***!
+  \****************************************************/
+
+/*!****************************************************!*\
+  !*** ./node_modules/vuex/dist/vuex.esm-bundler.js ***!
+  \****************************************************/
+
+/*!****************************************************!*\
+  !*** ./resources/js/components/global/TheLogo.vue ***!
+  \****************************************************/
+
+/*!*****************************************************!*\
+  !*** ./node_modules/axios/lib/core/enhanceError.js ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/validator.js ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
+  !*** ./node_modules/css-loader/dist/runtime/api.js ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
+  !*** ./resources/js/components/global/Currency.vue ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
+  !*** ./resources/js/components/global/NotFound.vue ***!
+  \*****************************************************/
+
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/cancel/CancelToken.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/core/buildFullPath.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ./node_modules/axios/lib/core/transformData.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ./node_modules/vue-loader/dist/exportHelper.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ./resources/js/App.vue?vue&type=script&lang=js ***!
+  \******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./node_modules/@vue/devtools-api/lib/esm/env.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/combineURLs.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./node_modules/bootstrap/dist/css/bootstrap.css ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./node_modules/vue-select/dist/vue-select.es.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./resources/js/components/skeleton/Skeleton.vue ***!
+  \*******************************************************/
+
+/*!********************************************************!*\
+  !*** ./node_modules/@vue/devtools-api/lib/esm/time.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/core/dispatchRequest.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isAxiosError.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/parseHeaders.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ./resources/js/components/global/BaseIconSvg.vue ***!
+  \********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./node_modules/@vue/devtools-api/lib/esm/const.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./node_modules/@vue/devtools-api/lib/esm/index.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./node_modules/@vue/devtools-api/lib/esm/proxy.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isAbsoluteURL.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./resources/js/components/global/SectionTitle.vue ***!
+  \*********************************************************/
+
+/*!**********************************************************!*\
+  !*** ./resources/js/components/global/BaseFileInput.vue ***!
+  \**********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./node_modules/axios/lib/core/InterceptorManager.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/isURLSameOrigin.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./node_modules/vue-toast-notification/dist/index.js ***!
+  \***********************************************************/
+
+/*!************************************************************!*\
+  !*** ./node_modules/vue-i18n/dist/vue-i18n.esm-bundler.js ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ./resources/js/App.vue?vue&type=template&id=f348271a ***!
+  \************************************************************/
+
+/*!*************************************************************!*\
+  !*** ./node_modules/@coreui/coreui/dist/css/coreui.min.css ***!
+  \*************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/axios/lib/helpers/normalizeHeaderName.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/vuex-multi-tab-state/lib/index.modern.js ***!
+  \***************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/vue-router/dist/vue-router.esm-bundler.js ***!
+  \****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ./node_modules/@intlify/shared/dist/shared.esm-bundler.js ***!
+  \*****************************************************************/
+
+/*!******************************************************************!*\
+  !*** ./node_modules/vue-toast-notification/dist/theme-sugar.css ***!
+  \******************************************************************/
+
+/*!********************************************************************!*\
+  !*** ./node_modules/vue-social-sharing/dist/vue-social-sharing.js ***!
+  \********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/@vue/reactivity/dist/reactivity.esm-bundler.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./resources/js/layouts/MainLayout.vue?vue&type=script&lang=js ***!
+  \*********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/@intlify/core-base/dist/core-base.esm-bundler.js ***!
+  \***********************************************************************/
+
+/*!***********************************************************************!*\
+  !*** ./node_modules/@vue/runtime-dom/dist/runtime-dom.esm-bundler.js ***!
+  \***********************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ./node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js ***!
+  \*************************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ./node_modules/@intlify/devtools-if/dist/devtools-if.esm-bundler.js ***!
+  \***************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js ***!
+  \****************************************************************************/
+
+/*!****************************************************************************!*\
+  !*** ./resources/js/components/global/TheLogo.vue?vue&type=script&lang=js ***!
+  \****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/@intlify/vue-devtools/dist/vue-devtools.esm-bundler.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/vue3-runtime-template/dist/vue3-runtime-template.es.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./resources/js/components/global/Currency.vue?vue&type=script&lang=js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./resources/js/components/global/NotFound.vue?vue&type=script&lang=js ***!
+  \*****************************************************************************/
+
+/*!******************************************************************************!*\
+  !*** ./node_modules/vue/node_modules/@vue/shared/dist/shared.esm-bundler.js ***!
+  \******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ./resources/js/components/skeleton/Skeleton.vue?vue&type=script&lang=js ***!
+  \*******************************************************************************/
+
+/*!********************************************************************************!*\
+  !*** ./resources/js/components/global/BaseIconSvg.vue?vue&type=script&lang=js ***!
+  \********************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./resources/js/components/global/SectionTitle.vue?vue&type=script&lang=js ***!
+  \*********************************************************************************/
+
+/*!**********************************************************************************!*\
+  !*** ./resources/js/components/global/BaseFileInput.vue?vue&type=script&lang=js ***!
+  \**********************************************************************************/
+
+/*!**********************************************************************************!*\
+  !*** ./resources/js/components/global/TheLogo.vue?vue&type=template&id=840f138a ***!
+  \**********************************************************************************/
+
+/*!***********************************************************************************!*\
+  !*** ./resources/js/components/global/Currency.vue?vue&type=template&id=6a5ef1bc ***!
+  \***********************************************************************************/
+
+/*!***********************************************************************************!*\
+  !*** ./resources/js/components/global/NotFound.vue?vue&type=template&id=bcc9ff00 ***!
+  \***********************************************************************************/
+
+/*!*************************************************************************************!*\
+  !*** ./node_modules/@intlify/message-compiler/dist/message-compiler.esm-bundler.js ***!
+  \*************************************************************************************/
+
+/*!**************************************************************************************!*\
+  !*** ./resources/js/components/global/BaseIconSvg.vue?vue&type=template&id=b69a1dce ***!
+  \**************************************************************************************/
+
+/*!***************************************************************************************!*\
+  !*** ./resources/js/components/global/SectionTitle.vue?vue&type=template&id=a774a7f8 ***!
+  \***************************************************************************************/
+
+/*!***************************************************************************************!*\
+  !*** ./resources/js/layouts/MainLayout.vue?vue&type=template&id=5a6a1827&scoped=true ***!
+  \***************************************************************************************/
+
+/*!****************************************************************************************!*\
+  !*** ./resources/js/components/global/BaseFileInput.vue?vue&type=template&id=c731e2c8 ***!
+  \****************************************************************************************/
+
+/*!******************************************************************************************!*\
+  !*** ./node_modules/@vue/reactivity/node_modules/@vue/shared/dist/shared.esm-bundler.js ***!
+  \******************************************************************************************/
+
+/*!******************************************************************************************!*\
+  !*** ./node_modules/vue/node_modules/@vue/compiler-dom/dist/compiler-dom.esm-bundler.js ***!
+  \******************************************************************************************/
+
+/*!*******************************************************************************************!*\
+  !*** ./node_modules/@vue/runtime-dom/node_modules/@vue/shared/dist/shared.esm-bundler.js ***!
+  \*******************************************************************************************/
+
+/*!********************************************************************************************!*\
+  !*** ./node_modules/@vue/runtime-core/node_modules/@vue/shared/dist/shared.esm-bundler.js ***!
+  \********************************************************************************************/
+
+/*!********************************************************************************************!*\
+  !*** ./node_modules/vue/node_modules/@vue/compiler-core/dist/compiler-core.esm-bundler.js ***!
+  \********************************************************************************************/
+
+/*!*************************************************************************************************!*\
+  !*** ./resources/js/components/skeleton/Skeleton.vue?vue&type=template&id=382eb9b4&scoped=true ***!
+  \*************************************************************************************************/
+
+/*!******************************************************************************************************!*\
+  !*** ./resources/js/layouts/MainLayout.vue?vue&type=style&index=0&id=5a6a1827&scoped=true&lang=scss ***!
+  \******************************************************************************************************/
+
+/*!****************************************************************************************************************!*\
+  !*** ./resources/js/components/skeleton/Skeleton.vue?vue&type=style&index=0&id=382eb9b4&lang=scss&scoped=true ***!
+  \****************************************************************************************************************/
+
+/*!**********************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/App.vue?vue&type=script&lang=js ***!
+  \**********************************************************************************************************************************************************************************/
+
+/*!**********************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./resources/js/assets/css/google-icons.css ***!
+  \**********************************************************************************************************************************************************************************/
+
+/*!***************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/bootstrap/dist/css/bootstrap.css ***!
+  \***************************************************************************************************************************************************************************************/
+
+/*!*********************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/@coreui/coreui/dist/css/coreui.min.css ***!
+  \*********************************************************************************************************************************************************************************************/
+
+/*!*************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/layouts/MainLayout.vue?vue&type=script&lang=js ***!
+  \*************************************************************************************************************************************************************************************************/
+
+/*!**************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/vue-toast-notification/dist/theme-sugar.css ***!
+  \**************************************************************************************************************************************************************************************************/
+
+/*!********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/TheLogo.vue?vue&type=script&lang=js ***!
+  \********************************************************************************************************************************************************************************************************/
+
+/*!*********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/Currency.vue?vue&type=script&lang=js ***!
+  \*********************************************************************************************************************************************************************************************************/
+
+/*!*********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/NotFound.vue?vue&type=script&lang=js ***!
+  \*********************************************************************************************************************************************************************************************************/
+
+/*!***********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/skeleton/Skeleton.vue?vue&type=script&lang=js ***!
+  \***********************************************************************************************************************************************************************************************************/
+
+/*!************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/BaseIconSvg.vue?vue&type=script&lang=js ***!
+  \************************************************************************************************************************************************************************************************************/
+
+/*!*************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/SectionTitle.vue?vue&type=script&lang=js ***!
+  \*************************************************************************************************************************************************************************************************************/
+
+/*!**************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/BaseFileInput.vue?vue&type=script&lang=js ***!
+  \**************************************************************************************************************************************************************************************************************/
+
+/*!*********************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./resources/js/assets/sass/app.scss ***!
+  \*********************************************************************************************************************************************************************************************************************************************/
+
+/*!**************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/App.vue?vue&type=template&id=f348271a ***!
+  \**************************************************************************************************************************************************************************************************************************************************************/
+
+/*!************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/TheLogo.vue?vue&type=template&id=840f138a ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!*************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/Currency.vue?vue&type=template&id=6a5ef1bc ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!*************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/NotFound.vue?vue&type=template&id=bcc9ff00 ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!****************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/BaseIconSvg.vue?vue&type=template&id=b69a1dce ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/SectionTitle.vue?vue&type=template&id=a774a7f8 ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/layouts/MainLayout.vue?vue&type=template&id=5a6a1827&scoped=true ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!******************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/BaseFileInput.vue?vue&type=template&id=c731e2c8 ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/skeleton/Skeleton.vue?vue&type=template&id=382eb9b4&scoped=true ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/layouts/MainLayout.vue?vue&type=style&index=0&id=5a6a1827&scoped=true&lang=scss ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/skeleton/Skeleton.vue?vue&type=style&index=0&id=382eb9b4&lang=scss&scoped=true ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/layouts/MainLayout.vue?vue&type=style&index=0&id=5a6a1827&scoped=true&lang=scss ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/skeleton/Skeleton.vue?vue&type=style&index=0&id=382eb9b4&lang=scss&scoped=true ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/

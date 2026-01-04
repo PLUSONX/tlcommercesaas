@@ -1,0 +1,159 @@
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MenuDropdown.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MenuItem.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MobileHeader.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SearchForm.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./TheOffcanvas.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MenuDropdown.vue?vue&type=template&id=0f2f1ea5 */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MenuItem.vue?vue&type=template&id=1101a2a7 */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MobileHeader.vue?vue&type=template&id=64cf81c7 */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SearchForm.vue?vue&type=template&id=48b04d4c */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./TheOffcanvas.vue?vue&type=template&id=32be5f2b */
+
+/*! ./MenuDropdown.vue */
+
+/*! ./MenuDropdown.vue?vue&type=script&lang=js */
+
+/*! ./MenuDropdown.vue?vue&type=template&id=0f2f1ea5 */
+
+/*! ./MenuItem.vue */
+
+/*! ./MenuItem.vue?vue&type=script&lang=js */
+
+/*! ./MenuItem.vue?vue&type=template&id=1101a2a7 */
+
+/*! ./MobileHeader.vue?vue&type=script&lang=js */
+
+/*! ./MobileHeader.vue?vue&type=template&id=64cf81c7 */
+
+/*! ./SearchForm.vue?vue&type=script&lang=js */
+
+/*! ./SearchForm.vue?vue&type=template&id=48b04d4c */
+
+/*! ./TheOffcanvas.vue?vue&type=script&lang=js */
+
+/*! ./TheOffcanvas.vue?vue&type=template&id=32be5f2b */
+
+/*! ./node_modules/vue-loader/dist/exportHelper.js */
+
+/*! @/components/menu/TheOffcanvas.vue */
+
+/*! @/components/ui/SearchForm.vue */
+
+/*! @/fakeDB/offcanvas.json */
+
+/*! vue */
+
+/*! vuex */
+
+/*!********************************************!*\
+  !*** ./resources/js/fakeDB/offcanvas.json ***!
+  \********************************************/
+
+/*!***************************************************!*\
+  !*** ./resources/js/components/menu/MenuItem.vue ***!
+  \***************************************************/
+
+/*!***************************************************!*\
+  !*** ./resources/js/components/ui/SearchForm.vue ***!
+  \***************************************************/
+
+/*!*******************************************************!*\
+  !*** ./resources/js/components/menu/MenuDropdown.vue ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./resources/js/components/menu/TheOffcanvas.vue ***!
+  \*******************************************************/
+
+/*!*************************************************************!*\
+  !*** ./resources/js/components/pageheader/MobileHeader.vue ***!
+  \*************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ./resources/js/components/menu/MenuItem.vue?vue&type=script&lang=js ***!
+  \***************************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ./resources/js/components/ui/SearchForm.vue?vue&type=script&lang=js ***!
+  \***************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ./resources/js/components/menu/MenuDropdown.vue?vue&type=script&lang=js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
+  !*** ./resources/js/components/menu/TheOffcanvas.vue?vue&type=script&lang=js ***!
+  \*******************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./resources/js/components/menu/MenuItem.vue?vue&type=template&id=1101a2a7 ***!
+  \*********************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./resources/js/components/ui/SearchForm.vue?vue&type=template&id=48b04d4c ***!
+  \*********************************************************************************/
+
+/*!*************************************************************************************!*\
+  !*** ./resources/js/components/menu/MenuDropdown.vue?vue&type=template&id=0f2f1ea5 ***!
+  \*************************************************************************************/
+
+/*!*************************************************************************************!*\
+  !*** ./resources/js/components/menu/TheOffcanvas.vue?vue&type=template&id=32be5f2b ***!
+  \*************************************************************************************/
+
+/*!*************************************************************************************!*\
+  !*** ./resources/js/components/pageheader/MobileHeader.vue?vue&type=script&lang=js ***!
+  \*************************************************************************************/
+
+/*!*******************************************************************************************!*\
+  !*** ./resources/js/components/pageheader/MobileHeader.vue?vue&type=template&id=64cf81c7 ***!
+  \*******************************************************************************************/
+
+/*!*******************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu/MenuItem.vue?vue&type=script&lang=js ***!
+  \*******************************************************************************************************************************************************************************************************/
+
+/*!*******************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/SearchForm.vue?vue&type=script&lang=js ***!
+  \*******************************************************************************************************************************************************************************************************/
+
+/*!***********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu/MenuDropdown.vue?vue&type=script&lang=js ***!
+  \***********************************************************************************************************************************************************************************************************/
+
+/*!***********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu/TheOffcanvas.vue?vue&type=script&lang=js ***!
+  \***********************************************************************************************************************************************************************************************************/
+
+/*!*****************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/pageheader/MobileHeader.vue?vue&type=script&lang=js ***!
+  \*****************************************************************************************************************************************************************************************************************/
+
+/*!***********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu/MenuItem.vue?vue&type=template&id=1101a2a7 ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!***********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/SearchForm.vue?vue&type=template&id=48b04d4c ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!***************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu/MenuDropdown.vue?vue&type=template&id=0f2f1ea5 ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!***************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu/TheOffcanvas.vue?vue&type=template&id=32be5f2b ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/pageheader/MobileHeader.vue?vue&type=template&id=64cf81c7 ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************/

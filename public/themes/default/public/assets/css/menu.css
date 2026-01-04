@@ -1,0 +1,4 @@
+.nav-menu li:hover>a {
+    color: #ff5A1f !important;
+    /* color:#4ad98f!important; */
+}
