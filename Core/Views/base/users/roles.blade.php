@@ -472,7 +472,7 @@
         function showEditableForm(role_id) {
             "use strict";
 
-            console.log("roleId: ", role_id);
+            // console.log("roleId: ", role_id);
             flash()
             $('#update_role').show();
             $('#add_role').hide();
@@ -521,8 +521,6 @@
                     let modules = response.modules
                     let last_permission_id = {{ $last_permission_id }}
                     
-                    console.log("status: ", status);
-                    console.log("response: ", response);
 
 
                     for (let i = 0; i < modules.length; i++) {
@@ -557,8 +555,6 @@
             let role_id = $('#role_id').val()
             let role_name = $('#role_name').val()
             let permissions = editable_role_has_permissions.join(',')
-
-            console.log("role_id: ", role_id);
 
             $.post("{{ route('core.update.role') }}", {
                     _token: '{{ csrf_token() }}',

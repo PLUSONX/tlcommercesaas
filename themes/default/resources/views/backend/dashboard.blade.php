@@ -298,7 +298,8 @@
                                         @if (isset($author_image)) {{ asset(getFilePath($author_image)) }}
                                         @else
                                             @if ($comment_setting['show_avatars'] == 1)
-                                                {{ asset('/public/comment-author-image/' . $comment_setting['avatar_default'] . '.png') }}
+                                                {{ asset('comment-author-image/' . $comment_setting['avatar_default'] . '.png') }}
+                                                <!-- {{ asset('/public/comment-author-image/' . $comment_setting['avatar_default'] . '.png') }} -->
                                             @else
                                                 {{ asset(getFilePath($author_image)) }} @endif
                                         @endif"

@@ -163,6 +163,8 @@ class StoreRepository
             }
         }
 
+        // dd($package_details);
+
         $package_details = $package_details[0];
 
         return $package_details;

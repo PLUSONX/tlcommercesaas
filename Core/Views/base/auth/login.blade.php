@@ -3,6 +3,8 @@ $system_name = getGeneralSetting('system_name');
 $desktop_logo = !empty(getGeneralSetting('admin_logo')) ? getFilePath(getGeneralSetting('admin_logo')) : '';
 $login_bg_image = !empty(getGeneralSetting('login_bg_image')) ? getFilePath(getGeneralSetting('login_bg_image')) : '';
 
+$login_bg_image = str_replace('/public', '', $login_bg_image);
+
 $host = request()->getHost();
 $centralDomains = config('tenancy.central_domains', ['localhost']);
 $isCentralDomain = in_array($host, $centralDomains);

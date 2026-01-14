@@ -14,8 +14,6 @@ import ToastPlugin from 'vue-toast-notification';
 import NotFound from "./components/global/NotFound.vue"
 import VueSocialSharing from 'vue-social-sharing'
 
-console.log('---------main.js--------');
-
 const app = createApp(App);
 app.use(store);
 app.use(router);
@@ -32,7 +30,6 @@ app.component('the-not-found', NotFound);
 app.component('skeleton', Skeleton);
 app.mount("#app");
 
-console.log('MAIN.JS END');
 
 
 //Import coreui Styles

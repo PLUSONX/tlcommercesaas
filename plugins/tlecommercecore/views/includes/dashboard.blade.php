@@ -620,8 +620,15 @@
                             <div class="product-list-item mb-20 d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
                                     <div class="img mr-3">
-                                        <img src="{{ asset(getFilePath($customer->image, true)) }}"
-                                            alt="{{ $customer->name }}">
+                                        <img 
+                                                src="{{ $customer->image 
+                                                    ? str_replace('/public', '', getFilePath($customer->image))
+                                                    : asset('backend/assets/img/avatar/avatar-user.png') 
+                                                }}"
+                                                alt="Customer Image"
+                                            />
+                                        <!-- <img src="{{ asset(getFilePath($customer->image, true)) }}"
+                                            alt="{{ $customer->name }}"> -->
                                     </div>
                                     <div class="content">
                                         <a href="{{ route('plugin.tlcommercecore.customers.details', ['id' => $customer->id]) }}"
@@ -659,9 +666,17 @@
                             <div class="product-list-item mb-20 d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
                                     <div class="img mr-3">
-                                        <img src="{{ asset(getFilePath($product->thumbnail_image)) }}"
+
+                                            <img 
+                                                src="{{ $product->thumbnail_image
+                                                    ? str_replace('/public', '', getFilePath($product->thumbnail_image))
+                                                    : asset('backend/assets/img/avatar/avatar-user.png') 
+                                                }}"
+                                                alt="Customer Image"
+                                            />
+                                        <!-- <img src="{{ asset(getFilePath($product->thumbnail_image)) }}"
                                             alt="{{ $product->translation('name', getLocale()) }}"
-                                            class="dash-image">
+                                            class="dash-image"> -->
                                     </div>
                                     <div class="content">
                                         <p class="black mb-1 overflow-text text-capitalize">
@@ -698,8 +713,11 @@
                             <div class="product-list-item mb-20 d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
                                     <div class="img mr-3">
-                                        <img src="{{ asset(getFilePath($category['icon'], true)) }}"
+                                         <img src="{{ str_replace('/public', '',  asset(getFilePath($category['icon'], true)) )
+                                        }}"
                                             alt="{{ $category['name'] }}">
+                                        <!-- <img src="{{ asset(getFilePath($category['icon'], true)) }}"
+                                            alt="{{ $category['name'] }}"> -->
                                     </div>
                                     <div class="content">
                                         <p class="black mb-1">{{ $category['name'] }}</p>
@@ -735,8 +753,11 @@
                             <div class="product-list-item mb-20 d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
                                     <div class="img mr-3">
-                                        <img src="{{ asset(getFilePath($brand['logo'])) }}"
+                                         <img src="{{ str_replace('/public', '', asset(getFilePath($brand['logo'])))
+                                          }}"
                                             alt="{{ $brand['name'] }}" class="img-20">
+                                        <!-- <img src="{{ asset(getFilePath($brand['logo'])) }}"
+                                            alt="{{ $brand['name'] }}" class="img-20"> -->
                                     </div>
                                     <div class="content">
                                         <p class="black mb-1">{{ $brand['name'] }}</p>

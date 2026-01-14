@@ -78,13 +78,6 @@
         $stores = $dashboard_details['stores'];
         $domain_request = $dashboard_details['domain_request'];
 
-        foreach ($new_customers as $customer) {
-            
-            echo "<script>console.log('url_image:', " . json_encode($customer->image) . ");</script>";
-        }
-        
-        echo "<script>console. log('domain_request:', " . json_encode($domain_request) . ");</script>";
-
     @endphp
     @push('head')
         {{-- Push custom script or style into head tag --}}

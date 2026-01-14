@@ -868,12 +868,6 @@ export default {
 
     
   },
-  mounted() {
-    console.log('SingleProduct mounted');
-    console.log('Single Product url:', this.item.thumbnail_image);
-    console.log('Cleaned URL:', this.cleanImage(this.item.thumbnail_image));
-
-  },
 };
 </script>
 <style lang="scss" scoped>

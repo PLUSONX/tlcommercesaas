@@ -9,8 +9,6 @@
     $motto = $generalSettings['site_moto'];
     $rtl = getActiveFrontLangRTL();
 
-    echo "<script>console.log('layout:', " . json_encode(  $layout ) . ");</script>";
-
 @endphp
 @extends('theme/default::frontend.layout.master')
 

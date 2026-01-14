@@ -9,6 +9,7 @@ use App\Http\Middleware\SystemInstalled;
 use App\Http\Middleware\SellerAuthenticate;
 use App\Http\Middleware\RedirectIfInstalled;
 use App\Http\Middleware\CheckSubscriptionLimit;
+use App\Http\Middleware\HandleTenantLoginToken;
 use App\Http\Middleware\AdminSubscriberSeparation;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use App\Http\Middleware\CheckSubscriberAuthentication;
@@ -35,6 +36,7 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\EncryptCookies::class,
         \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
         \Illuminate\Session\Middleware\StartSession::class,
+        \App\Http\Middleware\HandleTenantLoginToken::class,
         \Illuminate\View\Middleware\ShareErrorsFromSession::class,
         \App\Http\Middleware\RemoveTenancyAssetsSegment::class,
         SystemInstalled::class,
@@ -72,7 +74,7 @@ class Kernel extends HttpKernel
         'tenant' => [
             \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
             \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
-            \App\Http\Middleware\EnsureTenantUserAuth::class,
+            \App\Http\Middleware\EnsureTenantUserAuth::class
         ],
     ];
 
@@ -113,24 +115,24 @@ class Kernel extends HttpKernel
     ];
 
 
-//     protected $middlewarePriority = [
-//     // Tenancy must run before Debugbar
-//     \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
-//     \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
+    //     protected $middlewarePriority = [
+    //     // Tenancy must run before Debugbar
+    //     \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
+    //     \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
 
-//     // Debugbar AFTER tenancy
-//     \Barryvdh\Debugbar\Middleware\InjectDebugbar::class,
+    //     // Debugbar AFTER tenancy
+    //     \Barryvdh\Debugbar\Middleware\InjectDebugbar::class,
 
-//     // Now the rest of important middlewares
-//     \Illuminate\Session\Middleware\StartSession::class,
-//     \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+    //     // Now the rest of important middlewares
+    //     \Illuminate\Session\Middleware\StartSession::class,
+    //     \Illuminate\View\Middleware\ShareErrorsFromSession::class,
 
-//     // Authentication
-//     \Illuminate\Auth\Middleware\Authenticate::class,
+    //     // Authentication
+    //     \Illuminate\Auth\Middleware\Authenticate::class,
 
-//     // Keeping the rest just in case
-//     \App\Http\Middleware\Authenticate::class,
-//     \Illuminate\Routing\Middleware\SubstituteBindings::class,
-// ];
+    //     // Keeping the rest just in case
+    //     \App\Http\Middleware\Authenticate::class,
+    //     \Illuminate\Routing\Middleware\SubstituteBindings::class,
+    // ];
 
 }

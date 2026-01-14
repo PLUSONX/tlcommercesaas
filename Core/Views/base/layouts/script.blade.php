@@ -802,19 +802,12 @@
 
             fileLocation = fileLocation.replace(/^\/public/, '');
 
-            console.log("file_location: ", fileLocation);
-
-
-            // fileLocation = fileLocation.replace(/^\/+/, '');
-
             if (!fileLocation) {
                 console.error('Missing file location for:', fileKey, selected_file_location);
                 continue;
             }
 
             let splitted_file_location = fileLocation.split('.');
-
-            console.log("splitted_file_location: ", splitted_file_location);
 
             // let splitted_file_location = selected_file_location['file_' + selected_file_id[i]].split('.');
             let splitted_file_extension = splitted_file_location[splitted_file_location.length - 1];

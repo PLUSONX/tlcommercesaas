@@ -61,24 +61,29 @@
                                 <div class="col-sm-12 mt-10">
                                     <div
                                         class="section_layout {{ getHomePageSectionProperties($section_details->id, 'layout') == 'category_slider' ? 'category_slider' : 'd-none' }}">
-                                        <img src="{{ asset('/public/themes/tlcommerce/assets/img/category_slide.png') }}">
+                                        <img src="{{ asset('themes/tlcommerce/assets/img/category_slide.png') }}">
+                                        <!-- <img src="{{ asset('/public/themes/tlcommerce/assets/img/category_slide.png') }}"> -->
                                     </div>
                                     <div
                                         class="section_layout {{ getHomePageSectionProperties($section_details->id, 'layout') == 'flashdeal' ? 'flashdeal' : 'd-none' }}">
-                                        <img src="{{ asset('/public/themes/tlcommerce/assets/img/deals.png') }}">
+                                        <img src="{{ asset('themes/tlcommerce/assets/img/deals.png') }}">
+                                        <!-- <img src="{{ asset('/public/themes/tlcommerce/assets/img/deals.png') }}"> -->
                                     </div>
                                     <div
                                         class="section_layout {{ getHomePageSectionProperties($section_details->id, 'layout') == 'product_collection' ? 'product_collection' : 'd-none' }}">
-                                        <img src="{{ asset('/public/themes/tlcommerce/assets/img/collections.png') }}">
+                                        <img src="{{ asset('themes/tlcommerce/assets/img/collections.png') }}">
+                                        <!-- <img src="{{ asset('/public/themes/tlcommerce/assets/img/collections.png') }}"> -->
                                     </div>
                                     <div
                                         class="section_layout {{ getHomePageSectionProperties($section_details->id, 'layout') == 'custom_product_section' ? 'custom_product_section' : 'd-none' }}">
-                                        <img src="{{ asset('/public/themes/tlcommerce/assets/img/collections.png') }}">
+                                        <img src="{{ asset('themes/tlcommerce/assets/img/collections.png') }}">
+                                        <!-- <img src="{{ asset('/public/themes/tlcommerce/assets/img/collections.png') }}"> -->
                                     </div>
                                     <div
                                         class="section_layout {{ getHomePageSectionProperties($section_details->id, 'layout') == 'featured_product' ? 'featured_product' : 'd-none' }} ">
                                         <img
-                                            src="{{ asset('/public/themes/tlcommerce/assets/img/featured_product.png') }}">
+                                            src="{{ asset('themes/tlcommerce/assets/img/featured_product.png') }}">
+                                            <!-- src="{{ asset('/public/themes/tlcommerce/assets/img/featured_product.png') }}"> -->
                                     </div>
                                     <div
                                         class="section_layout {{ getHomePageSectionProperties($section_details->id, 'layout') == 'blogs' ? 'blogs' : 'd-none' }} ">
@@ -104,11 +109,13 @@
                                             <h4 class="mt-3">{{ translate('With Banner') }}</h4>
                                             <hr>
                                             <img
-                                                src="{{ asset('/public/themes/tlcommerce/assets/img/seller_with_banner.png') }}">
+                                                src="{{ asset('themes/tlcommerce/assets/img/seller_with_banner.png') }}">
+                                                <!-- src="{{ asset('/public/themes/tlcommerce/assets/img/seller_with_banner.png') }}"> -->
                                             <h4 class="mt-3">{{ translate('Without Banner') }}</h4>
                                             <hr>
                                             <img
-                                                src="{{ asset('/public/themes/tlcommerce/assets/img/seller_without_banner.png') }}">
+                                                src="{{ asset('themes/tlcommerce/assets/img/seller_without_banner.png') }}">
+                                                <!-- src="{{ asset('/public/themes/tlcommerce/assets/img/seller_without_banner.png') }}"> -->
                                         </div>
                                     @endif
                                 </div>

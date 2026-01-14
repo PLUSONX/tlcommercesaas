@@ -1,9 +1,6 @@
 @php
-    echo "<script>console.log('widget_image:', " . json_encode($data['widget_image']) . ");</script>";
-
+   
     $url = asset('themes/default/' . $data['widget_image']);
-
-    echo "<script>console.log('url:', " . json_encode($url) . ");</script>";
 
 @endphp
 @if (!isset($data['link']) || (isset($data['link']) && $data['link'] == 'none'))

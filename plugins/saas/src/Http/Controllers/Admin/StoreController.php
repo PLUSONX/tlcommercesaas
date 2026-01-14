@@ -208,8 +208,6 @@ class StoreController extends Controller
         try {
             $store = SaasAccount::find((int)$request['store_id']);
 
-            // echo "<script>console.log('store_from_controller:', " . json_encode($store) . ");</script>";
-
 
             $this->tenantRepository->createOrUpdateSingleTenantDatabase($store->tenant_id, $store->package_id, $store->id, 0, true);
 

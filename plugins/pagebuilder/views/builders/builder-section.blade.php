@@ -14,23 +14,16 @@
                     @foreach ($section['layouts'] as $section_layouts)
                         <div class="col-md-{{ $section_layouts['col_value'] }}">
 
-                        @php 
-                            echo "<script>console.log('section_layout:', " . json_encode($section_layouts) . ");</script>";
-
-                        @endphp
+         
                     
 
                             @foreach ($section_layouts['layout_widgets'] as $layout_widget)
                                 @php
                                     $properties = !empty($layout_widget['properties']['properties']) ? $layout_widget['properties']['properties'] : false;
                                                                                     
-                                    echo "<script>console.log('properties:', " . json_encode($properties) . ");</script>";
 
                                     $alignment = isset($properties['alignment']) ? $properties['alignment'] : 'start';
                                     $widget_name = $layout_widget['widget']['name'];
-
-                                    echo "<script>console.log('Widget Name:', '" . $widget_name . "');</script>";
-                                    echo "<script>console.log('Full Path:', 'plugin/pagebuilder::builders.builder-widgets." . $widget_name . "');</script>";
 
                                     switch ($widget_name) {
                                         case 'author':

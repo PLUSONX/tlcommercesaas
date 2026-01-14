@@ -377,22 +377,12 @@ class TenantRepository
             // $sqlFilePath = base_path('database/saas.sql');
             $sqlContent = file_get_contents($sqlFilePath);
 
-             // Get the subscriber/tenant owner details
-
-            // echo "<script>console.log('saas_account_id:', " . json_encode($saas_account_id) . ");</script>";
-
-
             $saasAccount = DB::table('tl_saas_accounts')->where('id', $saas_account_id)->first();
 
-            // $saasAccount = SaasAccount::find($saas_account_id);
-
             $subscriber = User::find($saasAccount->user_id);
-            // echo "<script>console.log('subscriber:', " . json_encode($subscriber) . ");</script>";
 
             // // Replace placeholder with actual user data
             $dynamicUserInsert = $this->generateUserInsert($subscriber, $tenant);
-
-            // echo "<script>console.log('dynamicUserInsert:', " . json_encode($dynamicUserInsert) . ");</script>";
 
 
             $sqlContent = str_replace('{{DYNAMIC_USER_INSERT}}', $dynamicUserInsert, $sqlContent);

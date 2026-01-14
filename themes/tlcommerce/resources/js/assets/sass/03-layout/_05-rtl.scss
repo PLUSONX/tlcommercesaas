@@ -3,7 +3,7 @@
    ********************* */
 
 html.rtl {
-    direction: rtl;
+    // direction: rtl;
 
     .header-info-wrap ul li:not(:last-child) {
         margin-right: 0px;
@@ -408,7 +408,8 @@ html.rtl {
         margin-left: 0px;
         margin-right: 10px;
     }
-    .modal .modal-header .btn-circle{
+
+    .modal .modal-header .btn-circle {
         margin-left: initial;
     }
 }

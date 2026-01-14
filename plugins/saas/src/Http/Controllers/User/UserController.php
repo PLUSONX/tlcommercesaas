@@ -120,10 +120,6 @@ class UserController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        // echo "<script>console.log('credentials: " . json_encode($credentials) . "');</script>";
-
-        // echo "<script>console.log('credentials: " . $credentials . "');</script>";
-
         if (Auth::attempt($credentials)) {
             $this->setupLoginLogoutActivity(true);
             if (Auth::user()->status == config('settings.user_status.in_active')) {

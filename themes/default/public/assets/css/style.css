@@ -4593,7 +4593,7 @@ body.dark .banner-slider .post-default.post-has-bg-img .title h2 a:hover {
 
 /* RTL MOOD CSS Start */
 body.rtl-mode {
-  direction: rtl !important;
+  /* direction: rtl !important; */
 }
 
 body.rtl-mode h1,

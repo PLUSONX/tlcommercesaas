@@ -27,9 +27,6 @@ $main_menuTree = buildMenuTree($data);
 
 $currentRoute = Route::currentRouteName();
 
-echo "<script>console.log('mood:', " . json_encode($mood) . ");</script>";
-echo "<script>console.log('logo_url:', " . json_encode(project_asset($header_logo)) . ");</script>";
-
 @endphp
 <!-- Header -->
 <header class="header home-header">

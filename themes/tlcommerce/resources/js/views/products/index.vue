@@ -359,7 +359,7 @@ export default {
           if (response.status === 200) {
             this.paginatedItems = response.data.data;
             this.totalItems = response.data.meta.total;
-            console.log("products: ", response.data);
+            
           }
           this.productsLoading = false;
         })

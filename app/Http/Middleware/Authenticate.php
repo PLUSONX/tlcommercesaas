@@ -14,7 +14,6 @@ class Authenticate extends Middleware
      */
     protected function redirectTo($request)
     {
-        echo "<script>console.log('request:', " . json_encode($request) . ");</script>";
 
             if (! $request->expectsJson()) {
 

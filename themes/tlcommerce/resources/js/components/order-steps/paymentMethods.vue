@@ -630,7 +630,6 @@ export default {
         formData.append("receipt", this.return_images);
       }
       formData.append("products", JSON.stringify(this.productPackages));
-      console.log(formData);
       axios
         .post("/api/v1/ecommerce-core/guest/checkout", formData)
         .then((response) => {

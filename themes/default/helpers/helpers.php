@@ -452,13 +452,38 @@ if (!function_exists('getHomePageSectionProperties')) {
      */
     function getHomePageSectionProperties($section_id, $key_name)
     {
-        $properties = HomeSectionProperties::where('section_id', $section_id)->where('key_name', $key_name)->first();
-        if ($properties != null) {
-            return $properties->key_value;
-        } else {
-            return null;
+        if(tenancy()->initialized) {
+
+        // dd(tenancy()->initialized);
+
+             $tenantValue = DB::connection('tenant')
+            ->table('tl_theme_tlcommerce_home_page_sections_properties')
+            ->where('section_id', $section_id)
+            ->where('key_name', $key_name)
+            ->value('key_value');
+
+            return $tenantValue;
+        }
+
+        else {
+
+            $properties = HomeSectionProperties::where('section_id', $section_id)->where('key_name', $key_name)->first();
+            if ($properties != null) {
+                return $properties->key_value;
+            } else {
+                return null;
+            }
         }
     }
+    // function getHomePageSectionProperties($section_id, $key_name)
+    // {
+    //     $properties = HomeSectionProperties::where('section_id', $section_id)->where('key_name', $key_name)->first();
+    //     if ($properties != null) {
+    //         return $properties->key_value;
+    //     } else {
+    //         return null;
+    //     }
+    // }
 }
 
 if (!function_exists('getAllSidebarWidgets')) {

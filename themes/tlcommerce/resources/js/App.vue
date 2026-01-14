@@ -9,7 +9,7 @@
 <script>
 import MainLayout from "./layouts/MainLayout.vue";
 const axios = require("axios").default;
-console.log("------App.vue-----");
+
 export default {
   components: {
     MainLayout,

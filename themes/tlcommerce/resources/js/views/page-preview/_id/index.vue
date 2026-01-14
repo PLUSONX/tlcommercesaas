@@ -81,8 +81,6 @@ export default {
 
   mounted() {
     this.getPageDetails();
-
-    console.log("=== MainLayout mounted ===");
   },
 
   methods: {

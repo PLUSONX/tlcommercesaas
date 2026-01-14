@@ -94,14 +94,25 @@ class PackageRepository
      */
     public function getPackagesByPlan($match_case, $data)
     {
-        $packages = DB::table('tl_saas_packages')
+        // dd($match_case);
+        // $packages = DB::table('tl_saas_packages')
+        //     ->leftJoin('tl_saas_package_has_plans', 'tl_saas_package_has_plans.package_id', '=', 'tl_saas_packages.id')
+        //     ->leftJoin('tl_saas_package_plans', 'tl_saas_package_plans.id', '=', 'tl_saas_package_has_plans.plan_id')
+        //     ->orderBy('tl_saas_package_has_plans.cost', 'asc')
+        //     ->orderBy('tl_saas_packages.id', 'desc')
+        //     ->where($match_case)
+        //     ->select($data)
+        //     ->get();
+
+         $packages = DB::table('tl_saas_packages')
             ->leftJoin('tl_saas_package_has_plans', 'tl_saas_package_has_plans.package_id', '=', 'tl_saas_packages.id')
             ->leftJoin('tl_saas_package_plans', 'tl_saas_package_plans.id', '=', 'tl_saas_package_has_plans.plan_id')
             ->orderBy('tl_saas_package_has_plans.cost', 'asc')
             ->orderBy('tl_saas_packages.id', 'desc')
-            ->where($match_case)
             ->select($data)
             ->get();
+
+            // dd($packages);
 
         return $packages;
     }

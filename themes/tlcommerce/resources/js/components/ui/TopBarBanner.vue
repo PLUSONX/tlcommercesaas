@@ -50,10 +50,6 @@ export default {
     }
      
   },
-  mounted() {
-    console.log('Topbar banner mounted');
-    console.log('topbar banner url:', this.properties.topbar_banner_image);
-  },
   methods: {
     closeBanner() {
       const now = new Date();

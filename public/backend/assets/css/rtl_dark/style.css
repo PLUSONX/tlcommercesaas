@@ -15646,7 +15646,7 @@ table.table-contextual .base-timer__path-remaining.details-btn,
 10.2: Rtl
 ********************* */
 body {
-  direction: rtl;
+  /* direction: rtl; */
   text-align: right;
 }
 
@@ -15695,7 +15695,7 @@ body.sidebar-folded .main-content {
 }
 
 .sidebar .sidebar-body {
-  direction: rtl;
+  /* direction: rtl; */
 }
 
 .sidebar .sidebar-body li {
@@ -16032,7 +16032,7 @@ table.style--five td .img {
 
 .chat-body *,
 .aside-body * {
-  direction: rtl;
+  /* direction: rtl; */
 }
 
 .chat_aside .aside-header .aside-header-bottom .nav-tabs li:not(:last-child) {
@@ -17764,9 +17764,9 @@ button.btn-link {
   opacity: 1;
 }
 
-@media (max-width:768px){
+@media (max-width:768px) {
   .right-sidebar {
-      opacity: 1;
+    opacity: 1;
   }
 }
 
@@ -18069,7 +18069,7 @@ button.btn-link {
 }
 
 .select2-container {
-  direction: rtl;
+  /* direction: rtl; */
 }
 
 .select2-container--classic .select2-selection--single .select2-selection__arrow {
@@ -18276,7 +18276,7 @@ button.bg-light:focus {
   margin-right: 0 !important;
 }
 
-.dropdown-menu .dropdown-body.notification-list-items{
+.dropdown-menu .dropdown-body.notification-list-items {
   color: #ffffff !important;
 }
 
@@ -18284,30 +18284,30 @@ button.bg-light:focus {
   background-color: #000 !important;
 }
 
-.apexcharts-menu-item:hover{
+.apexcharts-menu-item:hover {
   background-color: #000 !important;
- }
+}
 
 .apexcharts-menu-icon svg {
   fill: #fafafa !important;
 }
 
-.apexcharts-menu-icon:hover svg{
+.apexcharts-menu-icon:hover svg {
   fill: #ffffff !important;
 }
 
 @media (max-width:575px) {
-  .apexcharts-toolbar{
+  .apexcharts-toolbar {
     margin-right: 9px;
     margin-top: 15px
   }
 }
 
-@media (max-width: 575px){
-  .media-toolbar{
-      display: flex;
-      justify-content: space-between;
-      flex-direction: column;
+@media (max-width: 575px) {
+  .media-toolbar {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
   }
 }
 
@@ -18520,17 +18520,18 @@ button.bg-light:focus {
 .another-zone {
   margin-right: 30px;
 }
+
 /* Shipping zone Location css */
 
-.select-sidebar ul .list-group-item{
-  background-color:  #182335 !important;
+.select-sidebar ul .list-group-item {
+  background-color: #182335 !important;
 }
 
 .input-group-append .input-group-text {
   color: #03040c !important;
 }
 
-.form-control[readonly]{
+.form-control[readonly] {
   background-color: #384d6d !important;
   opacity: 1;
 }

@@ -6,7 +6,6 @@
  */
 
 
-console.log('VUE 2 APP.JS RUNNING');
 
 
 require('./bootstrap');

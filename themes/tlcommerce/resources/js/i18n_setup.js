@@ -20,7 +20,6 @@ function setI18nLanguage(lang) {
 }
 
 export async function loadLanguageAsync(lang) {
-    // console.log('=== loadLanguageAsync called ===', lang);
 
     if (loadedLanguages.includes(lang)) {
         if (i18n.locale !== lang) {
@@ -30,15 +29,11 @@ export async function loadLanguageAsync(lang) {
 
     return axios.get(`/api/v1/locale/${lang}`)
         .then(response => {
-            // console.log('=== Locale API Response ===', response.data);
 
             let messages = response.data.data;
             let language = response.data.language;
 
             if (language != null) {
-
-                console.log('Language object:', language);
-                console.log('is_rtl value:', language?.is_rtl);
 
                 var html = document.querySelector("html");
                 html.className = language?.is_rtl == 1 ? "rtl" : "";

@@ -39,8 +39,13 @@ class RemoveTenancyAssetsSegment
      */
     public function removeUpdateFolder()
     {
-        $saas_account = DB::table('tl_saas_accounts')
-            ->where('is_system_db_updated', '=', 0)
+        // $saas_account = DB::table('tl_saas_accounts')
+        //     ->where('is_system_db_updated', '=', 0)
+        //     ->exists();
+
+        $saas_account = DB::connection('mysql') // central DB
+            ->table('tl_saas_accounts')
+            ->where('is_system_db_updated', 0)
             ->exists();
 
         if (!$saas_account) {

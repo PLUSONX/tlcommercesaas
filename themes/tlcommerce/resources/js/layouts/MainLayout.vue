@@ -530,7 +530,6 @@ export default {
      * Get theme style
      */
     getThemeStyle() {
-        // console.log("=== getThemeStyle called ===");
 
       const headers = {
         "Content-Type": "application/json",

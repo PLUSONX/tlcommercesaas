@@ -15,13 +15,6 @@
     $foreground_image = 'themes/default/Dashboard_Frame.png';
 
     /* $foreground_image = $data['foreground_image']; */
-
-    /*
-    echo "<script>console.log('image:', " . json_encode($background_image) . ");</script>";
-    echo "<script>console.log('image:', " . json_encode(asset($background_image)) . ");</script>";
-    echo "<script>console.log('background_shape_image:', " . json_encode($background_shape_image) . ");</script>";
-    echo "<script>console.log('foreground_image:', " . json_encode(asset($foreground_image)) . ");</script>";
-    */
 @endphp
 
 <section class="banner style--two plugins"

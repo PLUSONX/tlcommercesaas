@@ -40,7 +40,8 @@
                                     <td>{{ $lang->native_name }}</td>
                                     <td class="text-uppercase">{{ $lang->code }}</td>
                                     <td>
-                                        <img src="{{ asset('/public/flags/') . '/' . $lang->code . '.png' }}"
+                                        <!-- <img src="{{ asset('/public/flags/') . '/' . $lang->code . '.png' }}" -->
+                                        <img src="{{ asset('flags/') . '/' . $lang->code . '.png' }}"
                                             width="25px">
                                     </td>
                                     <td>

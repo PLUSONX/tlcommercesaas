@@ -124,8 +124,6 @@ class ProductRepository
                 ->withQueryString();
         }
 
-        echo "<script>console.log('products from repository:', " . json_encode($products) . ");</script>";
-
         return $products;
     }
 

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use App\Http\MiddleWare\HandleTenantLoginToken;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -38,28 +39,34 @@ class RouteServiceProvider extends ServiceProvider
 
             $isCentralDomain = in_array($host, $centralDomains);
 
-            
+
             if (env('IS_USER_REGISTERED') == 1) {
 
                 $middlewares = routeApplicableMiddlewares();
                 $active_theme = getActiveTheme();
 
-                if($isCentralDomain) {
+                if ($isCentralDomain) {
 
                     Route::middleware('web')
-            ->prefix('admin') // hardcoded for clarity
-            ->group(base_path('core/routes/core.php'));
-            }
-            else {
-                 Route::middleware(['web', 'tenant']) // Added 'tenant' middleware
-            ->prefix('admin')
-            ->group(base_path('core/routes/core.php'));
-            }
-            
-                
-            // Route::middleware($middlewares['api'])
-            // ->prefix('superadmin') // hardcoded for clarity
-            // ->group(base_path('core/routes/core.php'));
+                        ->prefix('admin') // hardcoded for clarity
+                        ->group(base_path('core/routes/core.php'));
+                } else {
+                    Route::middleware(['web', 'tenant']) // Added 'tenant' middleware
+                        ->prefix('admin')
+                        ->group(base_path('core/routes/core.php'));
+                    // Route::middleware(['web', 'tenant', HandleTenantLoginToken::class]) // Added 'tenant' middleware
+                    //     ->prefix('admin')
+                    //     ->group(base_path('core/routes/core.php'));
+                }
+                //      Route::middleware(['web', 'tenant']) // Added 'tenant' middleware
+                // ->prefix('admin')
+                // ->group(base_path('core/routes/core.php'));
+                // }
+
+
+                // Route::middleware($middlewares['api'])
+                // ->prefix('superadmin') // hardcoded for clarity
+                // ->group(base_path('core/routes/core.php'));
 
                 if (file_exists(base_path('themes/' . $active_theme->location . '/routes/api.php'))) {
                     Route::middleware($middlewares['api'])->prefix('api')->group(base_path('themes/' . $active_theme->location . '/routes/api.php'));

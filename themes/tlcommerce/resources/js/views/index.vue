@@ -157,8 +157,6 @@ import { defineAsyncComponent } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Autoplay, Pagination } from "swiper";
 
-// console.log("---IN index.vue----");
-
 const BuilderSection = defineAsyncComponent(() =>
     import("@/components/page-builder/BuilderSection.vue")
 );
@@ -236,10 +234,6 @@ export default {
     mounted() {
         document.title = localStorage.getItem("site_title");
         this.getSections();
-
-        console.log('IndexVue mounted');
-        console.log('page_image url:', this.page.page_image);
-        console.log('Cleaned page_image URL:', this.cleanImage(this.page.page_image));
     },
 
     async created() {
@@ -274,7 +268,6 @@ export default {
                     if (response.data.success) {
                         this.dataAvailable = true;
                         this.sections = response.data.data ?? [];
-                        console.log("data", response.data);
                         this.page = response.data.page ?? {};
                         this.page_section = response.data.page_sections ?? {};
                         this.active_pagebuilder =

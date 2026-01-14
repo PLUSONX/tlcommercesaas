@@ -22,9 +22,6 @@
         $placeholder_image = $placeholder_info->placeholder_image;
         $placeholder_image_alt = $placeholder_info->placeholder_image_alt;
     }
-
-    echo "<script>console.log('placeholder_image:', " . json_encode(  $placeholder_image ) . ");</script>";
-
 @endphp
 @include('core::base.layouts.head')
 

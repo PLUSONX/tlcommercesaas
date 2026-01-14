@@ -76,7 +76,6 @@ export default {
     };
   },
   mounted() {
-    console.log("=== MainLayout mounted ===");
     this.getPageDetails();
 
   },

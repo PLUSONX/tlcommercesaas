@@ -3,9 +3,6 @@
 
 $url = str_replace('/public', '', getFilePath(getGeneralSetting('site_meta_image')));
 
-echo "<script>console.log('asset:', " . json_encode(getFilePath(getGeneralSetting('site_meta_image'))) . ");</script>";
-echo "<script>console.log('asset_updated:', " . json_encode($url) . ");</script>";
-
 @endphp
 @extends('theme/tlcommerce::frontend.layouts.master')
 @section('seo')

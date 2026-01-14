@@ -60,14 +60,6 @@ export default {
             required: false,
         },
     },
-
-    mounted() {
-        console.log('FeatureProduct mounted');
-        console.log('Properties video url:', this.properties.video_url);
-        console.log('Properties cta_image url:', this.properties.cta_image);
-
-    },
-
 };
 </script>
 

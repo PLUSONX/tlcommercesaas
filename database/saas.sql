@@ -116,6 +116,30 @@ CREATE TABLE `domains` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `device_tokens`
+--
+
+CREATE TABLE `device_tokens` (
+  `id` bigint(20) NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `platform` enum('ios','android','web') DEFAULT 'android',
+  `device_name` varchar(255) DEFAULT NULL,
+  `device_info` json DEFAULT NULL,
+  `last_used_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+ALTER TABLE `device_tokens`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `device_tokens_token_unique` (`token`),
+  ADD KEY `device_tokens_user_platform_index` (`user_id`,`platform`);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `failed_jobs`
 --
 

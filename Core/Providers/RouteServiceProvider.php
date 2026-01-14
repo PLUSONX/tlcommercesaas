@@ -42,38 +42,8 @@ class RouteServiceProvider extends ServiceProvider
         $this->routes(function () {
             if (env('IS_USER_REGISTERED') == 1) {
                 $middlewares = routeApplicableMiddlewares();
-                // Route::middleware($middlewares['web'])->prefix(config('app.superadmin_prefix', 'superadmin'))->group(base_path('Core/routes/core.php'));
-                // Core routes WITHOUT prefix (superadmin routes)
-                // Route::middleware($middlewares['web'])->group(base_path('Core/routes/core.php'));        
 
-                // Route::middleware($middlewares['web'])->prefix(getAdminPrefix())->group(base_path('Core/routes/core.php'));
-                // Route::middleware($middlewares['api'])->prefix('api')->group(base_path('Core/routes/api.php'));
-
-                $host = request()->getHost();
-
-                $centralDomains = config('tenancy.central_domains', ['localhost']);
-
-                $isCentralDomain = in_array($host, $centralDomains);
-
-                $path = request()->path();
-
-
-                // echo "<script>console.log('host:', " . json_encode($host) . ");</script>";
-
-                // echo "<script>console.log('centralDomains:', " . json_encode($centralDomains) . ");</script>";
-
-                // echo "<script>console.log('isCentralDomain:', " . json_encode($isCentralDomain) . ");</script>";
-
-                // echo "<script>console.log('path:', " . json_encode($path) . ");</script>";
-
-
-                if ($isCentralDomain == false) {
-                    Route::middleware($middlewares['web'])
-                        ->group(base_path('routes/tenant.php'));
-                } 
-                else {
-                    // Load core routes only on central domain
-                    Route::middleware($middlewares['web'])
+                 Route::middleware($middlewares['web'])
                         ->prefix(getSuperAdminPrefix())
                         ->group(base_path('Core/routes/core.php'));
 
@@ -101,7 +71,40 @@ class RouteServiceProvider extends ServiceProvider
                           
                             Route::middleware($middlewares['web'])->group(base_path('themes/' . $active_theme->location . '/routes/web.php'));
                         }
-                }
+
+                // Route::middleware($middlewares['web'])->prefix(config('app.superadmin_prefix', 'superadmin'))->group(base_path('Core/routes/core.php'));
+                // Core routes WITHOUT prefix (superadmin routes)
+                // Route::middleware($middlewares['web'])->group(base_path('Core/routes/core.php'));        
+
+                // Route::middleware($middlewares['web'])->prefix(getAdminPrefix())->group(base_path('Core/routes/core.php'));
+                // Route::middleware($middlewares['api'])->prefix('api')->group(base_path('Core/routes/api.php'));
+
+                $host = request()->getHost();
+
+                $centralDomains = config('tenancy.central_domains', ['localhost']);
+
+                $isCentralDomain = in_array($host, $centralDomains);
+
+                $path = request()->path();
+
+
+                // echo "<script>console.log('host:', " . json_encode($host) . ");</script>";
+
+                // echo "<script>console.log('centralDomains:', " . json_encode($centralDomains) . ");</script>";
+
+                // echo "<script>console.log('isCentralDomain:', " . json_encode($isCentralDomain) . ");</script>";
+
+                // echo "<script>console.log('path:', " . json_encode($path) . ");</script>";
+
+
+                // if ($isCentralDomain == false) {
+                //     Route::middleware($middlewares['web'])
+                //         ->group(base_path('routes/tenant.php'));
+                // } 
+                // else {
+                    // Load core routes only on central domain
+                   
+                // }
             }
         });
     }

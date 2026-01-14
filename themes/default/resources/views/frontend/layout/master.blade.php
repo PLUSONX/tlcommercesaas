@@ -30,9 +30,6 @@
             ? str_replace('#', '', $theme_color['theme_primary_color'])
             : 'ff7171';
     $currentRoute = Route::currentRouteName();
-    
-    echo "<script>console.log('theme_color:', " . json_encode(  $theme_color ) . ");</script>";
-    echo "<script>console.log('theme_primary_color:', " . json_encode(  $theme_color['theme_primary_color'] ) . ");</script>";
 
 
 @endphp
@@ -356,7 +353,6 @@
                 // language change
                 $('.language-change').on('change', function() {
                     let value = $(this).val();
-                    console.log(value)
                     if (value) {
                         $.post('{{ route('theme.default.language.change') }}', {
                             lang: value

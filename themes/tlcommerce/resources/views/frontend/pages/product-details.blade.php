@@ -5,12 +5,6 @@ $url = str_replace('/public', '', $product_details->meta_image);
 
 $url_2 = str_replace('/public', '', getFilePath(getGeneralSetting('site_meta_image')));
 
-
-echo "<script>console.log('asset:', " . $product_details->meta_image) . ");</script>";
-echo "<script>console.log('asset_updated:', " . json_encode($url) . ");</script>";
-echo "<script>console.log('asset_2:', " . json_encode(getFilePath(getGeneralSetting('site_meta_image'))) . ");</script>";
-echo "<script>console.log('asset_2_updated:', " . json_encode($url_2) . ");</script>";
-
 @endphp
 @extends('theme/tlcommerce::frontend.layouts.master')
 @section('seo')

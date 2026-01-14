@@ -1,4 +1,8 @@
 @php
+        foreach ($themes as $theme) {
+
+            $url = asset('themes' . '/' . $theme->location . '/banner.png');
+        }
 @endphp
 @extends('core::base.layouts.master')
 @section('title')
@@ -22,7 +26,8 @@
                     <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 mb-30">
                         <div class="app-item">
                             <div class="app-icon">
-                                <img src="{{ asset('themes' . '/' . $theme->location . '/Gradients-Lab-1.png') }}"
+                                <img src="{{ str_replace('/public', '', asset('themes' . '/' . $theme->location . '/Gradients-Lab-1.png'))
+                                 }}"
                                     alt="{{ $theme->name }}" />
                                 <!-- <img src="{{ asset('/themes' . '/' . $theme->location . '/banner.png') }}"
                                     alt="{{ $theme->name }}" /> -->
@@ -66,8 +71,11 @@
                     <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 mb-30">
                         <div class="app-item">
                             <div class="app-icon">
-                                <img src="{{ asset('/themes' . '/' . $theme->location . '/banner.png') }}"
+                                <img src="{{ str_replace('/public', '', asset('themes' . '/' . $theme->location . '/Gradients-Lab-1.png'))
+                                 }}"
                                     alt="{{ $theme->name }}" />
+                                <!-- <img src="{{ asset('/themes' . '/' . $theme->location . '/banner.png') }}"
+                                    alt="{{ $theme->name }}" /> -->
                             </div>
                             <div class="app-details">
                                 <h4 class="app-name">{{ $theme->name }}</h4>
@@ -108,7 +116,8 @@
                     <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 mb-30">
                         <div class="app-item">
                             <div class="app-icon">
-                                <img src="{{ asset('themes' . '/' . $theme->location . '/banner.png') }}"
+                                <img src="{{ str_replace('/public', '', asset('themes' . '/' . $theme->location . '/banner.png'))
+                                 }}"
                                     alt="{{ $theme->name }}" />
                                 <!-- <img src="{{ asset('/themes' . '/' . $theme->location . '/banner.png') }}"
                                     alt="{{ $theme->name }}" /> -->

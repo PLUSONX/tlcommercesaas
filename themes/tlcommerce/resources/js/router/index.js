@@ -2,8 +2,6 @@ import { createRouter, createWebHistory } from "vue-router";
 import { loadLanguageAsync } from "../i18n_setup";
 import store from "../store";
 
-console.log('VUE index.JS RUNNING');
-
 /**
  * Check customer is logged in or not
  * 

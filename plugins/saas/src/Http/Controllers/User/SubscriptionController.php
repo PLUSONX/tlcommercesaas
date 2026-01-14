@@ -51,15 +51,12 @@ class SubscriptionController extends Controller
 
         $package_plans = $this->packageRepository->getPackagePlans([], $data);
 
-        echo "<script>console.log('package_plans:', '" . json_encode($package_plans) . "');</script>";
 
 
         $package_plans = $package_plans->toArray();
         usort($package_plans, function ($a, $b) {
             return $a->duration - $b->duration;
         });
-
-        echo "<script>console.log('package_plans_2:', '" . json_encode($package_plans) . "');</script>";
 
 
         $saas_account = DB::table('tl_saas_accounts')
@@ -71,9 +68,6 @@ class SubscriptionController extends Controller
         } elseif (sizeof($package_plans) > 0) {
             $first_plan = $package_plans[0]->id;
         }
-
-        echo "<script>console.log('first_plan:', '" . json_encode($first_plan) . "');</script>";
-
 
         return view('plugin/saas::user.panel.subscription.subscribe', compact('package_plans', 'first_plan'));
     }

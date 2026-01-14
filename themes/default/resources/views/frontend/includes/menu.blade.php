@@ -31,6 +31,20 @@
                 <div class="header-btn book">
                     @if (sizeOf($header) > 0)
                         @if (!empty($header['dash_button_text']))
+                            <a href="{{ route('admin.dashboard') }}"
+                                class="btn-crs plug dash">{{ front_translate($header['dash_button_text']) }}</a>
+                        @else
+                            <a href="{{ route('admin.dashboard') }}"
+                                class="btn-crs plug dash">{{ front_translate('Dashboard') }}</a>
+                        @endif
+                    @else
+                        <a href="{{ route('admin.dashboard') }}"
+                            class="btn-crs plug dash">{{ front_translate('Dashboard') }}</a>
+                    @endif
+                </div>
+                <!-- <div class="header-btn book">
+                    @if (sizeOf($header) > 0)
+                        @if (!empty($header['dash_button_text']))
                             <a href="{{ route('plugin.saas.user.dashboard') }}"
                                 class="btn-crs plug dash">{{ front_translate($header['dash_button_text']) }}</a>
                         @else
@@ -41,7 +55,7 @@
                         <a href="{{ route('plugin.saas.user.dashboard') }}"
                             class="btn-crs plug dash">{{ front_translate('Dashboard') }}</a>
                     @endif
-                </div>
+                </div> -->
             @else
              <div class="header-btn book">
                     @if (sizeOf($header) > 0)
