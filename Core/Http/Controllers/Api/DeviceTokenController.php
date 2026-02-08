@@ -3,27 +3,267 @@
 namespace Core\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Core\Models\DeviceToken;
+use App\Models\DeviceToken;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Core\Http\Requests\StoreDeviceTokenRequest;
+use Illuminate\Support\Facades\Log;
 
 class DeviceTokenController extends Controller
 {
-     public function store(Request $request): JsonResponse
+     
+      public function store(StoreDeviceTokenRequest $request): JsonResponse
     {
-         return response()->json([
-        'status' => 'success3',
-        'user' => auth()->user(),
-        'message' => 'Authenticated!'
-    ]);
+        try {
+
+            $validated = $request->validated();
+
+            // Handle old token if provided (deactivate or remove)
+            if (!empty($validated['old_token'])) {
+                $this->handleOldToken($validated['old_token']);
+            }
+
+            // Check if new token already exists
+            $existingToken = DeviceToken::where('token', $validated['new_token'])->first();
+
+            if ($existingToken) {
+                // Reactivate if exists
+                $existingToken->update([
+                    'platform' => $validated['platform'],
+                    'is_active' => true,
+                    'last_used_at' => now(),
+                ]);
+                
+                $deviceToken = $existingToken;
+            } else {
+                // Create new token (without user_id and tenant_id initially)
+                $deviceToken = DeviceToken::create([
+                    'token' => $validated['new_token'],
+                    'platform' => $validated['platform'],
+                    'is_active' => true,
+                    'last_used_at' => now(),
+                ]);
+            }
+
+            // DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Device token registered successfully',
+                'data' => [
+                    'id' => $deviceToken->id,
+                    'token' => $deviceToken->token,
+                    'platform' => $deviceToken->platform,
+                ]
+            ], 201);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to register device token',
+            ], 500);
+        }
     }
+
     /**
-     * Register or update a device token.
+     * Handle old token - mark as inactive or delete
      */
+    private function handleOldToken(string $oldToken): void
+    {
+        DeviceToken::where('token', $oldToken)
+            ->update(['is_active' => false]);
+    }
+
+    /**
+     * This method would be called after successful login
+     * to associate the device token with user and tenant
+     */
+    public function associateWithUser(string $token, int $userId, ?string $tenantId = null): void
+    {
+
+        Log::info('associateWithUser method called!!!', [
+            'token' => $token,
+            'userId' => $userId,
+            'tenantId' => $tenantId,
+        ]);
+
+        DeviceToken::where('token', $token)
+            ->where('is_active', true)
+            ->update([
+                'user_id' => $userId,
+                'tenant_id' => $tenantId,
+                'last_used_at' => now(),
+            ]);
+    }
+
+
+
+    //  public function updateStore(Request $request): JsonResponse
+    // {
+    //     try {
+    //             $id = $request->device_uuid;
+    //             $token = $request->token;
+    //             $user = auth()->user();
+    //             $user_id = $user->id;
+
+    //             $deviceToken = DeviceToken::where('uuid', $id)->first();
+
+    //             if ($deviceToken) {
+
+    //                 if($deviceToken->token == $token) {
+
+    //                     $deviceToken->update([
+    //                         'user_id'      => $user->id,
+    //                         'tenant_id'    => $user->tenant_id, // Recommended for your SaaS logic
+    //                         'last_used_at' => now(),
+    //                     ]);
+    //                 }
+    //                 else {
+    //                     $deviceToken->update([
+    //                         'token'        => $token,
+    //                         'user_id'      => $user->id,
+    //                         'tenant_id'    => $user->tenant_id, // Recommended for your SaaS logic
+    //                         'last_used_at' => now(),
+    //                     ]);
+    //                 }
+                    
+    //                 return response()->json([
+    //                     'success' => true,
+    //                     'message' => 'Device successfully linked to user',
+    //                     'data'    => $deviceToken
+    //                 ]);
+    //             }
+
+
+    //     }
+    //     catch (\Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Failed to update record',
+    //             'error' => $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
+
+    /**
+     * Update a device token.
+     */
+
+    // public function updateStore(Request $request): JsonResponse
+    // {
+    //     // 1. Strict Validation: Prevent empty or null tokens
+    //     $validator = Validator::make($request->all(), [
+    //         'device_uuid' => 'required|string|exists:device_tokens,uuid',
+    //         'token'       => 'required|string|min:10', // FCM tokens are long; min:10 prevents empty strings
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+    //     }
+
+    //     try {
+    //         $uuid = $request->device_uuid;
+    //         $newToken = $request->token;
+    //         $user = auth()->user();
+
+    //         if (!$user) {
+    //             return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+    //         }
+
+    //         $deviceToken = DeviceToken::where('uuid', $uuid)->first();
+
+    //         // 2. The "Redundant check" + "Token Change" Logic
+    //         // We only proceed if: 
+    //         // a) The user_id is different (linking for the first time)
+    //         // b) The token has changed (FCM rotated)
+    //         // c) It's been a long time since the last sync (e.g., > 24 hours)
+            
+    //         $isUserDifferent = $deviceToken->user_id !== $user->id;
+    //         $isTokenDifferent = $deviceToken->token !== $newToken;
+    //         $isTimeForSync = $deviceToken->last_used_at < now()->subDay();
+
+    //         if ($isUserDifferent || $isTokenDifferent || $isTimeForSync) {
+    //             $deviceToken->update([
+    //                 'token'        => $newToken, // Won't be empty due to validation
+    //                 'user_id'      => $user->id,
+    //                 'tenant_id'    => $user->tenant_id,
+    //                 'last_used_at' => now(),
+    //             ]);
+
+    //             return response()->json([
+    //                 'success' => true,
+    //                 'message' => 'Device record synchronized',
+    //                 'synced'  => true
+    //             ]);
+    //         }
+
+    //         // 3. If everything was already correct, just return success without hitting the DB
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Device already up to date',
+    //             'synced'  => false
+    //         ]);
+
+    //     } catch (\Exception $e) {
+    //         return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+    //     }
+    // }
+
+    // /**
+    //  * Register a device token.
+    //  */
     // public function store(Request $request): JsonResponse
     // {
-    //     // dd($request);
+        
+    //     $validator = Validator::make($request->all(), [
+    //         'token' => 'required|string|max:500',
+    //         'platform' => 'required|in:ios,android,web',
+    //         'device_name' => 'nullable|string|max:255',
+    //         'device_info' => 'nullable|array',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Validation failed',
+    //             'errors' => $validator->errors(),
+    //         ], 422);
+    //     }
+
+    //     try {
+           
+    //         // Create new token
+    //         $deviceToken = DeviceToken::create([
+    //             // 'user_id' => $user->id,
+    //             'uuid' => (string) Str::uuid(),
+    //             'token' => $request->token,
+    //             'platform' => $request->platform,
+    //             'device_name' => $request->device_name,
+    //             'device_info' => $request->device_info,
+    //             'last_used_at' => now(),
+    //         ]);
+            
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Device token registered successfully',
+    //             'device_uuid' => $deviceToken->uuid,
+    //         ], 201);
+
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Failed to register device token',
+    //             'error' => $e->getMessage(),
+    //         ], 500);
+    //     }
+    // }
+    // public function store(Request $request): JsonResponse
+    // {
+        
     //     $validator = Validator::make($request->all(), [
     //         'token' => 'required|string|max:500',
     //         'platform' => 'required|in:ios,android,web',
@@ -42,7 +282,12 @@ class DeviceTokenController extends Controller
     //     try {
     //         $user = auth()->user();
 
+            
+
     //         // Check if token already exists for this user
+    //         if($user != null) {
+
+    //         }
     //         $deviceToken = DeviceToken::where('token', $request->token)
     //             ->where('user_id', $user->id)
     //             ->first();

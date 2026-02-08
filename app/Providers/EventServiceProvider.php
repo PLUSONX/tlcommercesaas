@@ -7,7 +7,7 @@ use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Notifications\Events\NotificationSent;
-use App\Listeners\SendPushNotificationOnDatabaseNotification;
+use Core\Notifications\SendPushNotificationOnDatabaseNotification;
 
 class EventServiceProvider extends ServiceProvider
 {

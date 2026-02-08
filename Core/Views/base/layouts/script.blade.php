@@ -41,6 +41,7 @@
              * 
              **/
             function getNotification() {
+                console.log("getNotification method called!");
                 $.ajax({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
@@ -49,6 +50,7 @@
                     url: '{{ route('core.admin.notification.list') }}',
                     success: function(response) {
                         if (response.success) {
+                            console.log("response: ", response);
                             $(".notification-list-items").html('');
                             let total_notification = response.notifications.length;
                             $('.notification-counter').html(total_notification);

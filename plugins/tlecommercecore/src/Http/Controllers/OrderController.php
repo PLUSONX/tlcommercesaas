@@ -228,7 +228,8 @@ class OrderController extends Controller
                 $qrCodePath = public_path('tenant/tenant' . $tenant_id . '/shipping_' . $shipping_label_content['order_code'] . 'qr_code.png');
                 file_put_contents($qrCodePath, base64_decode($qr_code));
 
-                $data['qr_code'] = url('public/tenant/tenant' . $tenant_id . '/shipping_' . $shipping_label_content['order_code'] . 'qr_code.png');
+                $data['qr_code'] = url('tenant/tenant' . $tenant_id . '/shipping_' . $shipping_label_content['order_code'] . 'qr_code.png');
+                // $data['qr_code'] = url('public/tenant/tenant' . $tenant_id . '/shipping_' . $shipping_label_content['order_code'] . 'qr_code.png');
 
                 $pdf = NPDF::loadView('plugin/tlecommercecore::orders.invoice.shipping_label_rtl', $data, [], [
                     'default_font' => 'dejavusans',

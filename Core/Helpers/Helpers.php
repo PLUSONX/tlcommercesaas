@@ -2324,13 +2324,26 @@ if (!function_exists('getSupperAdminId')) {
      *
      */
     function getSupperAdminId()
-    {
-        $supper_admin = User::role('Super Admin')->first();
-        if ($supper_admin != null) {
-            return $supper_admin->id;
+    {   
+        $user = Auth::user();
+
+        if($user->user_type == 1 ) {
+            return $user->id;
         }
-        return null;
+        else {
+            return null;
+        }
     }
+    // function getSupperAdminId()
+    // {   
+    //     $supper_admin = User::role('Super Admin')->first();
+
+        
+    //     if ($supper_admin != null) {
+    //         return $supper_admin->id;
+    //     }
+    //     return null;
+    // }
 }
 
 if (!function_exists('systemCurrentVersion')) {

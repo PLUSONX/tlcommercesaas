@@ -211,8 +211,6 @@
 
 /*! ../views/deals/index.vue */
 
-/*! ../views/index.vue */
-
 /*! ../views/multivendor/auth/register.vue */
 
 /*! ../views/page-preview/_id/index.vue */
@@ -355,6 +353,8 @@
 
 /*! ./mergeConfig */
 
+/*! ./modules/layout */
+
 /*! ./mutations.js */
 
 /*! ./node_modules/vue-loader/dist/exportHelper.js */
@@ -370,6 +370,8 @@
 /*! ./transformData */
 
 /*! ./utils */
+
+/*! @/components/features/BannerFeature.vue */
 
 /*! @/components/pageheader/HeaderBottom.vue */
 
@@ -486,8 +488,6 @@
 /*! import() | DealPage */
 
 /*! import() | ErrorPage */
-
-/*! import() | Home */
 
 /*! import() | ListBlogs */
 
@@ -619,6 +619,10 @@
 
 /*!**********************************************!*\
   !*** ./node_modules/axios/lib/core/Axios.js ***!
+  \**********************************************/
+
+/*!**********************************************!*\
+  !*** ./resources/js/store/modules/layout.js ***!
   \**********************************************/
 
 /*!***********************************************!*\

@@ -12,7 +12,7 @@
       {{ $t("All Categories") }}
     </button>
 
-    <button
+    <!-- <button
       v-else-if="buttonStyleThree"
       class="btn"
       :class="{ active: isShow }"
@@ -30,7 +30,7 @@
     >
       <base-icon-svg class="mr-15" name="category" :height="5.5" :width="16" />
       {{ $t("Select Categories") }}
-    </button>
+    </button> -->
     <!-- End MegaMenu Button -->
 
     <!-- MegaMenu -->
@@ -40,19 +40,19 @@
           <div class="cat-dropdown light-bg position-static box-shadow">
             <div class="d-flex justify-content-between">
               <!-- All Categories -->
-              <div class="all-category d-flex justify-content-end">
+              <!-- <div class="all-category d-flex justify-content-end">
                 <router-link to="/categories" class="btn-link custom-menu">{{
                   $t("All Categories")
                 }}</router-link>
-              </div>
+              </div> -->
               <!-- End All Categories -->
 
               <!-- All Categories -->
-              <div class="all-category d-flex justify-content-end">
+              <!-- <div class="all-category d-flex justify-content-end">
                 <router-link to="/products" class="btn-link custom-menu">{{
                   $t("All Products")
                 }}</router-link>
-              </div>
+              </div> -->
               <!-- End All Categories -->
             </div>
 
@@ -160,7 +160,7 @@ export default {
     close(e) {
       let el = this.$refs.catDropdown;
       let target = e.target;
-      if (el !== target && !el.contains(target)) {
+      if (el !== target && !el?.contains(target)) {
         this.isShow = false;
       }
     },

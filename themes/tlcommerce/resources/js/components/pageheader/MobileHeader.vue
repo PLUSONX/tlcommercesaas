@@ -177,10 +177,10 @@ export default {
       const mobileHeader = this.$refs.mobileHeader;
       if (window.pageYOffset > 100) {
         this.isSticky = true;
-        mobileHeader.classList.add("sticky", "fadeInDowns");
+        mobileHeader?.classList.add("sticky", "fadeInDowns");
       } else {
         this.isSticky = false;
-        mobileHeader.classList.remove("sticky", "fadeInDowns");
+        mobileHeader?.classList.remove("sticky", "fadeInDowns");
       }
     },
   },

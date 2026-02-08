@@ -1,6 +1,9 @@
 <template>
   <Dashboard>
-    <div class="purchase_history">
+    <div class="purchase_history" :class="{
+    'force-mobile-layout': forcedMobile,
+    'mobile-content-wrapper': forcedMobile
+  }">
       <page-header class="py-3" whiteBg :items="bItems" />
       <template v-if="!loading">
         <div v-if="tableData.length > 0">
@@ -134,7 +137,7 @@ import ShowingPerPage from "@/components/ui/ShowingPerPage.vue";
 import Dashboard from "@/views/dashboard.vue";
 import Pagination from "v-pagination-3";
 import axios from "axios";
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import {
   CTable,
   CTableBody,
@@ -220,9 +223,24 @@ export default {
       }
     },
   },
-  computed: mapState({
+  computed: {
+    ...mapState({
     customerToken: (state) => state.customerToken,
   }),
+
+  ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+  forcedMobile() {
+    // identical intent to MainLayout.vue
+    if (this.isSplitScreen) {
+      return true;
+    }
+    return this.isMobile;
+  },
+  },
+  // computed: mapState({
+  //   customerToken: (state) => state.customerToken,
+  // }),
   mounted() {
     document.title = this.$t("Dashboard") + " | " + this.$t("Purchase History");
     this.getCustomerOrders();

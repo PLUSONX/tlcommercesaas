@@ -98,7 +98,7 @@
                     :brands="brands"
                     :brand-loading="brandLoading"
                     @select-brand="addBrandFilter"
-                    v-if="!brandLoading && brands.length > 0"
+                    v-if="!brandLoading && brands?.length > 0"
                   ></brand-collapse-box>
                   <!-- End Brand Collapse Box -->
                   <!--Filter items-->

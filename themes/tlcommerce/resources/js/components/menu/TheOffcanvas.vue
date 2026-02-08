@@ -28,13 +28,20 @@
                     <!-- User Info -->
                     <div v-if="userInfo.name" class="user-info">
                         <div class="user-avatar mb-10">
-                            <img
+                             <img
+                                class="rounded-circle"
+                                :src="customerProfileImage" 
+                                :alt="userInfo.name"
+                                width="70"
+                                height="70"
+                            />
+                            <!-- <img
                                 class="rounded-circle"
                                 :src="userInfo.image"
                                 :alt="userInfo.name"
                                 width="70"
                                 height="70"
-                            />
+                            /> -->
                         </div>
                         <h4 class="mb-0">{{ userInfo.name }}</h4>
                     </div>
@@ -141,6 +148,17 @@ export default {
                 return openGroup;
             };
         },
+
+        customerProfileImage() {
+            const image = this.userInfo?.image;
+
+            if (!image) {
+            return '/themes/tlcommerce/assets/images/icons/dashboard/profile.svg';
+            }
+
+            // Remove `/public` ONLY if it exists
+            return image.replace(/^\/public/, '');
+        }
     },
     methods: {
         toggleOffcanvas() {

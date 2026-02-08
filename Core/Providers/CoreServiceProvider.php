@@ -3,6 +3,7 @@
 namespace Core\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Core\Services\PushNotificationService;
 
 class CoreServiceProvider extends ServiceProvider
 {
@@ -14,6 +15,18 @@ class CoreServiceProvider extends ServiceProvider
     public function register()
     {
         //
+
+        
+        // dd([
+        //     'file_exists' => file_exists(base_path('core/Services/PushNotificationService.php')),
+        //     'class_exists' => class_exists(PushNotificationService::class),
+        //     'realpath' => realpath(base_path('core')),
+        // ]);
+    
+            $this->app->singleton(PushNotificationService::class, function ($app) {
+                return new PushNotificationService();
+    });
+
     }
 
     /**

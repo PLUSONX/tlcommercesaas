@@ -25,4 +25,18 @@ class PickupPointController extends Controller
     {
         return new PickupPointCollection($this->repository->getActivePickupPoint($request));
     }
+    // public function activePickupPoints(Request $request)
+    // {
+    //     $points = $this->repository->getActivePickupPoint($request);
+
+    //     // Log the count to your laravel.log
+    //     \Log::info('Pickup Points found: ' . $points->count());
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'data' => new PickupPointCollection($points)
+    //     ]);
+    //     // return new PickupPointCollection($this->repository->getActivePickupPoint($request));
+    // }
+    
 }

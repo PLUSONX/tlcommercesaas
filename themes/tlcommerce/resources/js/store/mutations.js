@@ -269,8 +269,13 @@ export default {
   */
   customerLogin(state, data) {
     state.isCustomerLogin = true;
+    // console.log("state: ", state);
+    // console.log("data: ", data);
+    // console.log("data: ", data.token_refresh);
     if (data.token_refresh) {
+      // if (data.access_token) {
       state.customerToken = data.access_token;
+      // console.log("state.customerToken: ", state.customerToken);
       localStorage.setItem("customerToken", JSON.stringify(state.customerToken));
     }
     state.notifications = data.notifications.data;
@@ -299,6 +304,9 @@ export default {
   * Logout customer
   */
   customerLogout(state) {
+    console.log("customer logout method called!!!!");
+    console.trace();
+    console.log("state: ", state);
     state.isCustomerLogin = false;
     state.customerToken = "";
     state.customerInfo = {};

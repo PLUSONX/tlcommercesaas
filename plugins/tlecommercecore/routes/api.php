@@ -59,7 +59,8 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
      * Shipping Locations
      * 
      */
-    Route::get("get-countries", [OrderController::class, 'countryList']);
+    // Route::get("get-countries", [OrderController::class, 'countryList']);
+    Route::post("get-countries", [OrderController::class, 'countryList']);
     Route::post("get-states-of-countries", [OrderController::class, 'countryStates']);
     Route::post("get-cities-of-state", [OrderController::class, 'stateCities']);
     /**
@@ -75,8 +76,12 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
         Route::post('customer-reset-password', [CustomerController::class, 'customerResetPassword']);
         Route::post('customer-reset-email', [CustomerController::class, 'customerResetEmail']);
         Route::post('customer-login', [CustomerController::class, 'customerLogin']);
-        Route::get('customer-refresh-auth', [CustomerController::class, 'refresh']);
+        Route::post('customer-refresh-auth', [CustomerController::class, 'refresh']);
         Route::get('customer-logout', [CustomerController::class, 'customerLogout']);
+        Route::get('/test-refresh', function() {
+            \Log::info('Test refresh route hit!');
+            return response()->json(['message' => 'Test route works!']);
+        });
     });
 
     /**
@@ -91,7 +96,8 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
          * /api/v1/ecommerce-core/customer
          * 
          */
-        Route::get('customer-basic-info', [CustomerController::class, 'customerBasicInfo']);
+        // Route::get('customer-basic-info', [CustomerController::class, 'customerBasicInfo']);
+        Route::post('customer-basic-info', [CustomerController::class, 'customerBasicInfo']);
         Route::post('update-customer-basic-info', [CustomerController::class, 'updateCustomerBasicInfo']);
         Route::get('customer-email-reset-link', [CustomerController::class, 'customerEmailResetLink']);
         Route::get('customer-dashboard', [CustomerController::class, 'customerDashboardDetails']);
@@ -101,7 +107,8 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
          * 
          * /api/v1/ecommerce-core/customer
          */
-        Route::get('get-customer-all-address', [CustomerAddressController::class, 'customerAllAddress']);
+        // Route::get('get-customer-all-address', [CustomerAddressController::class, 'customerAllAddress']);
+        Route::post('get-customer-all-address', [CustomerAddressController::class, 'customerAllAddress']);
         Route::post('get-customer-address-details', [CustomerAddressController::class, 'customerAddressDetails']);
         Route::post('store-customer-address', [CustomerAddressController::class, 'storeCustomerAddress']);
         Route::post('update-customer-address', [CustomerAddressController::class, 'updateCustomerAddress']);

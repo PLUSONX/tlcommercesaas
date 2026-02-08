@@ -102,7 +102,7 @@
               <!--End Tags suggestion List--->
 
               <!--Categories suggestions List-->
-              <div v-if="category_suggestions">
+              <!-- <div v-if="category_suggestions">
                 <div
                   class="px-2 py-1 text-uppercase fs-10 text-right text-muted bg-soft-secondary"
                 >
@@ -119,7 +119,7 @@
                     }}</router-link>
                   </li>
                 </ul>
-              </div>
+              </div> -->
               <!--End Categories suggestion List--->
               <div v-if="products_suggestions">
                 <div
@@ -303,10 +303,10 @@ export default {
       const fooHeader = this.$refs.fooHeader;
       if (window.pageYOffset > 100) {
         this.isSticky = true;
-        fooHeader.classList.add("sticky", "fadeInDowns");
+        fooHeader?.classList.add("sticky", "fadeInDowns");
       } else {
         this.isSticky = false;
-        fooHeader.classList.remove("sticky", "fadeInDowns");
+        fooHeader?.classList.remove("sticky", "fadeInDowns");
       }
     },
   },

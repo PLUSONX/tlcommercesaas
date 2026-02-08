@@ -3,7 +3,7 @@
       <page-header class="pt-3 pb-3" :items="bItems" />
       <div class="pt-60 pb-60 light-bg">
           <div class="custom-container2">
-              <template v-if="$store.state.siteProperties.customer_limit_over == 0">
+              <template v-if="$store?.state?.siteProperties?.customer_limit_over == 0">
                   <div class="col-lg-5 mx-auto p-md-5 px-3 py-4 white-box">
                       <p v-bind:class="notificationClass" v-if="notification">
                           {{ notification }}

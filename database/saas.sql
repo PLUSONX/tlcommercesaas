@@ -120,20 +120,26 @@ CREATE TABLE `domains` (
 --
 
 CREATE TABLE `device_tokens` (
-  `id` bigint(20) NOT NULL,
-  `user_id` bigint(20) UNSIGNED NOT NULL,
-  `token` varchar(255) NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) UNSIGNED NULL,
+  `tenant_id` varchar(255)  NULL,
+  `token` varchar(500) NOT NULL,
   `platform` enum('ios','android','web') DEFAULT 'android',
   `device_name` varchar(255) DEFAULT NULL,
   `device_info` json DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
   `last_used_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `device_tokens_token_unique` (`token`),
+  KEY `device_tokens_user_id_index` (`user_id`),
+  KEY `device_tokens_tenant_id_index` (`tenant_id`),
+  KEY `device_tokens_token_is_active_index` (`token`, `is_active`),
+  KEY `device_tokens_user_tenant_index` (`user_id`, `tenant_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 ALTER TABLE `device_tokens`
-  ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `device_tokens_token_unique` (`token`),
   ADD KEY `device_tokens_user_platform_index` (`user_id`,`platform`);
 

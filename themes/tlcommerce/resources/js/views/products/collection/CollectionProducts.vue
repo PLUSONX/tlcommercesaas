@@ -154,6 +154,8 @@ export default {
   mounted() {
     this.getCollectionDetails();
     this.getProducts();
+
+    console.log("In Collection Products Vue");
   },
   methods: {
     /**

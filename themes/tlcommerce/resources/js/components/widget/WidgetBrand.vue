@@ -27,7 +27,7 @@
         </li>
       </template>
 
-      <li v-if="brands.length > max_brand">
+      <li v-if="brands?.length > max_brand">
         <button class="btn_underline" @click.prevent="ViewMore('brand')">
           {{ $t("View More") }}
         </button>
@@ -64,7 +64,7 @@ export default {
   methods: {
     ViewMore(item) {
       if (item === "brand") {
-        this.max_brand = this.brands.length;
+        this.max_brand = this.brands?.length ?? 0;
       }
     },
     ViewLess(item) {

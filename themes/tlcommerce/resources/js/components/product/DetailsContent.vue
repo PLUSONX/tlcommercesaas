@@ -24,11 +24,11 @@
     <!-- Rating -->
     <div
       class="align-items-center d-flex rating-wrap"
-      v-if="config.enable_product_reviews == enums.status.ACTIVE"
+      v-if="config?.enable_product_reviews == enums.status.ACTIVE"
     >
       <div
         class="d-flex align-items-center mr-15"
-        v-if="config.enable_product_star_rating == enums.status.ACTIVE"
+        v-if="config?.enable_product_star_rating == enums.status.ACTIVE"
       >
         <div class="product-rating-wrapper">
           <i :data-star="product.rating" :title="product.rating"></i>
@@ -130,10 +130,15 @@
                     }"
                   >
                     <img
-                      :src="option.image"
+                      :src="cleanImage(option.image)"
                       :alt="`${option.name}`"
                       v-if="option.image"
                     />
+                    <!-- <img
+                      :src="option.image"
+                      :alt="`${option.name}`"
+                      v-if="option.image"
+                    /> -->
                     <p v-else>{{ option.name }}</p>
                   </span>
                 </template>
@@ -189,14 +194,14 @@
           </button>
         </div>
         <!-- End Quantity Input -->
-        <div class="ml-15 fz-12">
+        <!-- <div class="ml-15 fz-12">
           <p v-if="product.quantity > 0" class="c1">
             {{ product.quantity }}
             {{ product.quantity > 1 ? "items" : "item" }}
             {{ $t("are available") }}
           </p>
           <p v-else class="text-danger">{{ $t("Sold out") }}</p>
-        </div>
+        </div> -->
       </div>
     </div>
     <!-- End Quantity -->
@@ -261,7 +266,7 @@
           <button
             class="icon_btn d-none d-md-inline-flex btn-compare"
             @click.prevent="addToCompare"
-            v-if="config.enable_product_compare == 1"
+            v-if="config?.enable_product_compare == 1"
           >
             <div class="icon-wrapper">
               <span class="material-icons"> compare_arrows </span>
@@ -271,7 +276,7 @@
           <!--End Desktop compare button-->
           <!--Add to wishlist button-->
           <button
-            :class="{ 'w-100': config.enable_product_compare != 1 }"
+            :class="{ 'w-100': config?.enable_product_compare != 1 }"
             class="icon_btn btn-wishlist mt-md-2"
             @click.prevent="addToWishlist"
           >
@@ -287,7 +292,7 @@
           <button
             class="icon_btn btn-chat d-inline-flex d-md-none"
             @click.prevent="addToCompare"
-            v-if="config.enable_product_compare == 1"
+            v-if="config?.enable_product_compare == 1"
           >
             <div class="icon-wrapper">
               <span class="material-icons"> compare_arrows </span>
@@ -398,6 +403,11 @@ export default {
     },
   },
   methods: {
+
+    cleanImage(img) {
+      if (!img) return '';
+      return img.startsWith('/public') ? img.slice(7) : img;
+    },
     gotoSec() {
       this.$emit("goto-section", "productDetails");
     },

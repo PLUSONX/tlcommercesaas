@@ -38,7 +38,7 @@
           <!--Tax-->
           <tr
             class="shipping-cost font-weight-regular"
-            v-if="config.enable_tax_in_checkout == enums.status.ACTIVE"
+            v-if="config?.enable_tax_in_checkout == enums.status.ACTIVE"
           >
             <td>{{ $t("Tax") }}</td>
             <td>
@@ -68,7 +68,7 @@
           <template
             v-if="
               couponDiscounts.length > 0 &&
-              config.enable_coupon_in_checkout == this.enums.status.ACTIVE
+              config?.enable_coupon_in_checkout == this.enums.status.ACTIVE
             "
           >
             <tr
@@ -151,7 +151,7 @@ export default {
       return payable;
     },
     totalSaving() {
-      if (this.config.enable_coupon_in_checkout == this.enums.status.ACTIVE) {
+      if (this.config?.enable_coupon_in_checkout == this.enums.status.ACTIVE) {
         return this.couponDiscounts.reduce((accum, item) => {
           return parseFloat(accum) + parseFloat(item.discount);
         }, 0.0);

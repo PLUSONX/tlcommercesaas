@@ -47,11 +47,11 @@
                             </div>
                             <div class="col-sm-12 mt-10">
                                 <div class="section_layout d-none category_slider">
-                                    <img src="{{ asset('themes/tlcommerce/assets/img/category_slide.png') }}">
+                                    <img src="{{ asset('themes/tlcommerce/assets/img/category_slider.png') }}">
                                     <!-- <img src="{{ asset('/public/themes/tlcommerce/assets/img/category_slide.png') }}"> -->
                                 </div>
                                 <div class="section_layout d-none flashdeal">
-                                    <img src="{{ asset('themes/tlcommerce/assets/img/deals.png') }}">
+                                    <img src="{{ asset('themes/tlcommerce/assets/img/flash_deal.png') }}">
                                     <!-- <img src="{{ asset('/public/themes/tlcommerce/assets/img/deals.png') }}"> -->
                                 </div>
                                 <div class="section_layout d-none product_collection">

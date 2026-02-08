@@ -63,6 +63,8 @@ class ProductRepository
     public function productManagement($request, $seller_id = null, $product_owner = null)
     {
 
+        // dd($seller_id, $product_owner);
+
         $query = Product::with(['seller', 'product_translations', 'variations', 'reviews', 'single_price', 'unit_info']);
 
 
@@ -78,6 +80,8 @@ class ProductRepository
                 $q->whereNull('user_type')
                     ->orWhere('user_type', config('tlecommercecore.user_type.admin'));
             });
+
+            
         }
 
 
@@ -116,6 +120,7 @@ class ProductRepository
 
         $per_page = $request->has('per_page') && $request['per_page'] != null ? $request['per_page'] : 10;
 
+            
         if ($per_page != null && $per_page == 'all') {
             $products = $query->paginate($query->get()->count())
                 ->withQueryString();
@@ -123,6 +128,16 @@ class ProductRepository
             $products = $query->paginate($per_page)
                 ->withQueryString();
         }
+
+        // dd([
+        //     'current_page' => $products->currentPage(),
+        //     'per_page' => $products->perPage(),
+        //     'total' => $products->total(),
+        //     'userType' => config('tlecommercecore.user_type.admin'),
+        //     'sql' => $query->toSql()
+        // ]);
+
+        // dd($products);
 
         return $products;
     }

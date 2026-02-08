@@ -3,7 +3,7 @@
     {{ translate('Offline Payment Methods') }}
 @endsection
 @section('custom_css')
-    <link href="{{ asset('/public/backend/assets/plugins/summernote/summernote-lite.css') }}" rel="stylesheet" />
+    <link href="{{ asset('backend/assets/plugins/summernote/summernote-lite.css') }}" rel="stylesheet" />
 @endsection
 @section('main_content')
     <div class="row">
@@ -281,7 +281,7 @@
     @include('core::base.media.partial.media_modal')
 @endsection
 @section('custom_scripts')
-    <script src="{{ asset('/public/backend/assets/plugins/summernote/summernote-lite.js') }}"></script>
+    <script src="{{ asset('backend/assets/plugins/summernote/summernote-lite.js') }}"></script>
     <script>
         (function($) {
             "use strict";

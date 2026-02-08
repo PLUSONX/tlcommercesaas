@@ -1,155 +1,226 @@
 <template>
-  <div class="layout__two">
-    <preloader :loading="preloaderLoading"></preloader>
-    <!-- <top-bar-banner
-      :properties="top_bar_banner_properties"
-      v-if="top_bar_banner_properties"
-    ></top-bar-banner> -->
-    <top-bar-banner
-      :properties="top_bar_banner_properties"
-      v-if="
-        top_bar_banner_properties != null &&
-        top_bar_banner_properties.topbar_banner_status == 1
-      "
-    ></top-bar-banner>
-    <!-- Header -->
-    <header class="header__two love-sticky">
-      <header-top
-        :data-loading="MenuItemsLoading"
-        :currencies="data.currencies"
-        :languages="data.languages"
-        :right-menu-items="rightMenuItems"
-        :left-menu-items="leftMenuItems"
-        :header-menu-style="headerMenuStyle"
-        @change-language-currency="setCurrencyLanguage"
-        @logout-customer="logoutCustomer"
-      ></header-top>
-      <header-middle
-        :site-properties="data.site_properties"
-        :mode="mode"
-        :cart-item="cartItem"
-        :wishlist-item="wishlistItem"
-        :compare-item="compareItem"
-        :header-logo-style="headerLogoStyle"
-        :header-menu-style="headerMenuStyle"
-        class="d-none d-lg-block"
-      ></header-middle>
-      <header-bottom
-        :data-loading="MenuItemsLoading"
-        :mega-categories="data.megaCategories"
-        :menu-items="headerBottomMenu"
-        :header-style="headerStyle"
-        :header-menu-style="headerMenuStyle"
-        class="d-none d-lg-block"
-      ></header-bottom>
-    </header>
-
-    <mobile-header
-      :site-properties="data.site_properties"
-      :mode="mode"
-      :cart-item="cartItem"
-      :header-style="headerStyle"
-      :header-menu-style="headerMenuStyle"
-      :header-logo-style="headerLogoStyle"
-    ></mobile-header>
-    <!-- End Header -->
-
-    <div class="main_content light-bg">
-      <slot />
-    </div>
-
-    <StickyFooter v-if="!isSingleProduct" />
-
-    <!-- Footer -->
-    <footer
-      :class="
-        this.footerStyle.custom_footer == 1
-          ? 'custom-footer footer footer__two c1-bg'
-          : 'footer footer__two c1-bg'
-      "
-      :style="{ backgroundImage: `url('${footerBgImg}')` }"
-    >
-      <!-- Footer Top -->
-      <div class="footer-top">
-        <div class="custom-container2">
-          <div class="row justify-content-between">
-            <v-runtime-template :template="widget_html"></v-runtime-template>
-          </div>
-        </div>
-      </div>
-      <!-- End Footer Top -->
-      <!-- Footer Bottom -->
-      <div class="footer-bottom">
-        <div class="custom-container2">
-          <div class="border-top text-center py-4">
-            <copyright :site-properties="data.site_properties" />
-          </div>
-        </div>
-      </div>
-      <!-- End Footer Bottom -->
-    </footer>
-    <!-- End Footer -->
-
-    <!--Cookie Consent-->
-    <gdpr
-      v-if="gdpr_properties != null && gdpr_properties.gdpr_status == 1"
-      :properties="gdpr_properties"
-    ></gdpr>
-    <!--End Cookie Consent-->
-
-    <!-- Dark Light Switcher -->
-    <div class="floating-mode-switcher-wrap" v-if="dark_light_status == '1'">
-      <label class="dl-switch">
-        <input
-          class="dark-looks-mode-changer"
-          @change="toggleDark"
-          :checked="mode == 'dark'"
-          type="checkbox"
-        />
-        <span class="dl-slider"></span>
-        <span class="dl-light">Light</span>
-        <span class="dl-dark">Dark</span>
-      </label>
-    </div>
-    <!-- End Dark Light Switcher -->
-    <!--Website popup-->
-    <CModal
-      :visible="visibleWebsitePopup"
-      alignment="center"
-      class="website-popup-modal"
-      @close="
-        () => {
-          visibleWebsitePopup = false;
-        }
-      "
-    >
-      <CModalBody
-        class="modal-body p-0 position-relative website-popup-modal-body rounded-0"
-      >
-        <button
-          class="btn-circle custom-modal-btn position-absolute size-35"
-          @click="closePopupModal()"
+  <div :class="layoutClass">
+    <!-- Split Screen Layout (Desktop Only) -->
+    <template v-if="isSplitScreen && !isMobile">
+      <div class="split-screen-container" :style="containerStyle">
+        <!-- Main Content Side -->
+        <div 
+          class="split-screen-content"
+          :class="[contentSideClass, 'force-mobile-view']"
+          :style="contentStyle"
         >
-          <base-icon-svg name="close" :width="10" :height="10" />
-        </button>
-        <div
-          class="m-0"
-          v-html="website_popup_properties.website_popup_content"
-        ></div>
-        <subscribe-form
-          class="mt-20"
-          v-if="website_popup_properties.website_popup_subscribe_status == 1"
-        ></subscribe-form>
-      </CModalBody>
-    </CModal>
-    <!--End website popup-->
 
-    <BackToTop />
+          <header class="header__two love-sticky">
+            <header-top
+              :data-loading="MenuItemsLoading"
+              :currencies="data.currencies"
+              :languages="data.languages"
+              :right-menu-items="rightMenuItems"
+              :left-menu-items="leftMenuItems"
+              :header-menu-style="headerMenuStyle"
+              @change-language-currency="setCurrencyLanguage"
+              @logout-customer="logoutCustomer"
+            ></header-top>
+          </header>
+
+          <mobile-header
+            :site-properties="data.site_properties"
+            :mode="mode"
+            :cart-item="cartItem"
+            :header-style="headerStyle"
+            :header-menu-style="headerMenuStyle"
+            :header-logo-style="headerLogoStyle"
+            :class="{ 'force-show': isSplitScreen }"
+          ></mobile-header>
+
+          <slot></slot>
+
+        </div>
+
+        <!-- Feature Side (Banner/Product/Video) -->
+        <div 
+          class="split-screen-feature"
+          :class="featureSideClass"
+          :style="featureStyle"
+        >
+         <BannerFeature 
+          :settings="splitScreenSettings"
+          :imagePath="featureImagePath"
+          v-if="isSplitScreen"
+        />
+          <!-- <p>Split Screen Settings: {{ splitScreenSettings }}</p>
+          <p>Is Split Screen: {{ isSplitScreen }}</p>
+          <p>Feature Image Path: {{ featureImagePath }}</p>
+
+          <component 
+            :is="featureComponent" 
+            :settings="splitScreenSettings"
+            :imagePath="featureImagePath"
+            v-if="isSplitScreen"
+          /> -->
+        </div>
+      </div>
+    </template>
+
+    <!-- Default Layout (Always on Mobile) -->
+    <template v-else>
+      
+      <div class="layout__two">
+        <preloader :loading="preloaderLoading"></preloader>
+        <!-- <top-bar-banner
+          :properties="top_bar_banner_properties"
+          v-if="top_bar_banner_properties"
+        ></top-bar-banner> -->
+        <top-bar-banner
+          :properties="top_bar_banner_properties"
+          v-if="
+            top_bar_banner_properties != null &&
+            top_bar_banner_properties.topbar_banner_status == 1
+          "
+        ></top-bar-banner>
+        <!-- Header -->
+        <header class="header__two love-sticky">
+          <header-top
+            :data-loading="MenuItemsLoading"
+            :currencies="data.currencies"
+            :languages="data.languages"
+            :right-menu-items="rightMenuItems"
+            :left-menu-items="leftMenuItems"
+            :header-menu-style="headerMenuStyle"
+            @change-language-currency="setCurrencyLanguage"
+            @logout-customer="logoutCustomer"
+          ></header-top>
+          <header-middle
+            :site-properties="data.site_properties"
+            :mode="mode"
+            :cart-item="cartItem"
+            :wishlist-item="wishlistItem"
+            :compare-item="compareItem"
+            :header-logo-style="headerLogoStyle"
+            :header-menu-style="headerMenuStyle"
+            class="d-none d-lg-block"
+          ></header-middle>
+          <header-bottom
+            :data-loading="MenuItemsLoading"
+            :mega-categories="data.megaCategories"
+            :menu-items="headerBottomMenu"
+            :header-style="headerStyle"
+            :header-menu-style="headerMenuStyle"
+            class="d-none d-lg-block"
+          ></header-bottom>
+        </header>
+
+        <mobile-header
+          :site-properties="data.site_properties"
+          :mode="mode"
+          :cart-item="cartItem"
+          :header-style="headerStyle"
+          :header-menu-style="headerMenuStyle"
+          :header-logo-style="headerLogoStyle"
+        ></mobile-header>
+        <!-- End Header -->
+
+        <div class="main_content light-bg">
+          <slot />
+        </div>
+
+        <!-- <StickyFooter v-if="!isSingleProduct" /> -->
+
+        <!-- Footer -->
+        <!-- <footer
+          :class="
+            this.footerStyle.custom_footer == 1
+              ? 'custom-footer footer footer__two c1-bg'
+              : 'footer footer__two c1-bg'
+          "
+          :style="{ backgroundImage: `url('${footerBgImg}')` }"
+        > -->
+          <!-- Footer Top -->
+          <!-- <div class="footer-top">
+            <div class="custom-container2">
+              <div class="row justify-content-between">
+                <v-runtime-template :template="widget_html"></v-runtime-template>
+              </div>
+            </div>
+          </div> -->
+          <!-- End Footer Top -->
+          <!-- Footer Bottom -->
+          <!-- <div class="footer-bottom">
+            <div class="custom-container2">
+              <div class="border-top text-center py-4">
+                <copyright :site-properties="data.site_properties" />
+              </div>
+            </div>
+          </div> -->
+          <!-- End Footer Bottom -->
+        <!-- </footer> -->
+        <!-- End Footer -->
+
+        <!--Cookie Consent-->
+        <gdpr
+          v-if="gdpr_properties != null && gdpr_properties.gdpr_status == 1"
+          :properties="gdpr_properties"
+        ></gdpr>
+        <!--End Cookie Consent-->
+
+        <!-- Dark Light Switcher -->
+        <div class="floating-mode-switcher-wrap" v-if="dark_light_status == '1'">
+          <label class="dl-switch">
+            <input
+              class="dark-looks-mode-changer"
+              @change="toggleDark"
+              :checked="mode == 'dark'"
+              type="checkbox"
+            />
+            <span class="dl-slider"></span>
+            <span class="dl-light">Light</span>
+            <span class="dl-dark">Dark</span>
+          </label>
+        </div>
+        <!-- End Dark Light Switcher -->
+        <!--Website popup-->
+        <CModal
+          :visible="visibleWebsitePopup"
+          alignment="center"
+          class="website-popup-modal"
+          @close="
+            () => {
+              visibleWebsitePopup = false;
+            }
+          "
+        >
+          <CModalBody
+            class="modal-body p-0 position-relative website-popup-modal-body rounded-0"
+          >
+            <button
+              class="btn-circle custom-modal-btn position-absolute size-35"
+              @click="closePopupModal()"
+            >
+              <base-icon-svg name="close" :width="10" :height="10" />
+            </button>
+            <div
+              class="m-0"
+              v-html="website_popup_properties.website_popup_content"
+            ></div>
+            <subscribe-form
+              class="mt-20"
+              v-if="website_popup_properties.website_popup_subscribe_status == 1"
+            ></subscribe-form>
+          </CModalBody>
+        </CModal>
+        <!--End website popup-->
+
+        <BackToTop />
+      </div>
+
+    </template>
   </div>
 </template>
 
+
+
 <script>
-import { mapState } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 import config from "../config.js";
 const axios = require("axios").default;
 import VRuntimeTemplate from "vue3-runtime-template";
@@ -217,6 +288,10 @@ const recent_blog_widget = defineAsyncComponent(() =>
   import("@/components/widget/recent_blog_widget.vue")
 );
 
+const BannerFeature = defineAsyncComponent(() =>
+  import("@/components/features/BannerFeature.vue")
+);
+
 import { defineAsyncComponent, reactive } from "vue";
 import { useStore } from "vuex";
 import {
@@ -254,6 +329,7 @@ export default {
     recent_blog_widget,
     VRuntimeTemplate,
     Preloader,
+    BannerFeature
   },
   setup() {
     const data = reactive({
@@ -358,12 +434,58 @@ export default {
       gdpr_properties: null,
       website_popup_properties: null,
       dark_light_status: "0",
+
+      resizeObserver: null,
+      mobileBreakpoint: 768,  // Customizable breakpoint
+      resizeTimeout: null,  // Add this for debounce
     };
   },
-  computed: mapState({
+//   watch: {
+//   isSplitScreen: {
+//     immediate: true,
+//     handler(newVal) {
+//       if (newVal) {
+//         // Force mobile view when split screen is active
+//         this.$nextTick(() => {
+//           // Any additional logic to maintain mobile view
+//         });
+//       }
+//     }
+//   },
+  
+//   $route() {
+//     // Ensure mobile view persists on route change
+//     if (this.isSplitScreen) {
+//       this.$nextTick(() => {
+//         // Re-apply mobile view styles if needed
+//       });
+//     }
+//   }
+// },
+  computed: {
+
+      isMobile() {
+    // Get split screen state from store
+    const splitScreen = this.$store.getters['layout/isSplitScreen'];
+    const actualMobile = this.$store.getters['layout/isMobile'];
+    
+    // If split screen is active, always treat as mobile
+    if (splitScreen) {
+      return true;
+    }
+    
+    // Otherwise use the actual mobile detection
+    return actualMobile;
+  },
+    ...mapState({
     preloaderLoading: (state) => state.preloaderLoading,
     mode: (state) => state.mode,
-    customerToken: (state) => state.customerToken,
+    customerToken: (state) => {
+      // console.log("state:", state);
+      // console.log("state.customerToken:", state.customerToken)
+      return state.customerToken;
+    },
+    // customerToken: (state) => state.customerToken,
     isCustomerLogin: (state) => state.isCustomerLogin,
     wishlistItem: (state) =>
       state.customerDashboardInfo != null
@@ -374,6 +496,117 @@ export default {
     compareItem: (state) =>
       state.compareItems.length ? state.compareItems.length : 0,
   }),
+
+  // NEW: Layout computed properties
+    ...mapGetters('layout', [
+      'isSplitScreen',
+      'splitScreenSettings',
+      'contentPosition',
+      'featureImagePath',
+      'isMobile'
+    ]),
+
+    featureComponent() {
+      console.log("feature Component method called!!")
+      // Return the appropriate component based on feature_type
+      // const type = this.featureType;
+      const type = 'banner';
+      
+      if (type == 'banner') {
+        return () => import('@/components/features/BannerFeature.vue');
+      } 
+      // else if (type === 'product') {
+      //   return () => import('./components/ProductFeature.vue');
+      // } else if (type === 'video') {
+      //   return () => import('./components/VideoFeature.vue');
+      // }
+      
+      return null;
+    },
+
+    featureSideClass() {
+      return this.contentPosition === 'left' ? 'order-2' : 'order-1';
+    },
+
+    featureStyle() {
+      // You can add dynamic styling based on splitScreenSettings
+      return {
+        backgroundColor: this.splitScreenSettings?.background_color || '#f8f9fa'
+      };
+    },
+
+    layoutClass() {
+      if (this.isMobile) {
+        return 'layout__two';
+      }
+      return this.isSplitScreen ? 'layout-split-screen' : 'layout__two';
+    },
+
+    containerStyle() {
+      if (!this.isSplitScreen || this.isMobile) return {};
+      
+      return {
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        minHeight: '100vh'
+      };
+    },
+
+    contentSideClass() {
+      return this.contentPosition === 'left' ? 'order-1' : 'order-2';
+    },
+
+    featureSideClass() {
+      return this.contentPosition === 'left' ? 'order-2' : 'order-1';
+    },
+
+    contentStyle() {
+      return {
+        backgroundColor: '#ffffff',
+        overflowY: 'auto'
+      };
+    },
+
+    featureStyle() {
+      if (!this.splitScreenSettings) return {};
+      
+      return {
+        backgroundColor: this.splitScreenSettings.background_color || '#ffffff',
+        backgroundImage: this.splitScreenSettings.feature_image 
+          ? `url(${this.splitScreenSettings.feature_image})` 
+          : 'none',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      };
+    },
+
+    featureComponent() {
+      if (!this.splitScreenSettings) return null;
+      
+      const componentMap = {
+        'banner': 'BannerFeature',
+        'product': 'ProductFeature',
+        'video': 'VideoFeature'
+      };
+      
+      return componentMap[this.splitScreenSettings.feature_type] || 'BannerFeature';
+    }
+
+  }, 
+  // computed: mapState({
+  //   preloaderLoading: (state) => state.preloaderLoading,
+  //   mode: (state) => state.mode,
+  //   customerToken: (state) => state.customerToken,
+  //   isCustomerLogin: (state) => state.isCustomerLogin,
+  //   wishlistItem: (state) =>
+  //     state.customerDashboardInfo != null
+  //       ? state.customerDashboardInfo.total_wishlisted_product
+  //       : 0,
+  //   cartItem: (state) =>
+  //     state.cart.length ? state.cart.reduce((a, b) => a + b.quantity, 0) : 0,
+  //   compareItem: (state) =>
+  //     state.compareItems.length ? state.compareItems.length : 0,
+  // }),
 
   mounted() {
     var body = document.querySelector("body");
@@ -387,9 +620,54 @@ export default {
       setInterval(this.checkCustomerAuthentication, 1000 * 60);
     }
     this.$store.state.$t = this.translateLanguage;
+
+    // NEW: Initialize layout detection
+    this.fetchActiveLayout();
+    this.checkMobileView();
+    window.addEventListener('resize', this.handleResize);
+    this.initResizeObserver();
+  },
+
+  beforeUnmount() {
+    // NEW: Clean up listeners
+    window.removeEventListener('resize', this.handleResize);
+    
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
+    
+    if (this.resizeTimeout) {
+      clearTimeout(this.resizeTimeout);
+    }
   },
 
   methods: {
+
+    // Your existing methods...
+    ...mapActions('layout', ['fetchActiveLayout', 'updateMobileView']),
+
+    // NEW: Mobile detection methods
+    checkMobileView() {
+      const isMobile = window.innerWidth < this.mobileBreakpoint;
+      this.updateMobileView(isMobile);
+    },
+
+    handleResize() {
+      clearTimeout(this.resizeTimeout);
+      this.resizeTimeout = setTimeout(() => {
+        this.checkMobileView();
+      }, 150);
+    },
+
+    initResizeObserver() {
+      if ('ResizeObserver' in window) {
+        this.resizeObserver = new ResizeObserver(() => {
+          this.checkMobileView();
+        });
+        this.resizeObserver.observe(document.body);
+      }
+    },
+
     translateLanguage(val) {
       return this.$t(val);
     },
@@ -398,24 +676,67 @@ export default {
      * Check customer authentication
      */
     checkCustomerAuthentication() {
-      axios
-        .get("/api/v1/ecommerce-core/auth/customer-refresh-auth", {
-          headers: {
-            Authorization: `Bearer ${this.customerToken}`,
-          },
-        })
-        .then((response) => {
-          if (response.data.success) {
+  // console.log("checkCustomerAuthentication method called!!!");
+  // console.log("customer token: ", this.customerToken);
+  
+  const fullUrl = "/api/v1/ecommerce-core/auth/customer-refresh-auth";
+  // const fullUrl = "/api/v1/ecommerce-core/auth/test-refresh";
+  // console.log("🌐 Full URL:", fullUrl);
+  // console.log("🏠 Base URL:", axios.defaults.baseURL);
+  // console.log("🔗 Complete URL:", window.location.origin + fullUrl);
+  
+  axios
+    .post(fullUrl, null, {
+      headers: {
+        Authorization: `Bearer ${this.customerToken}`,
+      },
+    })
+    .then((response) => {
+      // console.log("✅ Response received:", response);
+
+      if (response.data.success) {
             this.$store.dispatch("customerLogin", response.data);
             this.$store.dispatch("getCustomerCartItems");
           } else {
+            console.log(".then triggers customer Logout");
             this.$store.dispatch("customerLogout");
           }
-        })
-        .catch((error) => {
-          this.$store.dispatch("customerLogout");
-        });
-    },
+    })
+    .catch((error) => {
+      console.log("❌ Error caught:", error);
+      console.log("Error response:", error.response);
+      console.log("Error status:", error.response?.status);
+      console.log("Error data:", error.response?.data);
+    });
+},
+    // checkCustomerAuthentication() {
+    //   console.log("checkCustomerAuthentication method called!!!");
+    //   console.log("customer token: ", this.customerToken);
+    //   axios
+    //     // .get("/api/v1/ecommerce-core/auth/customer-refresh-auth", {
+    //     //   headers: {
+    //     //     Authorization: `Bearer ${this.customerToken}`,
+    //     //   },
+    //     // })
+    //     .get("/api/v1/ecommerce-core/customer-refresh-auth", {
+    //       headers: {
+    //         Authorization: `Bearer ${this.customerToken}`,
+    //       },
+    //     })
+    //     .then((response) => {
+    //       if (response.data.success) {
+    //         this.$store.dispatch("customerLogin", response.data);
+    //         this.$store.dispatch("getCustomerCartItems");
+    //       } else {
+    //         console.log(".then triggers customer Logout");
+    //         this.$store.dispatch("customerLogout");
+    //       }
+    //     })
+    //     .catch((error) => {
+    //         console.log(".catch triggers customer Logout");
+    //       this.$store.dispatch("customerLogout");
+    //     });
+    // },
 
     /**
      * Get all ecommerce menus
@@ -713,6 +1034,7 @@ export default {
       this.visibleWebsitePopup = false;
     },
   },
+
   watch: {
     $route(to, from) {
       if (this.$route.name === "product") {
@@ -758,5 +1080,114 @@ export default {
       }
     }
   }
+}
+
+.split-screen-container {
+  width: 100%;
+}
+
+.split-screen-content {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.split-screen-feature {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+/* Mobile: Force default layout */
+@media (max-width: 768px) {
+  .layout-split-screen {
+    display: block !important;
+  }
+  
+  .split-screen-container {
+    display: block !important;
+    grid-template-columns: none !important;
+  }
+  
+  .split-screen-content,
+  .split-screen-feature {
+    width: 100% !important;
+    order: initial !important;
+  }
+}
+
+
+.split-screen-content.force-mobile-view {
+  /* Remove max-width constraint */
+  width: 100%;
+  overflow-y: auto;
+  padding: 0 20px; /* Optional: add some padding */
+}
+
+/* Hide desktop elements in split screen */
+.force-mobile-view .d-none.d-lg-block {
+  display: none !important;
+}
+
+.force-show {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.mobile-content-wrapper {
+  /* Simulate mobile viewport */
+  max-width: 100%;
+  width: 100%;
+}
+
+/* Hide desktop-only elements in slot content */
+.mobile-content-wrapper .d-none.d-lg-block,
+.mobile-content-wrapper .d-lg-block {
+  display: none !important;
+}
+
+/* Force mobile elements to show */
+.mobile-content-wrapper .d-block.d-lg-none,
+.mobile-content-wrapper .d-lg-none {
+  display: block !important;
+}
+
+/* Override any media queries that might show desktop elements */
+@media (min-width: 992px) {
+  .mobile-content-wrapper .d-none.d-lg-block,
+  .mobile-content-wrapper .d-lg-block {
+    display: none !important;
+  }
+  
+  .mobile-content-wrapper .d-block.d-lg-none,
+  .mobile-content-wrapper .d-lg-none {
+    display: block !important;
+  }
+}
+
+.forced-mobile-context {
+  /* 1. Force the container to a mobile width if necessary */
+  max-width: 100%; /* Or 100% depending on your split design */
+  margin: 0 auto;
+}
+
+/* 2. Nuclear option: Force hide desktop elements and show mobile elements */
+.forced-mobile-context :deep(.d-lg-block), 
+.forced-mobile-context :deep(.d-xl-block),
+.forced-mobile-context :deep(.hide-on-mobile) {
+  display: none !important;
+}
+
+.forced-mobile-context :deep(.d-none),
+.forced-mobile-context :deep(.show-on-mobile) {
+  /* Only show it if it's meant to be visible on mobile */
+  display: block !important; 
 }
 </style>

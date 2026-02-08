@@ -48,12 +48,27 @@ export default {
       });;
     }
 
-    if (!this.state.isCustomerLogin && this.state.siteSettings != null && this.state.siteSettings.enable_guest_checkout == 1) {
+    console.log("isCustomerLogin: ", this.state.isCustomerLogin);
+
+    console.log("siteSettings: ", this.state.siteSettings);
+
+    console.log("enable_guest_checkout: ", this.state.siteSettings?.enable_guest_checkout);
+
+    if (!this.state.isCustomerLogin || (this.state.siteSettings != null && this.state.siteSettings?.enable_guest_checkout == 1)) {
+      // Add to cart if logged in OR guest checkout is enabled
       context.commit("storeCartItems", data);
     } else {
+      // Only redirect if NOT logged in AND guest checkout is disabled
       $toast.error(this.state.$t("Please login"));
       router.push('/login')
     }
+
+    // if (!this.state.isCustomerLogin && this.state.siteSettings != null && this.state.siteSettings.enable_guest_checkout == 1) {
+    //   context.commit("storeCartItems", data);
+    // } else {
+    //   $toast.error(this.state.$t("Please login"));
+    //   router.push('/login')
+    // }
   },
   /**
   * Add data to checkout items

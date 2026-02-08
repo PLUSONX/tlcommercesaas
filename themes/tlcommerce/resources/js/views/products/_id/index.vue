@@ -1,5 +1,8 @@
 <template>
-  <div class="productDetails">
+  <div class="productDetails" :class="{
+    'force-mobile-layout': forcedMobile,
+    'mobile-content-wrapper': forcedMobile
+  }">
     <page-header :items="bItems" />
 
     <!-- Product details Hash Menu -->
@@ -145,7 +148,7 @@
                 </CNavItem>
                 <CNavItem
                   v-if="
-                    site_config.enable_product_reviews == enums.status.ACTIVE
+                    site_config?.enable_product_reviews == enums.status.ACTIVE
                   "
                 >
                   <CNavLink
@@ -192,7 +195,7 @@
                   aria-labelledby="profile-tab"
                   :visible="tabPaneActiveKey === 2"
                   v-if="
-                    site_config.enable_product_reviews == enums.status.ACTIVE
+                    site_config?.enable_product_reviews == enums.status.ACTIVE
                   "
                 >
                   <ProductReview
@@ -259,7 +262,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import { Pagination } from "swiper";
 const axios = require("axios").default;
 import enums from "../../../enums/enums";
@@ -369,9 +372,24 @@ export default {
       productLoading: true,
     };
   },
-  computed: mapState({
+  computed: {
+    ...mapState({
     site_config: (state) => state.siteSettings,
   }),
+
+    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+  forcedMobile() {
+    // identical intent to MainLayout.vue
+    if (this.isSplitScreen) {
+      return true;
+    }
+    return this.isMobile;
+  },
+  },
+  // computed: mapState({
+  //   site_config: (state) => state.siteSettings,
+  // }),
   setup() {
     return {
       modules: [Pagination],
@@ -388,6 +406,7 @@ export default {
     },
   },
   mounted() {
+    console.log("Products Details Mounted!!!!");
     window.addEventListener("scroll", this.scrollHandler);
     this.getProductDetails();
     this.getCategories();
@@ -407,7 +426,9 @@ export default {
               : null,
         })
         .then((response) => {
-          if (response.data.success) {
+          // if (response.data.success) {
+          if (response.data) {
+            console.log("product: ", response.data);
             this.getRelatedProducts(response.data.data.id);
             document.title = response.data.data.name;
             this.product = response.data.data;
@@ -501,8 +522,8 @@ export default {
       const hashMenu = this.$refs.hashMenu;
       if (hashMenu) {
         window.pageYOffset > 450
-          ? hashMenu.classList.add("active")
-          : hashMenu.classList.remove("active");
+          ? hashMenu?.classList.add("active")
+          : hashMenu?.classList.remove("active");
       }
     },
   },
@@ -511,6 +532,44 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../../assets/sass/00-abstracts/01-variables";
+
+.force-mobile-layout .row > [class*="col-"] {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+// .force-mobile-layout .product-content .image,
+// .force-mobile-layout .product-content .product-img {
+//   min-width: 0 !important;
+//   max-width: 100px;
+// }
+
+
+
+// .force-mobile-layout .cart-image-review {
+//   max-width: 100% !important;
+//   height: auto !important;
+//   flex-shrink: 1 !important;
+// }
+
+.force-mobile-layout .d-none.d-lg-block,
+.force-mobile-layout .d-lg-block {
+  display: none !important;
+}
+
+.force-mobile-layout .d-block.d-lg-none,
+.force-mobile-layout .d-lg-none {
+  display: block !important;
+}
+
+
+.force-mobile-layout .d-block.d-lg-none.col-12 {
+  width: 100% !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
+}
+
 
 .product-details {
   padding: 30px;

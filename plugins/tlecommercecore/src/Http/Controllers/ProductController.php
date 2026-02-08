@@ -77,6 +77,9 @@ class ProductController extends Controller
      */
     public function productDropdownOptions(Request $request)
     {
+        // dd($request);
+        // $query = Product::where('tenant_id', tenant('id')) 
+        //             ->select('id', 'name as text');
         $query = Product::query()->select('id', 'name as text');
         if ($request->has('term')) {
             $term = trim($request->term);

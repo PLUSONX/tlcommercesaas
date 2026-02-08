@@ -1,4 +1,13 @@
 <template>
+
+  <!-- <section 
+  v-if="true" 
+  style="min-height: 100px; background: red !important; border: 5px solid yellow;"
+>
+  <h1>TESTING: I AM HERE</h1>
+  <pre>{{ properties[0].products.data.length }}</pre>
+</section> -->
+
   <section
     class="collection-section home-page-section"
     :style="styleObject"
@@ -10,22 +19,22 @@
           <section-title
             class="mb-30 section-title"
             :title="
-              properties[0].category_info != null
-                ? properties[0].category_info.name
-                : $t(properties.title)
+              properties[0]?.category_info != null
+                ? properties[0]?.category_info.name
+                : (properties?.title ? $t(properties.title) : '')
             "
-            :titleColor="properties.title_color"
+            :titleColor="properties?.title_color"
           />
         </div>
         <div
           class="col-md-6 text-md-end"
-          v-if="properties.content == 'category'"
+          v-if="properties?.content == 'category'"
         >
           <router-link
-            v-if="properties[0].category_info != null"
+            v-if="properties[0]?.category_info != null"
             class="btn btn-sm rounded-0 mb-30 section_btn"
             :style="styleObject"
-            :to="`/products/category/${properties[0].category_info.slug}`"
+            :to="`/products/category/${properties[0]?.category_info.slug}`"
           >
             {{
               properties.btn_title != null
@@ -160,6 +169,14 @@ export default {
         "--button-hover-color": this.properties.btn_hover_color,
       };
     },
+  },
+  mounted() {
+    console.log("CustomProductSection: Component Mounted");
+    console.log("Full Properties:", this.properties);
+    if (this.properties[0]) {
+        console.log("Products Object:", this.properties[0].products);
+    }
+
   },
 };
 </script>

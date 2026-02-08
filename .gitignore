@@ -18,6 +18,8 @@ pnpm-debug.log
 /storage/logs
 /storage/framework
 /public/storage
+/storage/app/firebase-auth.json
+/public/themes/tlcommerce
 
 # =========================
 # Build artifacts

@@ -78,7 +78,10 @@
                     mb-0
                   "
                 >
-                  <img :src="userData.image" :alt="userData.name" />
+                  <img 
+                  :src="customerProfileImage" 
+                  :alt="userData.name" />
+                  <!-- <img :src="userData.image" :alt="userData.name" /> -->
                   <button
                     title="Remove"
                     class="btn_circle"
@@ -211,9 +214,26 @@ export default {
       loading: true,
     };
   },
-  computed: mapState({
+  computed: {
+
+    ...mapState({
     customerToken: (state) => state.customerToken,
   }),
+
+  customerProfileImage() {
+    const image = this.userData?.image;
+
+    if (!image) {
+      return '/themes/tlcommerce/assets/images/icons/dashboard/profile.svg';
+    }
+
+    // Remove `/public` ONLY if it exists
+    return image.replace(/^\/public/, '');
+  }
+  },
+  // computed: mapState({
+  //   customerToken: (state) => state.customerToken,
+  // }),
   mounted() {
     document.title = this.$t("Dashboard") + " | " + this.$t("Manage Account");
     this.getCustomerBasicInfo();
@@ -239,7 +259,7 @@ export default {
      */
     getCustomerBasicInfo() {
       axios
-        .get("/api/v1/ecommerce-core/customer/customer-basic-info", {
+        .post("/api/v1/ecommerce-core/customer/customer-basic-info", null, {
           headers: {
             Authorization: `Bearer ${this.customerToken}`,
           },
@@ -261,6 +281,30 @@ export default {
           });
         });
     },
+    // getCustomerBasicInfo() {
+    //   axios
+    //     .get("/api/v1/ecommerce-core/customer/customer-basic-info", {
+    //       headers: {
+    //         Authorization: `Bearer ${this.customerToken}`,
+    //       },
+    //     })
+    //     .then((response) => {
+    //       if (response.data.success) {
+    //         this.userData = response.data.info;
+    //       } else {
+    //         this.$store.dispatch("customerLogout").then(() => {
+    //           this.$router.push("/");
+    //         });
+    //       }
+    //       this.loading = false;
+    //     })
+    //     .catch((error) => {
+    //       this.loading = false;
+    //       this.$store.dispatch("customerLogout").then(() => {
+    //         this.$router.push("/");
+    //       });
+    //     });
+    // },
     /**
      * Will remove old image
      */

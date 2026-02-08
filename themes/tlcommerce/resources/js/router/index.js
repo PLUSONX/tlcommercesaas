@@ -10,6 +10,8 @@ import store from "../store";
  * @param {*} next 
  */
 function customerguard(to, from, next) {
+  // console.log("store.state.isCustomerLogin: ", store.state.isCustomerLogin);
+  // console.log("store.state.customerToken: ", store.state.customerToken);
   if (store.state.isCustomerLogin) {
     next();
   } else {
@@ -26,20 +28,24 @@ function isCustomerLogin(to, from, next) {
 }
 const router = createRouter({
   routes: [
+    // {
+    //   path: "/",
+    //   name: "home",
+    //   component: () => import(/* webpackChunkName: "Home" */ '../views/index.vue'),
+    // },
     {
       path: "/",
-      name: "home",
-      component: () => import(/* webpackChunkName: "Home" */ '../views/index.vue'),
-    },
-    {
-      path: "/categories",
-      name: "categories",
-      component: () => import(/* webpackChunkName: "ProductCategories" */ '../views/category/index.vue'),
+      redirect: { name: 'products' }
     },
     {
       path: "/products",
       name: "products",
       component: () => import(/* webpackChunkName: "ProductPage" */ '../views/products/index.vue'),
+    },
+    {
+      path: "/categories",
+      name: "categories",
+      component: () => import(/* webpackChunkName: "ProductCategories" */ '../views/category/index.vue'),
     },
     {
       path: "/products/:id",

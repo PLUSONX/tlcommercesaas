@@ -2,6 +2,9 @@
 
 namespace Plugin\TlcommerceCore\Repositories;
 
+use Exception;
+use Throwable;
+use Illuminate\Support\Facades\Log;
 use Core\Models\User;
 use Core\Http\Mail\NewOrderMail;
 use Core\Jobs\SendTenantMailJob;
@@ -118,9 +121,13 @@ class EcommerceNotification
     /**
      * Will send new order notification
      */
+
     public static function sendNewOrderNotification($order)
     {
-        //Send notification to admin
+        \Log::info('sendNewOrderNotification method called!!!');
+
+        try {
+            //Send notification to admin
         $link = '/orders/order-details/' . $order->id;
         $message =  "New order has been placed. Order code " . $order->order_code;
         $data = [
@@ -129,18 +136,107 @@ class EcommerceNotification
         ];
         $admins = User::where('user_type', config('tlecommercecore.user_type.admin'))->where('status', config('settings.general_status.active'))->get();
         if ($admins != null) {
-            Notification::send($admins, new CustomerOrderCreateNotification($data));
+                \Log::info('Admin is not null!!!');
+
+                \Log::info('Admins Data:', [
+                    'count' => count($admins),
+                    'class' => get_class($admins),
+                    'emails' => $admins->pluck('email')->toArray()
+                ]);
+                \Log::info('Payload Data:', $data);
+
+                $notification = new CustomerOrderCreateNotification($data);
+                
+                \Log::info('Notification Data', [
+                    'notification' => $notification
+                ]);
+
+            try {
+                    \Log::info('Testing manual insert...');
+
+                    // $fullType = 'Plugin\TlcommerceCore\Notifications\CustomerOrderCreateNotification';
+
+                    // \Log::info('Type length', [
+                    //     'length' => strlen($fullType),
+                    //     'value' => $fullType,
+                    //     'escaped' => addslashes($fullType)
+                    // ]);
+                    // \DB::connection('tenant')->table('notifications')->insert([
+                    //     'id' => \Str::uuid(),
+                    //     'type' => 'Plugin\\TlcommerceCore\\Notifications\\CustomerOrderCreateNotification', // Double backslashes
+                    //     'notifiable_type' => 'Core\\Models\\User',
+                    //     'notifiable_id' => 1,
+                    //     'data' => json_encode($data),
+                    //     'created_at' => now(),
+                    //     'updated_at' => now(),
+                    // ]);
+                    // \DB::connection('tenant')->table('notifications')->insert([
+                    //     'id' => \Str::uuid(),
+                    //     'type' => 'test',
+                    //     // 'type' => 'Plugin\TlcommerceCore\Notifications\CustomerOrderCreateNotification',
+                    //     'notifiable_type' => 'Core\Models\User',
+                    //     'notifiable_id' => 1,
+                    //     'data' => json_encode($data),
+                    //     'created_at' => now(),
+                    //     'updated_at' => now(),
+                    // ]);
+                    // \Log::info('Manual insert worked!');
+                // \Log::info('Current DB connection:', [
+                //     'connection' => \DB::connection()->getName(),
+                //     'database' => \DB::connection()->getDatabaseName()
+                // ]);
+
+                // \Log::info('User connection:', [
+                //     'connection' => $admins->first()->getConnectionName()
+                // ]);
+                \Log::info('About to send notification');
+                Notification::send($admins, $notification);
+                \Log::info('Notification send completed');
+
+            } catch (\Throwable $e) {
+
+                // dd([
+                //     'Message' => $e->getMessage(),
+                //     'File'    => $e->getFile(),
+                //     'Line'    => $e->getLine(),
+                //     'Sql'     => $e instanceof \Illuminate\Database\QueryException ? $e->getSql() : 'Not a SQL error'
+                // ]);
+
+                // \Log::info("Notification system crashed!", [
+                //     'message' => $e->getMessage(),
+                //     'file' => $e->getFile(),
+                //     'line' => $e->getLine()
+                // ]);
+
+                \Log::error("Notification system crashed!", [
+                    'message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ]);
+            }
+
+            // Notification::send($admins, new CustomerOrderCreateNotification($data));
         }
+        \Log::info('Outside Admins!!!');
         //Send Email to admin
         if (SettingsRepository::getEcommerceSetting('admin_new_order_email_notification') == config('settings.general_status.active')) {
             $admin_emails = User::where('user_type', config('tlecommercecore.user_type.admin'))->where('status', config('settings.general_status.active'))->pluck('email');
+            
+            try {
+             $orderDetailsHtml = view('plugin/tlecommercecore::mail.order_details_mail', ['order_id' => $order->id])->render();
+        } catch (\Exception $e) {
+             \Log::error("Mail rendering failed: " . $e->getMessage());
+             $orderDetailsHtml = "Order details currently unavailable in email.";
+        }
+            
             $mail_data = [
                 'template_id' => 13,
                 'keywords' => getEmailTemplateVariables(13, true),
                 'subject' => 'New Order Placed!',
                 '_order_code_' =>  $order->order_code,
                 '_tracking_url_' => url('/') . '/' . getAdminPrefix() . '/orders/order-details/' . $order->id,
-                '_order_details_' => view('plugin/tlecommercecore::mail.order_details_mail', ['order_id' => $order->id])->render(),
+                '_order_details_' => $orderDetailsHtml,
+                // '_order_details_' => view('plugin/tlecommercecore::mail.order_details_mail', ['order_id' => $order->id])->render(),
             ];
 
             SendTenantMailJob::dispatch($admin_emails, $mail_data, getTenantMailConfig());
@@ -178,7 +274,77 @@ class EcommerceNotification
                 SendTenantMailJob::dispatch($customer_email, $mail_data, getTenantMailConfig());
             }
         }
+        }
+        catch (\Exception $e) {
+        \Log::error("Global Notification Method Error: " . $e->getMessage());
     }
+
+        
+    }
+
+    // public static function sendNewOrderNotification($order)
+    // {
+    //     \Log::info('sendNewOrderNotification method called!!!');
+
+    //     //Send notification to admin
+    //     $link = '/orders/order-details/' . $order->id;
+    //     $message =  "New order has been placed. Order code " . $order->order_code;
+    //     $data = [
+    //         'message' => $message,
+    //         'link' => $link
+    //     ];
+    //     $admins = User::where('user_type', config('tlecommercecore.user_type.admin'))->where('status', config('settings.general_status.active'))->get();
+    //     if ($admins != null) {
+    //         Notification::send($admins, new CustomerOrderCreateNotification($data));
+    //     }
+    //     //Send Email to admin
+    //     if (SettingsRepository::getEcommerceSetting('admin_new_order_email_notification') == config('settings.general_status.active')) {
+    //         $admin_emails = User::where('user_type', config('tlecommercecore.user_type.admin'))->where('status', config('settings.general_status.active'))->pluck('email');
+    //         $mail_data = [
+    //             'template_id' => 13,
+    //             'keywords' => getEmailTemplateVariables(13, true),
+    //             'subject' => 'New Order Placed!',
+    //             '_order_code_' =>  $order->order_code,
+    //             '_tracking_url_' => url('/') . '/' . getAdminPrefix() . '/orders/order-details/' . $order->id,
+    //             '_order_details_' => view('plugin/tlecommercecore::mail.order_details_mail', ['order_id' => $order->id])->render(),
+    //         ];
+
+    //         SendTenantMailJob::dispatch($admin_emails, $mail_data, getTenantMailConfig());
+    //     }
+
+    //     //send notification to seller
+    //     if (isActivePluging('multivendor')) {
+    //         $seller_link = '/seller/order-details/' . $order->id;
+    //         $seller_data = [
+    //             'message' => $message,
+    //             'link' => $seller_link
+    //         ];
+    //         $seller_ids = OrderHasProducts::where('order_id', $order->id)->distinct()->pluck('seller_id');
+
+    //         $sellers = User::whereIn('id', $seller_ids)->where('user_type', config('tlecommercecore.user_type.seller'))->get();
+    //         if ($sellers != null) {
+    //             Notification::send($sellers, new CustomerOrderCreateNotification($seller_data));
+    //         }
+    //     }
+
+    //     //Send invoice to customer
+    //     if (SettingsRepository::getEcommerceSetting('send_invoice_to_customer_mail') == config('settings.general_status.active')) {
+    //         $customer_email = $order->customer_info != null ? $order->customer_info?->email : $order->guest_customer?->email;
+    //         $customer_name = $order->customer_info != null ? $order->customer_info?->name : 'Guest Customer';
+    //         if ($customer_email != null) {
+    //             $mail_data = [
+    //                 'template_id' => 10,
+    //                 'keywords' => getEmailTemplateVariables(10, true),
+    //                 'subject' => 'Your order has been placed!',
+    //                 '_order_code_' =>  $order->order_code,
+    //                 '_tracking_url_' => url('/') . '/dashboard/order-details/' . $order->id,
+    //                 '_customer_name_' => $customer_name,
+    //                 '_order_details_' => view('plugin/tlecommercecore::mail.order_details_mail', ['order_id' => $order->id])->render(),
+    //             ];
+    //             SendTenantMailJob::dispatch($customer_email, $mail_data, getTenantMailConfig());
+    //         }
+    //     }
+    // }
     /**
      * Will send new order notification
      *

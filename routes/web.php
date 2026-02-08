@@ -15,3 +15,5 @@ use App\Http\Controllers\TestController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::view('/privacy-policy', 'privacy-policy');

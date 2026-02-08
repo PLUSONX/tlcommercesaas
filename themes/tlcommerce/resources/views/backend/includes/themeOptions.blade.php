@@ -35,6 +35,16 @@
                 </li>
                 <!--End Widget Module-->
             @endif
+            
+            @if (auth()->user()->can('Manage Layout Settings'))
+                 <!--Layout Module-->
+                <li class="{{ Request::routeIs(['theme.tlcommerce.layoutSettings']) ? 'active ' : '' }}">
+                    <a href="{{ route('theme.tlcommerce.layoutSettings') }}">
+                        <span class="link-title">{{ translate('Layout Settings') }}</span>
+                    </a>
+                </li>
+                <!--End Layout Module-->
+            @endif
         </ul>
     </li>
 @endif

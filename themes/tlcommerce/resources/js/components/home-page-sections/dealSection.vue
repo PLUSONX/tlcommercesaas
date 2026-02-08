@@ -22,6 +22,42 @@
       </div>
       <swiper
         v-if="dealProducts.length"
+        direction="vertical"
+        :style="{ 
+          height: '800px',
+          maxHeight: '150vh' 
+        }"
+        :slidesPerView="1"
+        :modules="modules"
+        :spaceBetween="15"
+        :autoplay="{
+          delay: 2500,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true,
+        }"
+        :loop="true"
+        :pagination="{
+          clickable: true,
+        }"
+        :navigation="true"
+        class="product-grid-slider theme-slider-dots vertical-product-slider"
+        :breakpoints="{
+          '0': {
+            slidesPerView: 1,
+            spaceBetween: 10,
+          },
+          '768': {
+            slidesPerView: 1,
+            spaceBetween: 12,
+          },
+          '1024': {
+            slidesPerView: 1,
+            spaceBetween: 50,
+          },
+        }"
+      >
+      <!-- <swiper
+        v-if="dealProducts.length"
         :slidesPerView="6"
         :modules="modules"
         :spaceBetween="1"
@@ -43,17 +79,17 @@
             slidesPerView: 3,
           },
           '1024': {
-            slidesPerView: 6,
+            slidesPerView: 3,
           },
         }"
-      >
+      > -->
         <swiper-slide
           v-for="(item, index) in dealProducts"
           :key="`slide-${index}`"
         >
           <single-product :item="item" />
         </swiper-slide>
-      </swiper>
+      </swiper> 
       <div class="col-md-12 text-center mt-20">
         <router-link
           class="btn btn-sm rounded-0 mb-30 section_btn"
@@ -72,7 +108,7 @@
 <script>
 import { defineAsyncComponent } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
-import { Autoplay, Pagination } from "swiper";
+import { Autoplay, Pagination, Navigation } from "swiper";
 const SingleProduct = defineAsyncComponent(() =>
   import("../product/SingleProduct.vue")
 );
@@ -100,7 +136,7 @@ export default {
   },
   setup() {
     return {
-      modules: [Autoplay, Pagination],
+      modules: [Autoplay, Pagination, Navigation],
     };
   },
   data() {
@@ -203,5 +239,52 @@ export default {
   background-position: var(--section-background-image-position);
   background-size: var(--section-background-image-size);
   background-repeat: var(--section-background-image-repeat);
+}
+
+/* Vertical slider styles */
+.vertical-product-slider {
+  width: 100%;
+}
+
+.vertical-product-slider :deep(.swiper-button-next),
+.vertical-product-slider :deep(.swiper-button-prev) {
+  left: 50%;
+  transform: translateX(-50%);
+  right: auto;
+  width: 40px;
+  height: 40px;
+}
+
+.vertical-product-slider :deep(.swiper-button-next) {
+  top: auto;
+  bottom: -50px;
+}
+
+.vertical-product-slider :deep(.swiper-button-prev) {
+  bottom: auto;
+  top: -50px;
+}
+
+.vertical-product-slider :deep(.swiper-button-next::after),
+.vertical-product-slider :deep(.swiper-button-prev::after) {
+  font-size: 20px;
+}
+
+.vertical-product-slider :deep(.swiper-pagination) {
+  left: auto;
+  right: -20px;
+  width: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .vertical-product-slider {
+    height: 500px !important;
+    max-height: 70vh !important;
+  }
 }
 </style>

@@ -1,8 +1,11 @@
 <template>
-  <div class="light-bg pt-4 pt-md-5 pb-4 pb-md-5">
+  <div class="light-bg pt-4 pt-md-5 pb-4 pb-md-5" :class="{
+    'force-mobile-layout': forcedMobile,
+    'mobile-content-wrapper': forcedMobile
+  }">
     <div class="custom-container2">
       <div class="row" v-if="isCustomerLogin">
-        <div class="col-lg-3">
+        <div class="col-lg-3" >
           <!-- Store Info -->
           <div
             class="store-info media c1-bg pl-20 pr-20 pt-15 pb-15 align-items-center mb-30"
@@ -10,19 +13,30 @@
             <div class="reseller-logo position-relative me-3">
               <img
                 class="rounded-circle"
-                :src="customerInfo.image"
+                :src="customerProfileImage" 
                 :alt="`${customerInfo.name}`"
                 height="50px"
                 width="50px"
               />
+              <!-- <img
+                class="rounded-circle"
+                :src="customerInfo.image"
+                :alt="`${customerInfo.name}`"
+                height="50px"
+                width="50px"
+              /> -->
 
               <template>
                 <span class="btn_tooltip position-absolute" title="Verified">
                   <span class="tooltip-icon w-auto h-auto">
                     <img
-                      src="/src/assets/images/icons/dashboard/verified.png"
+                      src="/themes/tlcommerce/assets/images/icons/dashboard/verified.png"
                       alt=""
                     />
+                    <!-- <img
+                      src="/src/assets/images/icons/dashboard/verified.png"
+                      alt=""
+                    /> -->
                   </span>
                 </span>
               </template>
@@ -138,7 +152,7 @@
             <li>
               <router-link
                 to="/dashboard/wallet"
-                v-if="siteSettings.is_active_wallet == status.ACTIVE"
+                v-if="siteSettings?.is_active_wallet == status.ACTIVE"
               >
                 {{ $t("My Wallet") }}
               </router-link>
@@ -161,7 +175,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import enums from "../enums/enums";
 export default {
   data() {
@@ -170,13 +184,44 @@ export default {
       status: enums.status,
     };
   },
-  computed: mapState({
+  computed: {
+    ...mapState({
     isCustomerLogin: (state) => state.isCustomerLogin,
     customerToken: (state) => state.customerToken,
     customerInfo: (state) => state.customerInfo,
     dashboard_content: (state) => state.customerDashboardInfo,
     siteSettings: (state) => state.siteSettings,
   }),
+
+   ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+  forcedMobile() {
+    // identical intent to MainLayout.vue
+    if (this.isSplitScreen) {
+      return true;
+    }
+    return this.isMobile;
+  },
+
+  customerProfileImage() {
+    const image = this.customerInfo?.image;
+
+    if (!image) {
+      return '/themes/tlcommerce/assets/images/icons/dashboard/profile.svg';
+    }
+
+    // Remove `/public` ONLY if it exists
+    return image.replace(/^\/public/, '');
+  }
+
+  },
+  // computed: mapState({
+  //   isCustomerLogin: (state) => state.isCustomerLogin,
+  //   customerToken: (state) => state.customerToken,
+  //   customerInfo: (state) => state.customerInfo,
+  //   dashboard_content: (state) => state.customerDashboardInfo,
+  //   siteSettings: (state) => state.siteSettings,
+  // }),
 };
 </script>
 
@@ -251,4 +296,44 @@ export default {
     transform: translateY(-50%);
   }
 }
+
+
+.force-mobile-layout .row > [class*="col-"] {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+.force-mobile-layout .product-content .image,
+.force-mobile-layout .product-content .product-img {
+  min-width: 0 !important;
+  max-width: 100px;
+}
+
+
+
+.force-mobile-layout .cart-image-review {
+  max-width: 100% !important;
+  height: auto !important;
+  flex-shrink: 1 !important;
+}
+
+.force-mobile-layout .d-none.d-lg-block,
+.force-mobile-layout .d-lg-block {
+  display: none !important;
+}
+
+.force-mobile-layout .d-block.d-lg-none,
+.force-mobile-layout .d-lg-none {
+  display: block !important;
+}
+
+
+.force-mobile-layout .d-block.d-lg-none.col-12 {
+  width: 100% !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
+}
+
+
 </style>

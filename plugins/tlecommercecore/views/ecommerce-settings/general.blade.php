@@ -3,7 +3,7 @@
         @if (count($currencies) > 0)
             <div class="form-row mb-20">
                 <div class="col-sm-4">
-                    <label class="font-14 bold black">{{ translate('Defalt currency') }}
+                    <label class="font-14 bold black">{{ translate('Default currency') }}
                     </label>
                 </div>
                 <div class="col-sm-4">

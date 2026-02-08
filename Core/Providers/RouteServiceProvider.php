@@ -51,6 +51,10 @@ class RouteServiceProvider extends ServiceProvider
                         ->prefix(getSaasPrefix())
                         ->group(base_path('plugins/saas/routes/user.php'));
 
+                    Route::middleware(['web', 'tenant'])
+                        ->prefix('payment')
+                        ->group(base_path('plugins/tlecommercecore/routes/web.php'));
+
                     //  Route::middleware($middlewares['web'])
                     //     ->prefix(getAdminPrefix())
                     //     ->group(base_path('Core/routes/core.php'));
@@ -59,8 +63,15 @@ class RouteServiceProvider extends ServiceProvider
                         ->prefix('api')
                         ->group(base_path('Core/routes/api.php'));
 
+                    
+
                         $middlewares = routeApplicableMiddlewares();
                         $active_theme = getActiveTheme();
+
+                        
+
+                        
+
 
                         if (file_exists(base_path('themes/' . $active_theme->location . '/routes/api.php'))) {
                            
@@ -72,6 +83,10 @@ class RouteServiceProvider extends ServiceProvider
                             Route::middleware($middlewares['web'])->group(base_path('themes/' . $active_theme->location . '/routes/web.php'));
                         }
 
+                    
+                    // Route::middleware(['web', 'tenant'])
+                    // ->group(base_path('plugins/tlecommercecore/routes/web.php'));
+
                 // Route::middleware($middlewares['web'])->prefix(config('app.superadmin_prefix', 'superadmin'))->group(base_path('Core/routes/core.php'));
                 // Core routes WITHOUT prefix (superadmin routes)
                 // Route::middleware($middlewares['web'])->group(base_path('Core/routes/core.php'));        
@@ -79,13 +94,13 @@ class RouteServiceProvider extends ServiceProvider
                 // Route::middleware($middlewares['web'])->prefix(getAdminPrefix())->group(base_path('Core/routes/core.php'));
                 // Route::middleware($middlewares['api'])->prefix('api')->group(base_path('Core/routes/api.php'));
 
-                $host = request()->getHost();
+                // $host = request()->getHost();
 
-                $centralDomains = config('tenancy.central_domains', ['localhost']);
+                // $centralDomains = config('tenancy.central_domains', ['localhost']);
 
-                $isCentralDomain = in_array($host, $centralDomains);
+                // $isCentralDomain = in_array($host, $centralDomains);
 
-                $path = request()->path();
+                // $path = request()->path();
 
 
                 // echo "<script>console.log('host:', " . json_encode($host) . ");</script>";

@@ -548,21 +548,63 @@ if (!function_exists('getAllFonts')) {
     function getAllFonts()
     {
         $url = config('default.google_font_api_key.url');
-        $json = file_get_contents($url);
-        $json_data = json_decode($json, true);
-
-        $data = [];
-
-        for ($i = 0; $i < sizeof($json_data['items']); $i++) {
-            $item = $json_data['items'][$i];
-
-            $data[$i]['family'] = $item['family'];
-            $data[$i]['variants'] = json_encode($item['variants']);
-            $data[$i]['subsets'] = json_encode($item['subsets']);
+        
+        // PHP 8.3 FIX: Handle missing or null URL
+        if ($url === null || $url === '' || trim($url) === '') {
+            \Log::warning('Google Fonts API URL is not configured in config/default.php');
+            return []; // Return empty array if URL is not configured
         }
 
-        return $data;
+        try {
+            $json = file_get_contents($url);
+            
+            if ($json === false) {
+                \Log::error('Failed to fetch Google Fonts from: ' . $url);
+                return [];
+            }
+            
+            $json_data = json_decode($json, true);
+            
+            if (!isset($json_data['items']) || !is_array($json_data['items'])) {
+                \Log::error('Invalid Google Fonts API response');
+                return [];
+            }
+
+            $data = [];
+
+            for ($i = 0; $i < sizeof($json_data['items']); $i++) {
+                $item = $json_data['items'][$i];
+
+                $data[$i]['family'] = $item['family'];
+                $data[$i]['variants'] = json_encode($item['variants']);
+                $data[$i]['subsets'] = json_encode($item['subsets']);
+            }
+
+            return $data;
+            
+        } catch (\Exception $e) {
+            \Log::error('Error fetching Google Fonts: ' . $e->getMessage());
+            return [];
+        }
     }
+    // function getAllFonts()
+    // {
+    //     $url = config('default.google_font_api_key.url');
+    //     $json = file_get_contents($url);
+    //     $json_data = json_decode($json, true);
+
+    //     $data = [];
+
+    //     for ($i = 0; $i < sizeof($json_data['items']); $i++) {
+    //         $item = $json_data['items'][$i];
+
+    //         $data[$i]['family'] = $item['family'];
+    //         $data[$i]['variants'] = json_encode($item['variants']);
+    //         $data[$i]['subsets'] = json_encode($item['subsets']);
+    //     }
+
+    //     return $data;
+    // }
 }
 
 if (!function_exists('themeOptionToCss')) {

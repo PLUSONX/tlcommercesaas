@@ -56,7 +56,7 @@
               </p>
               <div
                 class="star-rating"
-                v-if="config.enable_product_star_rating == enums.status.ACTIVE"
+                v-if="config?.enable_product_star_rating == enums.status.ACTIVE"
               >
                 <div class="product-rating-wrapper">
                   <i :data-star="review.rating" :title="review.rating"></i>

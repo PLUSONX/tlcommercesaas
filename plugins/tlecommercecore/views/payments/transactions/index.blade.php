@@ -3,7 +3,7 @@
     {{ translate('Transaction history') }}
 @endsection
 @section('custom_css')
-    <link rel="stylesheet" href="{{ asset('/public/backend/assets/plugins/daterangepicker/daterangepicker.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/assets/plugins/daterangepicker/daterangepicker.css') }}">
     <style>
         .info {
             display: -webkit-box;
@@ -130,8 +130,8 @@
     <!--End view details modal-->
 @endsection
 @section('custom_scripts')
-    <script src="{{ asset('/public/backend/assets/plugins/moment/moment.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('/public/backend/assets/plugins/daterangepicker/daterangepicker.js') }}">
+    <script src="{{ asset('backend/assets/plugins/moment/moment.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('backend/assets/plugins/daterangepicker/daterangepicker.js') }}">
     </script>
     <script>
         (function($) {

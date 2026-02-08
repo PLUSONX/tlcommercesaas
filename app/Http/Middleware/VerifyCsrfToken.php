@@ -15,6 +15,7 @@ class VerifyCsrfToken extends Middleware
         '/user/app/ssl-commerce*',
         '/user/app/powertranzpay-payment-finalize',
         '/admin/powertranzpay-payment-finalize',
-        '/webhook/paddle'
+        '/webhook/paddle',
+        'payment/payzah/*'
     ];
 }

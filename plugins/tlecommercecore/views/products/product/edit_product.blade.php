@@ -34,10 +34,10 @@
 @endsection
 @section('custom_css')
     <!--Select2-->
-    <link rel="stylesheet" href="{{ asset('/public/backend/assets/plugins/select2/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/assets/plugins/select2/select2.min.css') }}">
     <!--End select2-->
     <!--Editor-->
-    <link href="{{ asset('/public/backend/assets/plugins/summernote/summernote-lite.css') }}" rel="stylesheet" />
+    <link href="{{ asset('backend/assets/plugins/summernote/summernote-lite.css') }}" rel="stylesheet" />
     <!--End editor-->
     <style>
         #codCountries {
@@ -1379,12 +1379,12 @@
 @endsection
 @section('custom_scripts')
     <!--Select2-->
-    <script src="{{ asset('/public/backend/assets/plugins/select2/select2.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/plugins/select2/select2.min.js') }}"></script>
     <!--End Select2-->
     <!--Editor-->
-    <script src="{{ asset('/public/backend/assets/plugins/summernote/summernote-lite.js') }}"></script>
+    <script src="{{ asset('backend/assets/plugins/summernote/summernote-lite.js') }}"></script>
     <!--End Editor-->
-    <script src="{{ asset('/public/backend/assets/js/products.js?v=1') }}"></script>
+    <script src="{{ asset('backend/assets/js/products.js?v=1') }}"></script>
     <script>
         let select_attribute_placeholder = '{{ translate('Select Choice Option') }}';
         (function($) {

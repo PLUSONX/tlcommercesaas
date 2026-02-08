@@ -1,6 +1,6 @@
 <template>
   <!-- Widget -->
-  <div class="widget widget-style-1 widget_top_category mb-4">
+  <!-- <div class="widget widget-style-1 widget_top_category mb-4">
     <h5>
       <span>{{ $t("Top Categories") }}</span>
       <span
@@ -33,7 +33,7 @@
         </li>
       </template>
 
-      <li v-if="categories.length > max_cat">
+      <li v-if="categories?.length > max_cat">
         <button class="btn_underline" @click.prevent="ViewMore('cat')">
           {{ $t("View More") }}
         </button>
@@ -44,7 +44,7 @@
         </button>
       </li>
     </ul>
-  </div>
+  </div> -->
   <!-- Widget -->
 </template>
 
@@ -75,7 +75,7 @@ export default {
   methods: {
     ViewMore(item) {
       if (item === "cat") {
-        this.max_cat = this.categories.length;
+        this.max_cat = this.categories?.length ?? 0;
       }
     },
     ViewLess(item) {

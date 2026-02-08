@@ -1,5 +1,8 @@
 <template>
-  <div class="">
+  <div class="" :class="{
+    'force-mobile-layout': forcedMobile,
+    'mobile-content-wrapper': forcedMobile
+  }">
     <page-header class="pt-3 pb-3" :items="bItems" />
     <div class="shipping-info light-bg pt-60 pb-60">
       <!--Container-->
@@ -122,7 +125,7 @@ import ReviewOrder from "../../components/order-steps/reviewOrder";
 import orderSummary from "../../components/order-steps/orderSummary";
 import enums from "../../enums/enums";
 import axios from "axios";
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 export default {
   name: "Checkout",
   components: {
@@ -156,11 +159,30 @@ export default {
       product_packages: [],
     };
   },
-  computed: mapState({
+  computed: {
+
+    ...mapState({
     customerToken: (state) => state.customerToken,
     isCustomerLogin: (state) => state.isCustomerLogin,
     configuration: (state) => state.siteSettings,
   }),
+
+  ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+  forcedMobile() {
+    // identical intent to MainLayout.vue
+    if (this.isSplitScreen) {
+      return true;
+    }
+    return this.isMobile;
+  },
+
+  },
+  // computed: mapState({
+  //   customerToken: (state) => state.customerToken,
+  //   isCustomerLogin: (state) => state.isCustomerLogin,
+  //   configuration: (state) => state.siteSettings,
+  // }),
   beforeMount() {
     if (this.tableData.length < 1) {
       this.$router.push("/cart");
@@ -177,7 +199,7 @@ export default {
     CheckCheckoutConfig() {
       //Check guest checkout
       if (
-        this.configuration.enable_guest_checkout ==
+        this.configuration?.enable_guest_checkout ==
           this.enums.status.IN_ACTIVE &&
         !this.isCustomerLogin
       ) {
@@ -189,12 +211,13 @@ export default {
         this.getCustomerAddress();
       }
       //Get pickup points
-      if (
-        this.configuration.enable_pickuppoint_in_checkout ==
-        this.enums.status.ACTIVE
-      ) {
-        this.getPickupPoints();
-      }
+      this.getPickupPoints();
+      // if (
+      //   this.configuration?.enable_pickuppoint_in_checkout ==
+      //   this.enums.status.ACTIVE
+      // ) {
+      //   this.getPickupPoints();
+      // }
     },
     /**
      * Will get customer address
@@ -202,7 +225,8 @@ export default {
     getCustomerAddress() {
       this.dataLoading = true;
       axios
-        .get("/api/v1/ecommerce-core/customer/get-customer-all-address", {
+        // .get("/api/v1/ecommerce-core/customer/get-customer-all-address", {
+        .post("/api/v1/ecommerce-core/customer/get-customer-all-address", null, {
           headers: {
             Authorization: `Bearer ${this.customerToken}`,
           },
@@ -224,6 +248,7 @@ export default {
      * Will get active pickup points
      */
     getPickupPoints() {
+      console.log("getPickupPoints called!!!");
       axios
         .post("/api/v1/pickup-points/active-list")
         .then((response) => {
@@ -234,7 +259,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.this.pickupPoints = [];
+          this.pickupPoints = [];
         });
     },
     /**
@@ -256,3 +281,45 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+
+  .force-mobile-layout .row > [class*="col-"] {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+.force-mobile-layout .product-content .image,
+.force-mobile-layout .product-content .product-img {
+  min-width: 0 !important;
+  max-width: 100px;
+}
+
+
+
+.force-mobile-layout .cart-image-review {
+  max-width: 100% !important;
+  height: auto !important;
+  flex-shrink: 1 !important;
+}
+
+.force-mobile-layout .d-none.d-lg-block,
+.force-mobile-layout .d-lg-block {
+  display: none !important;
+}
+
+.force-mobile-layout .d-block.d-lg-none,
+.force-mobile-layout .d-lg-none {
+  display: block !important;
+}
+
+
+.force-mobile-layout .d-block.d-lg-none.col-12 {
+  width: 100% !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
+}
+
+
+</style>

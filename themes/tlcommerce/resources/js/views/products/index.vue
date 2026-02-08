@@ -3,54 +3,61 @@
     <page-header :items="bItems" />
     <div class="pt-30 pt-lg-60 pb-60 light-bg">
       <div class="custom-container2">
-        <div class="row">
-          <div class="col-lg-3">
-            <div class="widget_wrap" :class="{ active: wToggle }">
-              <button
+        <!-- <div class="row"> -->
+          <!-- <div class="col-lg-3">
+            <div class="widget_wrap" :class="{ active: wToggle }"> -->
+              <!-- <button
                 class="close-btn btn-circle d-lg-none"
                 @click.prevent="wToggle = !wToggle"
               >
                 <span class="material-icons"> close </span>
-              </button>
-              <div class="widget_wrap-inner">
-                <WidgetTopCategory
+              </button> -->
+              <!-- <div class="widget_wrap-inner"> -->
+                <!-- <WidgetTopCategory
                   v-if="!categoryLoading"
                   :categories="categories"
                   :selected-cat="category_filter"
                   @filter="addCategoryFilter"
-                />
-                <div
+                /> -->
+                <!-- <div
                   v-if="categoryLoading"
                   class="widget widget-style-1 widget_top_category mb-4"
                 >
                   <skeleton height="300px"></skeleton>
-                </div>
-                <WidgetBrand
+                </div> -->
+                <!-- <WidgetBrand
                   v-if="!brandLoading"
                   :brands="brands"
                   :selected-brand="brand_filter"
                   @filter="addBrandFilter"
-                />
-                <div
+                /> -->
+                <!-- <div
                   v-if="brandLoading"
                   class="widget widget-style-1 widget_top_category mb-4"
                 >
                   <skeleton height="300px"></skeleton>
-                </div>
-                <WidgetRating
+                </div> -->
+                <!-- <WidgetRating
                   :selected-item="rating_filter"
                   @filter="addRatingFilter"
-                />
-                <WidgetPrice
+                /> -->
+                <!-- <WidgetPrice
                   :selected-option="price_filter"
                   @filter="addPriceFilter"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-9">
+                /> -->
+              <!-- </div> -->
+            <!-- </div>
+          </div> -->
+          <!-- <div class="col-lg-9">
             <div class="row">
               <div class="col-12">
+                <div class="mb-40 shadow-card">
+                  <div class="row">
+                    <div class="col-lg-6 order-1 order-lg-0 col-xl-6">
+                      <div class="section-header"> -->
+          <!-- <div class="col-lg-9"> -->
+            <div class="row">
+              <!-- <div class="col-12"> -->
                 <div class="mb-40 shadow-card">
                   <div class="row">
                     <div class="col-lg-6 order-1 order-lg-0 col-xl-6">
@@ -95,7 +102,7 @@
                     :brands="brands"
                     :brand-loading="brandLoading"
                     @select-brand="addBrandFilter"
-                    v-if="!brandLoading && brands.length > 0"
+                    v-if="!brandLoading && brands?.length > 0"
                   ></brand-collapse-box>
                   <!-- End Brand Collapse Box -->
                   <!--Filter items-->
@@ -165,7 +172,7 @@
                   </div>
                   <!--End filter items-->
                 </div>
-              </div>
+              <!-- </div> -->
             </div>
             <div class="row mobile-gap-10" v-if="productsLoading">
               <div
@@ -180,7 +187,7 @@
               <div
                 v-for="product in paginatedItems"
                 :key="product.id"
-                class="col-lg-3 col-6"
+                class="col-lg-6 col-6"
               >
                 <single-product :item="product" styleEight />
               </div>
@@ -210,9 +217,9 @@
                 <!-- End Pagination -->
               </div>
             </div>
-          </div>
-        </div>
-      </div>
+          <!-- </div> -->
+        <!-- </div> -->
+      </div> 
     </div>
   </div>
 </template>
@@ -359,6 +366,9 @@ export default {
           if (response.status === 200) {
             this.paginatedItems = response.data.data;
             this.totalItems = response.data.meta.total;
+
+            // console.log("paginated_Items: ", this.paginatedItems);
+            // console.log("total_Items: ", this.totalItems);
             
           }
           this.productsLoading = false;

@@ -503,14 +503,14 @@ export default {
       let el3 = this.$refs.notificationDropdownMenu;
       let target = e.target;
 
-      if (el !== target && !el.contains(target)) {
+      if (el !== target && !el?.contains(target)) {
         this.showLanguageCurrency = false;
       }
-      if (el2 !== target && !el2.contains(target)) {
+      if (el2 !== target && !el2?.contains(target)) {
         this.showMyAccount = false;
       }
       if (this.isCustomerLogin) {
-        if (el3 !== target && !el3.contains(target)) {
+        if (el3 !== target && !el3?.contains(target)) {
           this.showNotification = false;
         }
       }

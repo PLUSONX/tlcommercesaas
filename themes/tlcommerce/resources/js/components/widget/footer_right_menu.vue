@@ -1,6 +1,6 @@
-<template>
+<!-- <template> -->
   <!-- Widget Nav Menu -->
-  <div class="widget widget_nav_menu">
+  <!-- <div class="widget widget_nav_menu">
     <template v-if="footer_right_menu != null">
       <h3
         :class="
@@ -21,9 +21,9 @@
         </li>
       </ul>
     </template>
-  </div>
+  </div> -->
   <!-- End Widget Nav Menu -->
-</template>
+<!-- </template> -->
 
 <script>
 export default {

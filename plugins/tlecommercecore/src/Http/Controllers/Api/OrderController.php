@@ -192,11 +192,21 @@ class OrderController extends Controller
     public function countryList()
     {
         try {
-            $countries = Country::with(['country_translations'])
-                ->where('status', config('settings.general_status.active'))
-                ->select('id', 'name', 'code')
-                ->orderBy('name', 'ASC')
-                ->get();
+            \Log::info('countryList method called !!!!');
+
+            $countries = Country::where('status', config('settings.general_status.active'))
+            ->select('id', 'name', 'code')
+            ->orderBy('name', 'ASC')
+            ->get();
+
+            \Log::info('countryList data', [
+                'countries' => json_encode($countries),
+        ]);
+            // $countries = Country::with(['country_translations'])
+            //     ->where('status', config('settings.general_status.active'))
+            //     ->select('id', 'name', 'code')
+            //     ->orderBy('name', 'ASC')
+            //     ->get();
             return new CountryCollection($countries);
         } catch (\Exception $e) {
             return response()->json(
@@ -215,6 +225,7 @@ class OrderController extends Controller
     public function countryStates(Request $request)
     {
         try {
+             \Log::info('countryStates method called !!!!');
             $states = States::with(['state_translations'])->where('country_id', $request['country_id'])
                 ->select('name', 'id', 'code')
                 ->where('status', config('settings.general_status.active'))
@@ -417,25 +428,25 @@ class OrderController extends Controller
         $product_details = Product::where('id', $item['id'])->select('supplier', 'id', 'status', 'is_approved', 'has_variant')->first();
 
         //If Product not found
-        if ($product_details == null) {
-            return config('settings.general_status.in_active');
-        }
+        // if ($product_details == null) {
+        //     return config('settings.general_status.in_active');
+        // }
 
         //Check product status
-        if ($product_details->status != config('settings.general_status.active')) {
-            return config('settings.general_status.in_active');
-        }
+        // if ($product_details->status != config('settings.general_status.active')) {
+        //     return config('settings.general_status.in_active');
+        // }
 
         //check  single product available stock
-        if ($product_details->has_variant == config('tlecommercecore.product_variant.single')) {
-            $single_price = SingleProductPrice::where('product_id', $item['id'])->select('quantity', 'product_id')->first();
-            if ($single_price == null) {
-                return config('settings.general_status.in_active');
-            }
-            if ($single_price->quantity < $item['quantity']) {
-                return config('settings.general_status.in_active');
-            }
-        }
+        // if ($product_details->has_variant == config('tlecommercecore.product_variant.single')) {
+        //     $single_price = SingleProductPrice::where('product_id', $item['id'])->select('quantity', 'product_id')->first();
+        //     if ($single_price == null) {
+        //         return config('settings.general_status.in_active');
+        //     }
+        //     if ($single_price->quantity < $item['quantity']) {
+        //         return config('settings.general_status.in_active');
+        //     }
+        // }
 
         //check  variant product available stock
         if ($product_details->has_variant == config('tlecommercecore.product_variant.variable')) {
@@ -454,25 +465,25 @@ class OrderController extends Controller
         }
 
         //check  seller's product approval status when multivendor active
-        if (isActivePluging('multivendor') && $product_details->is_approved != config('settings.general_status.active')) {
-            return config('settings.general_status.in_active');
-        }
+        // if (isActivePluging('multivendor') && $product_details->is_approved != config('settings.general_status.active')) {
+        //     return config('settings.general_status.in_active');
+        // }
 
         //check supplier and shop status
-        if (isActivePluging('multivendor') && $item['seller'] != null) {
+        // if (isActivePluging('multivendor') && $item['seller'] != null) {
 
-            if ($product_details->seller->status != config('settings.general_status.active')) {
-                return config('settings.general_status.in_active');
-            }
+        //     if ($product_details->seller->status != config('settings.general_status.active')) {
+        //         return config('settings.general_status.in_active');
+        //     }
 
-            if ($product_details->seller->shop == null) {
-                return config('settings.general_status.in_active');
-            }
+        //     if ($product_details->seller->shop == null) {
+        //         return config('settings.general_status.in_active');
+        //     }
 
-            if ($product_details->seller->shop->status != config('settings.general_status.active')) {
-                return config('settings.general_status.in_active');
-            }
-        }
+        //     if ($product_details->seller->shop->status != config('settings.general_status.active')) {
+        //         return config('settings.general_status.in_active');
+        //     }
+        // }
 
 
         return config('settings.general_status.active');
@@ -746,6 +757,8 @@ class OrderController extends Controller
      */
     public function customerOrders(Request $request)
     {
+         \Log::info('customerOrders method called !!!!');
+         
         return new OrderCollection($this->order_repository->customerOrders($request, auth('jwt-customer')->user()->id));
     }
     /**

@@ -25,6 +25,7 @@ class SettingsRepository
                 $config = EcommerceConfig::where('key_name', $key)->first();
             } else {
                 $config = EcommerceConfig::firstOrCreate(['key_name' => $key]);
+                dd($config);
                 $config->key_value = $fallback;
                 $config->save();
             }

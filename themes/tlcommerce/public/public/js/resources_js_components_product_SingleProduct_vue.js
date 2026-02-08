@@ -1,0 +1,2 @@
+/*! For license information please see resources_js_components_product_SingleProduct_vue.js.LICENSE.txt */
+(self.webpackChunk=self.webpackChunk||[]).push([["resources_js_components_product_SingleProduct_vue"],{"./resources/js/components/product/SingleProduct.vue":()=>{}}]);

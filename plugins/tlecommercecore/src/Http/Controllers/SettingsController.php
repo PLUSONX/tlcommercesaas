@@ -8,6 +8,8 @@ use Illuminate\Validation\ValidationException;
 use Plugin\TlcommerceCore\Models\EcommerceConfig;
 use Plugin\TlcommerceCore\Repositories\CurrencyRepository;
 use Plugin\TlcommerceCore\Repositories\SettingsRepository;
+use Illuminate\Support\Facades\Log;
+use Plugin\Multivendor\Models\SellerShop;
 
 class SettingsController extends Controller
 {
@@ -41,6 +43,42 @@ class SettingsController extends Controller
      */
     public function updateEcommerceSettings(Request $request)
     {
+        $tenant = tenant(); 
+        Log::info('Tenant resolved', [
+            'tenant' => $tenant ? $tenant->toArray() : null,
+            'tenant_slug' => $tenant->shop_slug
+        ]);
+
+        if (!$request->filled('shop_slug')) {
+            $request->merge([
+                'shop_slug' => $tenant->tenancy_db_name
+            ]);
+        }
+
+        // Normalize shop_name
+        if (!$request->filled('shop_name')) {
+            $request->merge([
+                'shop_name' => ucfirst($tenant->tenancy_db_name) . ' Store'
+            ]);
+        }
+
+        // Optional SEO defaults
+        if (!$request->filled('shop_meta_title')) {
+            $request->merge([
+                'shop_meta_title' => $request->shop_name
+            ]);
+        }
+
+        if (!$request->filled('shop_meta_description')) {
+            $request->merge([
+                'shop_meta_description' => 'Welcome to ' . $request->shop_name
+            ]);
+        }
+        // if (!$request->filled('shop_slug')) {
+        //     $request->merge(['shop_slug' => $tenant->slug]);
+
+        // }
+        // Log::info('updateEcommerceSettings request', $request->all());
         //validate shop url
         if (isActivePluging('multivendor') && $request->has('shop_name')) {
             $supper_admin_id = getSupperAdminId();
@@ -62,12 +100,26 @@ class SettingsController extends Controller
                 ]);
             }
 
-            if ($in_house_shop_id == null) {
-                $shop = new \Plugin\Multivendor\Models\SellerShop;
+            // if ($in_house_shop_id == null) {
+            //     $shop = new \Plugin\Multivendor\Models\SellerShop;
+            // }
+            // if ($in_house_shop_id != null) {
+            //     $shop = \Plugin\Multivendor\Models\SellerShop::where('id', $in_house_shop_id)->first();
+            // }
+
+            $shop = null;
+
+            if ($in_house_shop_id) {
+                $shop = SellerShop::find($in_house_shop_id);
             }
-            if ($in_house_shop_id != null) {
-                $shop = \Plugin\Multivendor\Models\SellerShop::where('id', $in_house_shop_id)->first();
+
+            // If ID is missing OR record does not exist → create
+            if (!$shop) {
+                $shop = new SellerShop();
+                // $shop->is_in_house = 1; // if this column exists
             }
+
+
             //Store or update in-house shop
             $shop->shop_name = $request['shop_name'];
             $shop->shop_slug = $request['shop_slug'];

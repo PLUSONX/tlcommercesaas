@@ -3,7 +3,8 @@
     {{ translate('Products') }}
 @endsection
 @section('custom_css')
-    <link href="{{ asset('/public/backend/assets/css/ratings.css') }}" rel="stylesheet" />
+    <link href="{{ asset('backend/assets/css/ratings.css') }}" rel="stylesheet" />
+    <!-- <link href="{{ asset('/public/backend/assets/css/ratings.css') }}" rel="stylesheet" /> -->
     <style>
         .product-title {
             max-width: 150px;

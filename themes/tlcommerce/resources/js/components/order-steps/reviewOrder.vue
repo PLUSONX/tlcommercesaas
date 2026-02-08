@@ -56,7 +56,7 @@
                   shipping_package.product.shop_slug
                 "
               >
-                <p class="product-shop fz-12">
+                <!-- <p class="product-shop fz-12">
                   {{ $t("Sold By") }}
                   <router-link
                     :to="`/shop/${shipping_package.product.shop_slug}`"
@@ -65,7 +65,7 @@
                   >
                     {{ shipping_package.product.shop_name }}
                   </router-link>
-                </p>
+                </p> -->
               </div>
             </div>
           </div>
@@ -73,7 +73,7 @@
             v-if="
               isActiveHomeDelivery &&
               !isActivePickupPoint &&
-              config.shipping_option == 3
+              config?.shipping_option == 3
             "
             class="row shipping-content"
             @click.prevent="openShippingOptionPopup(shipping_package.id)"
@@ -399,7 +399,7 @@ export default {
       }, 0.0);
       this.$store.dispatch(
         "setFinalTax",
-        this.config.enable_tax_in_checkout == this.enums.status.ACTIVE
+        this.config?.enable_tax_in_checkout == this.enums.status.ACTIVE
           ? total_tax
           : 0
       );
@@ -421,7 +421,7 @@ export default {
         let temp = {
           uid: this.shippingPackages[i].id,
           tax:
-            this.config.enable_tax_in_checkout == this.enums.status.ACTIVE
+            this.config?.enable_tax_in_checkout == this.enums.status.ACTIVE
               ? this.shippingPackages[i].tax
               : 0,
           product_id: this.shippingPackages[i].product.id,

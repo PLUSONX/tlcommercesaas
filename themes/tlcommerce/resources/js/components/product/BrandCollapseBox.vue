@@ -1,7 +1,7 @@
 <template>
   <div
     class="d-flex align-items-start justify-content-between mt-10"
-    v-if="!brandLoading && brands.length > 0"
+    v-if="!brandLoading && brands?.length > 0"
   >
     <div class="brands-collapse-box" :class="{ showFull: showFull }">
       <ul class="list-unstyled inline-links d-flex flex-wrap mb-0">

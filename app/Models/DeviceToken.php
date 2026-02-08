@@ -1,63 +1,96 @@
 <?php
 
-namespace Core\Models;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DeviceToken extends Model
 {
+    protected $table = 'device_tokens'; 
+
+    protected $connection = 'mysql';
+
     protected $fillable = [
-        'user_id',
         'token',
         'platform',
-        'device_name',
-        'device_info',
+        'user_id',
+        'tenant_id',
+        'is_active',
         'last_used_at',
     ];
 
     protected $casts = [
-        'device_info' => 'array',
+        'is_active' => 'boolean',
         'last_used_at' => 'datetime',
     ];
 
-    /**
-     * Get the user that owns the device token.
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Update the last used timestamp.
-     */
-    public function markAsUsed(): void
+    public function tenant(): BelongsTo
     {
-        $this->update(['last_used_at' => now()]);
+        return $this->belongsTo(Tenant::class);
     }
 
-    /**
-     * Scope to get tokens for a specific user.
-     */
-    public function scopeForUser($query, int $userId)
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeForUser($query, $userId)
     {
         return $query->where('user_id', $userId);
     }
 
-    /**
-     * Scope to get tokens by platform.
-     */
-    public function scopeByPlatform($query, string $platform)
+    public function scopeForTenant($query, $tenantId)
     {
-        return $query->where('platform', $platform);
+        return $query->where('tenant_id', $tenantId);
     }
 
-    /**
-     * Scope to get active tokens (used within last 30 days).
-     */
-    public function scopeActive($query)
+    public function markAsUsed(): void
     {
-        return $query->where('last_used_at', '>=', now()->subDays(30));
+        $this->update([
+            'last_used_at' => now(),
+        ]);
     }
 }
+
+// class DeviceToken extends Model
+// {
+//     protected $table = 'device_tokens'; 
+
+//     protected $connection = 'mysql';
+
+//     protected $fillable = [
+//         'uuid',
+//         'user_id',
+//         'token',
+//         'platform',
+//         'device_name',
+//         'device_info',
+//         'last_used_at',
+//     ];
+
+//     protected $casts = [
+//         'device_info' => 'array',
+//         'last_used_at' => 'datetime',
+//     ];
+
+//     /**
+//      * Get the user that owns the device token.
+//      */
+//     public function user(): BelongsTo
+//     {
+//         return $this->belongsTo(User::class);
+//     }
+
+//     /**
+//      * Update the last used timestamp.
+//      */
+//     public function markAsUsed(): void
+//     {
+
+// }

@@ -54,9 +54,10 @@ class RouteServiceProvider extends ServiceProvider
                     Route::middleware(['web', 'tenant']) // Added 'tenant' middleware
                         ->prefix('admin')
                         ->group(base_path('core/routes/core.php'));
-                    // Route::middleware(['web', 'tenant', HandleTenantLoginToken::class]) // Added 'tenant' middleware
-                    //     ->prefix('admin')
-                    //     ->group(base_path('core/routes/core.php'));
+                      
+                    Route::middleware(['web', 'tenant'])
+                        ->prefix('payment')
+                        ->group(base_path('plugins/tlecommercecore/routes/web.php'));
                 }
                 //      Route::middleware(['web', 'tenant']) // Added 'tenant' middleware
                 // ->prefix('admin')

@@ -1,6 +1,9 @@
 <template>
   <Dashboard>
-    <div class="dashboard">
+    <div class="dashboard" :class="{
+    'force-mobile-layout': forcedMobile,
+    'mobile-content-wrapper': forcedMobile
+  }">
       <template v-if="!loading">
         <!--Dashboard overview-->
         <div class="row">
@@ -104,7 +107,7 @@
 import Dashboard from "@/views/dashboard.vue";
 import DashboardCard from "../../components/ui/DashboardCard.vue";
 import axios from "axios";
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import {
   CTable,
   CTableBody,
@@ -154,9 +157,26 @@ export default {
     CPagination,
     CPaginationItem,
   },
-  computed: mapState({
-    customerToken: (state) => state.customerToken,
-  }),
+  computed: {
+
+    ...mapState({
+     customerToken: (state) => state.customerToken,
+   }),
+
+   ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+  forcedMobile() {
+    // identical intent to MainLayout.vue
+    if (this.isSplitScreen) {
+      return true;
+    }
+    return this.isMobile;
+  },
+
+  },
+  // computed: mapState({
+  //   customerToken: (state) => state.customerToken,
+  // }),
   mounted() {
     document.title = this.$t("Dashboard");
     this.getCustomerDashboardContent();
@@ -190,3 +210,31 @@ export default {
 };
 </script>
 
+<style scoped>
+
+  .force-mobile-layout .row > [class*="col-"] {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+
+.force-mobile-layout .d-none.d-lg-block,
+.force-mobile-layout .d-lg-block {
+  display: none !important;
+}
+
+.force-mobile-layout .d-block.d-lg-none,
+.force-mobile-layout .d-lg-none {
+  display: block !important;
+}
+
+
+.force-mobile-layout .d-block.d-lg-none.col-12 {
+  width: 100% !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
+}
+
+
+</style>

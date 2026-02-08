@@ -234,6 +234,8 @@ export default {
     mounted() {
         document.title = localStorage.getItem("site_title");
         this.getSections();
+
+
     },
 
     async created() {
@@ -277,6 +279,19 @@ export default {
                         if(!this.active_pagebuilder){
                             this.loaded();
                         }
+
+                        // if(this.sections != null) {
+            
+                        //     for (var i = 0; i < this.sections.length; i++) {
+
+                        //         if(this.sections[i].layout == 'custom_product_section') {
+
+                        //             console.log("section: ", this.sections[i]);
+
+                        //             console.log("section: ", this.sections[i].properties);
+                        //         }
+                        //     }
+                        // }
                     }
                 })
                 .catch((error) => {

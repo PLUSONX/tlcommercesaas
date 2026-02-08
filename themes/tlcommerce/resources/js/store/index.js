@@ -3,6 +3,8 @@ import mutations from "./mutations.js";
 import actions from "./actions.js";
 import getters from "./getters.js";
 import createMultiTabState from 'vuex-multi-tab-state';
+import layout from './modules/layout';
+
 
 const store = createStore({
   state() {
@@ -39,6 +41,9 @@ const store = createStore({
   mutations,
   actions,
   getters,
+  modules: {
+    layout
+  },
   plugins: [
     createMultiTabState(),
   ],

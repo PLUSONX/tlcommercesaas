@@ -32,6 +32,7 @@ class PageRequest extends FormRequest
                 'meta_title' => 'nullable',
                 'meta_description' => 'nullable',
                 'meta_image' => 'nullable|exists:tl_uploaded_files,id',
+                'feature_image' => 'nullable|exists:tl_uploaded_files,id',
                 'visibility' => ['required', Rule::in(config('settings.visibility_status'))],
                 'page_parent' => 'nullable|exists:tl_pages,id',
             ];
@@ -44,6 +45,7 @@ class PageRequest extends FormRequest
                 'meta_title' => 'nullable',
                 'meta_description' => 'nullable',
                 'meta_image' => 'nullable|exists:tl_uploaded_files,id',
+                'feature_image' => 'nullable|exists:tl_uploaded_files,id',
                 'visibility' => ['required', Rule::in(config('settings.visibility_status'))],
                 'page_parent' => 'nullable|exists:tl_pages,id',
             ];
@@ -63,6 +65,7 @@ class PageRequest extends FormRequest
             'permalink.unique' => translate('This Permalink is Already Available Please Insert Another'),
             'page_image.exists' => translate('Please Insert A Valid Image'),
             'meta_image.exists' => translate('Please Select a Valid Image'),
+            'feature_image.exists' => translate('Please Select a Valid Image'),
             'visibility.*' => translate('Something went Wrong, Please Select Visibility Again'),
             'page_parent.*' => translate('Something went Wrong, Please Select Parent Again'),
             'page_template.*' => translate('Something went Wrong, Please Select Parent Again'),

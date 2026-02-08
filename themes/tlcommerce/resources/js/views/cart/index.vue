@@ -1,5 +1,8 @@
 <template>
-  <div class="">
+  <div class=""  :class="{
+    'force-mobile-layout': forcedMobile,
+    'mobile-content-wrapper': forcedMobile
+  }">
     <page-header :items="bItems" />
 
     <div class="pt-60 pb-60 light-bg">
@@ -95,7 +98,7 @@
                             class="extra-addons-wrap d-flex flex-wrap"
                             v-if="tdata.shop_name != null && tdata.shop_slug"
                           >
-                            <p class="product-shop fz-12">
+                            <!-- <p class="product-shop fz-12">
                               {{ $t("Sold By") }}
                               <router-link
                                 :to="`/shop/${tdata.shop_slug}`"
@@ -104,7 +107,7 @@
                               >
                                 {{ tdata.shop_name }}
                               </router-link>
-                            </p>
+                            </p> -->
                           </div>
                           <!--Attachment-->
                           <div
@@ -183,7 +186,7 @@
                   class="alert alert-danger text-center w-100"
                   v-if="
                     !proceedToCheckout &&
-                    config.enable_minumun_order_amount == 1
+                    config?.enable_minumun_order_amount == 1
                   "
                 >
                   {{ $t("Minimum Order Amount") }}
@@ -280,7 +283,7 @@
                       <template
                         v-if="
                           couponDiscounts.length > 0 &&
-                          config.enable_coupon_in_checkout ==
+                          config?.enable_coupon_in_checkout ==
                             this.enums.status.ACTIVE
                         "
                       >
@@ -356,7 +359,7 @@
                       class="text text-danger"
                       v-if="
                         !proceedToCheckout &&
-                        config.enable_minumun_order_amount == 1
+                        config?.enable_minumun_order_amount == 1
                       "
                     >
                       {{ $t("Minimum Order Amount") }}
@@ -447,7 +450,7 @@ import PageHeader from "@/components/pageheader/PageHeader.vue";
 import OrderTotal from "@/components/product/OrderTotal.vue";
 import enums from "../../enums/enums";
 import ProductVariant from "@/components/ui/ProductVariant.vue";
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import axios from "axios";
 import {
   CTable,
@@ -492,54 +495,152 @@ export default {
       couponApplying: false,
       checkoutItems: [],
       all_selected: true,
+      isMobile: false,
     };
   },
-  computed: mapState({
+
+  computed: {
+  // 1. Map Vuex state
+  ...mapState({
     customerToken: (state) => state.customerToken,
     isCustomerLogin: (state) => state.isCustomerLogin,
-    customer_id: (state) =>
-      state.customerInfo != null ? state.customerInfo.id : null,
+    customer_id: (state) => state.customerInfo != null ? state.customerInfo.id : null,
     config: (state) => state.siteSettings,
-    couponDiscounts: (state) =>
-      state.couponDiscount ? state.couponDiscount : [],
-    totalUnitPrice() {
-      return this.tableData.reduce((accum, item) => {
-        if (item.is_available == 2 || !item.is_selected) {
-          return parseFloat(accum);
-        }
-
-        return parseFloat(accum) + parseFloat(item.unitPrice * item.quantity);
-      }, 0.0);
-    },
-    totalDiscount() {
-      return this.couponDiscounts.reduce((accum, item) => {
-        return parseFloat(accum) + parseFloat(item.discount);
-      }, 0.0);
-    },
-    enableApplyCoupon() {
-      if (
-        this.config.is_active_coupon == this.enums.status.ACTIVE &&
-        this.config.enable_coupon_in_checkout == this.enums.status.ACTIVE
-      ) {
-        if (
-          this.couponDiscounts.length > 0 &&
-          this.config.enable_multiple_coupon_in_checkout ==
-            this.enums.status.IN_ACTIVE
-        ) {
-          return false;
-        } else if (
-          this.config.enable_coupon_in_checkout == this.enums.status.IN_ACTIVE
-        ) {
-          return false;
-        } else {
-          return true;
-        }
-      } else {
-        return false;
-      }
-    },
+    couponDiscounts: (state) => state.couponDiscount ? state.couponDiscount : [],
   }),
+
+  ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+  forcedMobile() {
+    // identical intent to MainLayout.vue
+    if (this.isSplitScreen) {
+      return true;
+    }
+    return this.isMobile;
+  },
+
+  // 2. Map layout getters
+  // ...mapGetters('layout', ['isSplitScreen']),
+
+  // isMobile() {
+  //     console.log("Checking mobile status in Cart index.vue");
+  //     return this.isSplitScreen || window.innerWidth < 768;
+  //   },
+
+
+
+  // 3. Your custom computed properties (NOT inside mapState!)
+  totalUnitPrice() {
+    return this.tableData.reduce((accum, item) => {
+      if (item.is_available == 2 || !item.is_selected) {
+        return parseFloat(accum);
+      }
+      return parseFloat(accum) + parseFloat(item.unitPrice * item.quantity);
+    }, 0.0);
+  },
+
+  totalDiscount() {
+    return this.couponDiscounts.reduce((accum, item) => {
+      return parseFloat(accum) + parseFloat(item.discount);
+    }, 0.0);
+  },
+
+  enableApplyCoupon() {
+    if (
+      this.config?.is_active_coupon == this.enums.status.ACTIVE &&
+      this.config?.enable_coupon_in_checkout == this.enums.status.ACTIVE
+    ) {
+      if (
+        this.couponDiscounts.length > 0 &&
+        this.config?.enable_multiple_coupon_in_checkout == this.enums.status.IN_ACTIVE
+      ) {
+        return false;
+      } else if (
+        this.config?.enable_coupon_in_checkout == this.enums.status.IN_ACTIVE
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return false;
+    }
+  },
+
+ 
+},
+  // computed: {
+  //    ...mapState({
+  //   customerToken: (state) => state.customerToken,
+  //   isCustomerLogin: (state) => state.isCustomerLogin,
+  //   customer_id: (state) =>
+  //     state.customerInfo != null ? state.customerInfo.id : null,
+  //   config: (state) => state.siteSettings,
+  //   couponDiscounts: (state) =>
+  //     state.couponDiscount ? state.couponDiscount : [],
+  //   totalUnitPrice() {
+  //     return this.tableData.reduce((accum, item) => {
+  //       if (item.is_available == 2 || !item.is_selected) {
+  //         return parseFloat(accum);
+  //       }
+
+  //       return parseFloat(accum) + parseFloat(item.unitPrice * item.quantity);
+  //     }, 0.0);
+  //   },
+  //   totalDiscount() {
+  //     return this.couponDiscounts.reduce((accum, item) => {
+  //       return parseFloat(accum) + parseFloat(item.discount);
+  //     }, 0.0);
+  //   },
+  //   enableApplyCoupon() {
+  //     if (
+  //       this.config?.is_active_coupon == this.enums.status.ACTIVE &&
+  //       this.config?.enable_coupon_in_checkout == this.enums.status.ACTIVE
+  //     ) {
+  //       if (
+  //         this.couponDiscounts.length > 0 &&
+  //         this.config?.enable_multiple_coupon_in_checkout ==
+  //           this.enums.status.IN_ACTIVE
+  //       ) {
+  //         return false;
+  //       } else if (
+  //         this.config?.enable_coupon_in_checkout == this.enums.status.IN_ACTIVE
+  //       ) {
+  //         return false;
+  //       } else {
+  //         return true;
+  //       }
+  //     } else {
+  //       return false;
+  //     }
+  //   },
+  // }),
+
+  // ...mapGetters('layout', {
+  //       storeIsMobile: 'isMobile',        // Renamed to avoid collision
+  //       storeIsSplitScreen: 'isSplitScreen'
+  //   }),
+
+  // isMobile() {
+
+  //     console.log("Checking mobile status in Cart index.vue");
+
+  //     // 1. Check Injection (from Layout)
+  //     if (this.forceMobileView) return true;
+      
+  //     // 2. Check Vuex (via the renamed getter)
+  //     if (this.storeIsMobile || this.storeIsSplitScreen) return true;
+
+  //     // 3. Final fallback
+  //     return window.innerWidth < 768;
+  //   },
+
+ 
+
+  // }
+  
   mounted() {
+    console.log("isSplitScreen: ", this.isSplitScreen);
     document.title = this.$t("Cart");
     this.validateCartItems();
   },
@@ -621,7 +722,13 @@ export default {
         })
         .then((response) => {
           if (response.data.success) {
-            this.tableData = response.data.items;
+            //this.tableData = response.data.items;
+            this.tableData = response.data.items.map(item => {
+              return {
+                ...item,
+                image: item.image.replace(/^\/public/, '') // remove leading /public
+              };
+            });
             this.checkMinimumOrderAmount();
           }
           this.dataLoading = false;
@@ -634,7 +741,7 @@ export default {
      *
      */
     checkMinimumOrderAmount() {
-      if (this.config.enable_minumun_order_amount == this.enums.status.ACTIVE) {
+      if (this.config?.enable_minumun_order_amount == this.enums.status.ACTIVE) {
         if (this.totalUnitPrice < this.config.min_order_amount) {
           this.proceedToCheckout = false;
         } else {
@@ -871,6 +978,101 @@ export default {
 };
 </script>
 <style scoped>
+
+/* ============================================
+   FORCE MOBILE STYLES WHEN SPLIT SCREEN ACTIVE
+   ============================================ */
+
+/* When split screen is on, apply all mobile styles */
+/* .force-mobile-layout {
+  max-width: 100px !important;
+  width: 100% !important;
+  margin: 0 auto;
+} */
+
+/* <!-- ADD THIS: Non-scoped styles that apply globally --> */
+
+/* Force mobile styles globally when this class exists */
+
+
+/* .force-mobile-layout .fz-sm-12 {
+  font-size: 12px !important;
+  line-height: 14px !important;
+}
+
+.force-mobile-layout .fz-sm-14 {
+  font-size: 14px !important;
+  line-height: 14px !important;
+}
+
+.force-mobile-layout .quantity-input input {
+  height: 34px;
+  font-size: 14px;
+} */
+
+/* ============================================
+   ADD ALL OTHER MOBILE STYLES HERE
+   Copy EVERYTHING from your @media query below
+   and prefix with .force-mobile-layout
+   ============================================ */
+
+/* For example, if you have these in @media: */
+/* .force-mobile-layout .cart-table {
+  display: block !important;
+}
+
+.force-mobile-layout .cart-item {
+  flex-direction: column !important;
+}
+
+.force-mobile-layout .product-image {
+  width: 100% !important;
+} */
+
+.force-mobile-layout {
+  /* transform: scale(0.57); */
+  /* font-size: 14px; */
+  width: 100%;
+}
+
+.force-mobile-layout .row > [class*="col-"] {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+.force-mobile-layout .product-content .image,
+.force-mobile-layout .product-content .product-img {
+  min-width: 0 !important;
+  max-width: 100px;
+}
+
+
+
+.force-mobile-layout .cart-image-review {
+  max-width: 100% !important;
+  height: auto !important;
+  flex-shrink: 1 !important;
+}
+
+.force-mobile-layout .d-none.d-lg-block,
+.force-mobile-layout .d-lg-block {
+  display: none !important;
+}
+
+.force-mobile-layout .d-block.d-lg-none,
+.force-mobile-layout .d-lg-none {
+  display: block !important;
+}
+
+
+.force-mobile-layout .d-block.d-lg-none.col-12 {
+  width: 100% !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
+}
+
+
 .item-selector {
   min-width: 14px;
   cursor: pointer;
@@ -923,6 +1125,7 @@ export default {
 .quantity-input {
   border: 1px solid #e5e5e5;
 }
+
 @media (max-width: 575px) {
   .fz-sm-12 {
     font-size: 12px !important;

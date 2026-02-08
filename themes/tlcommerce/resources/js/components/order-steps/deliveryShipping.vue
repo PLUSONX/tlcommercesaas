@@ -45,18 +45,22 @@
               </label>
             </span>
           </li>
-          <li
+           <li
+            class="m-0 m-w-100 mb-3 single-form-selector"
+            v-if="true"
+          >
+          <!-- <li
             class="m-0 m-w-100 mb-3 single-form-selector"
             v-if="
-              config.enable_pickuppoint_in_checkout == enums.status.ACTIVE &&
-              config.is_active_pickuppoint == enums.status.ACTIVE
+              config?.enable_pickuppoint_in_checkout == enums.status.ACTIVE &&
+              config?.is_active_pickuppoint == enums.status.ACTIVE
             "
-          >
-            <span
+          > -->
+            <!-- <span
               class="custom-radio-btn"
               :class="{ active: isActivePickupPoint }"
-            >
-              <label>
+            > -->
+              <!-- <label>
                 <input
                   type="radio"
                   value="Delivery"
@@ -77,8 +81,8 @@
                   </span></span
                 >
                 <span class="label-title">{{ $t("Collect From Store") }}</span>
-              </label>
-            </span>
+              </label> -->
+            <!-- </span> -->
           </li>
         </ul>
       </div>
@@ -160,8 +164,8 @@
         <div
           class="row"
           v-if="
-            config.enable_billing_address == enums.status.ACTIVE &&
-            config.use_shipping_address_as_billing_address !=
+            config?.enable_billing_address == enums.status.ACTIVE &&
+            config?.use_shipping_address_as_billing_address !=
               enums.status.ACTIVE
           "
         >
@@ -227,12 +231,18 @@
 
       <!--Guest Checkout -->
       <div v-if="!isCustomerLogin">
-        <div
+        <!-- <div
           class="row"
           v-if="
-            config.enable_personal_info_guest_checkout == enums.status.ACTIVE
+            config?.enable_personal_info_guest_checkout == enums.status.ACTIVE
           "
+        > -->
+
+        <div
+          class="row"
+         
         >
+        
           <h5>{{ $t("Personal Information") }}</h5>
           <div class="form-group mb-20 col-lg-6">
             <input
@@ -269,7 +279,7 @@
           <div
             class="form-group mb-20 col-lg-6"
             v-if="
-              config.create_account_in_guest_checkout == enums.status.ACTIVE
+              config?.create_account_in_guest_checkout == enums.status.ACTIVE
             "
           >
             <label class="d-flex gap-1 radio-label">
@@ -286,7 +296,7 @@
             class="row m-0 p-0"
             v-if="
               isActiveCreateNewAccount &&
-              config.create_account_in_guest_checkout == enums.status.ACTIVE
+              config?.create_account_in_guest_checkout == enums.status.ACTIVE
             "
           >
             <div class="form-group mb-20 col-lg-6">
@@ -333,8 +343,9 @@
           </div>
           <div
             class="form-group mb-20 col-lg-6"
-            v-if="config.enable_name_in_checkout == enums.status.ACTIVE"
+            v-if="config?.enable_name_in_checkout == enums.status.ACTIVE"
           >
+          
             <input
               type="text"
               v-bind:placeholder="$t('Your Name')"
@@ -352,8 +363,9 @@
           </div>
           <div
             class="form-group mb-20 col-lg-6"
-            v-if="config.enable_email_in_checkout == enums.status.ACTIVE"
+            v-if="config?.enable_email_in_checkout == enums.status.ACTIVE"
           >
+          
             <input
               type="email"
               v-bind:placeholder="$t('Email Address')"
@@ -369,9 +381,12 @@
               </p>
             </div>
           </div>
+          <!-- <div
+            class="form-group mb-20 col-lg-6"
+            v-if="config?.enable_phone_in_checkout == enums.status.ACTIVE"
+          > -->
           <div
             class="form-group mb-20 col-lg-6"
-            v-if="config.enable_phone_in_checkout == enums.status.ACTIVE"
           >
             <input
               type="tel"
@@ -388,9 +403,12 @@
               </p>
             </div>
           </div>
+          <!-- <div
+            class="form-group mb-20 col-lg-6"
+            v-if="config?.enable_address_in_checkout == enums.status.ACTIVE"
+          > -->
           <div
             class="form-group mb-20 col-lg-6"
-            v-if="config.enable_address_in_checkout == enums.status.ACTIVE"
           >
             <input
               type="text"
@@ -409,9 +427,9 @@
           </div>
 
           <div
-            v-if="config.enable_post_code_in_checkout == enums.status.ACTIVE"
+            v-if="config?.enable_post_code_in_checkout == enums.status.ACTIVE"
             :class="
-              config.hide_country_state_city_in_checkout == enums.status.ACTIVE
+              config?.hide_country_state_city_in_checkout == enums.status.ACTIVE
                 ? 'form-group mb-20 col-lg-12'
                 : 'form-group mb-20 col-lg-6'
             "
@@ -435,7 +453,7 @@
           <div
             class="form-group mb-20 col-lg-6"
             v-if="
-              config.hide_country_state_city_in_checkout !=
+              config?.hide_country_state_city_in_checkout !=
                 enums.status.ACTIVE && countries.length > 1
             "
           >
@@ -457,7 +475,7 @@
           <div
             class="form-group mb-20 col-lg-6"
             v-if="
-              config.hide_country_state_city_in_checkout != enums.status.ACTIVE
+              config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
             "
           >
             <v-select
@@ -478,7 +496,7 @@
           <div
             class="form-group mb-20 col-lg-6"
             v-if="
-              config.hide_country_state_city_in_checkout != enums.status.ACTIVE
+              config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
             "
           >
             <v-select
@@ -502,9 +520,9 @@
         <div
           class="row"
           v-if="
-            config.use_shipping_address_as_billing_address !=
+            config?.use_shipping_address_as_billing_address !=
               enums.status.ACTIVE &&
-            config.enable_billing_address == enums.status.ACTIVE
+            config?.enable_billing_address == enums.status.ACTIVE
           "
         >
           <div class="col-12">
@@ -530,8 +548,8 @@
         <div
           class="row guest-billing-address"
           v-if="
-            config.enable_billing_address == enums.status.ACTIVE &&
-            config.use_shipping_address_as_billing_address !=
+            config?.enable_billing_address == enums.status.ACTIVE &&
+            config?.use_shipping_address_as_billing_address !=
               enums.status.ACTIVE &&
             isActiveBillToDifferentAddress
           "
@@ -602,7 +620,7 @@
           </div>
           <div
             :class="
-              config.hide_country_state_city_in_checkout == enums.status.ACTIVE
+              config?.hide_country_state_city_in_checkout == enums.status.ACTIVE
                 ? 'form-group mb-20 col-lg-12'
                 : 'form-group mb-20 col-lg-6'
             "
@@ -625,7 +643,7 @@
           <div
             class="form-group mb-20 col-lg-6"
             v-if="
-              config.hide_country_state_city_in_checkout != enums.status.ACTIVE
+              config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
             "
           >
             <v-select
@@ -646,7 +664,7 @@
           <div
             class="form-group mb-20 col-lg-6"
             v-if="
-              config.hide_country_state_city_in_checkout != enums.status.ACTIVE
+              config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
             "
           >
             <v-select
@@ -667,7 +685,7 @@
           <div
             class="form-group mb-20 col-lg-6"
             v-if="
-              config.hide_country_state_city_in_checkout != enums.status.ACTIVE
+              config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
             "
           >
             <v-select
@@ -690,7 +708,7 @@
     <!--End Home delivery-->
 
     <!--Pickup point Selector-->
-    <div class="row" v-if="isActivePickupPoint">
+    <!-- <div class="row" v-if="isActivePickupPoint">
       <div class="row" v-if="!isCustomerLogin">
         <h5>{{ $t("Personal Information") }}</h5>
         <div class="form-group mb-20 col-lg-6">
@@ -721,7 +739,7 @@
         </div>
         <div
           class="form-group mb-20 col-lg-6"
-          v-if="config.create_account_in_guest_checkout == enums.status.ACTIVE"
+          v-if="config?.create_account_in_guest_checkout == enums.status.ACTIVE"
         >
           <label class="d-flex gap-1 radio-label">
             <input
@@ -737,7 +755,7 @@
           class="row m-0 p-0"
           v-if="
             isActiveCreateNewAccount &&
-            config.create_account_in_guest_checkout == enums.status.ACTIVE
+            config?.create_account_in_guest_checkout == enums.status.ACTIVE
           "
         >
           <div class="form-group mb-20 col-lg-6">
@@ -817,7 +835,7 @@
           </p>
         </div>
       </div>
-    </div>
+    </div> -->
     <!--End Pickup Point Selector-->
 
     <!--Delivery not available alert-->
@@ -997,6 +1015,8 @@ export default {
       loading: true,
       isActiveHomeDelivery: true,
       isActivePickupPoint: false,
+      // isActiveHomeDelivery: true,
+      // isActivePickupPoint: false,
       isActiveCreateNewAccount: false,
       isActiveBillToDifferentAddress: false,
       deliveryNotAvailable: false,
@@ -1093,6 +1113,9 @@ export default {
         address: "",
         country: this.$t("Select Country"),
       };
+
+      console.log("store: ", this.$store);
+      
       this.isActivePickupPoint = this.$store.state.isActivePickupPoint;
       this.isActiveHomeDelivery = this.$store.state.isActiveHomeDelivery;
 
@@ -1229,14 +1252,14 @@ export default {
             if (this.isCustomerLogin) {
               shippingAddress = this.customerShippingInfo;
               billingAddress =
-                this.config.use_shipping_address_as_billing_address ==
+                this.config?.use_shipping_address_as_billing_address ==
                 this.enums.status.ACTIVE
                   ? this.customerShippingInfo
                   : this.customerBillingInfo;
             } else {
               shippingAddress = this.guestShippingInfo;
               billingAddress =
-                this.config.use_shipping_address_as_billing_address ==
+                this.config?.use_shipping_address_as_billing_address ==
                   this.enums.status.ACTIVE ||
                 !this.isActiveBillToDifferentAddress
                   ? this.guestShippingInfo
@@ -1349,26 +1372,26 @@ export default {
             this.errors.push({ customer_email: this.$t("Email is required") });
           }
           //Password validation
-          if (this.isActiveCreateNewAccount) {
-            if (!this.guestCustomerInfo.password) {
-              this.errors.push({
-                customer_password: this.$t("Password is required"),
-              });
-            }
-            if (!this.guestCustomerInfo.confirm_password) {
-              this.errors.push({
-                customer_confirm_password: this.$t("Please conform password"),
-              });
-            }
-            if (
-              this.guestCustomerInfo.password !=
-              this.guestCustomerInfo.confirm_password
-            ) {
-              this.errors.push({
-                customer_password: this.$t("Password does not match"),
-              });
-            }
-          }
+          // if (this.isActiveCreateNewAccount) {
+          //   if (!this.guestCustomerInfo.password) {
+          //     this.errors.push({
+          //       customer_password: this.$t("Password is required"),
+          //     });
+          //   }
+          //   if (!this.guestCustomerInfo.confirm_password) {
+          //     this.errors.push({
+          //       customer_confirm_password: this.$t("Please confirm password"),
+          //     });
+          //   }
+          //   if (
+          //     this.guestCustomerInfo.password !=
+          //     this.guestCustomerInfo.confirm_password
+          //   ) {
+          //     this.errors.push({
+          //       customer_password: this.$t("Password does not match"),
+          //     });
+          //   }
+          // }
         }
       }
 
@@ -1387,8 +1410,8 @@ export default {
           }
           //validate customer billing address
           if (
-            this.config.enable_billing_address == this.enums.status.ACTIVE &&
-            this.config.use_shipping_address_as_billing_address !=
+            this.config?.enable_billing_address == this.enums.status.ACTIVE &&
+            this.config?.use_shipping_address_as_billing_address !=
               this.enums.status.ACTIVE
           ) {
             if (this.customerBillingInfo == null) {
@@ -1407,43 +1430,43 @@ export default {
           //Validate Personal Information
           if (
             !this.guestCustomerInfo.name &&
-            this.config.enable_personal_info_guest_checkout ==
+            this.config?.enable_personal_info_guest_checkout ==
               this.enums.status.ACTIVE
           ) {
             this.errors.push({ customer_name: this.$t("Name is required") });
           }
           if (
             !this.guestCustomerInfo.email &&
-            this.config.enable_personal_info_guest_checkout ==
+            this.config?.enable_personal_info_guest_checkout ==
               this.enums.status.ACTIVE
           ) {
             this.errors.push({ customer_email: this.$t("Email is required") });
           }
           //Password validation
-          if (this.isActiveCreateNewAccount) {
-            if (!this.guestCustomerInfo.password) {
-              this.errors.push({
-                customer_password: this.$t("Password is required"),
-              });
-            }
-            if (!this.guestCustomerInfo.confirm_password) {
-              this.errors.push({
-                customer_confirm_password: this.$t("Please conform password"),
-              });
-            }
-            if (
-              this.guestCustomerInfo.password !=
-              this.guestCustomerInfo.confirm_password
-            ) {
-              this.errors.push({
-                customer_password: this.$t("Password does not match"),
-              });
-            }
-          }
+          // if (this.isActiveCreateNewAccount) {
+          //   if (!this.guestCustomerInfo.password) {
+          //     this.errors.push({
+          //       customer_password: this.$t("Password is required"),
+          //     });
+          //   }
+          //   if (!this.guestCustomerInfo.confirm_password) {
+          //     this.errors.push({
+          //       customer_confirm_password: this.$t("Please conform password"),
+          //     });
+          //   }
+          //   if (
+          //     this.guestCustomerInfo.password !=
+          //     this.guestCustomerInfo.confirm_password
+          //   ) {
+          //     this.errors.push({
+          //       customer_password: this.$t("Password does not match"),
+          //     });
+          //   }
+          // }
           //Validate Billing Address
           if (
-            this.config.enable_billing_address == this.enums.status.ACTIVE &&
-            this.config.use_shipping_address_as_billing_address !=
+            this.config?.enable_billing_address == this.enums.status.ACTIVE &&
+            this.config?.use_shipping_address_as_billing_address !=
               this.enums.status.ACTIVE &&
             this.isActiveBillToDifferentAddress
           ) {
@@ -1499,8 +1522,8 @@ export default {
           //name validation
           if (
             !this.guestShippingInfo.name &&
-            this.config.enable_name_in_checkout == this.enums.status.ACTIVE &&
-            this.config.name_required_in_checkout == this.enums.status.ACTIVE
+            this.config?.enable_name_in_checkout == this.enums.status.ACTIVE &&
+            this.config?.name_required_in_checkout == this.enums.status.ACTIVE
           ) {
             this.errors.push({ shipping_name: this.$t("Name is required") });
           }
@@ -1508,8 +1531,8 @@ export default {
           //email validation
           if (
             !this.guestShippingInfo.email &&
-            this.config.enable_email_in_checkout == this.enums.status.ACTIVE &&
-            this.config.email_required_in_checkout == this.enums.status.ACTIVE
+            this.config?.enable_email_in_checkout == this.enums.status.ACTIVE &&
+            this.config?.email_required_in_checkout == this.enums.status.ACTIVE
           ) {
             this.errors.push({ shipping_email: this.$t("Email is required") });
           }
@@ -1517,8 +1540,8 @@ export default {
           //Phone validation
           if (
             !this.guestShippingInfo.phone &&
-            this.config.enable_phone_in_checkout == this.enums.status.ACTIVE &&
-            this.config.phone_required_in_checkout == this.enums.status.ACTIVE
+            this.config?.enable_phone_in_checkout == this.enums.status.ACTIVE &&
+            this.config?.phone_required_in_checkout == this.enums.status.ACTIVE
           ) {
             this.errors.push({ shipping_phone: this.$t("Phone is required") });
           }
@@ -1526,9 +1549,9 @@ export default {
           //address validation
           if (
             !this.guestShippingInfo.address &&
-            this.config.enable_address_in_checkout ==
+            this.config?.enable_address_in_checkout ==
               this.enums.status.ACTIVE &&
-            this.config.address_required_in_checkout == this.enums.status.ACTIVE
+            this.config?.address_required_in_checkout == this.enums.status.ACTIVE
           ) {
             this.errors.push({
               shipping_address: this.$t("Address is required"),
@@ -1538,9 +1561,9 @@ export default {
           //postal code validation
           if (
             !this.guestShippingInfo.postal_code &&
-            this.config.post_code_required_in_checkout ==
+            this.config?.post_code_required_in_checkout ==
               this.enums.status.ACTIVE &&
-            this.config.post_code_required_in_checkout ==
+            this.config?.post_code_required_in_checkout ==
               this.enums.status.ACTIVE
           ) {
             this.errors.push({
@@ -1550,7 +1573,7 @@ export default {
 
           //If country , state and city option not hide
           if (
-            this.config.hide_country_state_city_in_checkout ==
+            this.config?.hide_country_state_city_in_checkout ==
             this.enums.status.IN_ACTIVE
           ) {
             if (!this.guestShippingInfo.country.id) {
@@ -1584,7 +1607,8 @@ export default {
      */
     getCounties() {
       axios
-        .get("/api/v1/ecommerce-core/get-countries")
+        //.get("/api/v1/ecommerce-core/get-countries")
+        .post("/api/v1/ecommerce-core/get-countries", null)
         .then((response) => {
           if (response.data.success) {
             this.countries = response.data.data.countries;

@@ -61,12 +61,12 @@
                                 <div class="col-sm-12 mt-10">
                                     <div
                                         class="section_layout {{ getHomePageSectionProperties($section_details->id, 'layout') == 'category_slider' ? 'category_slider' : 'd-none' }}">
-                                        <img src="{{ asset('themes/tlcommerce/assets/img/category_slide.png') }}">
+                                        <img src="{{ asset('themes/tlcommerce/assets/img/category_slider.png') }}">
                                         <!-- <img src="{{ asset('/public/themes/tlcommerce/assets/img/category_slide.png') }}"> -->
                                     </div>
                                     <div
                                         class="section_layout {{ getHomePageSectionProperties($section_details->id, 'layout') == 'flashdeal' ? 'flashdeal' : 'd-none' }}">
-                                        <img src="{{ asset('themes/tlcommerce/assets/img/deals.png') }}">
+                                        <img src="{{ asset('themes/tlcommerce/assets/img/flash_deal.png') }}">
                                         <!-- <img src="{{ asset('/public/themes/tlcommerce/assets/img/deals.png') }}"> -->
                                     </div>
                                     <div
@@ -76,7 +76,7 @@
                                     </div>
                                     <div
                                         class="section_layout {{ getHomePageSectionProperties($section_details->id, 'layout') == 'custom_product_section' ? 'custom_product_section' : 'd-none' }}">
-                                        <img src="{{ asset('themes/tlcommerce/assets/img/collections.png') }}">
+                                        <img src="{{ asset('themes/tlcommerce/assets/img/product_collection.png') }}">
                                         <!-- <img src="{{ asset('/public/themes/tlcommerce/assets/img/collections.png') }}"> -->
                                     </div>
                                     <div
@@ -87,7 +87,8 @@
                                     </div>
                                     <div
                                         class="section_layout {{ getHomePageSectionProperties($section_details->id, 'layout') == 'blogs' ? 'blogs' : 'd-none' }} ">
-                                        <img src="{{ asset('/public/themes/tlcommerce/assets/img/blog.png') }}">
+                                        <img src="{{ asset('themes/tlcommerce/assets/img/blog.png') }}">
+                                        <!-- <img src="{{ asset('/public/themes/tlcommerce/assets/img/blog.png') }}"> -->
                                     </div>
                                     <div
                                         class="section_layout {{ getHomePageSectionProperties($section_details->id, 'layout') == 'ads' ? 'ads' : 'd-none' }} ">

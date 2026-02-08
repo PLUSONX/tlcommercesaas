@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Mail;
 use Core\Mail\EmailPasswordResetLink;
 use Core\Models\AdminLoginActivityLog;
 use Illuminate\Support\Facades\Session;
+use Core\Http\Controllers\Api\DeviceTokenController;
+use Illuminate\Support\Facades\Log;
 
 class AuthenticationController extends Controller
 {
@@ -38,6 +40,7 @@ class AuthenticationController extends Controller
      */
     public function login()
     {
+        // dd("LOGIN CONTROLLER WORKS");
         // return 'LOGIN CONTROLLER WORKS';
         $this->setGeneralSettings();
         if (Auth::user()) {
@@ -55,19 +58,22 @@ class AuthenticationController extends Controller
      * @param  mixed $request
      * @return mixed
      */
-
-    public function attemptLogin(LoginRequest $request)
+     public function attemptLogin(LoginRequest $request)
     {
-        $credentials = $request->only('email', 'password');
-        $path = $request->path();
+        $credentials = $request->only(
+            'email', 
+            'password',
+            'token'
+            );
 
-        // Log the attempt
-        // \Log::info('Login attempt', ['email' => $credentials['email'], 'path' => $path]);
+        // dd($credentials);
+
+        $path = $request->path();
 
         // Check if we're in tenant context and authenticate accordingly
         if (tenancy()->initialized) {
             // Tenant domain - authenticate against tenant database
-            $user = \Core\Models\User::on('tenant')
+            $user = User::on('tenant')
                 ->where('email', $credentials['email'])
                 ->first();
 
@@ -82,7 +88,7 @@ class AuthenticationController extends Controller
             // Central domain - check BOTH central DB and tenant DBs
 
             // First, try to find user in central database
-            $centralUser = \Core\Models\User::where('email', $credentials['email'])->first();
+            $centralUser = User::where('email', $credentials['email'])->first();
 
             if ($centralUser && \Hash::check($credentials['password'], $centralUser->password)) {
                 // User exists in central DB and password is correct
@@ -107,7 +113,7 @@ class AuthenticationController extends Controller
                             tenancy()->initialize($tenant);
 
                             // Authenticate in tenant context
-                            $tenantUser = \Core\Models\User::on('tenant')
+                            $tenantUser = User::on('tenant')
                                 ->where('email', $centralUser->email)
                                 ->first();
 
@@ -159,7 +165,7 @@ class AuthenticationController extends Controller
                     if ($tenant) {
                         tenancy()->initialize($tenant);
 
-                        $tenantUser = \Core\Models\User::on('tenant')
+                        $tenantUser = User::on('tenant')
                             ->where('email', $credentials['email'])
                             ->first();
 
@@ -185,6 +191,18 @@ class AuthenticationController extends Controller
 
         $user = Auth::user();
 
+        Log::info('User Authentication Check', [
+            'user' => $user,
+        ]);
+
+        if (!empty($credentials['token']) && $user->user_type != 1) {
+
+            Log::info('Inside of the If condition');
+
+            $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $user->id, tenant('id'));
+
+        }
+
         // Check user permissions based on path
         if (str_starts_with($path, getAdminPrefix())) {
             // Admin area access
@@ -201,54 +219,7 @@ class AuthenticationController extends Controller
         toastNotification('error', translate("You don't have permission to access this area"));
         return redirect()->back();
     }
-
-
-
-
-
-    /**
-     * Find which tenant a user belongs to and return both tenant and user
-     * 
-     * @param string $email
-     * @param string $password
-     * @return array|null ['tenant' => Tenant, 'user' => User]
-     */
-    // protected function findUserInTenants($user)
-    // {
-    //     // Get all active tenants
-    //     $tenant = \App\Models\Tenant::where('user_id', $user-> id)->first();
-
-    //     // foreach ($tenants as $tenant) {
-    //         try {
-    //             // Initialize this tenant's context temporarily
-    //             tenancy()->initialize($tenant);
-
-    //             // Check if user exists in this tenant's database
-    //             $user = \Core\Models\User::on('tenant')
-    //                 ->where('email', $email)
-    //                 ->first();
-
-    //             if ($user && \Hash::check($password, $user->password)) {
-    //                 // Found the user's tenant - DO NOT end tenancy, we need it active
-    //                 return [
-    //                     'tenant' => $tenant,
-    //                     'user' => $user
-    //                 ];
-    //             }
-
-    //             // Not found in this tenant, end context and continue
-    //             tenancy()->end();
-
-    //         } catch (\Exception $e) {
-    //             // Log error but continue checking other tenants
-    //             \Log::error('Error checking tenant: ' . $tenant->id, ['error' => $e->getMessage()]);
-    //             tenancy()->end();
-    //             continue;
-    //         }
-    //     // }
-
-    //     return null;
-    // }
+   
 
     /**
      * Build the tenant dashboard URL for redirect
@@ -274,274 +245,7 @@ class AuthenticationController extends Controller
     }
 
 
-    /**
-     * attempt to Login
-     *
-     * @param  mixed $request
-     * @return mixed
-     */
-    //     public function attemptLogin(LoginRequest $request)
-    // {
-    //     $credentials = $request->only('email', 'password');
-    //     $path = $request->path();
-
-    //     // Log the attempt
-    //     \Log::info('Login attempt', ['email' => $credentials['email'], 'path' => $path]);
-
-    //     // Check if we're in tenant context and authenticate accordingly
-    //     if (tenancy()->initialized) {
-    //         // Tenant domain - authenticate against tenant database
-    //         $user = \Core\Models\User::on('tenant')
-    //             ->where('email', $credentials['email'])
-    //             ->first();
-
-    //         if ($user && \Hash::check($credentials['password'], $user->password)) {
-    //             $user->setConnection('tenant');
-    //             Auth::login($user);
-    //         } else {
-    //             toastNotification('error', translate("Login Credentials Does not Match"));
-    //             return redirect()->back()->withInput($request->only('email'));
-    //         }
-    //     } else {
-    //         // Central domain - use default authentication
-    //         if (!Auth::attempt($credentials)) {
-    //             toastNotification('error', translate("Login Credentials Does not Match"));
-    //             return redirect()->back()->withInput($request->only('email'));
-    //         }
-    //     }
-
-    //     $user = Auth::user();
-
-    //     // Check user permissions based on path
-    //     if (str_starts_with($path, getAdminPrefix())) {
-    //         // Admin area access
-    //         return redirect()->intended('/admin/dashboard');
-    //     }
-
-    //     if (str_starts_with($path, getSaasPrefix()) && $user->user_type == 4) {
-    //         // SaaS user area access
-    //         return redirect()->intended('/user/dashboard');
-    //     }
-
-    //     // No valid context matched - logout and deny access
-    //     Auth::logout();
-    //     toastNotification('error', translate("You don't have permission to access this area"));
-    //     return redirect()->back();
-    // }
-    //     public function attemptLogin(LoginRequest $request)
-    // {
-    //     $credentials = $request->only('email', 'password');
-    //     $path = request()->path();
-
-    //     // Better debugging
-    //     \Log::info('Login attempt', ['email' => $credentials['email'], 'path' => $path]);
-
-    //     if (!Auth::attempt($credentials)) {
-    //         toastNotification('error', translate("Login Credentials Does not Match"));
-    //         return redirect()->back()->withInput($request->only('email'));
-    //     }
-
-
-
-    //     $user = Auth::user();
-
-    //     if (tenancy()->initialized) {
-    //         $user->setConnection('tenant');
-    //      }
-
-    //       if (str_starts_with($path, getAdminPrefix())) {
-    //         return redirect()->intended('/admin/dashboard');
-    //     }
-
-    //     if (str_starts_with($path, getSaasPrefix()) && $user->user_type == 4) {
-    //         return redirect()->intended('/user/dashboard');
-    //     }
-
-    //     // No valid context matched
-    //     Auth::logout();
-    //     toastNotification('error', translate("You don't have permission to access this area"));
-    //     return redirect()->back();
-
-    //     // Tenant context
-    //     // if (tenant()) {
-    //     //     if (str_starts_with($path, getAdminPrefix()) && in_array($user->user_type, [1, 4])) {
-    //     //         return redirect()->route('tenant.dashboard');
-    //     //     }
-
-    //     //     Auth::logout();
-    //     //     toastNotification('error', translate("You don't have permission to access this area"));
-    //     //     return redirect()->back();
-    //     // }
-
-    //     // Super admin context
-
-    // }
-    //     public function attemptLogin(LoginRequest $request)
-    // {
-    //     $credentials = $request->only('email', 'password');
-    //     $path = request()->path();
-
-    //     // Better debugging
-    //     \Log::info('Login attempt', ['email' => $credentials['email'], 'path' => $path]);
-
-    //     if (!Auth::attempt($credentials)) {
-    //         toastNotification('error', translate("Login Credentials Does not Match"));
-    //         return redirect()->back()->withInput($request->only('email'));
-    //     }
-
-    //     $user = Auth::user();
-
-    //     // Tenant context
-    //     if (tenant()) {
-    //         if (str_starts_with($path, getAdminPrefix()) && in_array($user->user_type, [1, 4])) {
-    //             return redirect()->route('tenant.dashboard');
-    //         }
-
-    //         Auth::logout();
-    //         toastNotification('error', translate("You don't have permission to access this area"));
-    //         return redirect()->back();
-    //     }
-
-    //     // Super admin context
-    //     if (str_starts_with($path, getSuperAdminPrefix()) && $user->user_type == 1) {
-    //         return redirect()->intended('/superadmin/dashboard');
-    //     }
-
-    //     if (str_starts_with($path, getSaasPrefix()) && $user->user_type == 4) {
-    //         return redirect()->intended('/user/dashboard');
-    //     }
-
-    //     // No valid context matched
-    //     Auth::logout();
-    //     toastNotification('error', translate("You don't have permission to access this area"));
-    //     return redirect()->back();
-    // }
-    //     public function attemptLogin(LoginRequest $request)
-    // {
-    //     $credentials = $request->only('email', 'password');
-    //     // $host = request()->getHost();
-    //     $path = request()->path();
-
-    //     \Log::info('Login attempt', ['email' => $credentials['email'], 'path' => $path]);
-
-    //     if(Auth::attempt($credentials)) {
-    //         $user = Auth::user();
-
-    //         if(tenant()) {
-    //             if((str_starts_with($path, getAdminPrefix()) && ($user->user_type == 1 || $user->user_type == 4 ))) {
-    //                 return redirect()->intended('/admin/dashboard');
-    //             } 
-    //             else {
-    //                 $this->logout();
-    //             }
-    //         }
-    //         else {
-    //             if (str_starts_with($path, getSuperAdminPrefix()) && $user->user_type == 1) {
-    //                 return redirect()->intended('/superadmin/dashboard');
-    //             }
-    //             else if(str_starts_with($path, getSaasPrefix()) && $user->user_type == 4) {
-    //                 return redirect()->intended('/user/dashboard');
-    //             }
-    //             else {
-    //                 $this->logout();
-    //             }
-    //         }
-
-    //     }  
-    //     else {
-    //         toastNotification('error', translate("Login Credentials Does not Match"));
-    //         return redirect()->back();
-    //     } 
-
-    //     // if (Auth::attempt($credentials)) {
-    //     //     $this->setupLoginLogoutActivity(true);
-    //     //     toastNotification('success', translate('Login successful'));
-
-    //     //     $user = Auth::user();
-    //     //     $path = $request->path(); // get the URL path, e.g., "superadmin/login" or "admin/login"
-
-    //     //     echo "<script>console.log('Full URL:', '" . request()->fullUrl() . "');</script>";
-    //     //     echo "<script>console.log('Path:', '" . $path . "');</script>";
-    //     //     echo "<script>console.log('Request path:', '" . request()->path() . "');</script>";
-    //     //     echo "<script>console.log('getAdminPrefix():', '" . getAdminPrefix() . "');</script>";
-    //     //     echo "<script>console.log('user_type:', " . $user->user_type . ");</script>";
-    //     //     echo "<script>console.log('tenant:', " . json_encode(tenant()) . ");</script>";
-
-    //     //     // Decide redirect based on URL prefix and user type
-    //     //     if (str_starts_with($path, getSuperAdminPrefix()) && $user->user_type == 1) {
-    //     //         return redirect()->intended('/superadmin/dashboard');
-    //     //     }
-
-    //     //     if (str_starts_with($path, getSaasPrefix()) && $user->user_type == 4) {
-    //     //         // Central subscriber dashboard
-    //     //         return redirect()->intended('/user/dashboard');
-    //     //     }
-
-    //     //     if (str_starts_with($path, getAdminPrefix()) && $user->user_type == 4) {
-    //     //         // Store-specific dashboard
-    //     //         echo "<script>console.log('condition worked!');</script>";
-
-    //     //          return redirect()->route('tenant.dashboard'); 
-    //     //         // return redirect()->intended('/admin/dashboard');
-
-
-    //     //     }
-
-    //     // //     // fallback (if URL or user type is inconsistent)
-    //     // //     // return redirect()->intended('/');
-    //     // }
-
-    //     // toastNotification('error', translate("Login Credentials Does not Match"));
-    //     // return redirect()->back();
-    // }
-
-    // public function attemptLogin(LoginRequest $request)
-    // {
-    //     $credentials = $request->only('email', 'password');
-
-    //     if (Auth::attempt($credentials)) {
-    //         $this->setupLoginLogoutActivity(true);
-    //         toastNotification('success', translate('Login successful'));
-    //         // if (Auth::user()->status == config('settings.user_status.in_active')) {
-    //         //     $this->logout();
-    //         // }
-    //         return redirect()->route('admin.dashboard');
-    //     }
-    //     toastNotification('error', translate("Login Credentials Does not Match"));
-    //     return redirect()->back();
-    // }
-
-
-    //     public function attemptLogin(LoginRequest $request)
-    // {
-    //     $credentials = $request->only('email', 'password');
-
-    //     \Log::info('Login attempt', ['email' => $credentials['email']]);
-
-    //     if (Auth::attempt($credentials)) {
-    //         \Log::info('Auth successful', [
-    //             'user_id' => Auth::user()->id,
-    //             'user_type' => Auth::user()->user_type,
-    //             'status' => Auth::user()->status,
-    //             'is_authenticated' => Auth::check(),
-    //         ]);
-
-    //         $this->setupLoginLogoutActivity(true);
-    //         toastNotification('success', translate('Login successful'));
-
-    //         if (Auth::user()->status == config('settings.user_status.in_active')) {
-    //             \Log::info('User inactive, logging out');
-    //             $this->logout();
-    //         }
-
-    //         \Log::info('Redirecting to admin.dashboard');
-    //         return redirect()->route('admin.dashboard');
-    //     }
-
-    //     \Log::info('Auth failed');
-    //     toastNotification('error', translate("Login Credentials Does not Match"));
-    //     return redirect()->back();
-    // }
+   
 
     /**
      * Attempt logout
@@ -603,37 +307,6 @@ class AuthenticationController extends Controller
             return redirect()->route('subscriber.login');
         }
     }
-    // public function logout()
-    // {
-    //     $user_type = Auth::user()->user_type;
-    //     $currentPath = request()->path();
-    //     $this->setupLoginLogoutActivity(false);
-    //     Auth::logout();
-
-    //     echo "<script>console.log('Request path:', '" . request()->path() . "');</script>";
-
-
-    //     if ($user_type == 4) {
-    //         // return redirect()->route('subscriber.login');
-    //         if (str_starts_with($currentPath, getSaasPrefix())) {
-    //         // Central subscriber dashboard logout
-    //         return redirect()->route('subscriber.login');
-    //     }
-
-    //     if (str_starts_with($currentPath, getAdminPrefix())) {
-    //         // Store-specific dashboard logout
-    //         return redirect()->route('core.login'); // whatever your route is
-    //     }
-
-    //     // default fallback
-    //     return redirect()->route('subscriber.login');
-
-    //     } else if ($user_type == 1)  {
-    //         return redirect()->route('core.login');
-    //     }else {
-    //         return redirect()->route('subscriber.login');
-    //     }
-    // }
 
     /**
      * redirect to password reset page

@@ -70,6 +70,8 @@ class CustomerAddressController extends Controller
      */
     public function customerAllAddress()
     {
+        \Log::info('customerAllAddress method called !!!!');
+
         $addresses = $this->customer_repository->customerAllAddress(auth('jwt-customer')->user()->id);
         if ($addresses != NULL) {
             return  new CustomerAddressCollection($addresses);

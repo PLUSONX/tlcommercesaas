@@ -23,6 +23,12 @@ class PluginRouteServices extends ServiceProvider
      */
     public function boot()
     {
+        // \Log::info('PluginRouteServices called !!!!');
+
+        // \Log::info('IS_USER_REGISTERED', [
+        //     'value' => env('IS_USER_REGISTERED'),
+        // ]);
+
         if (env('IS_USER_REGISTERED') == 1) {
             $this->routes(function () {
                 $plugins = getActivePlugins(true);

@@ -1,6 +1,9 @@
 <template>
   <Dashboard>
-    <div class="address">
+    <div class="address" :class="{
+    'force-mobile-layout': forcedMobile,
+    'mobile-content-wrapper': forcedMobile
+  }">
       <page-header class="py-3 mb-3" whiteBg :items="bItems" />
       <template v-if="!loading">
         <div class="row">
@@ -165,11 +168,15 @@
             </div>
           </div>
         </div>
+        <!-- <div
+          class="row mb-20"
+          v-if="configuration?.hide_country_state_city_in_checkout != 1"
+        > -->
         <div
           class="row mb-20"
-          v-if="configuration.hide_country_state_city_in_checkout != 1"
         >
-          <div class="form-group col-lg-6 mb-20" v-if="countries.length > 1">
+          <!-- <div class="form-group col-lg-6 mb-20" v-if="countries.length > 1"> -->
+          <div class="form-group col-lg-6 mb-20">
             <label class="font-weight-bold fz-12 mb-2">
               {{ $t("Country") }} <span class="text-danger">*</span>
             </label>
@@ -215,7 +222,7 @@
 
           <div
             class="form-group col-lg-6 mb-20"
-            v-if="configuration.hide_country_state_city_in_checkout != 1"
+            v-if="configuration?.hide_country_state_city_in_checkout != 1"
           >
             <label class="font-weight-bold fz-12 mb-2">
               {{ $t("City") }} <span class="text-danger">*</span>
@@ -240,7 +247,7 @@
 
           <div
             :class="
-              configuration.hide_country_state_city_in_checkout == 1
+              configuration?.hide_country_state_city_in_checkout == 1
                 ? 'form-group col-lg-12 mb-20'
                 : 'form-group col-lg-6 mb-20'
             "
@@ -249,7 +256,7 @@
               {{ $t("Postal Code") }}
               <span
                 class="text-danger"
-                v-if="configuration.post_code_required_in_checkout == 1"
+                v-if="configuration?.post_code_required_in_checkout == 1"
                 >*</span
               >
             </label>
@@ -382,7 +389,7 @@
         </div>
         <div
           class="row mb-20"
-          v-if="configuration.hide_country_state_city_in_checkout != 1"
+          v-if="configuration?.hide_country_state_city_in_checkout != 1"
         >
           <div class="form-group col-lg-6" v-if="countries.length > 1">
             <label class="font-weight-bold fz-12 mb-2">
@@ -430,7 +437,7 @@
 
           <div
             class="form-group col-lg-6"
-            v-if="configuration.hide_country_state_city_in_checkout != 1"
+            v-if="configuration?.hide_country_state_city_in_checkout != 1"
           >
             <label class="font-weight-bold fz-12 mb-2">
               {{ $t("City") }} <span class="text-danger">*</span>
@@ -455,7 +462,7 @@
 
           <div
             :class="
-              configuration.hide_country_state_city_in_checkout == 1
+              configuration?.hide_country_state_city_in_checkout == 1
                 ? 'form-group col-lg-12'
                 : 'form-group col-lg-6'
             "
@@ -464,7 +471,7 @@
               {{ $t("Postal Code") }}
               <span
                 class="text-danger"
-                v-if="configuration.post_code_required_in_checkout == 1"
+                v-if="configuration?.post_code_required_in_checkout == 1"
                 >*</span
               >
             </label>
@@ -626,7 +633,7 @@ import ShowingPerPage from "@/components/ui/ShowingPerPage.vue";
 import Dashboard from "@/views/dashboard.vue";
 import axios from "axios";
 import { CSpinner } from "@coreui/vue";
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import {
   CTable,
   CTableBody,
@@ -692,10 +699,26 @@ export default {
       this.getCities("edit");
     },
   },
-  computed: mapState({
+  computed: {
+    ...mapState({
     customerToken: (state) => state.customerToken,
     configuration: (state) => state.siteSettings,
   }),
+
+   ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+  forcedMobile() {
+    // identical intent to MainLayout.vue
+    if (this.isSplitScreen) {
+      return true;
+    }
+    return this.isMobile;
+  },
+  },
+  // computed: mapState({
+  //   customerToken: (state) => state.customerToken,
+  //   configuration: (state) => state.siteSettings,
+  // }),
   data() {
     return {
       loading: false,
@@ -774,9 +797,11 @@ export default {
      * Will get customer all address
      */
     getCustomerAddress() {
+      console.log("getCustomerAddress method called!!!");
       this.loading = true;
       axios
-        .get("/api/v1/ecommerce-core/customer/get-customer-all-address", {
+        // .get("/api/v1/ecommerce-core/customer/get-customer-all-address", {
+        .post("/api/v1/ecommerce-core/customer/get-customer-all-address", null, {
           headers: {
             Authorization: `Bearer ${this.customerToken}`,
           },
@@ -971,8 +996,10 @@ export default {
      * Get counties list
      */
     getCounties() {
+      console.log("getCountries method called!!!");
       axios
-        .get("/api/v1/ecommerce-core/get-countries")
+        // .get("/api/v1/ecommerce-core/get-countries")
+        .post("/api/v1/ecommerce-core/get-countries")
         .then((response) => {
           if (response.data.success) {
             this.countries = response.data.data.countries;
@@ -990,6 +1017,7 @@ export default {
      * Will get state list of a country
      */
     getStates(origin) {
+    console.log("get states method called!!!");
       let country_id = "";
       if (origin === "new") {
         country_id = this.addressInfo.country
@@ -1052,3 +1080,45 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+
+  .force-mobile-layout .row > [class*="col-"] {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+.force-mobile-layout .product-content .image,
+.force-mobile-layout .product-content .product-img {
+  min-width: 0 !important;
+  max-width: 100px;
+}
+
+
+
+.force-mobile-layout .cart-image-review {
+  max-width: 100% !important;
+  height: auto !important;
+  flex-shrink: 1 !important;
+}
+
+.force-mobile-layout .d-none.d-lg-block,
+.force-mobile-layout .d-lg-block {
+  display: none !important;
+}
+
+.force-mobile-layout .d-block.d-lg-none,
+.force-mobile-layout .d-lg-none {
+  display: block !important;
+}
+
+
+.force-mobile-layout .d-block.d-lg-none.col-12 {
+  width: 100% !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
+}
+
+
+</style>

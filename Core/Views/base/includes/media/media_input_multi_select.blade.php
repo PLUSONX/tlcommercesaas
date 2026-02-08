@@ -16,8 +16,10 @@
         <div id="multi_input_container_{{ $indicator }}" class="d-flex flex-wrap gap-10">
             @if (sizeof($data) == 0)
                 <div class="preview-image-wrapper" id="div_preview">
-                    <img src="{{ getPlaceHolderImagePath() }}" alt="{{ $input }}" width="150"
+                    <img src="{{ str_replace('/public', '', getPlaceHolderImagePath()) }}"alt="{{ $input }}" width="150"
                         class="preview_image" id="preview_image" />
+                    <!-- <img src="{{ getPlaceHolderImagePath() }}" alt="{{ $input }}" width="150"
+                        class="preview_image" id="preview_image" /> -->
                 </div>
             @endif
             @if (sizeof($data) > 0)
@@ -25,9 +27,12 @@
                     @if ($data[$i] != null)
                         <div class="preview-image-wrapper"
                             id="div_preview_{{ $input }}_{{ $indicator }}_{{ $data[$i] }}">
-                            <img src="{{ getFilePath($data[$i]) }}" alt="{{ $input }}" width="150"
+                            <img src="{{ str_replace('/public', '', getFilePath($data[$i])) }}" alt="{{ $input }}" width="150"
                                 class="preview_image"
                                 id="preview_{{ $input }}_{{ $indicator }}_{{ $data[$i] }}" />
+                            <!-- <img src="{{ getFilePath($data[$i]) }}" alt="{{ $input }}" width="150"
+                                class="preview_image"
+                                id="preview_{{ $input }}_{{ $indicator }}_{{ $data[$i] }}" /> -->
                             <button type="button" title="Remove image" class="remove-btn style--three"
                                 id="remove_{{ $input }}_{{ $indicator }}_{{ $data[$i] }}"
                                 onclick="removeSelectionForMultiSelect('#preview_{{ $input }}_{{ $indicator }}_{{ $data[$i] }},#{{ $input }}_{{ $indicator }},#remove_{{ $input }}_{{ $indicator }}_{{ $data[$i] }},#div_preview_{{ $input }}_{{ $indicator }}_{{ $data[$i] }}',{{ $data[$i] }})"><i

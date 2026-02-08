@@ -5,13 +5,9 @@
             :width="width"
             :height="height"
         >
-            <use
-                v-bind="{
-                    'xlink:href':
-                        '/themes/tlcommerce/resources/js/assets/images/iconpack.svg#' +
-                        name,
-                }"
-            />
+            <use :xlink:href="`/themes/default/public/assets/images/iconpack.svg#${name}`" />
+
+
         </svg>
     </span>
 </template>

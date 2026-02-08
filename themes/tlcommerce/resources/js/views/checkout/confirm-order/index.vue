@@ -1,5 +1,8 @@
 <template>
-  <div class="">
+  <div class="" :class="{
+    'force-mobile-layout': forcedMobile,
+    'mobile-content-wrapper': forcedMobile
+  }">
     <page-header :items="bItems" />
 
     <div class="pt-60 pb-60 light-bg">
@@ -8,10 +11,15 @@
           <div class="col-12" v-if="success">
             <div class="shadow-card py-5 text-center mb-30">
               <img
-                src="/public/themes/tlcommerce/assets/img/complete-order.png"
+                src="/themes/tlcommerce/assets/images/icons/completed-order.svg"
                 class="mb-4"
                 alt="Order"
               />
+              <!-- <img
+                src="/public/themes/tlcommerce/assets/img/complete-order.png"
+                class="mb-4"
+                alt="Order"
+              /> -->
               <h3>{{ $t("Thank You") }}!</h3>
               <h4>{{ $t("Order ID") }}: {{ orderDetails.order_code }}</h4>
             </div>
@@ -180,7 +188,7 @@
                               class="extra-addons-wrap d-flex flex-wrap"
                               v-if="product.shop != null"
                             >
-                              <p class="product-shop fz-12">
+                              <!-- <p class="product-shop fz-12">
                                 {{ $t("Sold By") }}
                                 <router-link
                                   :to="`/shop/${product.shop.shop_slug}`"
@@ -189,7 +197,7 @@
                                 >
                                   {{ product.shop.shop_name }}
                                 </router-link>
-                              </p>
+                              </p> -->
                             </div>
                             <!--End shop-->
                           </div>
@@ -334,7 +342,7 @@
 import PageHeader from "@/components/pageheader/PageHeader.vue";
 import ProductVariant from "@/components/ui/ProductVariant.vue";
 import axios from "axios";
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import {
   CTable,
   CTableHead,
@@ -379,10 +387,27 @@ export default {
       dataLoading: true,
     };
   },
-  computed: mapState({
+  computed: {
+    ...mapState({
     customerToken: (state) => state.customerToken,
     isCustomerLogin: (state) => state.isCustomerLogin,
   }),
+
+  ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+  forcedMobile() {
+    // identical intent to MainLayout.vue
+    if (this.isSplitScreen) {
+      return true;
+    }
+    return this.isMobile;
+  },
+
+  },
+  // computed: mapState({
+  //   customerToken: (state) => state.customerToken,
+  //   isCustomerLogin: (state) => state.isCustomerLogin,
+  // }),
   mounted() {
     document.title = this.$t("Success Order");
     this.order_code = this.$route.params.id;
@@ -449,3 +474,45 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+
+  .force-mobile-layout .row > [class*="col-"] {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+.force-mobile-layout .product-content .image,
+.force-mobile-layout .product-content .product-img {
+  min-width: 0 !important;
+  max-width: 100px;
+}
+
+
+
+.force-mobile-layout .cart-image-review {
+  max-width: 100% !important;
+  height: auto !important;
+  flex-shrink: 1 !important;
+}
+
+.force-mobile-layout .d-none.d-lg-block,
+.force-mobile-layout .d-lg-block {
+  display: none !important;
+}
+
+.force-mobile-layout .d-block.d-lg-none,
+.force-mobile-layout .d-lg-none {
+  display: block !important;
+}
+
+
+.force-mobile-layout .d-block.d-lg-none.col-12 {
+  width: 100% !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
+}
+
+
+</style>

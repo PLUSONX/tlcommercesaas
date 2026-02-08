@@ -9,6 +9,7 @@ use Theme\TLCommerce\Http\Controllers\Frontend\PagesController;
 use Plugin\TlcommerceCore\Http\Controllers\LayoutSettingsController;
 use Theme\TLCommerce\Http\Controllers\Frontend\NewsletterController;
 use Theme\TLCommerce\Http\Controllers\Frontend\ThemeOptionController;
+use Theme\TLCommerce\Http\Controllers\Backend\ThemeOptionController As ThemeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,7 @@ Route::group(['prefix' => 'theme/tlcommerce/v1'], function () {
     Route::get('/get-theme-style', [ThemeOptionController::class, 'getThemeStyle']);
     Route::get('/get-theme-color', [ThemeOptionController::class, 'getPresentColor']);
     Route::get('/get-blog-theme-style', [ThemeOptionController::class, 'getBlogThemeStyle']);
+    Route::get('/get-active-layout', [ThemeController::class, 'getActiveLayout']);
 
     //Blogs
     Route::get('/blogs', [BlogController::class, 'blogs']);

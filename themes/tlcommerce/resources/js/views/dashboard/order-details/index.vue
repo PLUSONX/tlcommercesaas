@@ -205,7 +205,7 @@
                                   class="extra-addons-wrap d-flex flex-wrap"
                                   v-if="product.shop != null"
                                 >
-                                  <p class="product-shop fz-12">
+                                  <!-- <p class="product-shop fz-12">
                                     {{ $t("Sold By") }}
                                     <router-link
                                       :to="`/shop/${product.shop.shop_slug}`"
@@ -214,7 +214,7 @@
                                     >
                                       {{ product.shop.shop_name }}
                                     </router-link>
-                                  </p>
+                                  </p> -->
                                 </div>
                                 <!--End shop-->
                               </div>
@@ -289,7 +289,7 @@
                                     href="#"
                                     role="button"
                                     v-if="
-                                      product_config.enable_product_reviews ==
+                                      product_config?.enable_product_reviews ==
                                       enums.status.ACTIVE
                                     "
                                     @click.prevent="

@@ -71,8 +71,13 @@ class HomePageSectionResource extends ResourceCollection
                     ];
                 }
 
+                \Log::info('custom_product_section: before if statement!!!');
+
                 //Custom product sections
                 if ($item->key_name == 'layout' && $item->key_value == 'custom_product_section') {
+
+                \Log::info('custom_product_section: after if statement!!!');
+
                     $products = $this->customSectionProducts($item);
                     $data['category_info'] = null;
                     $data['products'] =  new \Plugin\TlcommerceCore\Http\Resources\ProductCollection($products);
@@ -120,15 +125,40 @@ class HomePageSectionResource extends ResourceCollection
 
     public function customSectionProducts($item)
     {
+        \Log::info('customSectionProducts method called!!!', [
+                'item' => json_encode($item),
+        ]);
         $products = [];
         $content = getHomePageSectionProperties($item->section_id, 'content');
+
+        \Log::info('after getHomePageSectionProperties method!!!', [
+                'content' => json_encode($content),
+        ]);
         if ($content == 'new_arrival') {
             $products = $this->productQuery()->orderBy('id', 'DESC')->take(6)->get();
         }
         if ($content == 'featured') {
-            $products = $this->productQuery()->where('is_featured', config('settings.general_status.active'))
-                ->orderBy('id', 'DESC')
-                ->take(6)->get();
+
+            \Log::info('before products query!!!');
+
+            \Log::info('checking config!!!', [
+                    'is_featured_config: ' => json_encode(config('settings.general_status.active')),
+            ]);
+
+            \Log::info('SQL Query: ' . $this->productQuery()->where('is_featured', config('settings.general_status.active'))->toSql());
+
+            $products = Product::where('is_featured', config('settings.general_status.active'))
+            ->where('status', config('settings.general_status.active')) // Ensure product is active
+            ->orderBy('id', 'DESC')
+            ->take(6)
+            ->get();
+            // $products = $this->productQuery()->where('is_featured', config('settings.general_status.active'))
+            //     ->orderBy('id', 'DESC')
+            //     ->take(6)->get();
+
+            \Log::info('after products query!!!', [
+                    'products' => json_encode($products),
+            ]);
         }
         if ($content == 'top_selling') {
             $products = $this->productQuery()->withCount(['orders as total_sales' => function ($query) {

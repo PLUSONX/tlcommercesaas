@@ -22,6 +22,15 @@ Route::group(['prefix' => 'v1'], function () {
 });
 
 
+Route::post('/device-tokens', [DeviceTokenController::class, 'store']);
+
+Route::post('/test-api', function () {
+    return response()->json([
+        'status' => 'success2',
+        'message' => 'API route reached!',
+        'timestamp' => now()->toDateTimeString()
+    ]);
+});
 
 // Route::group(['middleware' => 'auth'], function () {
 

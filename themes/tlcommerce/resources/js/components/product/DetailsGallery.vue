@@ -28,7 +28,8 @@
               }
             "
           >
-            <v-lazy-image :src="image.regular" />
+            <!-- <v-lazy-image :src="image.regular" /> -->
+            <v-lazy-image :src="cleanImage(image.regular)" />
           </div>
           <!--End Image Thumbnail-->
           <!--Video Thumbnail-->
@@ -47,11 +48,11 @@
               }
             "
           >
-          <img
+          <!-- <img
               src="themes/tlcommerce/assets/img/play-big.png"
               class="play-icon gallery-preview-panel__video-player"
               alt="video"
-            />
+            /> -->
             <!-- <img
               src="/public/themes/tlcommerce/assets/img/play-big.png"
               class="play-icon gallery-preview-panel__video-player"
@@ -75,15 +76,16 @@
           :key="imageIndex"
           class="gallery-image"
         >
-          <img :src="image.regular" v-if="image.type === 'image'" />
+          <img :src="cleanImage(image.regular)" v-if="image.type === 'image'" />
+          <!-- <img :src="image.regular" v-if="image.type === 'image'" /> -->
 
           
           <div class="item-gallery__image-wrapper" v-else>
-            <img
+            <!-- <img
               class="item-gallery__video-icon"
               src="themes/tlcommerce/assets/img/play-show.png"
               :alt="`product-gallery-image-${imageIndex}`"
-            />
+            /> -->
             <!-- <img
               class="item-gallery__video-icon"
               src="/public/themes/tlcommerce/assets/img/play-show.png"
@@ -160,11 +162,19 @@
           :title="productName"
           :description="summary"
         >
-        <img
-            class="rounded"
-            :src="`themes/tlcommerce/assets/img/social/${network.icon}`"
-            :alt="network.name"
+        <svg class="social-icon" width="24" height="24">
+          <use :href="`/themes/default/public/assets/social/social_media_icons.svg#${network.network}`" />
+        </svg>
+        <!-- <svg class="social-icon">
+          <use
+            :href="`/themes/default/public/assets/social/${network.icon}`"
           />
+        </svg> -->
+        <!-- <img
+            class="rounded"
+            :src="`themes/default/public/assets/social/${network.icon}`"
+            :alt="network.name"
+          /> -->
           <!-- <img
             class="rounded"
             :src="`/public/themes/tlcommerce/assets/img/social/${network.icon}`"

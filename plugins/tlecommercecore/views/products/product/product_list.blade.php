@@ -1,9 +1,11 @@
+
 @extends('core::base.layouts.master')
 @section('title')
     {{ translate('Products') }}
 @endsection
 @section('custom_css')
-    <link href="{{ asset('/public/backend/assets/css/ratings.css') }}" rel="stylesheet" />
+    <link href="{{ asset('backend/assets/css/ratings.css') }}" rel="stylesheet" />
+    <!-- <link href="{{ asset('/public/backend/assets/css/ratings.css') }}" rel="stylesheet" /> -->
     <style>
         .product-title {
             max-width: 150px;
@@ -133,8 +135,9 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <img src="{{ asset(getFilePath($product->thumbnail_image)) }}" class="img-45"
-                                                alt="{{ $product->name }}">
+                                            <img src="{{ str_replace('/public', '', asset(getFilePath($product->thumbnail_image))) }}" class="img-45">
+                                            <!-- <img src="{{ asset(getFilePath($product->thumbnail_image)) }}" class="img-45"
+                                                alt="{{ $product->name }}"> -->
                                         </td>
                                         <td>
                                             <span class="product-title text-capitalize">

@@ -13,11 +13,11 @@
       >
         <div class="col-lg-auto position-static d-flex align-items-center">
           <!-- MegaMenu -->
-          <mega-menu v-if="!dataLoading" :mega-categories="megaCategories" />
+          <!-- <mega-menu v-if="!dataLoading" :mega-categories="megaCategories" />
           <div v-if="dataLoading" class="megamenu-wrapper">
             <skeleton height="15px" border-radius="10px" width="100px">
             </skeleton>
-          </div>
+          </div> -->
           <!-- End MegaMenu -->
 
           <!-- Menu -->
@@ -37,9 +37,9 @@
           <!-- End Menu -->
         </div>
 
-        <div class="col-lg-auto text-right">
+        <!-- <div class="col-lg-auto text-right"> -->
           <!--Static Header-->
-          <template v-if="this.headerStyle.custom_header != 1">
+          <!-- <template v-if="this.headerStyle.custom_header != 1">
             <a
               v-if="
                 !dataLoading && this.headerStyle.header_bot_email_text != ''
@@ -52,10 +52,10 @@
               <skeleton height="12px" border-radius="10px" width="110px">
               </skeleton>
             </a>
-          </template>
+          </template> -->
           <!--End Static Header-->
           <!--Custom Header-->
-          <template v-else>
+          <!-- <template v-else>
             <a
               v-if="
                 !dataLoading && this.headerStyle.header_bot_email_text != ''
@@ -76,9 +76,9 @@
               <skeleton height="12px" border-radius="10px" width="110px">
               </skeleton>
             </a>
-          </template>
+          </template> -->
           <!--End custom Header-->
-        </div>
+        <!-- </div> -->
       </div>
     </div>
   </div>

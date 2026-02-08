@@ -7,7 +7,7 @@
       <!--Order Note-->
       <div
         class="col-lg-12"
-        v-if="config.enable_order_note_in_checkout == enums.status.ACTIVE"
+        v-if="config?.enable_order_note_in_checkout == enums.status.ACTIVE"
       >
         <div class="form-group mb-20">
           <label class="font-weight-bold fz-12 mb-2">
@@ -204,9 +204,9 @@
       <div
         class="col-12 mb-5 text-center"
         v-if="
-          config.enable_wallet_in_checkout == enums.status.ACTIVE &&
+          config?.enable_wallet_in_checkout == enums.status.ACTIVE &&
           isCustomerLogin &&
-          config.is_active_wallet == enums.status.ACTIVE &&
+          config?.is_active_wallet == enums.status.ACTIVE &&
           wallet_available_balance >= totalPayableAmount
         "
       >
@@ -426,12 +426,14 @@ export default {
       }
       if (this.isCustomerLogin) {
         this.customerCheckout();
-      } else if (
-        this.config.enable_guest_checkout == this.enums.status.ACTIVE
-      ) {
+      } 
+      else if (this.config?.enable_guest_checkout == this.enums.status.ACTIVE) 
+      {
         this.guestCheckout();
-      } else {
-        this.$router.push("/login");
+      } 
+      else {
+        this.guestCheckout();
+        // this.$router.push("/login");
       }
     },
 
@@ -439,6 +441,7 @@ export default {
      * Customer checkout
      */
     customerCheckout() {
+      console.log("Customer Checkout Called!!!");
       let formData = new FormData();
       formData.append(
         "coupon_discounts",
@@ -470,8 +473,8 @@ export default {
         );
         //Billing address
         if (
-          this.config.enable_billing_address == this.enums.status.ACTIVE &&
-          this.config.use_shipping_address_as_billing_address ==
+          this.config?.enable_billing_address == this.enums.status.ACTIVE &&
+          this.config?.use_shipping_address_as_billing_address ==
             this.enums.status.ACTIVE
         ) {
           formData.append(
@@ -481,8 +484,8 @@ export default {
         }
 
         if (
-          this.config.enable_billing_address == this.enums.status.ACTIVE &&
-          this.config.use_shipping_address_as_billing_address !=
+          this.config?.enable_billing_address == this.enums.status.ACTIVE &&
+          this.config?.use_shipping_address_as_billing_address !=
             this.enums.status.ACTIVE
         ) {
           formData.append(
@@ -555,6 +558,8 @@ export default {
      * Guest checkout
      */
     guestCheckout() {
+      console.log("Guest Checkout Called!!!");
+
       let formData = new FormData();
       formData.append(
         "coupon_discounts",
@@ -562,20 +567,20 @@ export default {
       );
       formData.append("name", this.$store.state.guestCustomerInfo.name);
       formData.append("email", this.$store.state.guestCustomerInfo.email);
-      if (this.$store.state.isActiveCreateNewAccount) {
-        formData.append(
-          "password",
-          this.$store.state.guestCustomerInfo.password
-        );
-        formData.append(
-          "password_confirmation",
-          this.$store.state.guestCustomerInfo.confirm_password
-        );
-        formData.append(
-          "create_new_account",
-          this.$store.state.isActiveCreateNewAccount
-        );
-      }
+      // if (this.$store.state.isActiveCreateNewAccount) {
+      //   formData.append(
+      //     "password",
+      //     this.$store.state.guestCustomerInfo.password
+      //   );
+      //   formData.append(
+      //     "password_confirmation",
+      //     this.$store.state.guestCustomerInfo.confirm_password
+      //   );
+      //   formData.append(
+      //     "create_new_account",
+      //     this.$store.state.isActiveCreateNewAccount
+      //   );
+      // }
       formData.append("payment_id", this.selected_payment_method.id);
       formData.append("note", this.additional_order_note);
       //pickup point delivery
@@ -592,17 +597,17 @@ export default {
         );
         formData.append("shipping_address", JSON.stringify(shippingAddress));
         //Billing address
-        if (this.config.enable_billing_address == this.enums.status.ACTIVE) {
+        if (this.config?.enable_billing_address == this.enums.status.ACTIVE) {
           //Shipping address as billing address
           if (
-            this.config.use_shipping_address_as_billing_address ==
+            this.config?.use_shipping_address_as_billing_address ==
             this.enums.status.ACTIVE
           ) {
             formData.append("billing_address", JSON.stringify(shippingAddress));
           }
           //Billing address as billing address
           if (
-            this.config.use_shipping_address_as_billing_address !=
+            this.config?.use_shipping_address_as_billing_address !=
             this.enums.status.ACTIVE
           ) {
             let billingAddress = this.getAddressData(
@@ -635,6 +640,7 @@ export default {
         .then((response) => {
           if (response.data.success) {
             if (response.data.response_url) {
+              console.log("response_url: ", response.data.response_url);
               this.$store.dispatch("flushCartData").then(() => {
                 window.location.href = response.data.response_url;
               });

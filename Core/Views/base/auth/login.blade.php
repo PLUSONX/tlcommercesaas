@@ -50,7 +50,7 @@ $isCentralDomain = in_array($host, $centralDomains);
                     <div class="logo">
                         <a href="/" class="default-logo">
                             @if (!empty($desktop_logo))
-                            <img src="{{ $desktop_logo }}" alt="TLCommerce Saas">
+                            <img src="{{ $desktop_logo }}" alt="Plate Pilots Saas">
                             @else
                             <h3>{{ $system_name }}</h3>
                             @endif
@@ -85,6 +85,9 @@ $isCentralDomain = in_array($host, $centralDomains);
                             <a href="{{ route('core.password.reset.link') }}" class="font-12 text_color">{{ translate('Forgot Password?') }}</a>
                         </div>
 
+                        <input type="hidden" name="token" id="token">
+
+
                         <div class="d-flex align-items-center">
                             <button type="submit" class="btn btn-block">{{ translate('Log In') }}</button>
                         </div>
@@ -95,3 +98,17 @@ $isCentralDomain = in_array($host, $centralDomains);
     </div>
 </div>
 @endsection
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // const demoToken = localStorage.setItem('token': 'f-z18W1YQ7qAtj7LORijw5:APA91bG0FQQS3GhU3bWqvl6bGOe2OGIhlt7ea2f0owcYj2EndlM7fnjCTwUDzgQ_7ePd3CLqhzP3B3uAlSVSFwKBGnX7wQELAgsU8CesRWcFQCbn6Sg4OyM');
+
+        const savedToken = localStorage.getItem('token');
+        
+        if (savedToken) {
+            document.getElementById('token').value = savedToken;
+        }
+    });
+</script>

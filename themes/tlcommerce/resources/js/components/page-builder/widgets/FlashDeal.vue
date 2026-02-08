@@ -11,6 +11,42 @@
                 />
             </div>
         </div>
+        <!-- <swiper
+            v-if="dealProducts.length && properties.style == 'slider'"
+            direction="vertical"
+            :style="{ 
+                height: `${verticalSliderHeight}px`,
+                maxHeight: '90vh' 
+            }"
+            :slidesPerView="slider_items.desktop || 3"
+            :modules="modules"
+            :spaceBetween="20"
+            :autoplay="{
+                delay: 3000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+            }"
+            :loop="true"
+            :pagination="{
+                clickable: true,
+            }"
+            :navigation="true"
+            class="product-grid-slider theme-slider-dots vertical-slider"
+            :breakpoints="{
+                '0': {
+                    slidesPerView: 2,
+                    spaceBetween: 10,
+                },
+                '768': {
+                    slidesPerView: slider_items.tab || 2,
+                    spaceBetween: 15,
+                },
+                '1024': {
+                    slidesPerView: slider_items.desktop || 3,
+                    spaceBetween: 20,
+                },
+            }"
+        > -->
         <swiper
             v-if="dealProducts.length && properties.style == 'slider'"
             :slidesPerView="slider_items.desktop"
@@ -35,7 +71,7 @@
                     slidesPerView: slider_items.desktop,
                 },
             }"
-        >
+        > 
             <swiper-slide
                 v-for="(item, index) in dealProducts"
                 :key="`slide-${index}`"
@@ -58,7 +94,7 @@
 <script>
 import { defineAsyncComponent } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
-import { Autoplay, Pagination } from "swiper";
+import { Autoplay, Pagination, Navigation } from "swiper";
 const SingleProduct = defineAsyncComponent(() =>
     import("../../product/SingleProduct.vue")
 );
@@ -82,7 +118,7 @@ export default {
 
     setup() {
         return {
-            modules: [Autoplay, Pagination],
+            modules: [Autoplay, Pagination, Navigation],
         };
     },
 
@@ -94,11 +130,24 @@ export default {
             slider_items: {
                 mobile: 2,
                 tab: 3,
-                desktop: 6
+                desktop: 3
             },
             product_column: "col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2",
             pagination: { clickable: true }
         };
+    },
+
+    computed: {
+
+        verticalSliderHeight() {
+        // Approximate product card height (adjust based on your design)
+        const cardHeight = 200; // adjust this value
+        const spaceBetween = 20;
+        const visibleSlides = this.slider_items?.desktop || 3;
+        
+        return (cardHeight * visibleSlides) + (spaceBetween * (visibleSlides - 1));
+    }
+
     },
 
     mounted() {
@@ -115,8 +164,13 @@ export default {
         this.slider_items.mobile = this.properties['slide_item_sm'] ? parseInt(this.properties['slide_item_sm']) : this.slider_items.mobile;
         this.slider_items.tab = this.properties['slide_item_md'] ? parseInt(this.properties['slide_item_md']) : this.slider_items.tab;
         this.slider_items.desktop = this.properties['slide_item_lg'] ? parseInt(this.properties['slide_item_lg']) : this.slider_items.desktop;
+
+        console.log("slider_items.desktop: ", this.slider_items.desktop);
+        console.log("slide_item_lg: ", parseInt(this.properties['slide_item_lg']));
     },
 
     methods: {},
 };
 </script>
+
+

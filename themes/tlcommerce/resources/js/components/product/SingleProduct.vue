@@ -75,8 +75,8 @@
       <div
         class="star-rating"
         v-if="
-          site_config.enable_product_reviews == 1 &&
-          site_config.enable_product_star_rating == 1
+          site_config?.enable_product_reviews == 1 &&
+          site_config?.enable_product_star_rating == 1
         "
       >
         <div class="product-rating-wrapper">
@@ -89,33 +89,42 @@
       </div>
       <!-- End Rating -->
 
-      <!-- Title -->
-      <h4 class="product-title">
-        <router-link :to="`/products/${item.slug}`">
-          {{ item.name }}
-        </router-link>
-      </h4>
-      <!-- End Title -->
+      <div class="row justify-content-between align-items-baseline">
 
-      <!-- Price -->
-      <span class="product-price d-flex flex-wrap c1">
-        <the-currency
-          :amount="item.price"
-          tag="span"
-          v-if="item.base_price > item.price"
-        ></the-currency>
-        <the-currency
-          :amount="item.base_price"
-          tag="span"
-          v-else
-        ></the-currency>
-        <the-currency
-          :amount="item.base_price"
-          tag="del"
-          v-if="!widgetSlider && item.base_price > item.price"
-        ></the-currency>
-      </span>
-      <!-- End Price -->
+        <div class="col-auto pe-0">
+            <!-- Title -->
+          <h4 class="product-title">
+            <router-link :to="`/products/${item.slug}`">
+              {{ item.name }}
+            </router-link>
+          </h4>
+          <!-- End Title -->
+        </div>
+
+        <div class="col-auto text-end">
+          <!-- Price -->
+          <span class="product-price d-flex flex-wrap c1">
+            <the-currency
+              :amount="item.price"
+              tag="span"
+              v-if="item.base_price > item.price"
+            ></the-currency>
+            <the-currency
+              :amount="item.base_price"
+              tag="span"
+              v-else
+            ></the-currency>
+            <the-currency
+              :amount="item.base_price"
+              tag="del"
+              v-if="!widgetSlider && item.base_price > item.price"
+            ></the-currency>
+          </span>
+          <!-- End Price -->
+        </div>
+        
+      </div>
+      
     </div>
     <!-- End Summary -->
     <!-- Quick View Modal -->
@@ -516,8 +525,8 @@
       <div
         class="star-rating mx-auto"
         v-if="
-          site_config.enable_product_reviews == 1 &&
-          site_config.enable_product_star_rating == 1
+          site_config?.enable_product_reviews == 1 &&
+          site_config?.enable_product_star_rating == 1
         "
       >
         <div class="product-rating-wrapper">
@@ -705,13 +714,24 @@ export default {
   methods: {
 
     cleanImage(img) {
-      if (!img) return '';
-      
-      // Only remove '/public' prefix, keep the leading '/'
-      return img.replace(/^\/public/, '');
-    },
+  if (!img) return '';
+  
+  // Use 'let' to declare the variable
+  let image_url = img;
+  
+  image_url = image_url.replace(/^\/public/, '');
+
+  console.log("image_url_vue: ", image_url);
+
+  return img.replace(/^\/public/, '');
+},
 
     handleCartButton(event) {
+
+      console.log('handleCartButton called');
+
+      console.log('itemHasVariant: ', this.item.has_variant);
+
       event.preventDefault();
 
       if (this.item.has_variant == 2) {
@@ -771,6 +791,7 @@ export default {
      * Store items to cart
      */
     addToCart() {
+      console.log('addToCart called');
       let cart_item = {
         uid: Date.now(),
         id: this.item.id,
@@ -795,6 +816,7 @@ export default {
      * Add to wishlist
      */
     addToWishlist() {
+      console.log('addToWishlist called');
       if (this.isCustomerLogin) {
         axios
           .post(
@@ -858,7 +880,9 @@ export default {
             this.$toast.error(this.$t("Product remove from wishlist failed"));
           });
       } else {
-        this.$toast.error("Please login");
+        console.log('addToWishlist called');
+        this.$toast.error("addToWishlist called");
+        // this.$toast.error("Please login");
         this.$router.push("/login");
       }
     },
@@ -922,6 +946,7 @@ export default {
     font-size: 16px;
     font-weight: 700;
     color: $c1;
+    line-height: 1;
     del {
       font-weight: 700;
       font-size: 12px;
@@ -1047,5 +1072,9 @@ export default {
   width: 60px !important;
   height: 60px !important;
   min-width: 60px;
+}
+.row.align-items-center {
+    display: flex;
+    align-items: center; /* Vertical center */
 }
 </style>

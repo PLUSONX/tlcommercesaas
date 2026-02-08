@@ -12,10 +12,47 @@ class NotificationController extends Controller
      * 
      * @return mixed
      */
+//     public function adminNotifications()
+// {
+//     try {
+//         // 1. Check if user is actually logged in
+//         $user = auth()->user();
+        
+//         if (!$user) {
+//             return response()->json([
+//                 'success' => false, 
+//                 'message' => 'Unauthenticated'
+//             ], 401);
+//         }
+
+//         // 2. Get notifications
+//         $notifications = $user->unreadNotifications;
+
+//         // 3. Return the exact structure your JS expects
+//         return response()->json([
+//             'success' => true,
+//             'notifications' => $notifications // Ensure this key matches your JS
+//         ]);
+
+//     } catch (\Exception $e) {
+//         // This will log the actual error so you can see it in storage/logs/laravel.log
+//         Log::error("Notification Error: " . $e->getMessage());
+        
+//         return response()->json([
+//             'success' => false, 
+//             'error' => $e->getMessage()
+//         ], 500);
+//     }
+// }
     public function adminNotifications()
     {
         try {
+            // dd("Admin notifications method working!");
+
             $notifications = auth()->user()->unreadNotifications;
+
+            // dd($notifications);
+
             $notifications = $notifications->map(function ($item) {
                 return [
                     'id' => $item->id,

@@ -1,5 +1,7 @@
 @php
     $pages = getPage([['tl_pages.publish_status', '=', config('default.page_status.publish')], ['tl_pages.publish_at', '<', currentDateTime()]]);
+
+
 @endphp
 {{-- Subscribe Header --}}
 <h3 class="black mb-3">{{ translate('Subscribe') }}</h3>

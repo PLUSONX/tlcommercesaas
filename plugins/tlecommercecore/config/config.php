@@ -60,7 +60,7 @@ return [
         'mollie' => 8,
         'bank' => 9,
         'gpay' => 10,
-        'wipay' => 11,
+        'payzah' => 11,
         'powertranzpay' => 12,
         'avariamoney' => 13,
         'paymob' => 15,

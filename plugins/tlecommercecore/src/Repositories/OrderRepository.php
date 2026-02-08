@@ -4,6 +4,7 @@ namespace Plugin\TlcommerceCore\Repositories;
 
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use NunoMaduro\Collision\Adapters\Phpunit\State;
@@ -40,6 +41,7 @@ use Plugin\TlcommerceCore\Models\LocationWiseShippingRateCountry;
 use Plugin\TlcommerceCore\Http\Resources\SingleShippingRateCollection;
 use Plugin\TlcommerceCore\Models\Country;
 use Plugin\TlcommerceCore\Models\LocationWiseShippingRate;
+
 
 class OrderRepository
 {
@@ -1194,6 +1196,8 @@ class OrderRepository
     public function guestCheckout($request)
     {
         try {
+            \Log::info('Guest Checkout Respository Method!!!');
+
             DB::beginTransaction();
             $shipping_address = $request->has('shipping_address') ? json_decode($request['shipping_address'], true) : [];
             $customer_id = NULL;
@@ -1213,6 +1217,9 @@ class OrderRepository
                 $customer_id = $customer->id;
             } else {
                 //Create guest customer
+
+                \Log::info('Respository Method: in guest customer region!!!');
+
                 $guest_customer = new GuestCustomers();
                 $guest_customer->name = !empty($customer_name) ? $customer_name : 'Guest Customer';
                 $guest_customer->email = !empty($customer_email) ? $customer_email : 'guest@default.com';
@@ -1220,10 +1227,14 @@ class OrderRepository
                 $guest_customer->save();
                 $guest_customer_id = $guest_customer->id;
             }
+            \Log::info('Respository Method: out guest customer region!!!');
             $shipping_address_id = NULL;
             $billing_address_id = NULL;
             //Store shipping address
             if ($request->has('shipping_address')) {
+
+                \Log::info('Respository Method: In shipping address region!!!');
+
                 $shipping_address = json_decode($request['shipping_address'], true);
 
                 $customer_address = new CustomerAddress;
@@ -1240,8 +1251,14 @@ class OrderRepository
                 $customer_address->save();
                 $shipping_address_id = $customer_address->id;
             }
+
+                \Log::info('Respository Method: Out shipping address region!!!');
+
             //Store billing address
             if ($request->has('billing_address')) {
+
+                \Log::info('Respository Method: In billing address region!!!');
+
                 $shipping_address = json_decode($request['billing_address'], true);
 
                 $customer_address = new CustomerAddress;
@@ -1258,6 +1275,9 @@ class OrderRepository
                 $customer_address->save();
                 $billing_address_id = $customer_address->id;
             }
+
+            \Log::info('Respository Method: out billing address region!!!');
+
 
             $products = json_decode($request['products'], true);
             $total_payable_amount = self::totalOrderAmount($products) - self::calculateOrderDiscount($request);
@@ -1279,13 +1299,23 @@ class OrderRepository
             $order->shipping_type = $shipping_type;
             $order->payment_status = config('tlecommercecore.order_payment_status.unpaid');
             $order->delivery_status = config('tlecommercecore.order_delivery_status.pending');
+
+            \Log::info('Respository Method: Before Saving Order!!!');
+
+
             $order->save();
             //Update guest customer
             if ($guest_customer_id != NULL) {
                 $guest_customer = GuestCustomers::where('id', $guest_customer_id)->first();
                 $guest_customer->order_id = $order->id;
+
+                \Log::info('Respository Method: Before Saving Guest Customer!!!');
+
                 $guest_customer->save();
             }
+
+            \Log::info('Respository Method: After Saving Guest Customer!!!');
+            
             //store order products
             $this->storeOrderProducts($order->id, $products, null);
 
@@ -1299,17 +1329,35 @@ class OrderRepository
                 $redirect_url = $this->generateOrderPaymentLink($order->id, $guest_customer_id, 'guest', $request['payment_id'], $total_payable_amount);
             }
             //Send new order notification to admin
+
+            \Log::info('Respository Method: before sending notification to admin!!!');
+
             EcommerceNotification::sendNewOrderNotification($order);
+
+            \Log::info('Respository Method: after sending notification to admin!!!');
+
             DB::commit();
             if ($request['payment_id'] == config('tlecommercecore.payment_methods.bank')) {
+
+                \Log::info('Respository Method: before storing bank payment info!!!');
+
                 $this->storeBankPaymentInfo($request, $order->id);
             }
             return $redirect_url;
         } catch (\Exception $e) {
+            Log::error('PickupPoint Error (Exception): ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
             DB::rollBack();
             return false;
         } catch (\Error $e) {
             DB::rollBack();
+            Log::error('PickupPoint Error (Critical Error): ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
             return false;
         }
     }
@@ -2451,6 +2499,7 @@ class OrderRepository
      */
     public  function generateOrderPaymentLink($order_id, $customer_id, $customer_type, $payment_method, $payable_amount, $is_wallet_payment = 2)
     {
+         \Log::info('generateOrderPaymentLink Method!!!');
         $base_url = url('/');
         if ($is_wallet_payment == config('settings.general_status.active')) {
             return $base_url . '/order-success/' . $order_id;
@@ -2462,8 +2511,21 @@ class OrderRepository
 
                     return $base_url . '/order-success/' . $order_id;
                 } else {
+                    \Log::info('before finding payment method!!!');
+
                     $payment_method = PaymentMethods::find($payment_method);
+
+                    \Log::info('Payment method data', [
+                            'payment_method' => json_encode($payment_method),
+                    ]);
+
                     $url = $base_url . '/payment/' . Str::slug($payment_method->name) . '/pay';
+
+                    \Log::info('check url', [
+                            'base_url' => json_encode($base_url),
+                            'url' => json_encode($url),
+                    ]);
+
                     session()->put('payment_type', 'checkout');
                     session()->put('order_id', $order_id);
                     session()->put('payable_amount', $payable_amount);

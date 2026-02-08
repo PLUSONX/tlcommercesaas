@@ -2,6 +2,7 @@
 
 namespace Plugin\TlcommerceCore\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\ValidationException;
@@ -384,6 +385,61 @@ class CustomerController extends Controller
             );
         }
     }
+
+//     public function refresh()
+// {
+//     try {
+//         \Log::info('Customer token refresh endpoint hit');
+
+//         $bearerToken = request()->bearerToken();
+
+//         if (!$bearerToken) {
+//             return response()->json([
+//                 'success' => false,
+//                 'message' => 'Authorization token not provided',
+//             ], 401);
+//         }
+
+//         \Log::info('Refresh attempt for token', [
+//             'token' => substr($bearerToken, 0, 15) . '...'
+//         ]);
+
+//         // IMPORTANT: explicitly set the token for the guard
+//         $token = auth('jwt-customer')->setToken($bearerToken)->refresh();
+
+//         return $this->createNewToken($token, true);
+
+//     } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Token has expired beyond refresh limit',
+//         ], 401);
+
+//     } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Invalid token',
+//         ], 401);
+
+//     } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Token error: ' . $e->getMessage(),
+//         ], 401);
+
+//     } catch (\Exception $e) {
+//         \Log::error('Customer token refresh failed', [
+//             'exception' => $e,
+//         ]);
+
+//         return response()->json([
+//             'success' => false,
+//             'message' => 'Internal server error',
+//         ], 500);
+//     }
+// }
+
+    
     /**
      * Get the authenticated User.
      *

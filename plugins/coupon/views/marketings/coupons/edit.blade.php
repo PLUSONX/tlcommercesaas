@@ -4,7 +4,7 @@
 @endsection
 @section('custom_css')
     <!--Select2-->
-    <link rel="stylesheet" href="{{ asset('/public/backend/assets/plugins/select2/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/assets/plugins/select2/select2.min.css') }}">
     <!--End select2-->
     <style>
         .select2-container {
@@ -371,7 +371,7 @@
 @endsection
 @section('custom_scripts')
     <!--Select2-->
-    <script src="{{ asset('/public/backend/assets/plugins/select2/select2.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/plugins/select2/select2.min.js') }}"></script>
     <script>
         (function($) {
             "use strict";

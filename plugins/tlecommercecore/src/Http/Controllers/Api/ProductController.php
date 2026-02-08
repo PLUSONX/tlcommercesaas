@@ -71,9 +71,11 @@ class ProductController extends Controller
         // echo "<script>console.log('request:', " . json_encode($request) . ");</script>";
         \Log::info('Products request', $request->all());
 
-        $query = $this->product_repository->filterProducts($request);
+        // $query = $this->product_repository->filterProducts($request);
 
-        \Log::info('query', $query);
+        $query = Product::query()
+            ->where('status', 1);
+        // \Log::info('query', $query);
 
 
         //sorting by newest items
@@ -103,7 +105,12 @@ class ProductController extends Controller
         
         
         $products = $query->paginate($request->perPage);
-        // echo "<script>console.log('products from controller:', " . json_encode($products) . ");</script>";
+        
+        \Log::info('Products data', [
+                'query' => $query,
+                'products' => json_encode($products),
+        ]);
+
         return new ProductCollection($products);
     }
 
@@ -166,6 +173,12 @@ class ProductController extends Controller
      */
     public function productDetails(Request $request)
     {
+        \Log::info('Product Details Method Called!!!!');
+
+        \Log::info('Request Data', [
+            'data' => $request->all() 
+        ]);
+
         if ($request->has('preview') && $request['preview'] == 1) {
             $product = Product::with(['single_price', 'variations', 'choices', 'reviews', 'gallery_images'])
                 ->where('permalink', $request['permalink'])
@@ -177,6 +190,15 @@ class ProductController extends Controller
                 ->where('is_approved', config('settings.general_status.active'))
                 ->first();
 
+            \Log::info('Product Data', [
+                'product' => json_encode($product) 
+            ]);
+
+            \Log::info('Final check before return', ['is_null' => is_null($product)]);
+
+            if ($product != null) {
+                return new SingleProductCollection($product);
+            }
 
             if ($product == null) {
                 return response()->json(
@@ -214,9 +236,16 @@ class ProductController extends Controller
             }
         }
 
-        if ($product != null) {
-            return new SingleProductCollection($product);
-        }
+        // if ($product != null) {
+        //     return response()->json([
+        //         'success' => true,
+        //         'data' => new SingleProductCollection($product)
+        //     ]);
+        // }
+
+        // if ($product != null) {
+        //     return new SingleProductCollection($product);
+        // }
     }
     /**
      * Will return compare items details
