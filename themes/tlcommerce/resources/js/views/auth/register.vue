@@ -1,10 +1,15 @@
 <template>
-  <div class="">
-      <page-header class="pt-3 pb-3" :items="bItems" />
-      <div class="pt-60 pb-60 light-bg">
+  <div class="" :class="{
+    'force-mobile-layout': forcedMobile,
+    'mobile-content-wrapper': forcedMobile
+  }">
+      <!-- <page-header class="pt-3 pb-3" :items="bItems" /> -->
+      <!-- <div class="pt-60 pb-60 light-bg"> -->
+    <div class="shipping-info light-bg pt-60 pb-60">
           <div class="custom-container2">
-              <template v-if="$store?.state?.siteProperties?.customer_limit_over == 0">
-                  <div class="col-lg-5 mx-auto p-md-5 px-3 py-4 white-box">
+              <!-- <template> -->
+                  <!-- <div class="col-lg-5 mx-auto p-md-5 px-3 py-4 white-box"> -->
+                    <div class="shipping-info light-bg pt-60 pb-60">
                       <p v-bind:class="notificationClass" v-if="notification">
                           {{ notification }}
                       </p>
@@ -175,7 +180,7 @@
                                       }}
                                   </span>
                                   <router-link
-                                      :to="`/page/${siteSettings.customer_term_condition_page_slug}`"
+                                      :to="`/page/${siteSettings?.customer_term_condition_page_slug}`"
                                       target="_blank"
                                       class="c1"
                                   >
@@ -218,21 +223,21 @@
                           </div>
                       </div>
                   </div>
-              </template>
-              <template v-else>
+              <!-- </template> -->
+              <!-- <template v-else>
                 <div class="col-lg-5 mx-auto p-md-5 px-3 py-4 white-box">
                       <h6>
                         {{ $t("Customer registration service is currently unavailable, please contact with admin") }}
                       </h6>
                 </div>
-              </template>
+              </template> -->
           </div>
       </div>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import PageHeader from "@/components/pageheader/PageHeader.vue";
 import { CSpinner } from "@coreui/vue";
 import axios from "axios";
@@ -274,10 +279,28 @@ export default {
           formSubmitting: false,
       };
   },
-  computed: mapState({
+  computed: {
+    ...mapState({
       siteSettings: (state) => state.siteSettings,
-  }),
+    }),
+
+    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+    forcedMobile() {
+        // identical intent to MainLayout.vue
+        if (this.isSplitScreen) {
+        return true;
+        }
+        return this.isMobile;
+    },
+  },
+//   computed: mapState({
+//       siteSettings: (state) => state.siteSettings,
+//   }),
   mounted() {
+
+    console.log("register vue mounted!!!!");
+
       document.title = this.$t("Registration");
       this.getPhoneCodes();
   },
@@ -363,3 +386,46 @@ export default {
   },
 };
 </script>
+
+
+<style scoped>
+
+  .force-mobile-layout .row > [class*="col-"] {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+.force-mobile-layout .product-content .image,
+.force-mobile-layout .product-content .product-img {
+  min-width: 0 !important;
+  max-width: 100px;
+}
+
+
+
+.force-mobile-layout .cart-image-review {
+  max-width: 100% !important;
+  height: auto !important;
+  flex-shrink: 1 !important;
+}
+
+.force-mobile-layout .d-none.d-lg-block,
+.force-mobile-layout .d-lg-block {
+  display: none !important;
+}
+
+.force-mobile-layout .d-block.d-lg-none,
+.force-mobile-layout .d-lg-none {
+  display: block !important;
+}
+
+
+.force-mobile-layout .d-block.d-lg-none.col-12 {
+  width: 100% !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
+}
+
+
+</style>

@@ -63,8 +63,8 @@ export default {
         },
 
         featureImagePath: (state) => {
-            console.log("state: ", state);
-            console.log("Banner Feature path: ", state.activeLayout?.split_screen?.feature_image_path);
+            //   console.log("state: ", state);
+            // console.log("Banner Feature path: ", state.activeLayout?.split_screen?.feature_image_path);
             return state.activeLayout?.split_screen?.feature_image_path || null;
         },
 

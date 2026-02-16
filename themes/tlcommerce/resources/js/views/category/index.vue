@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <page-header class="pt-3 pb-3" :items="bItems" />
+    <!-- <page-header class="pt-3 pb-3" :items="bItems" /> -->
     <div class="pt-60 pb-60 light-bg">
       <div class="custom-container2">
         <div class="row">

@@ -19,6 +19,8 @@ function customerguard(to, from, next) {
   }
 }
 function isCustomerLogin(to, from, next) {
+  // console.log("isCustomerLogin method called!!!");
+  // console.log("isCustomerLogin: ", store.state.isCustomerLogin);
 
   if (!store.state.isCustomerLogin) {
     next();
@@ -28,15 +30,15 @@ function isCustomerLogin(to, from, next) {
 }
 const router = createRouter({
   routes: [
-    // {
-    //   path: "/",
-    //   name: "home",
-    //   component: () => import(/* webpackChunkName: "Home" */ '../views/index.vue'),
-    // },
     {
       path: "/",
-      redirect: { name: 'products' }
+      name: "home",
+      component: () => import(/* webpackChunkName: "Home" */ '../views/index.vue'),
     },
+    // {
+    //   path: "/",
+    //   redirect: { name: 'products' }
+    // },
     {
       path: "/products",
       name: "products",

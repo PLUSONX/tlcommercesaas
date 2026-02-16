@@ -42,14 +42,14 @@ export default {
   },
   computed: {
     cleanLogo() {
-      return this.logo.replace('/public', '');
+      return this.logo?.replace('/public', '');
     },
   },
-  // mounted() {
-  //   console.log('TheLogo mounted');
-  //   console.log('Original logo:', this.logo);
-  //   console.log('Clean logo:', this.cleanLogo);
-  // },
+  mounted() {
+    console.log('TheLogo mounted');
+    console.log('Original logo:', this.logo);
+    console.log('Clean logo:', this.cleanLogo);
+  },
 };
 </script>
 <!-- <script>

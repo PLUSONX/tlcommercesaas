@@ -3,7 +3,7 @@
     'force-mobile-layout': forcedMobile,
     'mobile-content-wrapper': forcedMobile
   }">
-    <page-header class="pt-3 pb-3" :items="bItems" />
+    <!-- <page-header class="pt-3 pb-3" :items="bItems" /> -->
     <div class="shipping-info light-bg pt-60 pb-60">
       <!--Container-->
       <div class="custom-container2" v-if="!dataLoading && tableData.length">

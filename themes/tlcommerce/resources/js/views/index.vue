@@ -149,6 +149,9 @@
             ></top-sellers>
         </div>
         <!--End Dynamic Sections-->
+
+        <ProductPage />
+
     </div>
 </template>
 
@@ -196,6 +199,9 @@ const CustomProductSection = defineAsyncComponent(() =>
 const TopSellers = defineAsyncComponent(() =>
     import("@/components/home-page-sections/TopSellers.vue")
 );
+
+import ProductPage from '@/views/products/index.vue';
+
 const axios = require("axios").default;
 export default {
     components: {
@@ -211,6 +217,7 @@ export default {
         CustomProductSection,
         TopSellers,
         BuilderSection,
+        ProductPage
     },
     setup() {
         return {

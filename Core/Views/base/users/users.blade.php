@@ -63,8 +63,10 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <div class="img img-45">
-                                                <img src="{{ asset(getFilePath($user->image)) }}"
-                                                    alt="{{ $user->name }}">
+                                                <img src="{{ asset(str_replace('public/', '', getFilePath($user->image))) }}"
+     alt="{{ $user->name }}">
+                                                <!-- <img src="{{ asset(getFilePath($user->image)) }}"
+                                                    alt="{{ $user->name }}"> -->
                                             </div>
                                         </div>
                                     </td>

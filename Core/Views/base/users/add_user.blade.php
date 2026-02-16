@@ -15,7 +15,7 @@
     {{ translate('Add User') }}
 @endsection
 @section('custom_css')
-    <link rel="stylesheet" href="{{ asset('/public/backend/assets/plugins/select2/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/assets/plugins/select2/select2.min.css') }}">
 @endsection
 @section('main_content')
     <div class="row">
@@ -161,7 +161,7 @@
     </div>
 @endsection
 @section('custom_scripts')
-    <script src="{{ asset('/public/backend/assets/plugins/select2/select2.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/plugins/select2/select2.min.js') }}"></script>
     <script>
         (function($) {
             "use strict";

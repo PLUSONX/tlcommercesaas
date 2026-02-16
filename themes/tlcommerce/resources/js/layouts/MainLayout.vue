@@ -10,7 +10,24 @@
           :style="contentStyle"
         >
 
-          <header class="header__two love-sticky">
+        <!-- <pre>DEBUG: {{ data ? 'Data object exists' : 'Data object is NULL' }}</pre>
+        <pre>PROPS: {{ data?.site_properties }}</pre> -->
+
+        <header class="header__two love-sticky">
+         
+          <header-middle
+            :site-properties="data.site_properties"
+            :mode="mode"
+            :cart-item="cartItem"
+            :wishlist-item="wishlistItem"
+            :compare-item="compareItem"
+            :header-logo-style="headerLogoStyle"
+            :header-menu-style="headerMenuStyle"
+          ></header-middle>
+
+        </header>
+
+          <!-- <header class="header__two love-sticky">
             <header-top
               :data-loading="MenuItemsLoading"
               :currencies="data.currencies"
@@ -21,9 +38,19 @@
               @change-language-currency="setCurrencyLanguage"
               @logout-customer="logoutCustomer"
             ></header-top>
-          </header>
+          </header> -->
 
-          <mobile-header
+          <!-- <mobile-header
+            :site-properties="data.site_properties"
+            :mode="mode"
+            :cart-item="cartItem"
+            :header-style="headerStyle"
+            :header-menu-style="headerMenuStyle"
+            :header-logo-style="headerLogoStyle"
+            class="c1-bg custom-mobile-header mobile_header__two d-lg-none force-show sticky"
+          ></mobile-header> -->
+
+          <!-- <mobile-header
             :site-properties="data.site_properties"
             :mode="mode"
             :cart-item="cartItem"
@@ -31,9 +58,14 @@
             :header-menu-style="headerMenuStyle"
             :header-logo-style="headerLogoStyle"
             :class="{ 'force-show': isSplitScreen }"
-          ></mobile-header>
+          ></mobile-header> -->
 
-          <slot></slot>
+          <div class="content-split-nudge">
+              <slot></slot>
+          </div>
+          <!-- <slot></slot> -->
+
+              <!-- <ProductPage /> -->
 
         </div>
 
@@ -80,7 +112,7 @@
         ></top-bar-banner>
         <!-- Header -->
         <header class="header__two love-sticky">
-          <header-top
+          <!-- <header-top
             :data-loading="MenuItemsLoading"
             :currencies="data.currencies"
             :languages="data.languages"
@@ -89,7 +121,7 @@
             :header-menu-style="headerMenuStyle"
             @change-language-currency="setCurrencyLanguage"
             @logout-customer="logoutCustomer"
-          ></header-top>
+          ></header-top> -->
           <header-middle
             :site-properties="data.site_properties"
             :mode="mode"
@@ -100,14 +132,14 @@
             :header-menu-style="headerMenuStyle"
             class="d-none d-lg-block"
           ></header-middle>
-          <header-bottom
+          <!-- <header-bottom
             :data-loading="MenuItemsLoading"
             :mega-categories="data.megaCategories"
             :menu-items="headerBottomMenu"
             :header-style="headerStyle"
             :header-menu-style="headerMenuStyle"
             class="d-none d-lg-block"
-          ></header-bottom>
+          ></header-bottom> -->
         </header>
 
         <mobile-header
@@ -292,6 +324,9 @@ const BannerFeature = defineAsyncComponent(() =>
   import("@/components/features/BannerFeature.vue")
 );
 
+// import ProductPage from '@/views/products/index.vue';
+
+
 import { defineAsyncComponent, reactive } from "vue";
 import { useStore } from "vuex";
 import {
@@ -329,7 +364,7 @@ export default {
     recent_blog_widget,
     VRuntimeTemplate,
     Preloader,
-    BannerFeature
+    BannerFeature,
   },
   setup() {
     const data = reactive({
@@ -346,17 +381,19 @@ export default {
     /**
      * Get site properties
      */
-    function getSiteProperties() {
+      function getSiteProperties() {
+      console.log("-------getSiteProperties method called-----")
       const headers = {
         "Content-Type": "application/json",
         "Accept-Language": localStorage.getItem("locale") || "en",
       };
       axios
-        .get("/api/v1/ecommerce-core/site-properties", {
+        .post("/api/v1/ecommerce-core/site-properties", null, {
           headers: headers,
         })
         .then((response) => {
           if (response.data.success) {
+            console.log("response site_properties: ", response.data);
             data.site_properties = response.data.siteProperties;
             data.languages = response.data.languages;
             data.currencies = response.data.currencies;
@@ -366,6 +403,28 @@ export default {
         })
         .catch((error) => {});
     }
+    // function getSiteProperties() {
+    //   console.log("-------getSiteProperties method called-----")
+    //   const headers = {
+    //     "Content-Type": "application/json",
+    //     "Accept-Language": localStorage.getItem("locale") || "en",
+    //   };
+    //   axios
+    //     .get("/api/v1/ecommerce-core/site-properties", {
+    //       headers: headers,
+    //     })
+    //     .then((response) => {
+    //       if (response.data.success) {
+    //         console.log("response site_properties: ", response.data);
+    //         data.site_properties = response.data.siteProperties;
+    //         data.languages = response.data.languages;
+    //         data.currencies = response.data.currencies;
+    //         store.dispatch("siteSettings", response.data.site_settings);
+    //         store.dispatch("siteProperties", response.data.siteProperties);
+    //       }
+    //     })
+    //     .catch((error) => {});
+    // }
     /**
      * Get Mega categories
      */
@@ -1102,6 +1161,7 @@ export default {
   position: sticky;
   top: 0;
   height: 100vh;
+  margin-top: 50px;
 }
 
 /* Mobile: Force default layout */
@@ -1190,4 +1250,8 @@ export default {
   /* Only show it if it's meant to be visible on mobile */
   display: block !important; 
 }
+
+// .content-split-nudge {
+//    margin-top: 50px !important; /* This physically pushes the site content down from the top */
+// }
 </style>

@@ -20,7 +20,7 @@ class PushNotificationService
         // dd($userId);
         // Get all active device tokens for this user
         $deviceTokens = DeviceToken::forUser($userId)
-            ->active()
+         ->active()
             ->get();
 
         \Log::info('Device Token data', [

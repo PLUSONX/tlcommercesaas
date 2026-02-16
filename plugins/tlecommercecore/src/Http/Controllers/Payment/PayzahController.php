@@ -118,8 +118,8 @@ class PayzahController extends Controller
     try {
         // Prepare Payzah payment request
         $trackId = $this->generateTrackId($orderId); // We need to create this method
-        $successUrl = route('payment.payzah.success'); // Full URL
-        $errorUrl = route('payment.payzah.cancel', [
+        $successUrl = route('payzah.success'); // Full URL
+        $errorUrl = route('payzah.cancel', [
             'trackid' => $trackId,
         ]);
         // $errorUrl = route('payment.payzah.error'); // Full URL

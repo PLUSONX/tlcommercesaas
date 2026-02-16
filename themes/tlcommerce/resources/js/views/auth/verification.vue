@@ -1,12 +1,12 @@
 <template>
   <div class="">
-    <page-header class="pt-3 pb-3" :items="bItems" />
+    <!-- <page-header class="pt-3 pb-3" :items="bItems" /> -->
     <div class="pt-60 pb-60 light-bg">
       <div class="custom-container2">
         <div class="loginForm white-box px-3 py-4 p-md-5">
           <a v-if="processing">
             <CSpinner component="span" size="sm" aria-hidden="true" />
-            {{ $t("verify your email, please wait") }}...
+            {{ $t("verifying your email, please wait") }}...
           </a>
         </div>
       </div>

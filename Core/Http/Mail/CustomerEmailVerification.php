@@ -8,7 +8,8 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 
-class CustomerEmailVerification extends Mailable implements ShouldQueue
+// class CustomerEmailVerification extends Mailable implements ShouldQueue
+class CustomerEmailVerification extends Mailable 
 {
     use Queueable, SerializesModels;
 

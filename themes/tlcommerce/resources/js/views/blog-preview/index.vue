@@ -1,6 +1,6 @@
 <template>
   <div class="blog-details-page">
-    <page-header :items="bItems" />
+    <!-- <page-header :items="bItems" /> -->
     <div class="pt-30 pt-lg-60 pb-60 light-bg">
       <div class="custom-container2">
         <div class="row">

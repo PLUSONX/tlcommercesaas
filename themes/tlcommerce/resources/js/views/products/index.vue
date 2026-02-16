@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <page-header :items="bItems" />
+    <!-- <page-header :items="bItems" /> -->
     <div class="pt-30 pt-lg-60 pb-60 light-bg">
       <div class="custom-container2">
         <!-- <div class="row"> -->
@@ -60,7 +60,7 @@
               <!-- <div class="col-12"> -->
                 <div class="mb-40 shadow-card">
                   <div class="row">
-                    <div class="col-lg-6 order-1 order-lg-0 col-xl-6">
+                    <div class="col-lg-4 order-1 order-lg-0 col-xl-6">
                       <div class="section-header">
                         <h3 class="product_header" v-if="!categoryLoading">
                           {{ $t("Products") }}
@@ -187,7 +187,7 @@
               <div
                 v-for="product in paginatedItems"
                 :key="product.id"
-                class="col-lg-6 col-6"
+                class="col-lg-4 col-6"
               >
                 <single-product :item="product" styleEight />
               </div>
@@ -426,3 +426,28 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+
+/* .col-lg-4 {
+  border-radius: 12px; 
+} */
+
+
+/* Target the actual product card inside the column */
+.col-6 :deep(.product-card), /* Replace .product-card with the actual class inside SingleProduct */
+.col-6 :deep(.style-eight-wrapper) { 
+  border-radius: 12px !important;
+  overflow: hidden; /* This is crucial! */
+  background: #fff; /* Ensures the radius is visible against the background */
+  border: 1px solid #eee; /* Optional: makes the edge more defined */
+}
+
+/* If SingleProduct doesn't have a wrapper class, target the component directly */
+.col-6 :deep(> div) {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+
+</style>

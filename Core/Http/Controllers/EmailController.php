@@ -2,6 +2,7 @@
 
 namespace Core\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
 use Core\Mail\TestEmail;
 use Illuminate\Http\Request;
 use Core\Models\EmailTemplate;
@@ -93,32 +94,121 @@ class EmailController extends Controller
             return redirect()->back();
         }
     }
+
+
+    /**
+     * This function must update the runtime configuration
+     * so the Mailer knows which credentials to use.
+     */
+    public function changeEmailConfiguration()
+    {
+        config([
+            'mail.default' => getGeneralSetting('mail_driver') ?? 'smtp',
+            'mail.mailers.smtp.host' => getGeneralSetting('mail_host'),
+            'mail.mailers.smtp.port' => getGeneralSetting('mail_port'),
+            'mail.mailers.smtp.encryption' => getGeneralSetting('mail_encryption'),
+            'mail.mailers.smtp.username' => getGeneralSetting('mail_user_name'),
+            'mail.mailers.smtp.password' => getGeneralSetting('mail_password'),
+            'mail.from.address' => getGeneralSetting('mail_from'),
+            'mail.from.name' => getGeneralSetting('mail_from_name'),
+        ]);
+    }
+
     /**
      * Will send test email
      *
      * @param TestEmailRequest $request
      * @return mixed
      */
-    public function sendTestMail(TestEmailRequest $request)
+     public function sendTestMail(TestEmailRequest $request)
     {
+        Log::info('=== sendTestMail START ===');
+
         try {
+
+            Log::info('Step 1: Validated request received', [
+                'email' => $request->email,
+                'subject_length' => strlen($request->subject ?? ''),
+                'message_length' => strlen($request->message ?? '')
+            ]);
+
             $mailData = [
                 "message" => xss_clean($request['message']),
                 "subject" => xss_clean($request['subject'])
             ];
 
+            Log::info('Step 2: Mail data prepared');
+
             if (isTenant()) {
-                changeEmailConfiguration();
+                Log::info('Step 3: Tenant detected, changing email configuration');
+
+                $this->changeEmailConfiguration();
+
+                Log::info('Step 3.1: Config Verify', ['host' => config('mail.mailers.smtp.host')]);
+
+                Log::info('Step 3.2: Purging Mailer Instance');
+
+                Log::info('Step 4: Clearing mailers cache');
+                
                 app()->make(\Illuminate\Mail\MailManager::class)->forgetMailers();
+            } else {
+                Log::info('Step 3: Not a tenant');
             }
+
+            Log::info('Step 4.5: Current SMTP Host', ['host' => config('mail.mailers.smtp.host')]);
+
+            Log::info('Step 4.5.1: Current SMTP Host', ['host' => getGeneralSetting('mail_host')]);
+
+            Log::info('Step 4.5.2: Current SMTP Post', ['port' => getGeneralSetting('mail_port')]);
+
+            Log::info('Step 5: Attempting to send email', [
+                'to' => $request->email
+            ]);
+
             Mail::to($request['email'])->send(new TestEmail($mailData));
+
+            Log::info('Step 6: Email sent successfully');
+
             toastNotification('success', translate('A new email sending successfully'));
+
+            Log::info('=== sendTestMail END SUCCESS ===');
+
             return redirect()->route('core.email.smtp.configuration');
-        } catch (\Exception $e) {
+
+        } catch (\Throwable $e) {
+
+            Log::error('=== sendTestMail FAILED ===', [
+                'error_message' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             toastNotification('error', translate('Email sending failed'));
+
             return redirect()->back();
         }
     }
+    // public function sendTestMail(TestEmailRequest $request)
+    // {
+    //     try {
+    //         $mailData = [
+    //             "message" => xss_clean($request['message']),
+    //             "subject" => xss_clean($request['subject'])
+    //         ];
+
+    //         if (isTenant()) {
+    //             changeEmailConfiguration();
+    //             app()->make(\Illuminate\Mail\MailManager::class)->forgetMailers();
+    //         }
+    //         Mail::to($request['email'])->send(new TestEmail($mailData));
+    //         toastNotification('success', translate('A new email sending successfully'));
+    //         return redirect()->route('core.email.smtp.configuration');
+    //     } catch (\Exception $e) {
+    //         toastNotification('error', translate('Email sending failed'));
+    //         return redirect()->back();
+    //     }
+    // }
     /**
      * will redirect to email template listings
      *

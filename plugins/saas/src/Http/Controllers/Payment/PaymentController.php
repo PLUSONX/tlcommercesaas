@@ -31,20 +31,36 @@ class PaymentController extends Controller
      */
     public function convertCurrency($convert_to_currency, $amount)
     {
-        $system_currency = \Plugin\Saas\Models\Currency::where('id', \Plugin\Saas\Repositories\SettingsRepository::getSaasSetting('default_currency'))
-            ->select('code', 'conversion_rate')
-            ->first();
-        $to_currency = \Plugin\Saas\Models\Currency::where('code', $convert_to_currency)
-            ->select('code', 'conversion_rate')
-            ->first();
+        $default_id = \Plugin\Saas\Repositories\SettingsRepository::getSaasSetting('default_currency');
+        
+        $system_currency = \Plugin\Saas\Models\Currency::find($default_id);
+        $to_currency = \Plugin\Saas\Models\Currency::where('code', $convert_to_currency)->first();
 
-        if ($to_currency != null) {
-            $converted_amount = ($amount / $system_currency->conversion_rate) * $to_currency->conversion_rate;
-            return $converted_amount;
+        // Fallback: If currency config is broken, return original amount rather than crashing
+        if (!$system_currency || !$to_currency) {
+            \Log::error("Currency conversion failed: Default ID $default_id or Target $convert_to_currency missing.");
+            return $amount; 
         }
 
-        throw new CurrencyException("Currency error. $convert_to_currency currency is not configured.");
+        $converted_amount = ($amount / $system_currency->conversion_rate) * $to_currency->conversion_rate;
+        return $converted_amount;
     }
+    // public function convertCurrency($convert_to_currency, $amount)
+    // {
+    //     $system_currency = \Plugin\Saas\Models\Currency::where('id', \Plugin\Saas\Repositories\SettingsRepository::getSaasSetting('default_currency'))
+    //         ->select('code', 'conversion_rate')
+    //         ->first();
+    //     $to_currency = \Plugin\Saas\Models\Currency::where('code', $convert_to_currency)
+    //         ->select('code', 'conversion_rate')
+    //         ->first();
+
+    //     if ($to_currency != null) {
+    //         $converted_amount = ($amount / $system_currency->conversion_rate) * $to_currency->conversion_rate;
+    //         return $converted_amount;
+    //     }
+
+    //     throw new CurrencyException("Currency error. $convert_to_currency currency is not configured.");
+    // }
 
     /**
      * Will return payment methods

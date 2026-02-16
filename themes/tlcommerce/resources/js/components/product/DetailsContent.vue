@@ -507,6 +507,8 @@ export default {
           this.product.shopInfo != null ? this.product.shopInfo.slug : null,
       };
 
+      console.log("cart-item-DetailsContent: ", cart_item);
+
       this.$store.dispatch("addToCart", cart_item);
       this.$router.push("/cart");
     },

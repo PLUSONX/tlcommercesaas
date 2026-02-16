@@ -18,7 +18,8 @@ class HandleTenantLoginToken
         // Only process if we have a login token and tenancy is initialized
         if ($request->has('login_token') && !Auth::check() && !$isCentralDomain) {
 
-            $token = $request->get('login_token');
+            // $token = $request->get('login_token');
+            $token = $request->input('login_token');
             $hashedToken = hash('sha256', $token);
 
             try {

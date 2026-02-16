@@ -22,8 +22,6 @@
 
 /*! axios */
 
-/*! import() */
-
 /*! swiper */
 
 /*! swiper/vue */

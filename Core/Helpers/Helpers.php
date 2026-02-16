@@ -1111,7 +1111,13 @@ if (!function_exists('getEmailTemplateOf')) {
             $system_logo = asset(getFilePath(getGeneralSetting('white_background_logo')));
             if ($tenant_id != null) {
                 $system_logo = str_replace("/tenancy/assets", "", $system_logo);
-            }
+                $system_logo = str_replace('public/', '', $system_logo);
+
+            \Log::info('Logo url', [
+                'system_logo_url' => $system_logo,
+            ]);
+            
+        }
             $body = str_replace('_system_logo_url_', $system_logo, $body);
         }
         if (!array_key_exists('_store_link_', $data)) {

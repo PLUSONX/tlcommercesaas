@@ -12,6 +12,59 @@ use Theme\TLCommerce\Http\Controllers\Backend\HomePageController;
 use Theme\TLCommerce\Http\Controllers\Frontend\ProductController;
 use Theme\TLCommerce\Http\Controllers\Backend\ThemeOptionController;
 
+// Route::get('/test-route-works', function() {
+//     return 'Core.php routes are loading!';
+// });
+
+Route::get('/auth/token-login', function () {
+    \Log::info('Token login route hit');
+    
+    $token = request()->input('login_token');
+
+    if (!$token) {
+        \Log::info('No token provided');
+        return redirect()->route('login')->with('error', 'Invalid login token');
+    }
+
+    // Verify token in central database
+    $tokenData = \DB::connection('mysql')->table('tenant_login_tokens')
+        ->where('token', hash('sha256', $token))
+        ->where('tenant_id', tenant('id'))
+        ->where('expires_at', '>', now())
+        ->first();
+
+    if (!$tokenData) {
+        \Log::info('Token invalid or expired');
+        return redirect()->route('login')->with('error', 'Token expired or invalid');
+    }
+
+    \Log::info('Token valid, finding user: ' . $tokenData->email);
+
+    // Find user in tenant database
+    $user = \App\Models\User::where('email', $tokenData->email)->first();
+
+    if (!$user) {
+        \Log::info('User not found');
+        return redirect()->route('login')->with('error', 'User not found');
+    }
+
+    \Log::info('User found, logging in');
+
+    // Delete the used token
+    \DB::connection('mysql')->table('tenant_login_tokens')
+        ->where('token', hash('sha256', $token))
+        ->delete();
+
+    // Log the user in
+    \Auth::login($user);
+
+    \Log::info('User logged in, redirecting to dashboard');
+
+    // Redirect to dashboard
+    return redirect('/admin/dashboard');
+
+})->name('auth.token-login');
+
 $prefix = Request::segment(1);
 
 //Frontend 

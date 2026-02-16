@@ -22,7 +22,6 @@ use Plugin\TlcommerceCore\Http\Controllers\Payment\MollieController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\PaddleController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\PaymobController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\PaypalController;
-use Plugin\TlcommerceCore\Http\Controllers\Payment\PayzahController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\StripeController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\PaymentController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\PaystackController;
@@ -32,6 +31,25 @@ use Plugin\TlcommerceCore\Http\Controllers\ProductConditionController;
 use Plugin\TlcommerceCore\Http\Controllers\ProductCollectionController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\SSLCommerzController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\MercadoPagoController;
+use Plugin\TlcommerceCore\Http\Controllers\Payment\PayzahController;
+
+/**
+ * Payzah payment
+ */
+Route::get('/payzah/pay', [PayzahController::class, 'pay'])->name('payzah.pay');
+
+Route::prefix('payment')->group(function () {
+    Route::post('/payzah/success', [PayzahController::class, 'success'])
+        ->name('payment.payzah.success');
+
+        Route::post('/payzah/cancel', [PayzahController::class, 'cancel'])
+            ->name('payment.payzah.cancel');
+        });
+        // Route::get('/payzah/success', [PayzahController::class, 'success'])->name('payment.payzah.success');
+// Route::get('/payzah/cancel', [PayzahController::class, 'cancel'])->name('payment.payzah.error');
+Route::get('/payzah/test', [PayzahController::class, 'test'])->name('payzah.test');
+
+
 
 Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function () {
 
@@ -414,21 +432,7 @@ Route::get('/stripe/cancel', [StripeController::class, 'cancel'])->name('stripe.
 Route::get('/paypal/success', [PaypalController::class, 'success'])->name('paypal.success');
 Route::get('/paypal/cancel', [PaypalController::class, 'cancel'])->name('paypal.cancel');
 
-/**
- * Payzah payment
- */
-Route::get('/payzah/pay', [PayzahController::class, 'pay'])->name('payzah.pay');
 
-Route::prefix('payment')->group(function () {
-    Route::post('/payzah/success', [PayzahController::class, 'success'])
-        ->name('payment.payzah.success');
-
-        Route::post('/payzah/cancel', [PayzahController::class, 'cancel'])
-            ->name('payment.payzah.cancel');
-        });
-        // Route::get('/payzah/success', [PayzahController::class, 'success'])->name('payment.payzah.success');
-// Route::get('/payzah/cancel', [PayzahController::class, 'cancel'])->name('payment.payzah.error');
-Route::get('/payzah/test', [PayzahController::class, 'test'])->name('payzah.test');
         
 
 

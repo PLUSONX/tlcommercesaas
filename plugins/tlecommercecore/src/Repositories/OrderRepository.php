@@ -2401,25 +2401,36 @@ class OrderRepository
             )->get();
 
             $payment_method = null;
-            if ($order_info->payment_method == config('tlecommercecore.payment_methods.paypal')) {
-                $payment_method = 'Paypal';
-            } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.stripe')) {
-                $payment_method = 'Stripe';
-            } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.sslcommerz')) {
-                $payment_method = 'sslcommerz';
-            } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.paddle')) {
-                $payment_method = 'Paddle';
-            } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.paystack')) {
-                $payment_method = 'Paystack';
-            } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.razorpay')) {
-                $payment_method = 'Razorpay';
-            } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.mollie')) {
-                $payment_method = 'Mollie';
-            } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.bank')) {
-                $payment_method = 'Bank Transfer';
-            } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.gpay')) {
-                $payment_method = 'Gpay';
+
+            \Log::info('payment method data', [
+                'payment_method' => $order_info->payment_method,
+                'payment_method_in_config' => config('tlecommercecore.payment_methods.payzah'),
+            ]);
+
+            if ($order_info->payment_method == config('tlecommercecore.payment_methods.payzah')) {
+                $payment_method = 'Payzah';
             }
+
+
+            // if ($order_info->payment_method == config('tlecommercecore.payment_methods.paypal')) {
+            //     $payment_method = 'Paypal';
+            // } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.stripe')) {
+            //     $payment_method = 'Stripe';
+            // } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.sslcommerz')) {
+            //     $payment_method = 'sslcommerz';
+            // } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.paddle')) {
+            //     $payment_method = 'Paddle';
+            // } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.paystack')) {
+            //     $payment_method = 'Paystack';
+            // } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.razorpay')) {
+            //     $payment_method = 'Razorpay';
+            // } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.mollie')) {
+            //     $payment_method = 'Mollie';
+            // } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.bank')) {
+            //     $payment_method = 'Bank Transfer';
+            // } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.gpay')) {
+            //     $payment_method = 'Gpay';
+            // }
 
             $billing_info = [];
             if ($order_info->billing_details != null) {

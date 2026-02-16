@@ -73,6 +73,15 @@ use Core\Http\Controllers\Tenant\BlogCategoryController as TenantBlogCategoryCon
 |
 */
 
+Route::middleware(['tenant'])->group(function () {
+
+    Route::get('/test-route-works', function() {
+    return 'Core.php routes are loading!';
+});
+});
+
+
+
 // Route::middleware(['tenant'])->group(function () {
 
 //     Route::get('/', [FrontendController::class, 'EcommerceHome'])->name('theme.ecommerce.home');

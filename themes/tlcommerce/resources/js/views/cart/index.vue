@@ -3,7 +3,7 @@
     'force-mobile-layout': forcedMobile,
     'mobile-content-wrapper': forcedMobile
   }">
-    <page-header :items="bItems" />
+    <!-- <page-header :items="bItems" /> -->
 
     <div class="pt-60 pb-60 light-bg">
       <div class="custom-container2">
@@ -400,7 +400,7 @@
           <!--End Order Summary-->
 
           <!--No Items found-->
-          <div class="col-12" v-if="!tableData.length">
+          <div class="col-12" v-if="!tableData.length" style="margin-top: 10px;">
             <div class="alert alert-danger">
               <p class="d-flex align-items-center justify-content-between">
                 {{ $t("The Cart is Empty") }}

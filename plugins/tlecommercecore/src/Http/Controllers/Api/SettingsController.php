@@ -25,6 +25,8 @@ class SettingsController extends Controller
      */
     public function siteProperties(Request $request)
     {
+        \Log::info('siteProperties method called!!!!');
+
         try {
             $languages = Cache::rememberForever('-active-languages', function () {
                 return Language::where('status', config('settings.general_status.active'))
@@ -62,11 +64,14 @@ class SettingsController extends Controller
             });
 
             $total_customers = Customers::count();
-            if ($total_customers >= $customer_limit && $customer_limit != -1) {
-                $siteProperties['customer_limit_over'] = 1;
-            } else {
-                $siteProperties['customer_limit_over'] = 0;
-            }
+
+            $siteProperties['customer_limit_over'] = 1;
+
+            // if ($total_customers >= $customer_limit && $customer_limit != -1) {
+            //     $siteProperties['customer_limit_over'] = 1;
+            // } else {
+            //     $siteProperties['customer_limit_over'] = 0;
+            // }
 
             return response()->json(
                 [

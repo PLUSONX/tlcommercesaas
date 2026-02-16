@@ -80,64 +80,64 @@ class SettingsController extends Controller
         // }
         // Log::info('updateEcommerceSettings request', $request->all());
         //validate shop url
-        if (isActivePluging('multivendor') && $request->has('shop_name')) {
-            $supper_admin_id = getSupperAdminId();
-            if ($supper_admin_id == null) {
-                throw ValidationException::withMessages([
-                    'admin' => ['No super user found'],
-                ]);
-            }
-            $in_house_shop_id = SettingsRepository::getEcommerceSetting('in_house_shop_id');
-            if ($request['shop_slug'] == null) {
-                throw ValidationException::withMessages([
-                    'shop_slug' => ['Shop slug is required'],
-                ]);
-            }
+        // if (isActivePluging('multivendor') && $request->has('shop_name')) {
+        //     // $supper_admin_id = getSupperAdminId();
+        //     // if ($supper_admin_id == null) {
+        //     //     throw ValidationException::withMessages([
+        //     //         'admin' => ['No super user found'],
+        //     //     ]);
+        //     // }
+        //     // $in_house_shop_id = SettingsRepository::getEcommerceSetting('in_house_shop_id');
+        //     // if ($request['shop_slug'] == null) {
+        //     //     throw ValidationException::withMessages([
+        //     //         'shop_slug' => ['Shop slug is required'],
+        //     //     ]);
+        //     // }
 
-            if (!\Plugin\Multivendor\Models\SellerShop::where('shop_slug', $request['shop_slug'])->whereNot('id', $in_house_shop_id)->doesntExist()) {
-                throw ValidationException::withMessages([
-                    'shop_slug' => ['Shop slug is already taken'],
-                ]);
-            }
+        //     // if (!\Plugin\Multivendor\Models\SellerShop::where('shop_slug', $request['shop_slug'])->whereNot('id', $in_house_shop_id)->doesntExist()) {
+        //     //     throw ValidationException::withMessages([
+        //     //         'shop_slug' => ['Shop slug is already taken'],
+        //     //     ]);
+        //     // }
 
-            // if ($in_house_shop_id == null) {
-            //     $shop = new \Plugin\Multivendor\Models\SellerShop;
-            // }
-            // if ($in_house_shop_id != null) {
-            //     $shop = \Plugin\Multivendor\Models\SellerShop::where('id', $in_house_shop_id)->first();
-            // }
+        //     // if ($in_house_shop_id == null) {
+        //     //     $shop = new \Plugin\Multivendor\Models\SellerShop;
+        //     // }
+        //     // if ($in_house_shop_id != null) {
+        //     //     $shop = \Plugin\Multivendor\Models\SellerShop::where('id', $in_house_shop_id)->first();
+        //     // }
 
-            $shop = null;
+        //     $shop = null;
 
-            if ($in_house_shop_id) {
-                $shop = SellerShop::find($in_house_shop_id);
-            }
+        //     // if ($in_house_shop_id) {
+        //     //     $shop = SellerShop::find($in_house_shop_id);
+        //     // }
 
-            // If ID is missing OR record does not exist → create
-            if (!$shop) {
-                $shop = new SellerShop();
-                // $shop->is_in_house = 1; // if this column exists
-            }
+        //     // If ID is missing OR record does not exist → create
+        //     // if (!$shop) {
+        //     //     $shop = new SellerShop();
+        //     //     // $shop->is_in_house = 1; // if this column exists
+        //     // }
 
 
-            //Store or update in-house shop
-            $shop->shop_name = $request['shop_name'];
-            $shop->shop_slug = $request['shop_slug'];
-            $shop->seller_id = $supper_admin_id;
-            $shop->shop_phone = $request['shop_phone'];
-            $shop->logo = $request['shop_logo'];
-            $shop->shop_banner = $request['shop_banner'];
-            $shop->shop_address = $request['shop_address'];
-            $shop->meta_title = $request['shop_meta_title'];
-            $shop->meta_description = $request['shop_meta_description'];
-            $shop->meta_image = $request['shop_meta_image'];
-            $shop->status = config('settings.general_status.active');
-            $shop->save();
-            //store in-house shop id
-            $config = EcommerceConfig::firstOrCreate(['key_name' => 'in_house_shop_id']);
-            $config->key_value = $shop->id;
-            $config->save();
-        }
+        //     //Store or update in-house shop
+        //     $shop->shop_name = $request['shop_name'];
+        //     $shop->shop_slug = $request['shop_slug'];
+        //     $shop->seller_id = $supper_admin_id;
+        //     $shop->shop_phone = $request['shop_phone'];
+        //     $shop->logo = $request['shop_logo'];
+        //     $shop->shop_banner = $request['shop_banner'];
+        //     $shop->shop_address = $request['shop_address'];
+        //     $shop->meta_title = $request['shop_meta_title'];
+        //     $shop->meta_description = $request['shop_meta_description'];
+        //     $shop->meta_image = $request['shop_meta_image'];
+        //     $shop->status = config('settings.general_status.active');
+        //     $shop->save();
+        //     //store in-house shop id
+        //     $config = EcommerceConfig::firstOrCreate(['key_name' => 'in_house_shop_id']);
+        //     $config->key_value = $shop->id;
+        //     $config->save();
+        // }
         $res = $this->settings_repository->updateEcommerceSettings($request);
 
         if ($res) {

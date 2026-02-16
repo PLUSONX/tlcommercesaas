@@ -134,10 +134,24 @@ class AuthenticationController extends Controller
                                 tenancy()->end();
 
                                 // Build URL with token
-                                $tenantUrl = $this->buildTenantDashboardUrl($tenant) . '?login_token=' . $loginToken;
+                                // $tenantUrl = $this->buildTenantDashboardUrl($tenant) . '?login_token=' . $loginToken;
+                                $tenantUrl = $this->buildTenantLoginUrl($tenant) . '?login_token=' . $loginToken;
 
-                                toastNotification('success', translate("Welcome back!"));
-                                return redirect()->away($tenantUrl);
+                                 // Build URL to the token-login endpoint (not dashboard)
+                                 
+                                 toastNotification('success', translate("Welcome back!"));
+                                 return redirect()->away($tenantUrl);
+                                //  $tenantUrl = $this->buildTenantLoginUrl($tenant);
+                                 
+                                // return view('auth.tenant-redirect', [
+                                //     'tenantUrl' => $tenantUrl,
+                                //     'loginToken' => $loginToken
+                                // ]);
+
+                                // return redirect()->route('tenant.redirect', [
+                                //     'tenant' => $tenant->id,
+                                //     'token' => $loginToken
+                                // ]);
                             }
 
                             tenancy()->end();
@@ -176,7 +190,7 @@ class AuthenticationController extends Controller
 
                             $tenantUrl = $this->buildTenantDashboardUrl($tenant);
                             toastNotification('success', translate("Welcome back!"));
-                            return redirect()->away($tenantUrl);
+                            // return redirect()->away($tenantUrl);
                         }
 
                         tenancy()->end();
@@ -244,6 +258,28 @@ class AuthenticationController extends Controller
         return $tenantUrl;
     }
 
+
+    protected function buildTenantLoginUrl($tenant)
+{
+    // Get tenant domain/subdomain
+    $domain = $tenant->domains()->first();
+
+    if (!$domain) {
+        throw new \Exception('No domain configured for tenant');
+    }
+
+    // Build full URL to token-login endpoint (NOT dashboard)
+    $protocol = request()->secure() ? 'https://' : 'http://';
+    
+    $port = '';
+    if (!app()->environment('production') && request()->getPort() != 80 && request()->getPort() != 443) {
+        $port = ':' . request()->getPort();
+    }
+    
+    $tenantUrl = $protocol . $domain->domain . $port . '/auth/token-login';
+
+    return $tenantUrl;
+}
 
    
 

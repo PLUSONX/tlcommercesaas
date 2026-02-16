@@ -27,7 +27,8 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
      * 
      * /api/v1/ecommerce-core
      */
-    Route::get('site-properties', [SettingsController::class, 'siteProperties']);
+    Route::post('site-properties', [SettingsController::class, 'siteProperties']);
+    // Route::get('site-properties', [SettingsController::class, 'siteProperties']);
     Route::get('phone-codes', [SettingsController::class, 'phoneCodes']);
     /**
      * Product routes

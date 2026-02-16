@@ -3,7 +3,7 @@
     'force-mobile-layout': forcedMobile,
     'mobile-content-wrapper': forcedMobile
   }">
-    <page-header :items="bItems" />
+    <!-- <page-header :items="bItems" /> -->
 
     <div class="pt-60 pb-60 light-bg">
       <div class="custom-container2">

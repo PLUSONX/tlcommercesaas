@@ -211,6 +211,8 @@
 
 /*! ../views/deals/index.vue */
 
+/*! ../views/index.vue */
+
 /*! ../views/multivendor/auth/register.vue */
 
 /*! ../views/page-preview/_id/index.vue */
@@ -488,6 +490,8 @@
 /*! import() | DealPage */
 
 /*! import() | ErrorPage */
+
+/*! import() | Home */
 
 /*! import() | ListBlogs */
 

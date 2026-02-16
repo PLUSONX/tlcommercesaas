@@ -1,4 +1,4 @@
- <link href="{{ asset('/public/backend/assets/plugins/summernote/summernote-lite.css') }}" rel="stylesheet" />
+ <link href="{{ asset('backend/assets/plugins/summernote/summernote-lite.css') }}" rel="stylesheet" />
  <style>
      .product-select-box {
          border: 1px dotted;
@@ -167,7 +167,7 @@
          </div>
      </div>
  </form>
- <script src="{{ asset('/public/backend/assets/plugins/summernote/summernote-lite.js') }}"></script>
+ <script src="{{ asset('backend/assets/plugins/summernote/summernote-lite.js') }}"></script>
  <script>
      (function($) {
          "use strict";

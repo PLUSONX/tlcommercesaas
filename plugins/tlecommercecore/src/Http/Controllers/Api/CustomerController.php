@@ -169,6 +169,9 @@ class CustomerController extends Controller
      */
     public function verifyCustomerEmail(Request $request)
     {
+
+        \Log::info('verifyCustomerEmail method called !!!!');
+
         $customer = $this->customer_repository->verifyCustomerEmail($request['identifier']);
         if ($customer != NULL) {
             return response()->json(

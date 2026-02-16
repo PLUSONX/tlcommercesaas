@@ -4,7 +4,7 @@
       <skeleton height="100vh" class="w-100 pt-20"></skeleton>
     </div>
 
-    <page-header :items="bItems" v-if="is_breadcrumb" :title="page.title" />
+    <!-- <page-header :items="bItems" v-if="is_breadcrumb" :title="page.title" /> -->
 
     <builder-section
       :page="page"

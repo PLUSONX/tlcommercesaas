@@ -13,20 +13,20 @@
     <meta name="keywords" content="">
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('/public/backend/assets/img/favicon.png') }}">
+    <link rel="shortcut icon" href="{{ asset('backend/assets/img/favicon.png') }}">
 
     <!-- Web Fonts -->
     <link href="https://fonts.googleapis.com/css?family=PT+Sans:400,400i,700,700i&display=swap" rel="stylesheet">
 
     <!-- ======= BEGIN GLOBAL MANDATORY STYLES ======= -->
-    <link rel="stylesheet" href="{{ asset('/public/backend/assets/bootstrap/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('/public/backend/assets/fonts/icofont/icofont.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/assets/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/assets/fonts/icofont/icofont.min.css') }}">
     <link rel="stylesheet"
-        href="{{ asset('/public/backend/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.css') }}">
+        href="{{ asset('backend/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.css') }}">
     <!-- ======= END BEGIN GLOBAL MANDATORY STYLES ======= -->
 
     <!-- ======= MAIN STYLES ======= -->
-    <link rel="stylesheet" href="{{ asset('/public/backend/assets/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/assets/css/style.css') }}">
     <!-- ======= END MAIN STYLES ======= -->
 </head>
 
@@ -42,7 +42,7 @@
                         <div class="mt-3 mb-30 pb-2">
                             <a href="/" class="details-btn">
                                 {{ translate('Back To Home') }}
-                                <img src="{{ asset('/public/backend/assets/img/svg/left-arrow-c2.svg') }}"
+                                <img src="{{ asset('backend/assets/img/svg/left-arrow-c2.svg') }}"
                                     alt="" class="svg">
                             </a>
                         </div>
@@ -54,10 +54,10 @@
     </div>
 
     <!-- ======= BEGIN GLOBAL MANDATORY SCRIPTS ======= -->
-    <script src="{{ asset('/public/backend/assets/js/jquery.min.js') }}"></script>
-    <script src="{{ asset('/public/backend/assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('/public/backend/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
-    <script src="{{ asset('/public/backend/assets/js/script.js') }}"></script>
+    <script src="{{ asset('backend/assets/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/js/script.js') }}"></script>
     <!-- ======= BEGIN GLOBAL MANDATORY SCRIPTS ======= -->
 </body>
 

@@ -323,7 +323,8 @@ class OrderController extends Controller
                 $qrCodePath = public_path('tenant/tenant' . $tenant_id . '/invoice_' . $invoice_data['order_code'] . 'qr_code.png');
                 file_put_contents($qrCodePath, base64_decode($qr_code));
 
-                $data['qr_code'] = url('public/tenant/tenant' . $tenant_id . '/invoice_' . $invoice_data['order_code'] . 'qr_code.png');
+                $data['qr_code'] = url('tenant/tenant' . $tenant_id . '/invoice_' . $invoice_data['order_code'] . 'qr_code.png');
+                // $data['qr_code'] = url('public/tenant/tenant' . $tenant_id . '/invoice_' . $invoice_data['order_code'] . 'qr_code.png');
 
 
                 $pdf = NPDF::loadView('plugin/tlecommercecore::orders.invoice.invoice_rtl', $data, [], [

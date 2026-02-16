@@ -381,35 +381,73 @@ class OrderController extends Controller
      */
     public function validateCartItems(Request $request)
     {
+        \Log::info('validateCartItems method called!!!!');
+
         $items = json_decode($request['items'], true);
         $updated_cart = [];
         foreach ($items as $item) {
 
             $attachment = null;
-            if ($item['attachment'] != null && gettype($item['attachment']) != 'array') {
-                $attachment = json_decode($item['attachment']);
+
+            if (!empty($item['attachment'])) {
+                $attachment = is_array($item['attachment'])
+                    ? $item['attachment']
+                    : json_decode($item['attachment'], true);
             }
 
-            if ($item['attachment'] != null && gettype($item['attachment']) == 'array') {
-                $attachment = $item['attachment'];
-            }
+            // if (isset($item['attachment']) && $item['attachment'] != null) {
+
+            //     if (gettype($item['attachment']) != 'array') {
+            //         $attachment = json_decode($item['attachment'], true);
+            //     } else {
+            //         $attachment = $item['attachment'];
+            //     }
+            // }
+            // if($item['attachment'] != null) {
+
+            //     if ($item['attachment'] != null && gettype($item['attachment']) != 'array') {
+            //         $attachment = json_decode($item['attachment']);
+            //     }
+    
+            //     if ($item['attachment'] != null && gettype($item['attachment']) == 'array') {
+            //         $attachment = $item['attachment'];
+            //     }
+            // }
 
             $temp['id'] = $item['id'];
             $temp['uid'] = $item['uid'];
             $temp['name'] = $item['name'];
-            $temp['permalink'] = $item['permalink'];
+            if (!empty($item['permalink'])) {
+                $temp['permalink'] = $item['permalink'];
+            }
+            // $temp['permalink'] = $item['permalink'];
             $temp['image'] = $item['image'];
-            $temp['variant'] = $item['variant'];
-            $temp['variant_code'] = $item['variant_code'];
+            if (!empty($item['variant'])) {
+                $temp['variant'] = $item['variant'];
+            }
+            // $temp['variant'] = $item['variant'];
+            if (!empty($item['variant_code'])) {
+                $temp['variant_code'] = $item['variant_code'];
+            }
+            // $temp['variant_code'] = $item['variant_code'];
             $temp['quantity'] = $item['quantity'];
             $temp['unitPrice'] = $item['unitPrice'];
-            $temp['oldPrice'] = $item['oldPrice'];
+            if (!empty($item['oldPrice'])) {
+                $temp['oldPrice'] = $item['oldPrice'];
+            }
+            // $temp['oldPrice'] = $item['oldPrice'];
             $temp['min_item'] = $item['min_item'];
             $temp['max_item'] = $item['max_item'];
             $temp['attachment'] = $attachment;
             $temp['seller'] = $item['seller'];
-            $temp['shop_name'] = $item['shop_name'];
-            $temp['shop_slug'] = $item['shop_slug'];
+            if (!empty($item['shop_name'])) {
+                $temp['shop_name'] = $item['shop_name'];
+            }
+            // $temp['shop_name'] = $item['shop_name'];
+            if (!empty($item['shop_slug'])) {
+                $temp['shop_slug'] = $item['shop_slug'];
+            }
+            // $temp['shop_slug'] = $item['shop_slug'];
             $temp['is_available'] = $this->checkAvailabilityCartItem($item);
             $temp['is_selected'] = $this->checkAvailabilityCartItem($item) == 1 ? true : false;
             array_push($updated_cart, $temp);

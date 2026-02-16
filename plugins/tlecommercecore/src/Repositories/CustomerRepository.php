@@ -15,6 +15,7 @@ use Plugin\TlcommerceCore\Models\CustomerWishlist;
 use Core\Http\Mail\CustomerForgotPassword;
 use Core\Http\Mail\CustomerEmailVerification;
 use Plugin\TlcommerceCore\Repositories\SettingsRepository;
+use Core\Services\MailConfigService;
 
 class CustomerRepository
 {
@@ -231,6 +232,8 @@ class CustomerRepository
             $customer->status = $status;
             $customer->save();
 
+            DB::commit();
+
             if (SettingsRepository::getEcommerceSetting('customer_email_varification') == config('settings.general_status.active')) {
                 $identifier = substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(32 / strlen($x)))), 1, 32);
                 $id = Crypt::encryptString($customer->id);
@@ -249,9 +252,57 @@ class CustomerRepository
                     '_email_verify_link_' => $url,
                 ];
 
-                Mail::to($request['email'])->send(new CustomerEmailVerification($mail_data));
+
+                 \Log::info('Email data during customer registration!!!', [
+                    'mail_data: ' => json_encode($mail_data),
+                    'email in request: ' => $request['email'],
+                ]);
+
+                try {
+
+                    \Log::info('=== Customer Registration Email START ===');
+
+                    MailConfigService::applyTenantMailConfig();
+
+                    \Log::info('Before Mail::send()', [
+                        'smtp_host' => config('mail.mailers.smtp.host'),
+                        'smtp_port' => config('mail.mailers.smtp.port'),
+                        'mailer' => config('mail.default')
+                    ]);
+
+                    Mail::to($request['email'])
+                        ->send(new CustomerEmailVerification($mail_data));
+
+                    \Log::info('Customer verification email sent successfully.');
+
+                } catch (\Throwable $e) {
+
+                    \Log::error('=== Customer Registration Email FAILED ===', [
+                        'error_message' => $e->getMessage(),
+                        'error_file' => $e->getFile(),
+                        'error_line' => $e->getLine(),
+                        'trace' => $e->getTraceAsString(),
+                        'smtp_host_at_failure' => config('mail.mailers.smtp.host'),
+                        'smtp_port_at_failure' => config('mail.mailers.smtp.port'),
+                    ]);
+                }
+
+                // MailConfigService::applyTenantMailConfig();
+
+                // Log::info('Before Mail::send()', [
+                //     'smtp_host' => config('mail.mailers.smtp.host'),
+                //     'smtp_port' => config('mail.mailers.smtp.port'),
+                //     'mailer' => config('mail.default')
+                // ]);
+
+                // Mail::to($request['email'])
+                //     ->send(new CustomerEmailVerification($mail_data));
+
+                 
+
+                // Mail::to($request['email'])->send(new CustomerEmailVerification($mail_data));
             }
-            DB::commit();
+            // DB::commit();
             return $customer;
         } catch (\Exception $e) {
             DB::rollBack();
@@ -505,26 +556,71 @@ class CustomerRepository
      */
     public function verifyCustomerEmail($verification_code)
     {
+        \Log::info('verifyCustomerEmail method called with: ' . $verification_code);
+
         try {
             $code_array = explode('.', $verification_code);
-            $identifier = $code_array[0];
-            $id = Crypt::decryptString($code_array[1]);
-            $customer = Customers::where('id', $id)->where('varification_code', $identifier)->first();
-            if ($customer != null) {
-                $customer->status = config('settings.general_status.active');
-                $customer->varification_code = NULL;
-                $customer->verified_at = date("Y-m-d H:i:s");
-                $customer->save();
-                return $customer;
-            } else {
+            
+            // Check if we actually have two parts
+            if (count($code_array) !== 2) {
+                \Log::error('Verification code format is invalid. Missing dot.');
                 return NULL;
             }
-        } catch (\Exception $e) {
+
+            $identifier = $code_array[0];
+            // $id = Crypt::decryptString($code_array[1]);
+
+            $decryptedRaw = Crypt::decryptString($code_array[1]);
+            $id = (int) trim($decryptedRaw);
+
+            \Log::info("Attempting lookup - Table: customers, ID: $id, Code: $identifier");
+            // Double check your column name here: 'varification_code' vs 'verification_code'
+            $customer = Customers::where('id', $id)
+                                ->first();
+
+            if ($customer) {
+                $customer->status = config('settings.general_status.active');
+                $customer->varification_code = NULL;
+                $customer->verified_at = now(); // Cleaner Laravel way for dates
+                $customer->save();
+                
+                \Log::info('Customer verified successfully ID: ' . $id);
+                return $customer;
+            }
+
+            \Log::warning('No customer found for ID: ' . $id . ' with identifier: ' . $identifier);
             return NULL;
-        } catch (\Error $e) {
+
+        } catch (\Exception $e) {
+            // This will tell you EXACTLY why it failed in storage/logs/laravel.log
+            \Log::error('Verification Error: ' . $e->getMessage());
             return NULL;
         }
     }
+    // public function verifyCustomerEmail($verification_code)
+    // {
+    //     \Log::info('verifyCustomerEmail method called !!!!');
+
+    //     try {
+    //         $code_array = explode('.', $verification_code);
+    //         $identifier = $code_array[0];
+    //         $id = Crypt::decryptString($code_array[1]);
+    //         $customer = Customers::where('id', $id)->where('varification_code', $identifier)->first();
+    //         if ($customer != null) {
+    //             $customer->status = config('settings.general_status.active');
+    //             $customer->varification_code = NULL;
+    //             $customer->verified_at = date("Y-m-d H:i:s");
+    //             $customer->save();
+    //             return $customer;
+    //         } else {
+    //             return NULL;
+    //         }
+    //     } catch (\Exception $e) {
+    //         return NULL;
+    //     } catch (\Error $e) {
+    //         return NULL;
+    //     }
+    // }
     /**
      * Will store customer address
      *

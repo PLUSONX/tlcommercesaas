@@ -3,10 +3,10 @@
     'force-mobile-layout': forcedMobile,
     'mobile-content-wrapper': forcedMobile
   }">
-    <page-header :items="bItems" />
+    <!-- <page-header :items="bItems" /> -->
 
     <!-- Product details Hash Menu -->
-    <div class="product-details-hash-menu d-lg-none" ref="hashMenu">
+    <div class="product-details-hash-menu d-lg-none" ref="hashMenu" style="margin-top: 10px;">
       <div class="custom-container2">
         <ul>
           <li @click.prevent="goSec('overview')">{{ $t("Overview") }}</li>

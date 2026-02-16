@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <page-header :items="bItems" />
+    <!-- <page-header :items="bItems" /> -->
     <!-- Blog list with sidebar -->
     <div class="pt-30 pt-lg-60 pb-60 light-bg">
       <div class="custom-container2">

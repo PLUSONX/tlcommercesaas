@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <page-header class="pt-3 pb-3" :items="bItems" />
+    <!-- <page-header class="pt-3 pb-3" :items="bItems" /> -->
     <div class="pt-60 pb-60">
       <div class="custom-container2">
         <div class="login-form-wrap">
@@ -85,7 +85,8 @@
                 </span>
               </div>
             </div>
-            <div class="row" v-if="$store?.state?.siteProperties?.customer_limit_over == 0">
+            <!-- <div class="row" v-if="$store?.state?.siteProperties?.customer_limit_over == 0"> -->
+            <div class="row">
               <div class="col-12">
                 <span class="d-block mt-3">
                   {{ $t("If you have no account") }}.

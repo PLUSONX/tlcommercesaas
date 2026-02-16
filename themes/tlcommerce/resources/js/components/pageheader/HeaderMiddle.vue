@@ -1,12 +1,61 @@
 <template>
   <!-- Header Top -->
-  <div
+  <!-- <div
     class="custom-header-mid header-top py-20 c1-bg"
     @scroll="scrollHandler"
     ref="fooHeader"
-  >
+  > -->
+    <div
+      :class="headerClasses"
+      @scroll="scrollHandler"
+      ref="fooHeader"
+    >
     <div class="custom-container2">
       <div class="row align-items-center">
+
+        <div class="col-lg-3">
+          <div class="logo-wrapper d-flex align-items-center">
+            
+            <template v-if="!isSticky">
+              <template v-if="mode == 'dark'">
+                <the-logo v-if="siteProperties.logo_dark" 
+                  :header-logo-style="headerLogoStyle" 
+                  :logo="siteProperties.logo_dark" 
+                  :title="siteProperties.site_name" />
+                <h2 class="site-title" v-else>
+                  <a href="/">{{ siteProperties.site_name }}</a>
+                </h2>
+              </template>
+              <template v-else>
+                <the-logo 
+                  :header-logo-style="headerLogoStyle" 
+                  :logo="siteProperties.logo" 
+                  :title="siteProperties.site_name" />
+              </template>
+            </template>
+
+            <template v-else>
+              <template v-if="mode == 'dark'">
+                <the-logo v-if="siteProperties.sticky_black_logo"
+                  :header-logo-style="headerLogoStyle" 
+                  :logo="siteProperties.sticky_black_logo" 
+                  :title="siteProperties.site_name" />
+                <h2 class="site-title" v-else>
+                  <a href="/">{{ siteProperties.site_name }}</a>
+                </h2>
+              </template>
+              <template v-else>
+                <the-logo 
+                  :header-logo-style="headerLogoStyle" 
+                  :logo="siteProperties.sticky_logo" 
+                  :title="siteProperties.site_name" />
+              </template>
+            </template>
+
+          </div>
+        </div>
+
+        <!-- <div class="col-lg-3" v-if="!this.isSticky">
         <div class="col-lg-3" v-if="!this.isSticky">
           <template v-if="mode == 'dark'">
             <the-logo
@@ -48,6 +97,7 @@
           </template>
           <template v-else>
             <div v-if="siteProperties.sticky_logo">
+
               <the-logo
                 :header-logo-style="headerLogoStyle"
                 :logo="siteProperties.sticky_logo"
@@ -60,7 +110,7 @@
               </h2>
             </div>
           </template>
-        </div>
+        </div> -->
         <div class="col-lg-6 position-relative">
           <!-- Search Form -->
           <search-form
@@ -193,10 +243,11 @@
       </div>
     </div>
   </div>
+
   <!-- End Header Top -->
 </template>
 <script>
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import SearchForm from "@/components/ui/SearchForm.vue";
 import SingleProduct from "../product/SingleProduct.vue";
 import axios from "axios";
@@ -250,15 +301,47 @@ export default {
       isSticky: false,
     };
   },
-  computed: mapState({
+  computed: {
+    ...mapState({
     enable_product_compare: (state) =>
-      state.siteSettings != null
-        ? state.siteSettings.enable_product_compare
-        : 0,
-  }),
+        state.siteSettings != null
+          ? state.siteSettings.enable_product_compare
+          : 0,
+    }),
+
+    ...mapGetters('layout', [
+      'isSplitScreen',
+      'isMobile'
+    ]),
+
+    headerClasses() {
+      console.log("isSplitScreen: ", this.isSplitScreen);
+      console.log("isMobile: ", this.isMobile);
+      // 1. The "Force" condition: both are true
+      if (this.isSplitScreen && !this.isMobile) {
+        return 'custom-header-mid header-top py-20 c1-bg sticky fadeInDowns';
+      }
+
+      // 2. The default/fallback logic (your original ternary)
+      return "custom-header-mid header-top py-20 c1-bg";
+    }
+
+  },
+  // computed: mapState({
+  //   enable_product_compare: (state) =>
+  //     state.siteSettings != null
+  //       ? state.siteSettings.enable_product_compare
+  //       : 0,
+  // }),
   mounted() {
+    console.log("Middle Header mounted!!!");
     window.addEventListener("scroll", this.scrollHandler);
     document.addEventListener("click", this.close);
+
+    // console.log("isSticky: ", this.isSticky);
+
+    // console.log("site properties: ", this.siteProperties);
+
   },
   methods: {
     /**
@@ -300,6 +383,11 @@ export default {
       }
     },
     scrollHandler() {
+
+      if (this.isSplitScreen && !this.isMobile) {
+        return; 
+      }
+
       const fooHeader = this.$refs.fooHeader;
       if (window.pageYOffset > 100) {
         this.isSticky = true;
@@ -314,6 +402,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.logo-wrapper {
+  height: 60px; /* Set this to your desired logo height */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+/* Ensure the component inside doesn't override the height */
+.logo-wrapper :deep(img), 
+.logo-wrapper :deep(.site-logo) {
+  max-height: 100%;
+  width: auto;
+  display: block;
+}
+
 .search-suggestion {
   z-index: 9;
   position: absolute;

@@ -293,8 +293,8 @@
     @endif
 @endsection
 @section('custom_scripts')
-    <script src="{{ asset('/public/backend/assets/plugins/moment/moment.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('/public/backend/assets/plugins/daterangepicker/daterangepicker.js') }}">
+    <script src="{{ asset('backend/assets/plugins/moment/moment.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('backend/assets/plugins/daterangepicker/daterangepicker.js') }}">
     </script>
     <script>
         (function($) {

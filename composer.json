@@ -57,7 +57,8 @@
             "Core\\": "Core/",
             "Plugin\\Saas\\": "plugins/saas/src/",
             "Plugin\\PageBuilder\\": "plugins/pagebuilder/src/",
-            "Theme\\Default\\": "themes/default/src/"
+            "Theme\\Default\\": "themes/default/src/",
+            "Plugin\\TlcommerceCore\\": "plugins/tlecommercecore/src/"
         },
         "files": [
             "Core/Helpers/Helpers.php",

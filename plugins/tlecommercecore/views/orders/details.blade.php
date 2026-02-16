@@ -11,7 +11,7 @@
     {{ translate('Order Details') }}
 @endsection
 @section('custom_css')
-    <link href="{{ asset('/public/backend/assets/plugins/summernote/summernote-lite.css') }}" rel="stylesheet" />
+    <link href="{{ asset('backend/assets/plugins/summernote/summernote-lite.css') }}" rel="stylesheet" />
     <style>
         .status-list li span.badge {
             line-height: unset;
@@ -1033,7 +1033,7 @@
     <!--End invoice print modal-->
 @endsection
 @section('custom_scripts')
-    <script src="{{ asset('/public/backend/assets/plugins/summernote/summernote-lite.js') }}"></script>
+    <script src="{{ asset('backend/assets/plugins/summernote/summernote-lite.js') }}"></script>
     <script>
         (function($) {
             "use strict";

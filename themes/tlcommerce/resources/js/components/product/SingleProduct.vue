@@ -36,14 +36,14 @@
         class="product-action-buttons position-absolute fixed-top w-100 h-100 d-flex align-items-center justify-content-center"
       >
         <!-- Add to Cart -->
-        <button
+        <!-- <button
           v-if="item.quantity > 0"
           class="btn-circle bg-black"
           v-bind:title="$t('Add To Cart')"
           @click.prevent="handleCartButton"
         >
           <base-icon-svg name="cart" :height="17.5" :width="17.5" />
-        </button>
+        </button> -->
         <!-- End Add to Cart -->
 
         <!-- Add to Wishlist -->
@@ -124,6 +124,29 @@
         </div>
         
       </div>
+
+      <div class="button-group d-flex align-items-center justify-content-between">
+        <!--Place order button-->
+        <button
+          type="button"
+          class="btn btn_fill btn-xs rounded"
+          :disabled="product.quantity < 1"
+          @click.prevent="placeOrder"
+        >
+          {{ $t("Place Order") }}
+        </button>
+
+        <!--Add to cart button-->
+        <button
+          type="button"
+          :disabled="product.quantity < 1"
+          class="btn btn_borderd btn-xs rounded"
+          @click.prevent="addToCart"
+        >
+          {{ $t("Add To Cart") }}
+        </button>
+      </div>
+
       
     </div>
     <!-- End Summary -->
@@ -726,6 +749,65 @@ export default {
   return img.replace(/^\/public/, '');
 },
 
+/**
+     * Place order
+     */
+    placeOrder() {
+      console.log("-----PlaceOrder method called!!-----");
+
+      console.log("item: ", this.item);
+      let image = this.item.thumbnail_image;
+      // if (this.item?.galleryImages[0]?.type == "image") {
+      //   image = this.item?.galleryImages[0]?.regular;
+      // } else {
+      //   image = this.item?.galleryImages[1]?.regular;
+      // }
+      // let cart_item = {
+      //   uid: Date.now(),
+      //   id: this.item.id,
+      //   name: this.item.name,
+      //   permalink: this.item.permalink,
+      //   image: image,
+      //   variant: this.product_variant,
+      //   variant_code: this.item.selectedVariant,
+      //   unitPrice: this.item.price,
+      //   oldPrice: this.item.oldPrice,
+      //   quantity: this.quantityValue,
+      //   attachment: this.attachment,
+      //   max_item: this.max_qty,
+      //   min_item: this.min_qty,
+      //   seller: this.item.seller,
+      //   shop_name:
+      //     this.item.shopInfo != null ? this.item.shopInfo.name : null,
+      //   shop_slug:
+      //     this.item.shopInfo != null ? this.item.shopInfo.slug : null,
+      // };
+
+      let cart_item = {
+        uid: Date.now(),
+        id: this.item.id,
+        name: this.item.name,
+        permalink: this.item.slug,
+        image: this.item.thumbnail_image,
+        variant: null,
+        variant_code: null,
+        unitPrice: this.item.price,
+        oldPrice: this.item.base_price,
+        attachment: null,
+        quantity: this.quantityValue,
+        max_item: this.max_qty,
+        min_item: this.min_qty,
+        seller: this.item.seller,
+        shop_name: this.item.shop != null ? this.item.shop.shop_name : null,
+        shop_slug: this.item.shop != null ? this.item.shop.shop_slug : null,
+      };
+
+      // console.log("cart-item: ", cart_item);
+
+      this.$store.dispatch("addToCart", cart_item);
+      this.$router.push("/cart");
+    },
+
     handleCartButton(event) {
 
       console.log('handleCartButton called');
@@ -902,12 +984,13 @@ export default {
 .single-product-item {
   background-color: #f7f8fa;
   margin-bottom: 30px;
+  border-radius: 12px; 
   .badge-container {
     position: absolute;
     right: 0;
     top: 0;
-    width: 90px;
-    height: 90px;
+    width: 70px;
+    height: 70px;
     .product-badge {
       position: absolute;
       width: calc(100% * 2);
@@ -1077,4 +1160,48 @@ export default {
     display: flex;
     align-items: center; /* Vertical center */
 }
+
+// .btn-xs {
+//   margin-top: 10px;
+//   padding: 2px 8px !important;  /* Slightly larger vertical padding for touch on mobile */
+//   font-size: 12px;
+//   line-height: 1.2;
+//   height: auto;
+//   display: inline-flex;
+//   align-items: center;
+//   justify-content: center;
+//   text-align: center;
+// }
+
+.btn-xs {
+  margin-top: 10px;
+  padding: 6px 12px;   
+  font-size: 10px;    
+  font-weight: 600;   /* Slightly bolder to make the small text legible */
+  // text-transform: uppercase; /* Improves readability at small sizes */ /* Smaller text */
+  line-height: 1.2;   /* Tighter line height */
+  height: auto;       /* Ensures the button shrinks to content */
+}
+
+/* Desktop adjustment (Screens larger than 992px) */
+@media (min-width: 992px) {
+  .btn-xs {
+    padding: 2px 8px; /* Return to the tighter padding for mouse users */
+  }
+}
+
+@media (max-width: 480px) {
+  .btn-xs {
+    font-size: 8px;  /* Slightly smaller text for very narrow screens */
+    padding: 5px 6px; /* Narrower horizontal padding to prevent overlap */
+    width: 100%;      /* Optional: Make buttons full-width on tiny screens for better UX */
+  }
+}
+// .btn-xs {
+//   margin-top: 5px;
+//   padding: 2px 8px;   /* Vertical and Horizontal padding */
+//   font-size: 12px;    /* Smaller text */
+//   line-height: 1.2;   /* Tighter line height */
+//   height: auto;       /* Ensures the button shrinks to content */
+// }
 </style>

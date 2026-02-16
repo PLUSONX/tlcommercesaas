@@ -30,9 +30,9 @@ export default {
     }
   },
   mounted() {
-    console.log("Banner Feature Vue mounted!!!");
-    console.log("Image path:", this.imagePath);
-    console.log("Settings:", this.settings);
+    // console.log("Banner Feature Vue mounted!!!");
+    // console.log("Image path:", this.imagePath);
+    // console.log("Settings:", this.settings);
   }
 }
 </script>

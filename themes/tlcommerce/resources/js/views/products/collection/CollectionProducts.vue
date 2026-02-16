@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <page-header :items="bItems" />
+    <!-- <page-header :items="bItems" /> -->
     <div class="pb-60 light-bg">
       <template v-if="!loadingDetails">
         <template v-if="collectionDetails != null">

@@ -98,7 +98,7 @@ if (!function_exists('getMenuStructureByGroupId')) {
             }
         }
 
-    \Log::info('final data:', ['final_data' => $final_data]);
+    // \Log::info('final data:', ['final_data' => $final_data]);
 
 
         return $final_data;

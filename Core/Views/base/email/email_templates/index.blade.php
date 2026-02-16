@@ -177,7 +177,7 @@
 @endsection
 @section('custom_scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.6.0/ace.js" type="text/javascript" charset="utf-8"></script>
-    <script src="{{ asset('/public/backend/assets/plugins/js-beautify/beautify-html.js') }}"></script>
+    <script src="{{ asset('backend/assets/plugins/js-beautify/beautify-html.js') }}"></script>
     <script>
         /**
          * Get email template editable form
@@ -299,7 +299,9 @@
          */
         function logoAndFooter(content) {
             "use strict";
-            let system_logo = "{{ asset(getFilePath(getGeneralSetting('admin_logo'))) }}"
+            // let system_logo = "{{ asset(getFilePath(getGeneralSetting('admin_logo'))) }}"
+            let system_logo = "{{ url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))) }}"
+            console.log("system_logo: ", system_logo);
             let copyright_text = `{{ getGeneralSetting('copyright_text') }}`
             let site_url = `{{ URL::to('/') }}`
 
