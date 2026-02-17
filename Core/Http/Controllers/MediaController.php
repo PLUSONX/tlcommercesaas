@@ -92,13 +92,36 @@ class MediaController extends Controller
      */
     public function uploadMediaFile(Request $request)
     {
-         \Log::info('=== uploadMediaFile CALLED ===', [
-            // 'request_id' => $request->input('id')
+        \Log::info('=== uploadMediaFile CALLED ===');
+
+        \Log::info('=== uploadMediaFile CALLED ===', [
+            'request: ' => json_encode($request),
+            'file: ' => json_encode($request->file('file')),
         ]);
         try {
-            foreach ($request->file('file') as $file) {
-                $file_id = saveFileInStorage($file, true);
+
+            // 1. Get the file(s) from the request
+            $files = $request->file('file');
+
+            // 2. Ensure we are working with an array (Dropzone often sends arrays)
+            if (!is_array($files)) {
+                $files = [$files];
             }
+
+            $file_id = null;
+
+            foreach ($files as $file) {
+                // 3. Verify the file is valid and actually exists
+                if ($file && $file->isValid()) {
+                    $file_id = saveFileInStorage($file, true);
+                } else {
+                    \Log::warning('Invalid file upload attempt detected.');
+                }
+            }
+
+            // foreach ($request->file('file') as $file) {
+            //     $file_id = saveFileInStorage($file, true);
+            // }
 
             $total = DB::table('tl_uploaded_files')->count();
 

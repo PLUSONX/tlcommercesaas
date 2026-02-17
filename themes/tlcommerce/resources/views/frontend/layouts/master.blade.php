@@ -4,6 +4,7 @@
     use Plugin\TlcommerceCore\Repositories\SettingsRepository;
     use Core\Repositories\SettingsRepository as CoreSettingRepository;
     use Illuminate\Support\Facades\Cache;
+    use Illuminate\Support\Facades\Log;
 
     $siteProperties = Cache::rememberForever('site-properties', function () {
         return CoreSettingRepository::SiteProperties();
@@ -37,6 +38,13 @@
     $tenant_id = getGeneralSetting('tenant_id');
 
 
+    $facebook_integration = null;
+    
+    $facebook_integration = DB::table('tl_com_social_media_integrations')
+        ->where('provider', 'facebook_pixel')
+        ->first();
+    
+    \Log::info('facebook_integration: ' . json_encode($facebook_integration ?? 'NOT SET'));
 
 @endphp
 
@@ -44,6 +52,35 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
+
+    @if($facebook_integration && $facebook_integration->is_active)
+    @php 
+        $fbSettings = json_decode($facebook_integration->settings, true);
+        $fbPixelId = $fbSettings['pixel_id'] ?? null;
+
+        \Log::info('fbPixelId: ' . $fbPixelId);
+    @endphp
+
+    @if($fbPixelId)
+        <script>
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '{{ $fbPixelId }}');
+            fbq('track', 'PageView');
+        </script>
+        <noscript>
+            <img height="1" width="1" style="display:none"
+                 src="https://www.facebook.com/tr?id={{ $fbPixelId }}&ev=PageView&noscript=1"/>
+        </noscript>
+    @endif
+@endif
+
     <meta charset="utf-8">
     @if (isset($logo_details['favicon']))
         <link rel="shortcut icon" href="{{ project_asset($logo_details['favicon']) }}">

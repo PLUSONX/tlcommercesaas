@@ -892,6 +892,17 @@ export default {
         shop_name: this.item.shop != null ? this.item.shop.shop_name : null,
         shop_slug: this.item.shop != null ? this.item.shop.shop_slug : null,
       };
+
+      if (window.fbq) {
+        window.fbq('track', 'AddToCart', {
+          content_ids: [this.item.id],
+          content_name: this.item.name,
+          content_type: 'product',
+          value: this.item.price * this.quantityValue, // Total value for the items added
+          currency: 'USD' // You can pass this as a prop if you have multi-currency
+        });
+      };
+
       this.$store.dispatch("addToCart", cart_item);
     },
     /**

@@ -352,6 +352,12 @@
                          href="{{ route('plugin.tlcommercecore.marketing.custom.notification') }}">{{ translate('Custom Notification') }}</a>
                  </li>
              @endif
+
+                <li
+                     class="{{ Request::routeIs(['plugin.tlcommercecore.marketing.social.media.integration']) ? 'active ' : '' }}">
+                     <a
+                         href="{{ route('plugin.tlcommercecore.marketing.social.media.integration') }}">{{ translate('Social Media Integration') }}</a>
+                 </li>
          </ul>
      </li>
  @endif

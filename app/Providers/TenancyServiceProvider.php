@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Log;
 use Stancl\Tenancy\Jobs;
 use Stancl\Tenancy\Events;
 use Stancl\Tenancy\Listeners;

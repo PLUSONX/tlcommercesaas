@@ -15,7 +15,8 @@ use Plugin\TlcommerceCore\Http\Controllers\CustomerController;
 use Plugin\TlcommerceCore\Http\Controllers\LocationController;
 use Plugin\TlcommerceCore\Http\Controllers\SettingsController;
 use Plugin\TlcommerceCore\Http\Controllers\ShippingController;
-use \Plugin\TlcommerceCore\Http\Controllers\MarketingController;
+use Plugin\TlcommerceCore\Http\Controllers\MarketingController;
+use Plugin\TlcommerceCore\Http\Controllers\SocialMediaController;
 use Plugin\TlcommerceCore\Http\Controllers\ProductTagsController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\GpayController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\MollieController;
@@ -407,6 +408,12 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
         Route::post('/send-custom-notification', [MarketingController::class, 'sendCustomNotification'])->name('plugin.tlcommercecore.marketing.custom.notification.send');
         Route::post('/custom-notification-bulk-action', [MarketingController::class, 'customNotificationBulkAction'])->name('plugin.tlcommercecore.marketing.custom.notification.bulk.action')->middleware('demo');
     });
+
+
+    Route::get('/social-media-integration', [SocialMediaController::class, 'socialMediaIntegration'])->name('plugin.tlcommercecore.marketing.social.media.integration');
+    Route::post('/update-social-media-integration', [SocialMediaController::class, 'updateIntegrationSettings'])->name('plugin.tlcommercecore.marketing.social.media.integration.update');
+
+
 });
 
 /**
