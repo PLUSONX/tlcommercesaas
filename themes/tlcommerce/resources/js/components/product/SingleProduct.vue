@@ -1184,30 +1184,51 @@ export default {
 //   text-align: center;
 // }
 
-.btn-xs {
-  margin-top: 10px;
-  padding: 6px 12px;   
-  font-size: 10px;    
-  font-weight: 600;   /* Slightly bolder to make the small text legible */
-  // text-transform: uppercase; /* Improves readability at small sizes */ /* Smaller text */
-  line-height: 1.2;   /* Tighter line height */
-  height: auto;       /* Ensures the button shrinks to content */
-}
 
-/* Desktop adjustment (Screens larger than 992px) */
-@media (min-width: 992px) {
-  .btn-xs {
-    padding: 2px 8px; /* Return to the tighter padding for mouse users */
-  }
+.btn-xs {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  padding: 0.4em 0.8em;
+  font-size: 0.70em;
+  // font-size: clamp(0.65rem, 1.5vw, 0.85rem); /* min, fluid, max */
+  font-weight: 600;
+  line-height: 1.4;
+  height: auto;
+  max-width: 80px !important; /* prevents the button from growing too wide */
+  white-space: nowrap;
 }
 
 @media (max-width: 480px) {
   .btn-xs {
-    font-size: 8px;  /* Slightly smaller text for very narrow screens */
-    padding: 5px 6px; /* Narrower horizontal padding to prevent overlap */
-    width: 100%;      /* Optional: Make buttons full-width on tiny screens for better UX */
+    width: 100%;
+    max-width: 100%; /* override cap so full-width works on tiny screens */
   }
 }
+
+// .btn-xs {
+//   display: inline-flex;
+//   align-items: center;
+//   justify-content: center;
+//   margin-top: 10px;
+//   padding: 0.4em 0.7em;
+//   font-size: clamp(0.55rem, 1.5vw, 0.75rem);
+//   max-width: 100px; 
+//   // font-size: 0.65rem;   /* relative to root, scales with browser zoom */
+//   font-weight: 600;
+//   line-height: 1.4;
+//   height: auto;
+//   white-space: nowrap;
+// }
+
+// @media (max-width: 480px) {
+//   .btn-xs {
+//     width: 100%;  /* optional: full-width on tiny screens */
+//   }
+// }
+
+
 // .btn-xs {
 //   margin-top: 5px;
 //   padding: 2px 8px;   /* Vertical and Horizontal padding */

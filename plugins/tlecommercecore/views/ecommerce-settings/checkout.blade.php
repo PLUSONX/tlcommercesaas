@@ -191,7 +191,7 @@
              <div class="form-row mb-20">
                  <div class="col-12">
                      <p class="mt-0 font-13">
-                         {{ translate('To enable pickup point you need to active') }}
+                         {{ translate('To enable pickup point you need to activate') }}
                          <a href="{{ route('core.plugins.index') }}" class="btn-link">
                              Pickup Point Plugin
                          </a>

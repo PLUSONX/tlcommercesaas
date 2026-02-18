@@ -1394,10 +1394,18 @@ class OrderRepository
             $order_product = new OrderHasProducts;
             $order_product->order_id = $order_id;
             $order_product->product_id = $product['product_id'];
-            $order_product->variant_id = $product['variant'];
+            if (!empty($product['variant'])) {
+
+                $order_product->variant_id = $product['variant'];
+            }
+            // $order_product->variant_id = $product['variant'];
             $order_product->quantity = $product['quantity'];
             $order_product->unit_price = $product['unitPrice'];
-            $order_product->purchase_price = self::getProductPurchasePrice($product['product_id'], $product['variant_code']);
+            if (!empty($product['variant_code'])) {
+
+                $order_product->purchase_price = self::getProductPurchasePrice($product['product_id'], $product['variant_code']);
+            }
+            // $order_product->purchase_price = self::getProductPurchasePrice($product['product_id'], $product['variant_code']);
             $order_product->delivery_cost = $product['shipping_cost'];
             $order_product->shipping_rate = $product['shipping_rate_id'] != null ? $product['shipping_rate_id'] : null;
             $order_product->tax = $tax;
@@ -1413,7 +1421,11 @@ class OrderRepository
             $order_product->save();
 
             //Update Inventory
-            $this->updateProductInventory($product['product_id'], $product['quantity'], $product['variant_code']);
+            if (!empty($product['variant_code'])) {
+
+                $this->updateProductInventory($product['product_id'], $product['quantity'], $product['variant_code']);
+            }
+            // $this->updateProductInventory($product['product_id'], $product['quantity'], $product['variant_code']);
 
             //Store order tracking data
             $this->insertOrderTrackingData($order_id, $order_product->id, "Thank you for shopping. Your order is being verified");

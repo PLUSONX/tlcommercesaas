@@ -13,7 +13,7 @@
         <!-- <pre>DEBUG: {{ data ? 'Data object exists' : 'Data object is NULL' }}</pre>
         <pre>PROPS: {{ data?.site_properties }}</pre> -->
 
-        <header class="header__two love-sticky">
+        <header class="header__two love-sticky"  style="margin-bottom: 30px;">
          
           <header-middle
             :site-properties="data.site_properties"
@@ -23,6 +23,11 @@
             :compare-item="compareItem"
             :header-logo-style="headerLogoStyle"
             :header-menu-style="headerMenuStyle"
+
+              :data-loading="MenuItemsLoading"
+              :right-menu-items="rightMenuItems"
+              :left-menu-items="leftMenuItems"
+              @logout-customer="logoutCustomer"
           ></header-middle>
 
         </header>

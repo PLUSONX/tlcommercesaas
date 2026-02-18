@@ -3,7 +3,7 @@
     'force-mobile-layout': forcedMobile,
     'mobile-content-wrapper': forcedMobile
   }">
-    <div class="custom-container2">
+    <div class="custom-container2" style="margin-top: 10px;">
       <div class="row" v-if="isCustomerLogin">
         <div class="col-lg-3" >
           <!-- Store Info -->

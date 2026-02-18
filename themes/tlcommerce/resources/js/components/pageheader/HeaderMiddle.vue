@@ -200,8 +200,13 @@
         </div>
         <div class="col-lg-3">
           <!-- Header Buttons -->
+
+         
+
+
           <ul class="header-btn-group nav justify-content-end">
-            <li v-if="enable_product_compare == 1">
+           
+            <!-- <li v-if="enable_product_compare == 1">
               <router-link to="/compare" class="btn-circle custom-icon-btn">
                 <span class="material-icons">compare_arrows</span>
                 <span
@@ -209,7 +214,7 @@
                   >{{ compareItem }}</span
                 >
               </router-link>
-            </li>
+            </li> -->
             <li>
               <router-link
                 to="/dashboard/wishlist"
@@ -237,6 +242,41 @@
                 >
               </router-link>
             </li>
+
+            <li ref="dropdownMenu2" v-if="!dataLoading">
+                <span
+                  class="my-account-btn custom-menu"
+                  @click.prevent="showMyAccount = !showMyAccount"
+                >
+                  {{ $t("My Account") }}
+                  <span class="material-icons ms-1">expand_more</span>
+                </span>
+                <div class="my-account-dropdown" v-if="showMyAccount">
+                  <ul class="list-unstyled" v-if="isCustomerLogin">
+                    <li>
+                      <router-link to="/dashboard" class="custom-menu">{{
+                        $t("Dashboard")
+                      }}</router-link>
+                    </li>
+                    <li>
+                      <router-link
+                        to="#"
+                        @click.prevent="customerLogout()"
+                        class="custom-menu"
+                      >
+                        {{ $t("Logout") }}
+                      </router-link>
+                    </li>
+                  </ul>
+                  <ul class="list-unstyled" v-else>
+                    <li>
+                      <router-link to="/login" class="custom-menu">{{
+                        $t("Login")
+                      }}</router-link>
+                    </li>
+                  </ul>
+                </div>
+              </li>
           </ul>
           <!-- End Header Buttons -->
         </div>
@@ -250,13 +290,18 @@
 import { mapState, mapGetters } from "vuex";
 import SearchForm from "@/components/ui/SearchForm.vue";
 import SingleProduct from "../product/SingleProduct.vue";
+import MenuItem from "../../components/menu/MenuItem.vue";
+import MenuDropdown from "../../components/menu/MenuDropdown.vue";
 import axios from "axios";
 export default {
   name: "HeaderMiddle",
   components: {
     SearchForm,
     SingleProduct,
+       MenuItem,
+    MenuDropdown,
   },
+  emits: ["logout-customer"],
   props: {
     siteProperties: {
       type: Object,
@@ -288,6 +333,32 @@ export default {
         return {};
       },
     },
+    leftMenuItems: {
+      type: Array,
+      required: false,
+      default: () => {
+        return [];
+      },
+    },
+    rightMenuItems: {
+      type: Array,
+      required: false,
+      default: () => {
+        return [];
+      },
+    },
+    headerMenuStyle: {
+      type: Object,
+      required: false,
+      default: () => {
+        return {};
+      },
+    },
+    dataLoading: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
   data() {
     return {
@@ -307,6 +378,32 @@ export default {
         state.siteSettings != null
           ? state.siteSettings.enable_product_compare
           : 0,
+
+    isCustomerLogin: (state) => state.isCustomerLogin,
+    customerToken: (state) => state.customerToken,
+    notifications: (state) => state.notifications,
+    totalNotifications: (state) =>
+      state.notifications.length ? state.notifications.length : 0,
+    isGroupActive() {
+      return (item, path) => {
+        let openGroup = false;
+        const func = (item) => {
+          if (item.submenu) {
+            item.submenu.forEach((item) => {
+              if (path === item.url) {
+                openGroup = true;
+              } else if (item.submenu) {
+                func(item);
+              }
+            });
+          }
+        };
+        func(item, path);
+        return openGroup;
+      };
+    },
+
+    
     }),
 
     ...mapGetters('layout', [
@@ -315,16 +412,27 @@ export default {
     ]),
 
     headerClasses() {
-      console.log("isSplitScreen: ", this.isSplitScreen);
-      console.log("isMobile: ", this.isMobile);
-      // 1. The "Force" condition: both are true
-      if (this.isSplitScreen && !this.isMobile) {
-        return 'custom-header-mid header-top py-20 c1-bg sticky fadeInDowns';
-      }
-
-      // 2. The default/fallback logic (your original ternary)
-      return "custom-header-mid header-top py-20 c1-bg";
+      return {
+        'custom-header-mid': true,
+        'header-top': true,
+        'py-20': true,
+        'c1-bg': true,
+        'sticky': (this.isSplitScreen && !this.isMobile) || this.isSticky,
+        'fadeInDowns': (this.isSplitScreen && !this.isMobile) || this.isSticky,
+      };
     }
+
+    // headerClasses() {
+    //   console.log("isSplitScreen: ", this.isSplitScreen);
+    //   console.log("isMobile: ", this.isMobile);
+    //   // 1. The "Force" condition: both are true
+    //   if (this.isSplitScreen && !this.isMobile) {
+    //     return 'custom-header-mid header-top py-20 c1-bg sticky fadeInDowns';
+    //   }
+
+    //   // 2. The default/fallback logic (your original ternary)
+    //   return "custom-header-mid header-top py-20 c1-bg";
+    // }
 
   },
   // computed: mapState({
@@ -334,14 +442,23 @@ export default {
   //       : 0,
   // }),
   mounted() {
-    console.log("Middle Header mounted!!!");
+    // console.log("Middle Header mounted!!!");
+    // window.addEventListener("scroll", this.scrollHandler);
+    // document.addEventListener("click", this.close);
+
     window.addEventListener("scroll", this.scrollHandler);
+    window.addEventListener("resize", this.resizeHandler);  // ADD THIS
     document.addEventListener("click", this.close);
 
     // console.log("isSticky: ", this.isSticky);
 
     // console.log("site properties: ", this.siteProperties);
 
+  },
+  beforeUnmount() {
+    window.removeEventListener("scroll", this.scrollHandler);
+    window.removeEventListener("resize", this.resizeHandler);  // CLEAN UP
+    document.removeEventListener("click", this.close);
   },
   methods: {
     /**
@@ -382,21 +499,64 @@ export default {
         this.suggestionsOpen = false;
       }
     },
-    scrollHandler() {
-
-      if (this.isSplitScreen && !this.isMobile) {
-        return; 
-      }
-
-      const fooHeader = this.$refs.fooHeader;
-      if (window.pageYOffset > 100) {
-        this.isSticky = true;
-        fooHeader?.classList.add("sticky", "fadeInDowns");
-      } else {
-        this.isSticky = false;
-        fooHeader?.classList.remove("sticky", "fadeInDowns");
+    resizeHandler() {
+      // If no longer in splitscreen+desktop mode, reset sticky state
+      if (!this.isSplitScreen || this.isMobile) {
+        this.isSticky = window.pageYOffset > 100;
       }
     },
+     scrollHandler() {
+      if (this.isSplitScreen && !this.isMobile) return;
+
+      this.isSticky = window.pageYOffset > 100;
+    },
+
+    /**
+     * Will close dropdown area
+     *
+     * @param {*} e
+     */
+    close(e) {
+      let el = this.$refs.dropdownMenu;
+      let el2 = this.$refs.dropdownMenu2;
+      let el3 = this.$refs.notificationDropdownMenu;
+      let target = e.target;
+
+      if (el !== target && !el?.contains(target)) {
+        this.showLanguageCurrency = false;
+      }
+      if (el2 !== target && !el2?.contains(target)) {
+        this.showMyAccount = false;
+      }
+      if (this.isCustomerLogin) {
+        if (el3 !== target && !el3?.contains(target)) {
+          this.showNotification = false;
+        }
+      }
+    },
+
+    /**
+     * Will logout customer
+     *
+     */
+    customerLogout() {
+      this.$emit("logout-customer");
+    },
+    // scrollHandler() {
+
+    //   if (this.isSplitScreen && !this.isMobile) {
+    //     return; 
+    //   }
+
+    //   const fooHeader = this.$refs.fooHeader;
+    //   if (window.pageYOffset > 100) {
+    //     this.isSticky = true;
+    //     fooHeader?.classList.add("sticky", "fadeInDowns");
+    //   } else {
+    //     this.isSticky = false;
+    //     fooHeader?.classList.remove("sticky", "fadeInDowns");
+    //   }
+    // },
   },
 };
 </script>

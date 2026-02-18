@@ -414,7 +414,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/update-mood', [StyleController::class, 'changeMood'])->name('core.mood.change');
 
     // Plugins
-    if (!isTenant()) {
+    // if (!isTenant()) {
         Route::middleware(['can:Manage Plugins'])->group(function () {
             //plugins
             Route::get('/plugins', [PluginsController::class, 'index'])->name('core.plugins.index');
@@ -425,7 +425,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::post('/plugin/verify', [PluginsController::class, 'verify'])->name('core.plugins.purchase.verify');
             Route::delete('/plugin/delete/{plugin}', [PluginsController::class, 'delete'])->name('core.plugins.delete');
         });
-    }
+    // }
 
     //Themes
     Route::middleware(['can:Manage Themes'])->group(function () {

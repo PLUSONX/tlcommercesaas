@@ -1,7 +1,8 @@
 <template>
-  <div class="">
+  <!-- <div class=""> -->
     <!-- <page-header :items="bItems" /> -->
-    <div class="pt-30 pt-lg-60 pb-60 light-bg">
+    <!-- <div class="pt-30 pt-lg-60 pb-60 light-bg"> -->
+    <!-- <div class="light-bg"> -->
       <div class="custom-container2">
         <!-- <div class="row"> -->
           <!-- <div class="col-lg-3">
@@ -192,21 +193,18 @@
                 <single-product :item="product" styleEight />
               </div>
             </div>
-            <div class="row align-items-center mt-10" v-if="!productsLoading">
+            <!-- <div class="row align-items-center mt-10" v-if="!productsLoading">
               <div class="col-md-6">
-                <!-- Showing Per Page -->
                 <ShowingPerPage
                   class="text-center text-md-start"
                   :items-per-page="perPage"
                   :total-items="totalItems"
                   :current-page="currentPage"
                 />
-                <!-- Showing Per Page -->
               </div>
               <div
                 class="col-md-6 d-flex justify-content-center justify-content-md-end mt-3 mt-md-0"
               >
-                <!-- Pagination -->
                 <pagination
                   :options="paginationOptions"
                   v-model="currentPage"
@@ -214,14 +212,13 @@
                   :per-page="perPage"
                   @paginate="getProducts"
                 />
-                <!-- End Pagination -->
               </div>
-            </div>
+            </div> -->
           <!-- </div> -->
         <!-- </div> -->
       </div> 
-    </div>
-  </div>
+    <!-- </div> -->
+  <!-- </div> -->
 </template>
 
 <script>

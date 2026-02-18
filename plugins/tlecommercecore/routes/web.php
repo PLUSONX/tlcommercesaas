@@ -41,10 +41,10 @@ Route::get('/payzah/pay', [PayzahController::class, 'pay'])->name('payzah.pay');
 
 Route::prefix('payment')->group(function () {
     Route::post('/payzah/success', [PayzahController::class, 'success'])
-        ->name('payment.payzah.success');
+        ->name('payzah.success');
 
         Route::post('/payzah/cancel', [PayzahController::class, 'cancel'])
-            ->name('payment.payzah.cancel');
+            ->name('payzah.cancel');
         });
         // Route::get('/payzah/success', [PayzahController::class, 'success'])->name('payment.payzah.success');
 // Route::get('/payzah/cancel', [PayzahController::class, 'cancel'])->name('payment.payzah.error');
