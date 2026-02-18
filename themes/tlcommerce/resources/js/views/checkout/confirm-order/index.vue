@@ -416,6 +416,7 @@ export default {
     } else {
       this.guestCustomerOrderDetails();
     }
+
   },
   methods: {
     /**
@@ -439,6 +440,7 @@ export default {
           if (response.data.success) {
             this.orderDetails = response.data.data;
             this.success = true;
+            this.trackMetaPurchase(response.data.data);
           } else {
             this.$toast.error("Order not found");
           }
@@ -461,6 +463,7 @@ export default {
           if (response.data.success) {
             this.orderDetails = response.data.data;
             this.success = true;
+            this.trackMetaPurchase(response.data.data);
           } else {
             this.$toast.error("Order not found");
           }
@@ -471,6 +474,22 @@ export default {
           this.$toast.error("Order not found");
         });
     },
+
+    trackMetaPurchase(order) {
+        if (window.fbq) {
+            // Extracting product IDs from the order items
+            const productIds = order.details.map(item => item.product_id || item.id);
+            
+            window.fbq('track', 'Purchase', {
+                content_ids: productIds,
+                content_type: 'product',
+                value: order.total_payable_amount, // Ensure this matches your API field name
+                currency: 'USD', // Replace with order.currency if available
+                num_items: order.details.length
+            });
+            console.log('Meta Purchase Tracked');
+        }
+    }
   },
 };
 </script>
