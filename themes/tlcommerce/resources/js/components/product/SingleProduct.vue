@@ -736,7 +736,7 @@ export default {
   }),
   mounted() {
     if (window.fbq) {
-        window.fbq('track', 'ViewContent', {
+        window.fbq('track', 'View Content', {
             content_ids: [this.item.id],
             content_name: this.item.name,
             content_type: 'product',
@@ -813,6 +813,15 @@ export default {
         shop_slug: this.item.shop != null ? this.item.shop.shop_slug : null,
       };
 
+      if (window.fbq) {
+        window.fbq('track', 'Intiate checkout', {
+          content_ids: this.item.id,
+          content_name: this.item.name,
+          content_type: 'product',
+          value: this.item.price , // Total value for the items added
+          currency: 'KD' // You can pass this as a prop if you have multi-currency
+        });
+      };
       // console.log("cart-item: ", cart_item);
 
       this.$store.dispatch("addToCart", cart_item);
@@ -905,12 +914,12 @@ export default {
       };
 
       if (window.fbq) {
-        window.fbq('track', 'AddToCart', {
-          content_ids: [this.item.id],
+        window.fbq('track', 'Add to cart', {
+          content_id: this.item.id,
           content_name: this.item.name,
           content_type: 'product',
-          value: this.item.price * this.quantityValue, // Total value for the items added
-          currency: 'USD' // You can pass this as a prop if you have multi-currency
+          value: this.item.price, // Total value for the items added
+          currency: 'KD' // You can pass this as a prop if you have multi-currency
         });
       };
 

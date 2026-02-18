@@ -242,6 +242,9 @@ export default {
         document.title = localStorage.getItem("site_title");
         this.getSections();
 
+        if (window.fbq) {
+            window.fbq('track', 'Page View');
+        }
 
     },
 
