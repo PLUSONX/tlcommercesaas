@@ -243,7 +243,7 @@
               </router-link>
             </li>
 
-            <li ref="dropdownMenu2" v-if="!dataLoading">
+            <li ref="dropdownMenu2" v-if="!dataLoading" :class="{ 'active': showMyAccount }">
                 <span
                   class="my-account-btn custom-menu"
                   @click.prevent="showMyAccount = !showMyAccount"
@@ -252,7 +252,41 @@
                   <span class="material-icons ms-1">expand_more</span>
                 </span>
                 <div class="my-account-dropdown" v-if="showMyAccount">
-                  <ul class="list-unstyled" v-if="isCustomerLogin">
+                  <!-- <span>Items count: {{ offcanvas.menuItems.length }}</span> -->
+                  <ul class="list-unstyled mb-0" v-if="isCustomerLogin">
+                    <template v-for="(item, index) in offcanvas.menuItems">
+                        <menu-item
+                            v-if="!item.submenu"
+                            :key="`item-${index}`"
+                            :item="item"
+                            off-canvas
+                            :header-menu-style="headerMenuStyle"
+                        />
+
+                        <menu-dropdown
+                            v-else
+                            :key="`group-${index}`"
+                            :item="item"
+                            off-canvas
+                            :open-group="
+                                isGroupActive(item, $route.fullPath)
+                            "
+                            :header-menu-style="headerMenuStyle"
+                        />
+                        
+                    </template>
+
+                    <li>
+                      <router-link
+                        to="#"
+                        @click.prevent="customerLogout()"
+                        class="custom-menu"
+                      >
+                        {{ $t("Logout") }}
+                      </router-link>
+                    </li>
+                  </ul>
+                  <!-- <ul class="list-unstyled" v-if="isCustomerLogin">
                     <li>
                       <router-link to="/dashboard" class="custom-menu">{{
                         $t("Dashboard")
@@ -267,11 +301,16 @@
                         {{ $t("Logout") }}
                       </router-link>
                     </li>
-                  </ul>
+                  </ul> -->
                   <ul class="list-unstyled" v-else>
                     <li>
                       <router-link to="/login" class="custom-menu">{{
                         $t("Login")
+                      }}</router-link>
+                    </li>
+                    <li>
+                      <router-link to="/register" class="custom-menu">{{
+                        $t("Registration")
                       }}</router-link>
                     </li>
                   </ul>
@@ -293,6 +332,9 @@ import SingleProduct from "../product/SingleProduct.vue";
 import MenuItem from "../../components/menu/MenuItem.vue";
 import MenuDropdown from "../../components/menu/MenuDropdown.vue";
 import axios from "axios";
+import offcanvas from "@/fakeDB/offcanvas.json";
+import TheOffcanvas from "@/components/menu/TheOffcanvas.vue";
+
 export default {
   name: "HeaderMiddle",
   components: {
@@ -300,6 +342,7 @@ export default {
     SingleProduct,
        MenuItem,
     MenuDropdown,
+    TheOffcanvas,
   },
   emits: ["logout-customer"],
   props: {
@@ -359,6 +402,28 @@ export default {
       required: true,
       default: false,
     },
+    userInfo: {
+            type: Object,
+            default: null,
+    },
+    menuItems: {
+        type: Array,
+        default: () => []
+    },
+    headerMenuStyle: {
+        type: Object,
+        required: false,
+        default: () => {
+            return {};
+        },
+    },
+    headerStyle: {
+        type: Object,
+        required: false,
+        default: () => {
+            return {};
+        },
+    },
   },
   data() {
     return {
@@ -370,6 +435,8 @@ export default {
       tag_suggestions: [],
       active: 1,
       isSticky: false,
+      showMyAccount: false,
+      offcanvas,
     };
   },
   computed: {
@@ -620,4 +687,163 @@ export default {
 .text-muted {
   color: #6c757d !important;
 }
+
+/* --- My Account Section Container --- */
+.header-btn-group li {
+  position: relative; /* Anchor for the absolute dropdown */
+  display: flex;
+  align-items: center;
+  list-style: none;
+}
+
+/* --- The Pill Button --- */
+.my-account-btn {
+  /* Visibility & Contrast */
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 30px;
+  
+  /* Text & Color */
+  color: #fff !important; 
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  
+  /* Layout */
+  padding: 8px 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  /* The Arrow Icon */
+  .material-icons {
+    font-size: 18px;
+    transition: transform 0.3s ease;
+    margin: 0 !important; /* Reset any global margins */
+  }
+}
+
+/* Rotate arrow when menu is open */
+li.active .my-account-btn .material-icons {
+  transform: rotate(180deg);
+}
+
+/* --- The Dropdown Menu --- */
+.my-account-dropdown {
+  position: absolute;
+  top: calc(100% + 12px); /* Spacing below the pill */
+  right: 0;
+  z-index: 9999;
+  min-width: 190px;
+  
+  /* Visual Style */
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  overflow: hidden; /* Ensures hover states don't bleed out of corners */
+  
+  /* Animation */
+  animation: dropdownFade 0.2s ease-out;
+
+  ul {
+    margin: 0 !important;
+    padding: 8px 0 !important;
+    list-style: none !important;
+    display: block !important; /* Override flex if parent is flex */
+
+    li {
+      margin: 0 !important; /* Reset global li margins */
+      padding: 0 !important;
+      display: block !important;
+      width: 100%;
+      
+      a {
+        display: block;
+        padding: 12px 20px;
+        color: #333333 !important; /* Always dark on white bg */
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        text-align: left;
+
+        &:hover {
+          background-color: #f4f6f9;
+          color: var(--c1, #000) !important; /* Highlights with your theme color */
+          padding-left: 25px; /* Subtle slide effect */
+        }
+      }
+    }
+  }
+}
+
+
+.my-account-dropdown ul {
+  ::v-deep(li > a) {
+    display: block;
+    padding: 12px 20px;
+    color: #333 !important;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    text-align: left;
+
+    &:hover {
+      background-color: #f4f6f9;
+      color: var(--c1, #000) !important;
+      padding-left: 25px;
+    }
+  }
+}
+
+/* --- Dropdown Arrow Tip (Optional) --- */
+.my-account-dropdown::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 25px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  transform: rotate(45deg);
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* --- Animation --- */
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Responsive Fix --- */
+@media (max-width: 991px) {
+  .my-account-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  .my-account-dropdown {
+    right: -10px; /* Adjust for mobile edges */
+  }
+}
+
+
 </style>

@@ -125,8 +125,9 @@
         
       </div>
 
-      <div class="button-group d-flex align-items-center justify-content-between">
-        <!--Place order button-->
+      <!-- <div class="button-group d-flex align-items-center justify-content-between">
+        
+
         <button
           type="button"
           class="btn btn_fill btn-xs rounded"
@@ -136,7 +137,29 @@
           {{ $t("Place Order") }}
         </button>
 
-        <!--Add to cart button-->
+        <button
+          type="button"
+          :disabled="product.quantity < 1"
+          class="btn btn_borderd btn-xs rounded"
+          @click.prevent="addToCart"
+        >
+          {{ $t("Add To Cart") }}
+        </button>
+      </div> -->
+
+
+      <div class="button-group d-flex align-items-center justify-content-between">
+        
+        
+        <button
+          type="button"
+          class="btn btn_fill btn-xs rounded"
+          :disabled="product.quantity < 1"
+          @click.prevent="placeOrder"
+        >
+          {{ $t("Place Order") }}
+        </button>
+
         <button
           type="button"
           :disabled="product.quantity < 1"
@@ -146,7 +169,6 @@
           {{ $t("Add To Cart") }}
         </button>
       </div>
-
       
     </div>
     <!-- End Summary -->
@@ -1204,28 +1226,68 @@ export default {
 //   text-align: center;
 // }
 
+.button-group {
+    width: 100%;
+    gap: 0.5em;
+}
 
 .btn-xs {
+  flex: 1;                /* take equal width */
   display: inline-flex;
   align-items: center;
   justify-content: center;
   margin-top: 10px;
-  padding: 0.4em 0.8em;
-  font-size: 0.70em;
-  // font-size: clamp(0.65rem, 1.5vw, 0.85rem); /* min, fluid, max */
+  padding: 0.6em 1em;
+  font-size: clamp(0.55rem, 1vw, 0.65rem);
   font-weight: 600;
   line-height: 1.4;
-  height: auto;
-  max-width: 80px !important; /* prevents the button from growing too wide */
   white-space: nowrap;
 }
 
-@media (max-width: 480px) {
-  .btn-xs {
-    width: 100%;
-    max-width: 100%; /* override cap so full-width works on tiny screens */
-  }
-}
+// .btn-xs {
+//     /* padding: 10px; */
+//     // width: 48%;
+//     // align-items: center;
+//     // justify-content: center;
+
+//       display: inline-flex;
+//       align-items: center;
+//       justify-content: center;
+//       margin-top: 10px;
+//       padding: 0.4em 0.8em;
+//       font-size: clamp(0.65rem, 1.5vw, 0.75rem);
+//       // font-size: 0.75rem;
+//       max-width: 100px; 
+//       // font-size: 0.65rem;   /* relative to root, scales with browser zoom */
+//       font-weight: 600;
+//       line-height: 1.4;
+//       height: auto;
+//       white-space: nowrap;
+
+// }
+
+
+// .btn-xs {
+//   display: inline-flex;
+//   align-items: center;
+//   justify-content: center;
+//   margin-top: 10px;
+//   padding: 0.4em 0.8em;
+//   font-size: 0.70em;
+//   // font-size: clamp(0.65rem, 1.5vw, 0.85rem); /* min, fluid, max */
+//   font-weight: 600;
+//   line-height: 1.4;
+//   height: auto;
+//   max-width: 80px !important; /* prevents the button from growing too wide */
+//   white-space: nowrap;
+// }
+
+// @media (max-width: 480px) {
+//   .btn-xs {
+//     width: 100%;
+//     max-width: 100%; /* override cap so full-width works on tiny screens */
+//   }
+// }
 
 // .btn-xs {
 //   display: inline-flex;

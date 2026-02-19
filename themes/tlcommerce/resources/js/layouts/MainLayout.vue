@@ -24,6 +24,7 @@
             :header-logo-style="headerLogoStyle"
             :header-menu-style="headerMenuStyle"
 
+              :menu-items="rightMenuItems"
               :data-loading="MenuItemsLoading"
               :right-menu-items="rightMenuItems"
               :left-menu-items="leftMenuItems"
@@ -32,45 +33,9 @@
 
         </header>
 
-          <!-- <header class="header__two love-sticky">
-            <header-top
-              :data-loading="MenuItemsLoading"
-              :currencies="data.currencies"
-              :languages="data.languages"
-              :right-menu-items="rightMenuItems"
-              :left-menu-items="leftMenuItems"
-              :header-menu-style="headerMenuStyle"
-              @change-language-currency="setCurrencyLanguage"
-              @logout-customer="logoutCustomer"
-            ></header-top>
-          </header> -->
-
-          <!-- <mobile-header
-            :site-properties="data.site_properties"
-            :mode="mode"
-            :cart-item="cartItem"
-            :header-style="headerStyle"
-            :header-menu-style="headerMenuStyle"
-            :header-logo-style="headerLogoStyle"
-            class="c1-bg custom-mobile-header mobile_header__two d-lg-none force-show sticky"
-          ></mobile-header> -->
-
-          <!-- <mobile-header
-            :site-properties="data.site_properties"
-            :mode="mode"
-            :cart-item="cartItem"
-            :header-style="headerStyle"
-            :header-menu-style="headerMenuStyle"
-            :header-logo-style="headerLogoStyle"
-            :class="{ 'force-show': isSplitScreen }"
-          ></mobile-header> -->
-
           <div class="content-split-nudge">
               <slot></slot>
           </div>
-          <!-- <slot></slot> -->
-
-              <!-- <ProductPage /> -->
 
         </div>
 
@@ -85,6 +50,58 @@
           :imagePath="featureImagePath"
           v-if="isSplitScreen"
         />
+
+         
+        <!--End Cookie Consent-->
+
+        <!-- Dark Light Switcher -->
+        <div class="floating-mode-switcher-wrap" v-if="dark_light_status == '1'">
+          <label class="dl-switch">
+            <input
+              class="dark-looks-mode-changer"
+              @change="toggleDark"
+              :checked="mode == 'dark'"
+              type="checkbox"
+            />
+            <span class="dl-slider"></span>
+            <span class="dl-light">Light</span>
+            <span class="dl-dark">Dark</span>
+          </label>
+        </div>
+        <!-- End Dark Light Switcher -->
+        <!--Website popup-->
+        <CModal
+          :visible="visibleWebsitePopup"
+          alignment="center"
+          class="website-popup-modal"
+          @close="
+            () => {
+              visibleWebsitePopup = false;
+            }
+          "
+        >
+          <CModalBody
+            class="modal-body p-0 position-relative website-popup-modal-body rounded-0"
+          >
+            <button
+              class="btn-circle custom-modal-btn position-absolute size-35"
+              @click="closePopupModal()"
+            >
+              <base-icon-svg name="close" :width="10" :height="10" />
+            </button>
+            <div
+              class="m-0"
+              v-html="website_popup_properties.website_popup_content"
+            ></div>
+            <subscribe-form
+              class="mt-20"
+              v-if="website_popup_properties.website_popup_subscribe_status == 1"
+            ></subscribe-form>
+          </CModalBody>
+        </CModal>
+        <!--End website popup-->
+
+
           <!-- <p>Split Screen Settings: {{ splitScreenSettings }}</p>
           <p>Is Split Screen: {{ isSplitScreen }}</p>
           <p>Feature Image Path: {{ featureImagePath }}</p>
@@ -194,14 +211,14 @@
         <!-- End Footer -->
 
         <!--Cookie Consent-->
-        <gdpr
+        <!-- <gdpr
           v-if="gdpr_properties != null && gdpr_properties.gdpr_status == 1"
           :properties="gdpr_properties"
-        ></gdpr>
+        ></gdpr> -->
         <!--End Cookie Consent-->
 
         <!-- Dark Light Switcher -->
-        <div class="floating-mode-switcher-wrap" v-if="dark_light_status == '1'">
+        <!-- <div class="floating-mode-switcher-wrap" v-if="dark_light_status == '1'">
           <label class="dl-switch">
             <input
               class="dark-looks-mode-changer"
@@ -213,10 +230,10 @@
             <span class="dl-light">Light</span>
             <span class="dl-dark">Dark</span>
           </label>
-        </div>
+        </div> -->
         <!-- End Dark Light Switcher -->
         <!--Website popup-->
-        <CModal
+        <!-- <CModal
           :visible="visibleWebsitePopup"
           alignment="center"
           class="website-popup-modal"
@@ -244,13 +261,57 @@
               v-if="website_popup_properties.website_popup_subscribe_status == 1"
             ></subscribe-form>
           </CModalBody>
-        </CModal>
+        </CModal> -->
         <!--End website popup-->
 
         <BackToTop />
       </div>
 
     </template>
+
+    <!-- <StickyFooter v-if="!isSingleProduct" /> -->
+
+        <!-- Footer -->
+         <!-- <footer
+          :class="
+            this.footerStyle.custom_footer == 1
+              ? 'custom-footer footer footer__two c1-bg'
+              : 'footer footer__two c1-bg'
+          "
+          :style="{ backgroundImage: `url('${footerBgImg}')` }"
+        >  -->
+
+        <!-- <footer
+          class="footer footer__two c1-bg"
+          :style="{ backgroundImage: `url('${footerBgImg}')` }"
+        >  -->
+          <!-- Footer Top -->
+          <!-- <div class="footer-top">
+            <div class="custom-container2">
+              <div class="row justify-content-between">
+                <v-runtime-template :template="widget_html"></v-runtime-template>
+              </div>
+            </div>
+          </div>  -->
+          <!-- End Footer Top -->
+          <!-- Footer Bottom -->
+           <!-- <div class="footer-bottom">
+            <div class="custom-container2">
+              <div class="border-top text-center py-4">
+                <copyright :site-properties="data.site_properties" />
+              </div>
+            </div>
+          </div>  -->
+          <!-- End Footer Bottom -->
+        <!-- </footer> -->
+        <!-- End Footer -->
+
+
+        <!--Cookie Consent-->
+        <gdpr
+          v-if="gdpr_properties != null && gdpr_properties.gdpr_status == 1"
+          :properties="gdpr_properties"
+        ></gdpr>
   </div>
 </template>
 
@@ -1148,6 +1209,9 @@ export default {
 
 .split-screen-container {
   width: 100%;
+   align-items: flex-start;
+   height: fit-content;
+  min-height: unset;
 }
 
 .split-screen-content {
@@ -1156,6 +1220,8 @@ export default {
   flex-direction: column;
   padding: 0 !important;
   margin: 0 !important;
+  height: fit-content;
+  min-height: unset; 
 }
 
 .split-screen-feature {
@@ -1191,8 +1257,8 @@ export default {
 .split-screen-content.force-mobile-view {
   /* Remove max-width constraint */
   width: 100%;
-  overflow-y: auto;
-  padding: 0 20px; /* Optional: add some padding */
+  // overflow-y: auto;
+  // padding: 0 20px; /* Optional: add some padding */
 }
 
 /* Hide desktop elements in split screen */

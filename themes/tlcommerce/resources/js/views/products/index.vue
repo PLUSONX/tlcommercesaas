@@ -185,10 +185,15 @@
               </div>
             </div>
             <div class="row mobile-gap-10" v-else>
+              <!-- <div
+                v-for="product in paginatedItems"
+                :key="product.id"
+                class="col-lg-5 col-6"
+              > -->
               <div
                 v-for="product in paginatedItems"
                 :key="product.id"
-                class="col-lg-4 col-6"
+                class="col-6"
               >
                 <single-product :item="product" styleEight />
               </div>

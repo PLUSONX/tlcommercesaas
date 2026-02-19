@@ -1,263 +1,275 @@
 <template>
-  <div class="productDetails" :class="{
-    'force-mobile-layout': forcedMobile,
-    'mobile-content-wrapper': forcedMobile
-  }">
-    <!-- <page-header :items="bItems" /> -->
 
-    <!-- Product details Hash Menu -->
-    <div class="product-details-hash-menu d-lg-none" ref="hashMenu" style="margin-top: 10px;">
-      <div class="custom-container2">
-        <ul>
-          <li @click.prevent="goSec('overview')">{{ $t("Overview") }}</li>
-          <li @click.prevent="goSec('quickConnect')">
-            {{ $t("Quick Connect") }}
-          </li>
-          <li @click.prevent="goSec('productDetails')">
-            {{ $t("Product Details") }}
-          </li>
-          <li @click.prevent="goSec('recommendations')">
-            {{ $t("Recommendations") }}
-          </li>
-        </ul>
+  <div class="page-container">
+
+    <div class="productDetails" :class="{
+      'force-mobile-layout': forcedMobile,
+      'mobile-content-wrapper': forcedMobile
+    }">
+      <!-- <page-header :items="bItems" /> -->
+  
+      <!-- Product details Hash Menu -->
+      <div class="product-details-hash-menu d-lg-none" ref="hashMenu" style="margin-top: 10px;">
+        <div class="custom-container2">
+          <ul>
+            <li @click.prevent="goSec('overview')">{{ $t("Overview") }}</li>
+            <!-- <li @click.prevent="goSec('quickConnect')">
+              {{ $t("Quick Connect") }}
+            </li> -->
+            <li @click.prevent="goSec('productDetails')">
+              {{ $t("Product Details") }}
+            </li>
+            <!-- <li @click.prevent="goSec('recommendations')">
+              {{ $t("Recommendations") }}
+            </li> -->
+          </ul>
+        </div>
       </div>
-    </div>
-    <!-- End Product details Hash Menu -->
-
-    <div class="pt-4 pb-4 light-bg" ref="overview">
-      <div class="custom-container2">
-        <div class="product-details" v-if="!productLoading">
-          <div class="row">
-            <template v-if="product != null">
+      <!-- End Product details Hash Menu -->
+  
+      <div class="pt-4 pb-4 light-bg" ref="overview">
+        <div class="custom-container2">
+          <div class="product-details" v-if="!productLoading">
+            <div class="row">
+              <template v-if="product != null">
+                <div class="col-lg-5">
+                  <details-gallery
+                    :gallery-images="product.galleryImages"
+                    :voucher-list="product.voucher_list"
+                    :product-name="product.name"
+                    :url="product.url"
+                    :summary="product.summary"
+                    :networks="product.shareOptions"
+                    :key="galleryKey"
+                  />
+                </div>
+                <div class="col-lg-7">
+                  <details-content
+                    :product="product"
+                    @goto-section="goSec"
+                    @color-variant-images="colorVariantImages"
+                  />
+                </div>
+              </template>
+              <div class="row" v-else>
+                <the-not-found title="Sorry! Product not found"></the-not-found>
+              </div>
+            </div>
+          </div>
+  
+          <div class="product-details1" v-if="productLoading">
+            <div class="row">
               <div class="col-lg-5">
-                <details-gallery
-                  :gallery-images="product.galleryImages"
-                  :voucher-list="product.voucher_list"
-                  :product-name="product.name"
-                  :url="product.url"
-                  :summary="product.summary"
-                  :networks="product.shareOptions"
-                  :key="galleryKey"
-                />
+                <gallery-image-skeleton></gallery-image-skeleton>
               </div>
               <div class="col-lg-7">
-                <details-content
-                  :product="product"
-                  @goto-section="goSec"
-                  @color-variant-images="colorVariantImages"
-                />
+                <product-details-skeleton></product-details-skeleton>
               </div>
-            </template>
-            <div class="row" v-else>
-              <the-not-found title="Sorry! Product not found"></the-not-found>
             </div>
           </div>
-        </div>
-
-        <div class="product-details1" v-if="productLoading">
-          <div class="row">
-            <div class="col-lg-5">
-              <gallery-image-skeleton></gallery-image-skeleton>
+  
+          <!--Product info card-->
+          <!-- <div class="row mt-lg-4" v-if="!productLoading && product != null">
+            <div class="col-12">
+              <ul class="info-list shadow-card" ref="quickConnect">
+                <li class="info-item" v-if="product.condition">
+                  <h4>{{ $t("Conditions") }}</h4>
+                  <p>{{ $t("Product Condition") }}</p>
+                  <span class="c1">{{ product.condition }}</span>
+                </li>
+                <li class="info-item" v-if="product.is_authentic">
+                  <h4>{{ $t("Authentic") }}</h4>
+                  <p>{{ $t("Authentic") }}</p>
+                  <span class="c1">{{ product.is_authentic }}</span>
+                </li>
+                <li class="info-item" v-if="product.is_active_cod">
+                  <h4>{{ $t("Payment Option") }}</h4>
+                  <p>{{ $t("Cash on Delivery") }}</p>
+                  <span class="c1">{{ product.is_active_cod }}</span>
+                </li>
+                <li class="info-item">
+                  <h4>{{ $t("Return Options") }}</h4>
+                  <p>{{ $t("Change of mind is not applicable") }}</p>
+                  <span class="c1">{{ product.return_option }}</span>
+                </li>
+                <li class="info-item">
+                  <h4>{{ $t("Warranty") }}</h4>
+                  <p>{{ $t("Seller warranty") }}</p>
+                  <p v-if="product.has_warranty == enums.status.ACTIVE">
+                    <span class="c1"
+                      >{{ product.warrenty_days }} {{ $t("days") }}
+                      <span class="c1" v-if="product.has_replacement_warranty">
+                        {{ $t("replacement") }}</span
+                      >
+                      <span class="c1"> {{ $t("warranty") }}</span>
+                    </span>
+                  </p>
+                  <p class="c1" v-else>
+                    {{ $t("Not available") }}
+                  </p>
+                </li>
+              </ul>
             </div>
-            <div class="col-lg-7">
-              <product-details-skeleton></product-details-skeleton>
+          </div> -->
+          <!--End product info card-->
+  
+          <!--Tab Content-->
+          <div class="row mt-45" v-if="!productLoading && product != null">
+            <!--Product widgets-->
+            <div class="col-lg-3 d-none d-lg-block">
+              <div class="widget_wrap">
+                <single-shop
+                  :shop="product.shopInfo"
+                  widgetTitle
+                  v-if="product.shopInfo != null"
+                ></single-shop>
+                <WidgetTopCategory :categories="topCategories" link="true" />
+                <WidgetTopSellingProduct :products="topSellingProducts" />
+              </div>
             </div>
-          </div>
-        </div>
-
-        <!--Product info card-->
-        <div class="row mt-lg-4" v-if="!productLoading && product != null">
-          <div class="col-12">
-            <ul class="info-list shadow-card" ref="quickConnect">
-              <li class="info-item" v-if="product.condition">
-                <h4>{{ $t("Conditions") }}</h4>
-                <p>{{ $t("Product Condition") }}</p>
-                <span class="c1">{{ product.condition }}</span>
-              </li>
-              <li class="info-item" v-if="product.is_authentic">
-                <h4>{{ $t("Authentic") }}</h4>
-                <p>{{ $t("Authentic") }}</p>
-                <span class="c1">{{ product.is_authentic }}</span>
-              </li>
-              <li class="info-item" v-if="product.is_active_cod">
-                <h4>{{ $t("Payment Option") }}</h4>
-                <p>{{ $t("Cash on Delivery") }}</p>
-                <span class="c1">{{ product.is_active_cod }}</span>
-              </li>
-              <li class="info-item">
-                <h4>{{ $t("Return Options") }}</h4>
-                <p>{{ $t("Change of mind is not applicable") }}</p>
-                <span class="c1">{{ product.return_option }}</span>
-              </li>
-              <li class="info-item">
-                <h4>{{ $t("Warranty") }}</h4>
-                <p>{{ $t("Seller warranty") }}</p>
-                <p v-if="product.has_warranty == enums.status.ACTIVE">
-                  <span class="c1"
-                    >{{ product.warrenty_days }} {{ $t("days") }}
-                    <span class="c1" v-if="product.has_replacement_warranty">
-                      {{ $t("replacement") }}</span
+            <!--End Product widgets-->
+            <!--Product details tabs-->
+            <div class="col-lg-9">
+              <div class="overview-wrap" ref="productDetails">
+                <CNav
+                  variant="tabs"
+                  role="tablist"
+                  class="product-description-tabs bg-light"
+                >
+                  <CNavItem>
+                    <CNavLink
+                      href="javascript:void(0);"
+                      :active="tabPaneActiveKey === 1"
+                      @click="
+                        () => {
+                          tabPaneActiveKey = 1;
+                        }
+                      "
                     >
-                    <span class="c1"> {{ $t("warranty") }}</span>
-                  </span>
-                </p>
-                <p class="c1" v-else>
-                  {{ $t("Not available") }}
-                </p>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <!--End product info card-->
-
-        <!--Tab Content-->
-        <div class="row mt-45" v-if="!productLoading && product != null">
-          <!--Product widgets-->
-          <div class="col-lg-3 d-none d-lg-block">
-            <div class="widget_wrap">
-              <single-shop
-                :shop="product.shopInfo"
-                widgetTitle
-                v-if="product.shopInfo != null"
-              ></single-shop>
-              <WidgetTopCategory :categories="topCategories" link="true" />
-              <WidgetTopSellingProduct :products="topSellingProducts" />
-            </div>
-          </div>
-          <!--End Product widgets-->
-          <!--Product details tabs-->
-          <div class="col-lg-9">
-            <div class="overview-wrap" ref="productDetails">
-              <CNav
-                variant="tabs"
-                role="tablist"
-                class="product-description-tabs bg-light"
-              >
-                <CNavItem>
-                  <CNavLink
-                    href="javascript:void(0);"
-                    :active="tabPaneActiveKey === 1"
-                    @click="
-                      () => {
-                        tabPaneActiveKey = 1;
-                      }
+                      {{ $t("Product Overview") }}
+                    </CNavLink>
+                  </CNavItem>
+                  <CNavItem
+                    v-if="
+                      site_config?.enable_product_reviews == enums.status.ACTIVE
                     "
                   >
-                    {{ $t("Product Overview") }}
-                  </CNavLink>
-                </CNavItem>
-                <CNavItem
-                  v-if="
-                    site_config?.enable_product_reviews == enums.status.ACTIVE
-                  "
-                >
-                  <CNavLink
-                    href="javascript:void(0);"
-                    :active="tabPaneActiveKey === 2"
-                    @click="
-                      () => {
-                        tabPaneActiveKey = 2;
-                      }
+                    <CNavLink
+                      href="javascript:void(0);"
+                      :active="tabPaneActiveKey === 2"
+                      @click="
+                        () => {
+                          tabPaneActiveKey = 2;
+                        }
+                      "
+                    >
+                      {{ $t("Buyer Review") }}
+                    </CNavLink>
+                  </CNavItem>
+                </CNav>
+                <CTabContent>
+                  <CTabPane
+                    role="tabpanel"
+                    aria-labelledby="home-tab"
+                    click="product-overview"
+                    :visible="tabPaneActiveKey === 1"
+                  >
+                    <div
+                      v-if="product.description"
+                      v-html="product.description"
+                    ></div>
+                    <div class="no-review-wrapper text-center py-5" v-else>
+                      <h2>{{ $t("No Details Found") }}</h2>
+                      <p>
+                        {{
+                          $t("There are currently no details  for this product")
+                        }}
+                      </p>
+                    </div>
+                    <div v-if="product.pdf_specifications">
+                      <a :href="product.pdf_specifications" target="_blank"
+                        >Download Pdf Specifications</a
+                      >
+                    </div>
+                  </CTabPane>
+                  <CTabPane
+                    role="tabpanel"
+                    click="buyer-review "
+                    aria-labelledby="profile-tab"
+                    :visible="tabPaneActiveKey === 2"
+                    v-if="
+                      site_config?.enable_product_reviews == enums.status.ACTIVE
                     "
                   >
-                    {{ $t("Buyer Review") }}
-                  </CNavLink>
-                </CNavItem>
-              </CNav>
-              <CTabContent>
-                <CTabPane
-                  role="tabpanel"
-                  aria-labelledby="home-tab"
-                  click="product-overview"
-                  :visible="tabPaneActiveKey === 1"
-                >
-                  <div
-                    v-if="product.description"
-                    v-html="product.description"
-                  ></div>
-                  <div class="no-review-wrapper text-center py-5" v-else>
-                    <h2>{{ $t("No Details Found") }}</h2>
-                    <p>
-                      {{
-                        $t("There are currently no details  for this product")
-                      }}
-                    </p>
-                  </div>
-                  <div v-if="product.pdf_specifications">
-                    <a :href="product.pdf_specifications" target="_blank"
-                      >Download Pdf Specifications</a
-                    >
-                  </div>
-                </CTabPane>
-                <CTabPane
-                  role="tabpanel"
-                  click="buyer-review "
-                  aria-labelledby="profile-tab"
-                  :visible="tabPaneActiveKey === 2"
-                  v-if="
-                    site_config?.enable_product_reviews == enums.status.ACTIVE
-                  "
-                >
-                  <ProductReview
-                    :product-id="product.id"
-                    :config="site_config"
-                    :key="product.id"
-                  ></ProductReview>
-                </CTabPane>
-              </CTabContent>
+                    <ProductReview
+                      :product-id="product.id"
+                      :config="site_config"
+                      :key="product.id"
+                    ></ProductReview>
+                  </CTabPane>
+                </CTabContent>
+              </div>
             </div>
+            <!--End product details tabs-->
           </div>
-          <!--End product details tabs-->
+          <!--End Tab Content-->
         </div>
-        <!--End Tab Content-->
       </div>
-    </div>
-
-    <!-- Related Product -->
-    <section
-      class="bg-white mt-n1 pb-30 pt-30"
-      ref="recommendations"
-      v-if="!productLoading && product != null"
-    >
-      <div class="custom-container2">
-        <div class="row align-items-center mb-30">
-          <div class="col-md-6">
-            <section-title :title="sectionTitle" />
+  
+      <!-- Related Product -->
+      <!-- <section
+        class="bg-white mt-n1 pb-30 pt-30"
+        ref="recommendations"
+        v-if="!productLoading && product != null"
+      >
+        <div class="custom-container2">
+          <div class="row align-items-center mb-30">
+            <div class="col-md-6">
+              <section-title :title="sectionTitle" />
+            </div>
           </div>
-        </div>
-
-        <swiper
-          v-if="relatedProducts.length"
-          :slidesPerView="6"
-          :modules="modules"
-          :spaceBetween="1"
-          :loop="true"
-          class="product-grid-slider theme-slider-dots"
-          :breakpoints="{
-            '0': {
-              slidesPerView: 2,
-            },
-            '480': {
-              slidesPerView: 2,
-            },
-            '768': {
-              slidesPerView: 3,
-            },
-            '1024': {
-              slidesPerView: 6,
-            },
-          }"
-        >
-          <swiper-slide
-            v-for="(item, index) in relatedProducts"
-            :key="`slide-${index}`"
+  
+          <swiper
+            v-if="relatedProducts.length"
+            :slidesPerView="6"
+            :modules="modules"
+            :spaceBetween="1"
+            :loop="true"
+            class="product-grid-slider theme-slider-dots"
+            :breakpoints="{
+              '0': {
+                slidesPerView: 2,
+              },
+              '480': {
+                slidesPerView: 2,
+              },
+              '768': {
+                slidesPerView: 3,
+              },
+              '1024': {
+                slidesPerView: 6,
+              },
+            }"
           >
-            <single-product :item="item" />
-          </swiper-slide>
-        </swiper>
-      </div>
-    </section>
-    <!-- End Related Product -->
+            <swiper-slide
+              v-for="(item, index) in relatedProducts"
+              :key="`slide-${index}`"
+            >
+              <single-product :item="item" />
+            </swiper-slide>
+          </swiper>
+        </div>
+      </section> -->
+      <!-- End Related Product -->
+  
+    
+  
+      
+    </div>
+  
+  
+     <custom-footer :item="product" />
+
   </div>
 </template>
 
@@ -308,6 +320,8 @@ const SingleShop = defineAsyncComponent(() =>
   import("@/components//shop/SingleShop.vue")
 );
 
+import CustomFooter from '@/components/ui/CustomFooter.vue'
+
 import {
   CTabContent,
   CTabPane,
@@ -348,6 +362,7 @@ export default {
     CTableHeaderCell,
     CTableHead,
     SingleShop,
+    CustomFooter
   },
   data() {
     return {
@@ -734,6 +749,30 @@ export default {
     visibility: visible;
     opacity: 1;
     z-index: 9;
+  }
+}
+
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  height: 95vh;
+  // height: 100dvh; 
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.productDetails {
+  flex: 1;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .page-container {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 100px);
+  }
+
+  .button-group {
+    padding-bottom: 8px; /* just a little breathing room */
   }
 }
 </style>
