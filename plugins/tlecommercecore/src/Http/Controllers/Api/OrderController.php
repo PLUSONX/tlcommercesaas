@@ -421,7 +421,13 @@ class OrderController extends Controller
                 $temp['permalink'] = $item['permalink'];
             }
             // $temp['permalink'] = $item['permalink'];
-            $temp['image'] = $item['image'];
+            if (!empty($item['image'])) {
+                $temp['image'] = $item['image'];
+                
+            }
+
+             \Log::info('validateCartItems method middle point!!!!');
+            // $temp['image'] = $item['image'];
             if (!empty($item['variant'])) {
                 $temp['variant'] = $item['variant'];
             }
@@ -430,16 +436,47 @@ class OrderController extends Controller
                 $temp['variant_code'] = $item['variant_code'];
             }
             // $temp['variant_code'] = $item['variant_code'];
-            $temp['quantity'] = $item['quantity'];
-            $temp['unitPrice'] = $item['unitPrice'];
+
+            // $temp['quantity'] = $item['quantity'];
+            if (!empty($item['quantity'])) {
+                
+                $temp['quantity'] = $item['quantity'];
+            }
+            
+            // $temp['unitPrice'] = $item['unitPrice'];
+            if (!empty($item['unitPrice'])) {
+                
+                $temp['unitPrice'] = $item['unitPrice'];
+            }
+
             if (!empty($item['oldPrice'])) {
                 $temp['oldPrice'] = $item['oldPrice'];
             }
             // $temp['oldPrice'] = $item['oldPrice'];
-            $temp['min_item'] = $item['min_item'];
-            $temp['max_item'] = $item['max_item'];
-            $temp['attachment'] = $attachment;
-            $temp['seller'] = $item['seller'];
+            // $temp['min_item'] = $item['min_item'];
+
+            if (!empty($item['min_item'])) {
+                $temp['min_item'] = $item['min_item'];
+            }
+
+            // $temp['max_item'] = $item['max_item'];
+
+            if (!empty($item['max_item'])) {
+                $temp['max_item'] = $item['max_item'];
+            }
+
+            // $temp['attachment'] = $attachment;
+
+            if (!empty($item['attachment'])) {
+                $temp['attachment'] = $item['attachment'];
+            }
+
+            // $temp['seller'] = $item['seller'];
+
+            if (!empty($item['seller'])) {
+                $temp['seller'] = $item['seller'];
+            }
+
             if (!empty($item['shop_name'])) {
                 $temp['shop_name'] = $item['shop_name'];
             }
@@ -447,10 +484,17 @@ class OrderController extends Controller
             if (!empty($item['shop_slug'])) {
                 $temp['shop_slug'] = $item['shop_slug'];
             }
+
+            \Log::info('validateCartItems method validation end!!!!');
+
+
             // $temp['shop_slug'] = $item['shop_slug'];
             $temp['is_available'] = $this->checkAvailabilityCartItem($item);
             $temp['is_selected'] = $this->checkAvailabilityCartItem($item) == 1 ? true : false;
             array_push($updated_cart, $temp);
+
+            \Log::info('validateCartItems method end!!!!');
+
         }
 
         return response()->json(

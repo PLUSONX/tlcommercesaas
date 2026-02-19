@@ -266,9 +266,17 @@
   
       
     </div>
+
+     <custom-footer :item="productData" />
+
+    <!-- <custom-footer :item="product ? product.data : null" /> -->
   
+    <!-- <custom-footer
+      v-if="product && product.data"
+      :item="product.data"
+    /> -->
   
-     <custom-footer :item="product" />
+     <!-- <custom-footer :item="product.data" /> -->
 
   </div>
 </template>
@@ -389,18 +397,22 @@ export default {
   },
   computed: {
     ...mapState({
-    site_config: (state) => state.siteSettings,
-  }),
+      site_config: (state) => state.siteSettings,
+    }),
 
     ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
 
-  forcedMobile() {
-    // identical intent to MainLayout.vue
-    if (this.isSplitScreen) {
-      return true;
+    forcedMobile() {
+      // identical intent to MainLayout.vue
+      if (this.isSplitScreen) {
+        return true;
+      }
+      return this.isMobile;
+    },
+
+    productData() {
+      return this.product ?? null
     }
-    return this.isMobile;
-  },
   },
   // computed: mapState({
   //   site_config: (state) => state.siteSettings,
@@ -426,6 +438,8 @@ export default {
     this.getProductDetails();
     this.getCategories();
     this.getTopSellingProducts();
+
+    console.log("product: ", this.product);
   },
   methods: {
     /**
