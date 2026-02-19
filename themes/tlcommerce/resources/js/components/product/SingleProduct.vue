@@ -1237,7 +1237,7 @@ export default {
   align-items: center;
   justify-content: center;
   margin-top: 10px;
-  padding: 0.6em 1em;
+  padding: 1em 1em;
   font-size: clamp(0.55rem, 1vw, 0.65rem);
   font-weight: 600;
   line-height: 1.4;
