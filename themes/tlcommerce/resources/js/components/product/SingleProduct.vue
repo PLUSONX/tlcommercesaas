@@ -1066,18 +1066,35 @@ export default {
 
 .btn-xs {
   flex: 1;
-  /* take equal width */
   display: inline-flex;
   align-items: center;
   justify-content: center;
   margin-top: 10px;
   padding: 1em 1em;
-  //font-size: clamp(0.55rem, 1vw, 0.65rem);
   font-size: 14px;
   font-weight: 600;
   line-height: 1.4;
   white-space: nowrap;
+
+  @media (max-width: 768px) {
+    font-size: 0.55rem;
+  }
 }
+
+// .btn-xs {
+//   flex: 1;
+//   /* take equal width */
+//   display: inline-flex;
+//   align-items: center;
+//   justify-content: center;
+//   margin-top: 10px;
+//   padding: 1em 1em;
+//   //font-size: clamp(0.55rem, 1vw, 0.65rem);
+//   font-size: 0.65rem;
+//   font-weight: 600;
+//   line-height: 1.4;
+//   white-space: nowrap;
+// }
 
 // .btn-xs {
 //     /* padding: 10px; */
