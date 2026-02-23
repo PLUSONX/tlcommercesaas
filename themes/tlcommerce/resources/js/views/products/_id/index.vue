@@ -7,7 +7,7 @@
       'mobile-content-wrapper': forcedMobile
     }">
       <!-- <page-header :items="bItems" /> -->
-  
+
       <!-- Product details Hash Menu -->
       <div class="product-details-hash-menu d-lg-none" ref="hashMenu" style="margin-top: 10px;">
         <div class="custom-container2">
@@ -26,29 +26,20 @@
         </div>
       </div>
       <!-- End Product details Hash Menu -->
-  
+
       <div class="pt-4 pb-4 light-bg" ref="overview">
         <div class="custom-container2">
           <div class="product-details" v-if="!productLoading">
             <div class="row">
               <template v-if="product != null">
                 <div class="col-lg-5">
-                  <details-gallery
-                    :gallery-images="product.galleryImages"
-                    :voucher-list="product.voucher_list"
-                    :product-name="product.name"
-                    :url="product.url"
-                    :summary="product.summary"
-                    :networks="product.shareOptions"
-                    :key="galleryKey"
-                  />
+                  <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
+                    :product-name="product.name" :url="product.url" :summary="product.summary"
+                    :networks="product.shareOptions" :key="galleryKey" />
                 </div>
                 <div class="col-lg-7">
-                  <details-content
-                    :product="product"
-                    @goto-section="goSec"
-                    @color-variant-images="colorVariantImages"
-                  />
+                  <details-content :product="product" @goto-section="goSec"
+                    @color-variant-images="colorVariantImages" />
                 </div>
               </template>
               <div class="row" v-else>
@@ -56,7 +47,7 @@
               </div>
             </div>
           </div>
-  
+
           <div class="product-details1" v-if="productLoading">
             <div class="row">
               <div class="col-lg-5">
@@ -67,7 +58,7 @@
               </div>
             </div>
           </div>
-  
+
           <!--Product info card-->
           <!-- <div class="row mt-lg-4" v-if="!productLoading && product != null">
             <div class="col-12">
@@ -112,17 +103,13 @@
             </div>
           </div> -->
           <!--End product info card-->
-  
+
           <!--Tab Content-->
           <div class="row mt-45" v-if="!productLoading && product != null">
             <!--Product widgets-->
             <div class="col-lg-3 d-none d-lg-block">
               <div class="widget_wrap">
-                <single-shop
-                  :shop="product.shopInfo"
-                  widgetTitle
-                  v-if="product.shopInfo != null"
-                ></single-shop>
+                <single-shop :shop="product.shopInfo" widgetTitle v-if="product.shopInfo != null"></single-shop>
                 <WidgetTopCategory :categories="topCategories" link="true" />
                 <WidgetTopSellingProduct :products="topSellingProducts" />
               </div>
@@ -131,81 +118,49 @@
             <!--Product details tabs-->
             <div class="col-lg-9">
               <div class="overview-wrap" ref="productDetails">
-                <CNav
-                  variant="tabs"
-                  role="tablist"
-                  class="product-description-tabs bg-light"
-                >
+                <CNav variant="tabs" role="tablist" class="product-description-tabs bg-light">
                   <CNavItem>
-                    <CNavLink
-                      href="javascript:void(0);"
-                      :active="tabPaneActiveKey === 1"
-                      @click="
-                        () => {
-                          tabPaneActiveKey = 1;
-                        }
-                      "
-                    >
+                    <CNavLink href="javascript:void(0);" :active="tabPaneActiveKey === 1" @click="
+                      () => {
+                        tabPaneActiveKey = 1;
+                      }
+                    ">
                       {{ $t("Product Overview") }}
                     </CNavLink>
                   </CNavItem>
-                  <CNavItem
-                    v-if="
-                      site_config?.enable_product_reviews == enums.status.ACTIVE
-                    "
-                  >
-                    <CNavLink
-                      href="javascript:void(0);"
-                      :active="tabPaneActiveKey === 2"
-                      @click="
-                        () => {
-                          tabPaneActiveKey = 2;
-                        }
-                      "
-                    >
+                  <CNavItem v-if="
+                    site_config?.enable_product_reviews == enums.status.ACTIVE
+                  ">
+                    <CNavLink href="javascript:void(0);" :active="tabPaneActiveKey === 2" @click="
+                      () => {
+                        tabPaneActiveKey = 2;
+                      }
+                    ">
                       {{ $t("Buyer Review") }}
                     </CNavLink>
                   </CNavItem>
                 </CNav>
                 <CTabContent>
-                  <CTabPane
-                    role="tabpanel"
-                    aria-labelledby="home-tab"
-                    click="product-overview"
-                    :visible="tabPaneActiveKey === 1"
-                  >
-                    <div
-                      v-if="product.description"
-                      v-html="product.description"
-                    ></div>
+                  <CTabPane role="tabpanel" aria-labelledby="home-tab" click="product-overview"
+                    :visible="tabPaneActiveKey === 1">
+                    <div v-if="product.description" v-html="product.description"></div>
                     <div class="no-review-wrapper text-center py-5" v-else>
                       <h2>{{ $t("No Details Found") }}</h2>
                       <p>
                         {{
-                          $t("There are currently no details  for this product")
+                          $t("There are currently no details for this product")
                         }}
                       </p>
                     </div>
                     <div v-if="product.pdf_specifications">
-                      <a :href="product.pdf_specifications" target="_blank"
-                        >Download Pdf Specifications</a
-                      >
+                      <a :href="product.pdf_specifications" target="_blank">Download Pdf Specifications</a>
                     </div>
                   </CTabPane>
-                  <CTabPane
-                    role="tabpanel"
-                    click="buyer-review "
-                    aria-labelledby="profile-tab"
-                    :visible="tabPaneActiveKey === 2"
-                    v-if="
+                  <CTabPane role="tabpanel" click="buyer-review " aria-labelledby="profile-tab"
+                    :visible="tabPaneActiveKey === 2" v-if="
                       site_config?.enable_product_reviews == enums.status.ACTIVE
-                    "
-                  >
-                    <ProductReview
-                      :product-id="product.id"
-                      :config="site_config"
-                      :key="product.id"
-                    ></ProductReview>
+                    ">
+                    <ProductReview :product-id="product.id" :config="site_config" :key="product.id"></ProductReview>
                   </CTabPane>
                 </CTabContent>
               </div>
@@ -215,7 +170,7 @@
           <!--End Tab Content-->
         </div>
       </div>
-  
+
       <!-- Related Product -->
       <!-- <section
         class="bg-white mt-n1 pb-30 pt-30"
@@ -261,22 +216,22 @@
         </div>
       </section> -->
       <!-- End Related Product -->
-  
-    
-  
-      
+
+
+
+
     </div>
 
-     <custom-footer :item="productData" />
+    <custom-footer :item="productData" />
 
     <!-- <custom-footer :item="product ? product.data : null" /> -->
-  
+
     <!-- <custom-footer
       v-if="product && product.data"
       :item="product.data"
     /> -->
-  
-     <!-- <custom-footer :item="product.data" /> -->
+
+    <!-- <custom-footer :item="product.data" /> -->
 
   </div>
 </template>
@@ -433,13 +388,13 @@ export default {
     },
   },
   mounted() {
-    console.log("Products Details Mounted!!!!");
+    // console.log("Products Details Mounted!!!!");
     window.addEventListener("scroll", this.scrollHandler);
     this.getProductDetails();
     this.getCategories();
     this.getTopSellingProducts();
 
-    console.log("product: ", this.product);
+    // console.log("product: ", this.product);
   },
   methods: {
     /**
@@ -457,7 +412,7 @@ export default {
         .then((response) => {
           // if (response.data.success) {
           if (response.data) {
-            console.log("product: ", response.data);
+            // console.log("product: ", response.data);
             this.getRelatedProducts(response.data.data.id);
             document.title = response.data.data.name;
             this.product = response.data.data;
@@ -562,7 +517,7 @@ export default {
 <style lang="scss" scoped>
 @import "../../../assets/sass/00-abstracts/01-variables";
 
-.force-mobile-layout .row > [class*="col-"] {
+.force-mobile-layout .row>[class*="col-"] {
   flex: 0 0 100% !important;
   max-width: 100% !important;
 }
@@ -605,14 +560,17 @@ export default {
   background-color: #fff;
   box-shadow: 3px 3px 30px rgb(0 0 0 / 3%);
   border: 1px solid #f7f8fa;
+
   @media only screen and (max-width: 575px) {
     padding: 0px 15px;
   }
 }
+
 .overview-wrap {
   background-color: #fff;
   box-shadow: 3px 3px 30px rgb(0 0 0 / 3%);
   border: 1px solid #f7f8fa;
+
   ul {
     li {
       &:not(:last-child) {
@@ -620,13 +578,16 @@ export default {
       }
     }
   }
+
   p {
     &:not(:last-child) {
       margin-bottom: 30px;
     }
   }
+
   .tab-content {
     padding: 30px;
+
     @media only screen and (max-width: 575px) {
       padding: 0px 15px;
     }
@@ -639,8 +600,10 @@ export default {
   @media only screen and (max-width: 575px) {
     flex-direction: column;
   }
+
   li {
     margin-bottom: 0 !important;
+
     a {
       color: #666666;
       font-size: 18px;
@@ -651,9 +614,11 @@ export default {
       border: none;
       position: relative;
       border-radius: 0px;
+
       @media only screen and (max-width: 575px) {
         text-align: center;
       }
+
       &:after {
         font-family: "Material Icons";
         content: "\e5cf";
@@ -662,9 +627,11 @@ export default {
         left: 5px;
         font-size: 16px;
       }
+
       &.active {
         color: #fff;
         background-color: $c1;
+
         &:after {
           content: "\e5ce";
         }
@@ -672,6 +639,7 @@ export default {
     }
   }
 }
+
 .info-list {
   display: flex;
   list-style: none;
@@ -682,44 +650,54 @@ export default {
   border: 1px solid #f7f8fa;
   max-width: 100%;
   overflow-x: auto;
+
   @media only screen and (max-width: 1199px) {
     padding: 0;
   }
+
   li {
     padding: 0 30px;
     flex-grow: 1;
+
     &:not(:last-child) {
       border-right: 1px solid #e7eaef;
     }
+
     @media only screen and (max-width: 1199px) {
       padding: 15px;
       box-shadow: 3px 3px 30px rgb(0 0 0 / 3%);
       flex-grow: inherit;
       min-width: 220px;
     }
+
     p {
       margin-bottom: 0;
     }
+
     span,
     a {
       font-size: 13px;
     }
   }
 }
+
 .specification-table {
   h4 {
     font-size: 21px;
     font-weight: 500;
     margin-bottom: 16px;
   }
+
   .table {
     th {
       background-color: #f7f8fa;
     }
+
     th,
     td {
       border-color: #f7f8fa;
     }
+
     tr {
       &:hover {
         background-color: rgba($color: #fafafa, $alpha: 0.5);
@@ -739,6 +717,7 @@ export default {
   box-shadow: 7px 7px 60px rgb(0 0 0 / 7%);
   padding: 10px 0;
   background-color: #fff;
+
   ul {
     list-style: none;
     margin: 0;
@@ -747,17 +726,21 @@ export default {
     align-items: center;
     white-space: nowrap;
     overflow: auto;
+
     li {
       user-select: none;
       cursor: pointer;
+
       &:not(:last-child) {
         margin-right: 20px;
       }
+
       &.active {
         color: $c1;
       }
     }
   }
+
   &.active {
     top: 65px;
     visibility: visible;
@@ -786,7 +769,8 @@ export default {
   }
 
   .button-group {
-    padding-bottom: 8px; /* just a little breathing room */
+    padding-bottom: 8px;
+    /* just a little breathing room */
   }
 }
 </style>

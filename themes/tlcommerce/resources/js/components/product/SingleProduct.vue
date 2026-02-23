@@ -1,9 +1,6 @@
 <template>
   <!--Product Page style-->
-  <div
-    v-if="styleEight"
-    class="single-product-item d-inline-block mb-4 style--eight"
-  >
+  <div v-if="styleEight" class="single-product-item d-inline-block mb-4 style--eight">
     <div class="position-relative overflow-hidden">
       <!-- Thumb -->
       <router-link :to="`/products/${item.slug}`" class="d-block">
@@ -12,16 +9,12 @@
           src="/storage/all_files/2023/Mar/trending-offers-ear-phone-02_9_32.png"
           :alt="item.name"
         /> -->
-         <!-- <img
+        <!-- <img
             class="w-100"
             :src="cleanImage(item.thumbnail_image)"
             :alt="item.name"
           /> -->
-        <v-lazy-image
-          class="w-100"
-          :src="cleanImage(item.thumbnail_image)"
-          :alt="item.name"
-        />
+        <v-lazy-image class="w-100" :src="cleanImage(item.thumbnail_image)" :alt="item.name" />
         <!-- <v-lazy-image
           class="w-100"
           :src="item.thumbnail_image"
@@ -31,10 +24,8 @@
       <!-- End Thumb -->
 
       <!-- Action buttons -->
-      <router-link
-        :to="`/products/${item.slug}`"
-        class="product-action-buttons position-absolute fixed-top w-100 h-100 d-flex align-items-center justify-content-center"
-      >
+      <router-link :to="`/products/${item.slug}`"
+        class="product-action-buttons position-absolute fixed-top w-100 h-100 d-flex align-items-center justify-content-center">
         <!-- Add to Cart -->
         <!-- <button
           v-if="item.quantity > 0"
@@ -47,21 +38,13 @@
         <!-- End Add to Cart -->
 
         <!-- Add to Wishlist -->
-        <button
-          class="btn-circle bg-black"
-          v-bind:title="$t('Add To Wishlist')"
-          @click.prevent="addToWishlist"
-        >
+        <button class="btn-circle bg-black" v-bind:title="$t('Add To Wishlist')" @click.prevent="addToWishlist">
           <base-icon-svg name="wishlist" :height="16.5" :width="16.5" />
         </button>
         <!-- End Add to Wishlist -->
 
         <!-- Quick view -->
-        <button
-          class="btn-circle bg-black"
-          v-bind:title="$t('Quick View')"
-          @click.prevent="productQuickView()"
-        >
+        <button class="btn-circle bg-black" v-bind:title="$t('Quick View')" @click.prevent="productQuickView()">
           <base-icon-svg name="quickview" :height="17.688" :width="18.8" />
         </button>
         <!-- End Quick view -->
@@ -72,19 +55,12 @@
     <!-- Summary -->
     <div class="d-flex flex-column justify-content-between product-summary">
       <!-- Rating -->
-      <div
-        class="star-rating"
-        v-if="
-          site_config?.enable_product_reviews == 1 &&
-          site_config?.enable_product_star_rating == 1
-        "
-      >
+      <div class="star-rating" v-if="
+        site_config?.enable_product_reviews == 1 &&
+        site_config?.enable_product_star_rating == 1
+      ">
         <div class="product-rating-wrapper">
-          <i
-            :data-star="item.avg_rating"
-            :title="item.avg_rating"
-            class="star-rating"
-          ></i>
+          <i :data-star="item.avg_rating" :title="item.avg_rating" class="star-rating"></i>
         </div>
       </div>
       <!-- End Rating -->
@@ -92,7 +68,7 @@
       <div class="row justify-content-between align-items-baseline">
 
         <div class="col-auto pe-0">
-            <!-- Title -->
+          <!-- Title -->
           <h4 class="product-title">
             <router-link :to="`/products/${item.slug}`">
               {{ item.name }}
@@ -104,25 +80,14 @@
         <div class="col-auto text-end">
           <!-- Price -->
           <span class="product-price d-flex flex-wrap c1">
-            <the-currency
-              :amount="item.price"
-              tag="span"
-              v-if="item.base_price > item.price"
-            ></the-currency>
-            <the-currency
-              :amount="item.base_price"
-              tag="span"
-              v-else
-            ></the-currency>
-            <the-currency
-              :amount="item.base_price"
-              tag="del"
-              v-if="!widgetSlider && item.base_price > item.price"
-            ></the-currency>
+            <the-currency :amount="item.price" tag="span" v-if="item.base_price > item.price"></the-currency>
+            <the-currency :amount="item.base_price" tag="span" v-else></the-currency>
+            <the-currency :amount="item.base_price" tag="del"
+              v-if="!widgetSlider && item.base_price > item.price"></the-currency>
           </span>
           <!-- End Price -->
         </div>
-        
+
       </div>
 
       <!-- <div class="button-group d-flex align-items-center justify-content-between">
@@ -149,41 +114,28 @@
 
 
       <div class="button-group d-flex align-items-center justify-content-between">
-        
-        
-        <button
-          type="button"
-          class="btn btn_fill btn-xs rounded"
-          :disabled="product.quantity < 1"
-          @click.prevent="placeOrder"
-        >
+
+
+        <button type="button" class="btn btn_fill btn-xs rounded" :disabled="product.quantity < 1"
+          @click.prevent="placeOrder">
           {{ $t("Place Order") }}
         </button>
 
-        <button
-          type="button"
-          :disabled="product.quantity < 1"
-          class="btn btn_borderd btn-xs rounded"
-          @click.prevent="addToCart"
-        >
+        <button type="button" :disabled="product.quantity < 1" class="btn btn_borderd btn-xs rounded"
+          @click.prevent="addToCart">
           {{ $t("Add To Cart") }}
         </button>
       </div>
-      
+
     </div>
     <!-- End Summary -->
     <!-- Quick View Modal -->
     <teleport to="body">
-      <CModal
-        scrollable
-        :visible="visibleQuickView"
-        size="lg"
-        @close="
-          () => {
-            visibleQuickView = false;
-          }
-        "
-      >
+      <CModal scrollable :visible="visibleQuickView" size="lg" @close="
+        () => {
+          visibleQuickView = false;
+        }
+      ">
         <CModalHeader>
           <button class="btn-circle bg-black size-35" @click="close()">
             <base-icon-svg name="close" :width="10" :height="10" />
@@ -193,22 +145,13 @@
         <CModalBody>
           <div class="row">
             <div class="col-lg-6 mb-30 mb-lg-0">
-              <details-gallery
-                :gallery-images="product.galleryImages"
-                :voucher-list="product.voucher_list"
-                :product-name="product.name"
-                :url="product.url"
-                :summary="product.summary"
-                :networks="product.shareOptions"
-              />
+              <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
+                :product-name="product.name" :url="product.url" :summary="product.summary"
+                :networks="product.shareOptions" />
             </div>
 
             <div class="col-lg-6">
-              <details-content
-                :product="product"
-                @color-variant-images="colorVariantImages"
-                :key="product.id"
-              />
+              <details-content :product="product" @color-variant-images="colorVariantImages" :key="product.id" />
             </div>
           </div>
         </CModalBody>
@@ -219,18 +162,11 @@
   <!--End Product Page style-->
 
   <!--Product search style-->
-  <div
-    class="single-product-item style--eight d-flex flex-column m-0"
-    v-else-if="small"
-  >
+  <div class="single-product-item style--eight d-flex flex-column m-0" v-else-if="small">
     <div class="position-relative overflow-hidden d-flex">
       <!-- Thumb -->
       <router-link :to="`/products/${item.slug}`" class="d-block pr-10">
-         <v-lazy-image
-          :src="cleanImage(item.thumbnail_image)"
-          :alt="item.name"
-          class="small-image"
-        />
+        <v-lazy-image :src="cleanImage(item.thumbnail_image)" :alt="item.name" class="small-image" />
         <!-- <v-lazy-image
           :src="item.thumbnail_image"
           :alt="item.name"
@@ -250,21 +186,9 @@
 
         <!-- Price -->
         <span class="product-price">
-          <the-currency
-            :amount="item.price"
-            tag="span"
-            v-if="item.base_price > item.price"
-          ></the-currency>
-          <the-currency
-            :amount="item.base_price"
-            tag="span"
-            v-else
-          ></the-currency>
-          <the-currency
-            :amount="item.base_price"
-            tag="del"
-            v-if="item.base_price > item.price"
-          ></the-currency>
+          <the-currency :amount="item.price" tag="span" v-if="item.base_price > item.price"></the-currency>
+          <the-currency :amount="item.base_price" tag="span" v-else></the-currency>
+          <the-currency :amount="item.base_price" tag="del" v-if="item.base_price > item.price"></the-currency>
         </span>
         <!-- End Price -->
       </div>
@@ -274,17 +198,10 @@
   <!--End Product search style-->
 
   <!--Compare Product search style-->
-  <div
-    class="single-product-item style--eight d-flex flex-column m-0"
-    v-else-if="compareSearch"
-  >
+  <div class="single-product-item style--eight d-flex flex-column m-0" v-else-if="compareSearch">
     <div class="position-relative overflow-hidden d-flex">
       <!-- Thumb -->
-       <v-lazy-image
-          class="w-100"
-          :src="cleanImage(item.thumbnail_image)"
-          :alt="item.name"
-        />
+      <v-lazy-image class="w-100" :src="cleanImage(item.thumbnail_image)" :alt="item.name" />
       <!-- <v-lazy-image
         :src="item.thumbnail_image"
         :alt="item.name"
@@ -301,21 +218,9 @@
 
         <!-- Price -->
         <span class="product-price">
-          <the-currency
-            :amount="item.price"
-            tag="span"
-            v-if="item.base_price > item.price"
-          ></the-currency>
-          <the-currency
-            :amount="item.base_price"
-            tag="span"
-            v-else
-          ></the-currency>
-          <the-currency
-            :amount="item.base_price"
-            tag="del"
-            v-if="item.base_price > item.price"
-          ></the-currency>
+          <the-currency :amount="item.price" tag="span" v-if="item.base_price > item.price"></the-currency>
+          <the-currency :amount="item.base_price" tag="span" v-else></the-currency>
+          <the-currency :amount="item.base_price" tag="del" v-if="item.base_price > item.price"></the-currency>
         </span>
         <!-- End Price -->
       </div>
@@ -330,11 +235,7 @@
       <div class="d-flex align-items-center">
         <div class="product-img">
           <router-link :to="`/products/${item.slug}`">
-            <v-lazy-image
-          class="w-100"
-          :src="cleanImage(item.thumbnail_image)"
-          :alt="item.name"
-        />
+            <v-lazy-image class="w-100" :src="cleanImage(item.thumbnail_image)" :alt="item.name" />
             <!-- <img
               :src="item.thumbnail_image"
               :alt="item.name"
@@ -351,55 +252,31 @@
     </CTableDataCell>
     <CTableDataCell>
       <span class="product-price">
-        <the-currency
-          :amount="item.price"
-          tag="span"
-          v-if="item.base_price > item.price"
-        ></the-currency>
-        <the-currency
-          v-else
-          :amount="item.base_price"
-          tag="span"
-        ></the-currency>
-        <the-currency
-          v-if="item.base_price > item.price"
-          :amount="item.base_price"
-          tag="del"
-          class="ml-10"
-        ></the-currency>
+        <the-currency :amount="item.price" tag="span" v-if="item.base_price > item.price"></the-currency>
+        <the-currency v-else :amount="item.base_price" tag="span"></the-currency>
+        <the-currency v-if="item.base_price > item.price" :amount="item.base_price" tag="del"
+          class="ml-10"></the-currency>
       </span>
     </CTableDataCell>
     <CTableDataCell>
-      <span
-        class="cart-icon bg-light btn-circle"
-        v-bind:title="$t('Add To Cart')"
-        v-if="item.quantity > 0"
-        @click.prevent="handleCartButton"
-      >
+      <span class="cart-icon bg-light btn-circle" v-bind:title="$t('Add To Cart')" v-if="item.quantity > 0"
+        @click.prevent="handleCartButton">
         <span class="material-icons"> shopping_cart </span>
       </span>
     </CTableDataCell>
     <CTableDataCell class="text-center">
-      <span
-        class="remove-icon bg-light btn-circle"
-        title="remove item"
-        @click.prevent="removeItemFromWishlist(item.id)"
-      >
+      <span class="remove-icon bg-light btn-circle" title="remove item"
+        @click.prevent="removeItemFromWishlist(item.id)">
         <span class="material-icons"> delete </span>
       </span>
     </CTableDataCell>
     <!-- Quick View Modal -->
     <teleport to="body">
-      <CModal
-        scrollable
-        :visible="visibleQuickView"
-        size="lg"
-        @close="
-          () => {
-            visibleQuickView = false;
-          }
-        "
-      >
+      <CModal scrollable :visible="visibleQuickView" size="lg" @close="
+        () => {
+          visibleQuickView = false;
+        }
+      ">
         <CModalHeader>
           <button class="btn-circle bg-black size-35" @click="close()">
             <base-icon-svg name="close" :width="10" :height="10" />
@@ -409,22 +286,13 @@
         <CModalBody>
           <div class="row">
             <div class="col-lg-6 mb-30 mb-lg-0">
-              <details-gallery
-                :gallery-images="product.galleryImages"
-                :voucher-list="product.voucher_list"
-                :product-name="product.name"
-                :url="product.url"
-                :summary="product.summary"
-                :networks="product.shareOptions"
-              />
+              <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
+                :product-name="product.name" :url="product.url" :summary="product.summary"
+                :networks="product.shareOptions" />
             </div>
 
             <div class="col-lg-6">
-              <details-content
-                :product="product"
-                @color-variant-images="colorVariantImages"
-                :key="product.id"
-              />
+              <details-content :product="product" @color-variant-images="colorVariantImages" :key="product.id" />
             </div>
           </div>
         </CModalBody>
@@ -436,30 +304,19 @@
 
   <!--Compare page style-->
   <div class="compare-style-product" v-else-if="compareStyle">
-    <button
-      class="btn btn_bordered"
-      v-bind:title="$t('Add To Cart')"
-      :disabled="item.quantity < 1"
-      v-on="
-        item.has_variant == 2
-          ? { click: () => addToCart() }
-          : { click: () => productQuickView() }
-      "
-    >
+    <button class="btn btn_bordered" v-bind:title="$t('Add To Cart')" :disabled="item.quantity < 1" v-on="item.has_variant == 2
+      ? { click: () => addToCart() }
+      : { click: () => productQuickView() }
+      ">
       {{ $t("Add To Cart") }}
     </button>
     <!-- Quick View Modal -->
     <teleport to="body">
-      <CModal
-        scrollable
-        :visible="visibleQuickView"
-        size="lg"
-        @close="
-          () => {
-            visibleQuickView = false;
-          }
-        "
-      >
+      <CModal scrollable :visible="visibleQuickView" size="lg" @close="
+        () => {
+          visibleQuickView = false;
+        }
+      ">
         <CModalHeader>
           <button class="btn-circle bg-black size-35" @click="close()">
             <base-icon-svg name="close" :width="10" :height="10" />
@@ -469,22 +326,13 @@
         <CModalBody>
           <div class="row">
             <div class="col-lg-6 mb-30 mb-lg-0">
-              <details-gallery
-                :gallery-images="product.galleryImages"
-                :voucher-list="product.voucher_list"
-                :product-name="product.name"
-                :url="product.url"
-                :summary="product.summary"
-                :networks="product.shareOptions"
-              />
+              <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
+                :product-name="product.name" :url="product.url" :summary="product.summary"
+                :networks="product.shareOptions" />
             </div>
 
             <div class="col-lg-6">
-              <details-content
-                :product="product"
-                @color-variant-images="colorVariantImages"
-                :key="product.id"
-              />
+              <details-content :product="product" @color-variant-images="colorVariantImages" :key="product.id" />
             </div>
           </div>
         </CModalBody>
@@ -499,11 +347,7 @@
     <div class="position-relative overflow-hidden">
       <!-- Thumb -->
       <router-link :to="`/products/${item.slug}`" class="d-block">
-        <v-lazy-image
-          class="w-100"
-          :src="cleanImage(item.thumbnail_image)"
-          :alt="item.name"
-        />
+        <v-lazy-image class="w-100" :src="cleanImage(item.thumbnail_image)" :alt="item.name" />
         <!-- <v-lazy-image
           class="w-100"
           :src="item.thumbnail_image"
@@ -513,37 +357,23 @@
       <!-- End Thumb -->
 
       <!-- Action buttons -->
-      <router-link
-        :to="`/products/${item.slug}`"
-        class="product-action-buttons position-absolute fixed-top w-100 h-100 d-flex align-items-center justify-content-center"
-      >
+      <router-link :to="`/products/${item.slug}`"
+        class="product-action-buttons position-absolute fixed-top w-100 h-100 d-flex align-items-center justify-content-center">
         <!-- Add to Cart -->
-        <button
-          v-if="item.quantity > 0"
-          class="btn-circle bg-black"
-          v-bind:title="$t('Add To Cart')"
-          @click.prevent="handleCartButton"
-        >
+        <button v-if="item.quantity > 0" class="btn-circle bg-black" v-bind:title="$t('Add To Cart')"
+          @click.prevent="handleCartButton">
           <base-icon-svg name="cart" :height="17.5" :width="17.5" />
         </button>
         <!-- End Add to Cart -->
 
         <!-- Add to Wishlist -->
-        <button
-          class="btn-circle bg-black"
-          v-bind:title="$t('Add To Wishlist')"
-          @click.prevent="addToWishlist"
-        >
+        <button class="btn-circle bg-black" v-bind:title="$t('Add To Wishlist')" @click.prevent="addToWishlist">
           <base-icon-svg name="wishlist" :height="16.5" :width="16.5" />
         </button>
         <!-- End Add to Wishlist -->
 
         <!-- Quick view -->
-        <button
-          class="btn-circle bg-black"
-          v-bind:title="$t('Quick View')"
-          @click.prevent="productQuickView()"
-        >
+        <button class="btn-circle bg-black" v-bind:title="$t('Quick View')" @click.prevent="productQuickView()">
           <base-icon-svg name="quickview" :height="17.688" :width="18.8" />
         </button>
         <!-- End Quick view -->
@@ -557,8 +387,7 @@
             -{{ item.discount }}%
           </span>
           <span v-else>
-            -{{ item.discount.discount_amount }}{{ this.currency.symbol }}</span
-          >
+            -{{ item.discount.discount_amount }}{{ this.currency.symbol }}</span>
         </span>
       </div>
       <!-- End Discount -->
@@ -567,19 +396,12 @@
     <!-- Summary -->
     <div class="product-summary text-center">
       <!-- Rating -->
-      <div
-        class="star-rating mx-auto"
-        v-if="
-          site_config?.enable_product_reviews == 1 &&
-          site_config?.enable_product_star_rating == 1
-        "
-      >
+      <div class="star-rating mx-auto" v-if="
+        site_config?.enable_product_reviews == 1 &&
+        site_config?.enable_product_star_rating == 1
+      ">
         <div class="product-rating-wrapper">
-          <i
-            :data-star="item.avg_rating"
-            :title="item.avg_rating"
-            class="star-rating"
-          ></i>
+          <i :data-star="item.avg_rating" :title="item.avg_rating" class="star-rating"></i>
         </div>
       </div>
       <!-- End Rating -->
@@ -594,37 +416,20 @@
 
       <!-- Price -->
       <span class="product-price">
-        <the-currency
-          :amount="item.price"
-          tag="span"
-          v-if="item.base_price > item.price"
-        ></the-currency>
-        <the-currency
-          :amount="item.base_price"
-          tag="span"
-          v-else
-        ></the-currency>
-        <the-currency
-          :amount="item.base_price"
-          tag="del"
-          v-if="item.base_price > item.price"
-        ></the-currency>
+        <the-currency :amount="item.price" tag="span" v-if="item.base_price > item.price"></the-currency>
+        <the-currency :amount="item.base_price" tag="span" v-else></the-currency>
+        <the-currency :amount="item.base_price" tag="del" v-if="item.base_price > item.price"></the-currency>
       </span>
       <!-- End Price -->
     </div>
     <!-- End Summary -->
     <!-- Quick View Modal -->
     <teleport to="body">
-      <CModal
-        scrollable
-        :visible="visibleQuickView"
-        size="lg"
-        @close="
-          () => {
-            visibleQuickView = false;
-          }
-        "
-      >
+      <CModal scrollable :visible="visibleQuickView" size="lg" @close="
+        () => {
+          visibleQuickView = false;
+        }
+      ">
         <CModalHeader>
           <button class="btn-circle bg-black size-35" @click="close()">
             <base-icon-svg name="close" :width="10" :height="10" />
@@ -634,22 +439,13 @@
         <CModalBody>
           <div class="row">
             <div class="col-lg-6 mb-30 mb-lg-0">
-              <details-gallery
-                :gallery-images="product.galleryImages"
-                :voucher-list="product.voucher_list"
-                :product-name="product.name"
-                :url="product.url"
-                :summary="product.summary"
-                :networks="product.shareOptions"
-              />
+              <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
+                :product-name="product.name" :url="product.url" :summary="product.summary"
+                :networks="product.shareOptions" />
             </div>
 
             <div class="col-lg-6">
-              <details-content
-                :product="product"
-                @color-variant-images="colorVariantImages"
-                :key="product.id"
-              />
+              <details-content :product="product" @color-variant-images="colorVariantImages" :key="product.id" />
             </div>
           </div>
         </CModalBody>
@@ -758,37 +554,37 @@ export default {
   }),
   mounted() {
     if (window.fbq) {
-        window.fbq('track', 'View Content', {
-            content_ids: [this.item.id],
-            content_name: this.item.name,
-            content_type: 'product',
-            value: this.item.price,
-            currency: 'KD'
-        });
+      window.fbq('track', 'View Content', {
+        content_ids: [this.item.id],
+        content_name: this.item.name,
+        content_type: 'product',
+        value: this.item.price,
+        currency: 'KD'
+      });
     }
-},
+  },
   methods: {
 
     cleanImage(img) {
-  if (!img) return '';
-  
-  // Use 'let' to declare the variable
-  let image_url = img;
-  
-  image_url = image_url.replace(/^\/public/, '');
+      if (!img) return '';
 
-  console.log("image_url_vue: ", image_url);
+      // Use 'let' to declare the variable
+      let image_url = img;
 
-  return img.replace(/^\/public/, '');
-},
+      image_url = image_url.replace(/^\/public/, '');
 
-/**
-     * Place order
-     */
+      // console.log("image_url_vue: ", image_url);
+
+      return img.replace(/^\/public/, '');
+    },
+
+    /**
+         * Place order
+         */
     placeOrder() {
-      console.log("-----PlaceOrder method called!!-----");
+      // console.log("-----PlaceOrder method called!!-----");
 
-      console.log("item: ", this.item);
+      // console.log("item: ", this.item);
       let image = this.item.thumbnail_image;
       // if (this.item?.galleryImages[0]?.type == "image") {
       //   image = this.item?.galleryImages[0]?.regular;
@@ -840,7 +636,7 @@ export default {
           content_ids: this.item.id,
           content_name: this.item.name,
           content_type: 'product',
-          value: this.item.price , // Total value for the items added
+          value: this.item.price, // Total value for the items added
           currency: 'KD' // You can pass this as a prop if you have multi-currency
         });
       };
@@ -852,9 +648,9 @@ export default {
 
     handleCartButton(event) {
 
-      console.log('handleCartButton called');
+      // console.log('handleCartButton called');
 
-      console.log('itemHasVariant: ', this.item.has_variant);
+      // console.log('itemHasVariant: ', this.item.has_variant);
 
       event.preventDefault();
 
@@ -915,7 +711,7 @@ export default {
      * Store items to cart
      */
     addToCart() {
-      console.log('addToCart called');
+      // console.log('addToCart called');
       let cart_item = {
         uid: Date.now(),
         id: this.item.id,
@@ -951,7 +747,7 @@ export default {
      * Add to wishlist
      */
     addToWishlist() {
-      console.log('addToWishlist called');
+      // console.log('addToWishlist called');
       if (this.isCustomerLogin) {
         axios
           .post(
@@ -1015,7 +811,7 @@ export default {
             this.$toast.error(this.$t("Product remove from wishlist failed"));
           });
       } else {
-        console.log('addToWishlist called');
+        // console.log('addToWishlist called');
         this.$toast.error("addToWishlist called");
         // this.$toast.error("Please login");
         this.$router.push("/login");
@@ -1025,25 +821,29 @@ export default {
       this.visibleQuickView = false;
     },
 
-    
+
   },
 };
 </script>
 <style lang="scss" scoped>
 @import "../../assets/sass/00-abstracts/01-variables";
+
 .fixed-top {
   z-index: 99 !important;
 }
+
 .single-product-item {
   background-color: #f7f8fa;
   margin-bottom: 30px;
-  border-radius: 12px; 
+  border-radius: 12px;
+
   .badge-container {
     position: absolute;
     right: 0;
     top: 0;
     width: 70px;
     height: 70px;
+
     .product-badge {
       position: absolute;
       width: calc(100% * 2);
@@ -1058,44 +858,54 @@ export default {
       font-size: 13px;
     }
   }
+
   .product-action-buttons {
     transition: 0.2s ease-in;
     opacity: 0;
     visibility: hidden;
-    > button {
+
+    >button {
       width: 36px;
       min-width: 36px;
       height: 36px;
       transform: scale(0.8);
+
       &:nth-child(2) {
         transition-delay: 0.05s;
       }
+
       &:nth-child(3) {
         transition-delay: 0.1s;
       }
+
       &:not(:last-child) {
         margin-right: 5px;
       }
     }
   }
+
   .product-price {
     font-size: 16px;
     font-weight: 700;
     color: $c1;
     line-height: 1;
+
     del {
       font-weight: 700;
       font-size: 12px;
       margin-left: 12px;
       color: $text-color-light;
     }
+
     @media (min-width: 479px) {
       font-size: 15px;
+
       del {
         font-size: 14px;
       }
     }
   }
+
   .product-title {
     -webkit-box-orient: vertical;
     // -webkit-line-clamp: 2;
@@ -1106,77 +916,94 @@ export default {
     line-height: 1.4;
     margin: 8px 0;
     overflow: hidden;
+
     @media (max-width: 479px) {
       font-size: 15px;
     }
   }
+
   .product-summary {
     padding: 20px;
     padding-top: 24px;
     min-height: 134px;
+
     @media (max-width: 479px) {
       padding: 14px;
       padding-top: 18px;
     }
   }
+
   &:hover {
     .product-action-buttons {
       opacity: 1;
       visibility: visible;
-      > button {
+
+      >button {
         transform: scale(1);
       }
+
       @media (max-width: 479px) {
         display: none !important;
       }
     }
   }
+
   &.style--eight {
     box-shadow: 3px 3px 30px rgba(0, 0, 0, 0.03);
     background-color: #fff;
+
     .product-title {
       font-weight: 500;
       margin: 8px 0 8px;
     }
+
     .product-price {
       font-size: 15px;
       font-weight: 900;
       color: #363232;
     }
+
     .text-rating {
       .rating {
         font-size: 12px;
       }
     }
+
     &:hover {
       box-shadow: 5px 5px 60px rgba(0, 0, 0, 0.05);
     }
   }
+
   &--two {
     .product-thumb {
       width: 160px;
       height: 160px;
+
       img {
         width: 100%;
         height: 100%;
         object-fit: cover;
       }
     }
+
     &.small {
       .product-thumb {
         width: 100px;
         height: 100px;
       }
+
       p {
         font-size: 14px;
       }
     }
+
     .old-price {
       position: relative;
       color: $title-color;
       font-size: 16px;
       font-weight: $medium;
       margin-right: 13px;
+
       &::after {
         position: absolute;
         left: 0;
@@ -1188,6 +1015,7 @@ export default {
         content: "";
       }
     }
+
     .new-price {
       font-size: 13px;
       font-weight: $medium;
@@ -1198,20 +1026,25 @@ export default {
     }
   }
 }
+
 .small-image {
   width: 65px;
 }
+
 .star-rating {
   font-size: 18px !important;
 }
+
 .compare-product-image {
   width: 60px !important;
   height: 60px !important;
   min-width: 60px;
 }
+
 .row.align-items-center {
-    display: flex;
-    align-items: center; /* Vertical center */
+  display: flex;
+  align-items: center;
+  /* Vertical center */
 }
 
 // .btn-xs {
@@ -1227,18 +1060,20 @@ export default {
 // }
 
 .button-group {
-    width: 100%;
-    gap: 0.5em;
+  width: 100%;
+  gap: 0.5em;
 }
 
 .btn-xs {
-  flex: 1;                /* take equal width */
+  flex: 1;
+  /* take equal width */
   display: inline-flex;
   align-items: center;
   justify-content: center;
   margin-top: 10px;
   padding: 1em 1em;
-  font-size: clamp(0.55rem, 1vw, 0.65rem);
+  //font-size: clamp(0.55rem, 1vw, 0.65rem);
+  font-size: 14px;
   font-weight: 600;
   line-height: 1.4;
   white-space: nowrap;
@@ -1317,5 +1152,4 @@ export default {
 //   font-size: 12px;    /* Smaller text */
 //   line-height: 1.2;   /* Tighter line height */
 //   height: auto;       /* Ensures the button shrinks to content */
-// }
-</style>
+// }</style>

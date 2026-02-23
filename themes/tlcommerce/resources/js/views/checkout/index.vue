@@ -12,28 +12,19 @@
             <div class="col-lg-2 d-none d-lg-block">
               <div class="wizard-navigation">
                 <ul class="wizard-nav wizard-nav-pills">
-                  <li
-                    :class="{ active: showContactInfo }"
-                    class="bg-white mb-2"
-                  >
+                  <li :class="{ active: showContactInfo }" class="bg-white mb-2">
                     <div class="wizard-icon-circle">
                       <span class="material-icons"> description </span>
                     </div>
                     <span class="stepTitle"> {{ $t("Shipping") }}: </span>
                   </li>
-                  <li
-                    :class="{ active: showReviewOrder }"
-                    class="bg-white mb-2"
-                  >
+                  <li :class="{ active: showReviewOrder }" class="bg-white mb-2">
                     <div class="wizard-icon-circle">
                       <span class="material-icons"> description </span>
                     </div>
                     <span class="stepTitle"> {{ $t("Review") }}: </span>
                   </li>
-                  <li
-                    :class="{ active: showPaymentMethod }"
-                    class="bg-white mb-2"
-                  >
+                  <li :class="{ active: showPaymentMethod }" class="bg-white mb-2">
                     <div class="wizard-icon-circle">
                       <span class="material-icons"> payments </span>
                     </div>
@@ -43,55 +34,34 @@
               </div>
             </div>
             <div class="col-lg-6">
-              <delivery-shipping
-                v-if="showContactInfo"
-                :enums="enums"
-                :config="configuration"
-                :customer-address="customerAddress"
-                :is-customer-login="isCustomerLogin"
-                :pickup-points="pickupPoints"
+              <delivery-shipping v-if="showContactInfo" :enums="enums" :config="configuration"
+                :customer-address="customerAddress" :is-customer-login="isCustomerLogin" :pickup-points="pickupPoints"
                 @next-step="
                   () => {
                     showContactInfo = false;
                     showReviewOrder = true;
                   }
-                "
-              ></delivery-shipping>
-              <review-order
-                v-if="showReviewOrder"
-                :enums="enums"
-                :config="configuration"
-                :is-customer-login="isCustomerLogin"
-                @next-step="completedOrderReview"
-                @previous-step="
+                "></delivery-shipping>
+              <review-order v-if="showReviewOrder" :enums="enums" :config="configuration"
+                :is-customer-login="isCustomerLogin" @next-step="completedOrderReview" @previous-step="
                   () => {
                     showReviewOrder = false;
                     showContactInfo = true;
                   }
-                "
-              ></review-order>
+                "></review-order>
 
-              <payment-methods
-                v-if="showPaymentMethod"
-                :enums="enums"
-                :config="configuration"
-                :product-packages="product_packages"
-                :is-customer-login="isCustomerLogin"
-                :total-payable-amount="totalPayableAmount"
-                @previous-step="
+              <payment-methods v-if="showPaymentMethod" :enums="enums" :config="configuration"
+                :product-packages="product_packages" :is-customer-login="isCustomerLogin"
+                :total-payable-amount="totalPayableAmount" @previous-step="
                   () => {
                     showPaymentMethod = false;
                     showReviewOrder = true;
                   }
-                "
-              ></payment-methods>
+                "></payment-methods>
             </div>
             <div class="col-lg-4">
-              <order-summary
-                :enums="enums"
-                :config="configuration"
-                @get-total-payable="calculateTotalPayable"
-              ></order-summary>
+              <order-summary :enums="enums" :config="configuration"
+                @get-total-payable="calculateTotalPayable"></order-summary>
             </div>
           </div>
         </form>
@@ -162,20 +132,20 @@ export default {
   computed: {
 
     ...mapState({
-    customerToken: (state) => state.customerToken,
-    isCustomerLogin: (state) => state.isCustomerLogin,
-    configuration: (state) => state.siteSettings,
-  }),
+      customerToken: (state) => state.customerToken,
+      isCustomerLogin: (state) => state.isCustomerLogin,
+      configuration: (state) => state.siteSettings,
+    }),
 
-  ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
 
-  forcedMobile() {
-    // identical intent to MainLayout.vue
-    if (this.isSplitScreen) {
-      return true;
-    }
-    return this.isMobile;
-  },
+    forcedMobile() {
+      // identical intent to MainLayout.vue
+      if (this.isSplitScreen) {
+        return true;
+      }
+      return this.isMobile;
+    },
 
   },
   // computed: mapState({
@@ -200,7 +170,7 @@ export default {
       //Check guest checkout
       if (
         this.configuration?.enable_guest_checkout ==
-          this.enums.status.IN_ACTIVE &&
+        this.enums.status.IN_ACTIVE &&
         !this.isCustomerLogin
       ) {
         this.$toast.error(this.$t("Please login to complete checkout"));
@@ -248,7 +218,7 @@ export default {
      * Will get active pickup points
      */
     getPickupPoints() {
-      console.log("getPickupPoints called!!!");
+      // console.log("getPickupPoints called!!!");
       axios
         .post("/api/v1/pickup-points/active-list")
         .then((response) => {
@@ -283,8 +253,7 @@ export default {
 </script>
 
 <style scoped>
-
-  .force-mobile-layout .row > [class*="col-"] {
+.force-mobile-layout .row>[class*="col-"] {
   flex: 0 0 100% !important;
   max-width: 100% !important;
 }
@@ -320,6 +289,4 @@ export default {
   flex-wrap: wrap !important;
   justify-content: space-between !important;
 }
-
-
 </style>

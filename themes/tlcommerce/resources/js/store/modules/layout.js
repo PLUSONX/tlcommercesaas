@@ -30,7 +30,7 @@ export default {
             commit('SET_LOADING', true);
             try {
                 const response = await axios.get('/api/theme/tlcommerce/v1/get-active-layout');
-                console.log("response: ", response);
+                // console.log("response: ", response);
                 commit('SET_LAYOUT', response.data.layout);
                 commit('SET_ERROR', null);
             } catch (error) {

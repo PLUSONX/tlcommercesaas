@@ -1237,16 +1237,35 @@ class OrderRepository
 
                 $shipping_address = json_decode($request['shipping_address'], true);
 
+                \Log::info('Shipping Address data', [
+                        'shipping_address' => json_encode($shipping_address),
+                ]);
+
                 $customer_address = new CustomerAddress;
                 $customer_address->customer_id = $customer_id;
                 $customer_address->guest_customer = $guest_customer_id;
-                $customer_address->name = $shipping_address['name'];
+                if (!empty($shipping_address['name'])) {
+
+                    $customer_address->name = $shipping_address['name'];
+                }
+                else {
+                    $customer_address->name = $request['name'];
+                }
+                // $customer_address->name = $shipping_address['name'];
                 $customer_address->country_id = $shipping_address['country_id'];
                 $customer_address->state_id = $shipping_address['state_id'];
                 $customer_address->city_id = $shipping_address['city_id'];
-                $customer_address->postal_code = $shipping_address['postal_code'];
+                if (!empty($shipping_address['postal_code'])) {
+
+                    $customer_address->postal_code = $shipping_address['postal_code'];
+                }
+                // $customer_address->postal_code = $shipping_address['postal_code'];
                 $customer_address->address = $shipping_address['address'];
-                $customer_address->phone_code = $shipping_address['phone_code'];
+                if (!empty($shipping_address['phone_code'])) {
+
+                    $customer_address->phone_code = $shipping_address['phone_code'];
+                }
+                // $customer_address->phone_code = $shipping_address['phone_code'];
                 $customer_address->phone = $shipping_address['phone'];
                 $customer_address->save();
                 $shipping_address_id = $customer_address->id;
@@ -1264,13 +1283,28 @@ class OrderRepository
                 $customer_address = new CustomerAddress;
                 $customer_address->customer_id = $customer_id;
                 $customer_address->guest_customer = $guest_customer_id;
-                $customer_address->name = $shipping_address['name'];
+                if (!empty($shipping_address['name'])) {
+
+                    $customer_address->name = $shipping_address['name'];
+                }
+                else {
+                    $customer_address->name = $request['name'];
+                }
+                // $customer_address->name = $shipping_address['name'];
                 $customer_address->country_id = $shipping_address['country_id'];
                 $customer_address->state_id = $shipping_address['state_id'];
                 $customer_address->city_id = $shipping_address['city_id'];
-                $customer_address->postal_code = $shipping_address['postal_code'];
+                if (!empty($shipping_address['postal_code'])) {
+
+                    $customer_address->postal_code = $shipping_address['postal_code'];
+                }
+                // $customer_address->postal_code = $shipping_address['postal_code'];
                 $customer_address->address = $shipping_address['address'];
-                $customer_address->phone_code = $shipping_address['phone_code'];
+                if (!empty($shipping_address['phone_code'])) {
+                    
+                    $customer_address->phone_code = $shipping_address['phone_code'];
+                }
+                    // $customer_address->phone_code = $shipping_address['phone_code'];
                 $customer_address->phone = $shipping_address['phone'];
                 $customer_address->save();
                 $billing_address_id = $customer_address->id;

@@ -4,102 +4,60 @@
     <template v-if="isSplitScreen && !isMobile">
       <div class="split-screen-container" :style="containerStyle">
         <!-- Main Content Side -->
-        <div 
-          class="split-screen-content"
-          :class="[contentSideClass, 'force-mobile-view']"
-          :style="contentStyle"
-        >
+        <div class="split-screen-content" :class="[contentSideClass, 'force-mobile-view']" :style="contentStyle">
 
-        <!-- <pre>DEBUG: {{ data ? 'Data object exists' : 'Data object is NULL' }}</pre>
+          <!-- <pre>DEBUG: {{ data ? 'Data object exists' : 'Data object is NULL' }}</pre>
         <pre>PROPS: {{ data?.site_properties }}</pre> -->
 
-        <header class="header__two love-sticky"  style="margin-bottom: 30px;">
-         
-          <header-middle
-            :site-properties="data.site_properties"
-            :mode="mode"
-            :cart-item="cartItem"
-            :wishlist-item="wishlistItem"
-            :compare-item="compareItem"
-            :header-logo-style="headerLogoStyle"
-            :header-menu-style="headerMenuStyle"
+          <header class="header__two love-sticky" style="margin-bottom: 30px;">
 
-              :menu-items="rightMenuItems"
-              :data-loading="MenuItemsLoading"
-              :right-menu-items="rightMenuItems"
-              :left-menu-items="leftMenuItems"
-              @logout-customer="logoutCustomer"
-          ></header-middle>
+            <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
+              :wishlist-item="wishlistItem" :compare-item="compareItem" :header-logo-style="headerLogoStyle"
+              :header-menu-style="headerMenuStyle" :menu-items="rightMenuItems" :data-loading="MenuItemsLoading"
+              :right-menu-items="rightMenuItems" :left-menu-items="leftMenuItems"
+              @logout-customer="logoutCustomer"></header-middle>
 
-        </header>
+          </header>
 
           <div class="content-split-nudge">
-              <slot></slot>
+            <slot></slot>
           </div>
 
         </div>
 
         <!-- Feature Side (Banner/Product/Video) -->
-        <div 
-          class="split-screen-feature"
-          :class="featureSideClass"
-          :style="featureStyle"
-        >
-         <BannerFeature 
-          :settings="splitScreenSettings"
-          :imagePath="featureImagePath"
-          v-if="isSplitScreen"
-        />
+        <div class="split-screen-feature" :class="featureSideClass" :style="featureStyle">
+          <BannerFeature :settings="splitScreenSettings" :imagePath="featureImagePath" v-if="isSplitScreen" />
 
-         
-        <!--End Cookie Consent-->
 
-        <!-- Dark Light Switcher -->
-        <div class="floating-mode-switcher-wrap" v-if="dark_light_status == '1'">
-          <label class="dl-switch">
-            <input
-              class="dark-looks-mode-changer"
-              @change="toggleDark"
-              :checked="mode == 'dark'"
-              type="checkbox"
-            />
-            <span class="dl-slider"></span>
-            <span class="dl-light">Light</span>
-            <span class="dl-dark">Dark</span>
-          </label>
-        </div>
-        <!-- End Dark Light Switcher -->
-        <!--Website popup-->
-        <CModal
-          :visible="visibleWebsitePopup"
-          alignment="center"
-          class="website-popup-modal"
-          @close="
+          <!--End Cookie Consent-->
+
+          <!-- Dark Light Switcher -->
+          <div class="floating-mode-switcher-wrap" v-if="dark_light_status == '1'">
+            <label class="dl-switch">
+              <input class="dark-looks-mode-changer" @change="toggleDark" :checked="mode == 'dark'" type="checkbox" />
+              <span class="dl-slider"></span>
+              <span class="dl-light">Light</span>
+              <span class="dl-dark">Dark</span>
+            </label>
+          </div>
+          <!-- End Dark Light Switcher -->
+          <!--Website popup-->
+          <CModal :visible="visibleWebsitePopup" alignment="center" class="website-popup-modal" @close="
             () => {
               visibleWebsitePopup = false;
             }
-          "
-        >
-          <CModalBody
-            class="modal-body p-0 position-relative website-popup-modal-body rounded-0"
-          >
-            <button
-              class="btn-circle custom-modal-btn position-absolute size-35"
-              @click="closePopupModal()"
-            >
-              <base-icon-svg name="close" :width="10" :height="10" />
-            </button>
-            <div
-              class="m-0"
-              v-html="website_popup_properties.website_popup_content"
-            ></div>
-            <subscribe-form
-              class="mt-20"
-              v-if="website_popup_properties.website_popup_subscribe_status == 1"
-            ></subscribe-form>
-          </CModalBody>
-        </CModal>
-        <!--End website popup-->
+          ">
+            <CModalBody class="modal-body p-0 position-relative website-popup-modal-body rounded-0">
+              <button class="btn-circle custom-modal-btn position-absolute size-35" @click="closePopupModal()">
+                <base-icon-svg name="close" :width="10" :height="10" />
+              </button>
+              <div class="m-0" v-html="website_popup_properties.website_popup_content"></div>
+              <subscribe-form class="mt-20"
+                v-if="website_popup_properties.website_popup_subscribe_status == 1"></subscribe-form>
+            </CModalBody>
+          </CModal>
+          <!--End website popup-->
 
 
           <!-- <p>Split Screen Settings: {{ splitScreenSettings }}</p>
@@ -118,20 +76,17 @@
 
     <!-- Default Layout (Always on Mobile) -->
     <template v-else>
-      
+
       <div class="layout__two">
         <preloader :loading="preloaderLoading"></preloader>
         <!-- <top-bar-banner
           :properties="top_bar_banner_properties"
           v-if="top_bar_banner_properties"
         ></top-bar-banner> -->
-        <top-bar-banner
-          :properties="top_bar_banner_properties"
-          v-if="
-            top_bar_banner_properties != null &&
-            top_bar_banner_properties.topbar_banner_status == 1
-          "
-        ></top-bar-banner>
+        <top-bar-banner :properties="top_bar_banner_properties" v-if="
+          top_bar_banner_properties != null &&
+          top_bar_banner_properties.topbar_banner_status == 1
+        "></top-bar-banner>
         <!-- Header -->
         <header class="header__two love-sticky">
           <!-- <header-top
@@ -144,16 +99,9 @@
             @change-language-currency="setCurrencyLanguage"
             @logout-customer="logoutCustomer"
           ></header-top> -->
-          <header-middle
-            :site-properties="data.site_properties"
-            :mode="mode"
-            :cart-item="cartItem"
-            :wishlist-item="wishlistItem"
-            :compare-item="compareItem"
-            :header-logo-style="headerLogoStyle"
-            :header-menu-style="headerMenuStyle"
-            class="d-none d-lg-block"
-          ></header-middle>
+          <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
+            :wishlist-item="wishlistItem" :compare-item="compareItem" :header-logo-style="headerLogoStyle"
+            :header-menu-style="headerMenuStyle" class="d-none d-lg-block"></header-middle>
           <!-- <header-bottom
             :data-loading="MenuItemsLoading"
             :mega-categories="data.megaCategories"
@@ -164,14 +112,9 @@
           ></header-bottom> -->
         </header>
 
-        <mobile-header
-          :site-properties="data.site_properties"
-          :mode="mode"
-          :cart-item="cartItem"
-          :header-style="headerStyle"
-          :header-menu-style="headerMenuStyle"
-          :header-logo-style="headerLogoStyle"
-        ></mobile-header>
+        <mobile-header :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
+          :header-style="headerStyle" :header-menu-style="headerMenuStyle"
+          :header-logo-style="headerLogoStyle"></mobile-header>
         <!-- End Header -->
 
         <div class="main_content light-bg">
@@ -189,24 +132,24 @@
           "
           :style="{ backgroundImage: `url('${footerBgImg}')` }"
         > -->
-          <!-- Footer Top -->
-          <!-- <div class="footer-top">
+        <!-- Footer Top -->
+        <!-- <div class="footer-top">
             <div class="custom-container2">
               <div class="row justify-content-between">
                 <v-runtime-template :template="widget_html"></v-runtime-template>
               </div>
             </div>
           </div> -->
-          <!-- End Footer Top -->
-          <!-- Footer Bottom -->
-          <!-- <div class="footer-bottom">
+        <!-- End Footer Top -->
+        <!-- Footer Bottom -->
+        <!-- <div class="footer-bottom">
             <div class="custom-container2">
               <div class="border-top text-center py-4">
                 <copyright :site-properties="data.site_properties" />
               </div>
             </div>
           </div> -->
-          <!-- End Footer Bottom -->
+        <!-- End Footer Bottom -->
         <!-- </footer> -->
         <!-- End Footer -->
 
@@ -271,8 +214,8 @@
 
     <!-- <StickyFooter v-if="!isSingleProduct" /> -->
 
-        <!-- Footer -->
-         <!-- <footer
+    <!-- Footer -->
+    <!-- <footer
           :class="
             this.footerStyle.custom_footer == 1
               ? 'custom-footer footer footer__two c1-bg'
@@ -281,37 +224,34 @@
           :style="{ backgroundImage: `url('${footerBgImg}')` }"
         >  -->
 
-        <!-- <footer
+    <!-- <footer
           class="footer footer__two c1-bg"
           :style="{ backgroundImage: `url('${footerBgImg}')` }"
         >  -->
-          <!-- Footer Top -->
-          <!-- <div class="footer-top">
+    <!-- Footer Top -->
+    <!-- <div class="footer-top">
             <div class="custom-container2">
               <div class="row justify-content-between">
                 <v-runtime-template :template="widget_html"></v-runtime-template>
               </div>
             </div>
           </div>  -->
-          <!-- End Footer Top -->
-          <!-- Footer Bottom -->
-           <!-- <div class="footer-bottom">
+    <!-- End Footer Top -->
+    <!-- Footer Bottom -->
+    <!-- <div class="footer-bottom">
             <div class="custom-container2">
               <div class="border-top text-center py-4">
                 <copyright :site-properties="data.site_properties" />
               </div>
             </div>
           </div>  -->
-          <!-- End Footer Bottom -->
-        <!-- </footer> -->
-        <!-- End Footer -->
+    <!-- End Footer Bottom -->
+    <!-- </footer> -->
+    <!-- End Footer -->
 
 
-        <!--Cookie Consent-->
-        <gdpr
-          v-if="gdpr_properties != null && gdpr_properties.gdpr_status == 1"
-          :properties="gdpr_properties"
-        ></gdpr>
+    <!--Cookie Consent-->
+    <gdpr v-if="gdpr_properties != null && gdpr_properties.gdpr_status == 1" :properties="gdpr_properties"></gdpr>
   </div>
 </template>
 
@@ -447,8 +387,8 @@ export default {
     /**
      * Get site properties
      */
-      function getSiteProperties() {
-      console.log("-------getSiteProperties method called-----")
+    function getSiteProperties() {
+      // console.log("-------getSiteProperties method called-----")
       const headers = {
         "Content-Type": "application/json",
         "Accept-Language": localStorage.getItem("locale") || "en",
@@ -459,7 +399,7 @@ export default {
         })
         .then((response) => {
           if (response.data.success) {
-            console.log("response site_properties: ", response.data);
+            // console.log("response site_properties: ", response.data);
             data.site_properties = response.data.siteProperties;
             data.languages = response.data.languages;
             data.currencies = response.data.currencies;
@@ -467,7 +407,7 @@ export default {
             store.dispatch("siteProperties", response.data.siteProperties);
           }
         })
-        .catch((error) => {});
+        .catch((error) => { });
     }
     // function getSiteProperties() {
     //   console.log("-------getSiteProperties method called-----")
@@ -565,64 +505,64 @@ export default {
       resizeTimeout: null,  // Add this for debounce
     };
   },
-//   watch: {
-//   isSplitScreen: {
-//     immediate: true,
-//     handler(newVal) {
-//       if (newVal) {
-//         // Force mobile view when split screen is active
-//         this.$nextTick(() => {
-//           // Any additional logic to maintain mobile view
-//         });
-//       }
-//     }
-//   },
-  
-//   $route() {
-//     // Ensure mobile view persists on route change
-//     if (this.isSplitScreen) {
-//       this.$nextTick(() => {
-//         // Re-apply mobile view styles if needed
-//       });
-//     }
-//   }
-// },
+  //   watch: {
+  //   isSplitScreen: {
+  //     immediate: true,
+  //     handler(newVal) {
+  //       if (newVal) {
+  //         // Force mobile view when split screen is active
+  //         this.$nextTick(() => {
+  //           // Any additional logic to maintain mobile view
+  //         });
+  //       }
+  //     }
+  //   },
+
+  //   $route() {
+  //     // Ensure mobile view persists on route change
+  //     if (this.isSplitScreen) {
+  //       this.$nextTick(() => {
+  //         // Re-apply mobile view styles if needed
+  //       });
+  //     }
+  //   }
+  // },
   computed: {
 
-      isMobile() {
-    // Get split screen state from store
-    const splitScreen = this.$store.getters['layout/isSplitScreen'];
-    const actualMobile = this.$store.getters['layout/isMobile'];
-    
-    // If split screen is active, always treat as mobile
-    if (splitScreen) {
-      return true;
-    }
-    
-    // Otherwise use the actual mobile detection
-    return actualMobile;
-  },
-    ...mapState({
-    preloaderLoading: (state) => state.preloaderLoading,
-    mode: (state) => state.mode,
-    customerToken: (state) => {
-      // console.log("state:", state);
-      // console.log("state.customerToken:", state.customerToken)
-      return state.customerToken;
-    },
-    // customerToken: (state) => state.customerToken,
-    isCustomerLogin: (state) => state.isCustomerLogin,
-    wishlistItem: (state) =>
-      state.customerDashboardInfo != null
-        ? state.customerDashboardInfo.total_wishlisted_product
-        : 0,
-    cartItem: (state) =>
-      state.cart.length ? state.cart.reduce((a, b) => a + b.quantity, 0) : 0,
-    compareItem: (state) =>
-      state.compareItems.length ? state.compareItems.length : 0,
-  }),
+    isMobile() {
+      // Get split screen state from store
+      const splitScreen = this.$store.getters['layout/isSplitScreen'];
+      const actualMobile = this.$store.getters['layout/isMobile'];
 
-  // NEW: Layout computed properties
+      // If split screen is active, always treat as mobile
+      if (splitScreen) {
+        return true;
+      }
+
+      // Otherwise use the actual mobile detection
+      return actualMobile;
+    },
+    ...mapState({
+      preloaderLoading: (state) => state.preloaderLoading,
+      mode: (state) => state.mode,
+      customerToken: (state) => {
+        // console.log("state:", state);
+        // console.log("state.customerToken:", state.customerToken)
+        return state.customerToken;
+      },
+      // customerToken: (state) => state.customerToken,
+      isCustomerLogin: (state) => state.isCustomerLogin,
+      wishlistItem: (state) =>
+        state.customerDashboardInfo != null
+          ? state.customerDashboardInfo.total_wishlisted_product
+          : 0,
+      cartItem: (state) =>
+        state.cart.length ? state.cart.reduce((a, b) => a + b.quantity, 0) : 0,
+      compareItem: (state) =>
+        state.compareItems.length ? state.compareItems.length : 0,
+    }),
+
+    // NEW: Layout computed properties
     ...mapGetters('layout', [
       'isSplitScreen',
       'splitScreenSettings',
@@ -636,16 +576,16 @@ export default {
       // Return the appropriate component based on feature_type
       // const type = this.featureType;
       const type = 'banner';
-      
+
       if (type == 'banner') {
         return () => import('@/components/features/BannerFeature.vue');
-      } 
+      }
       // else if (type === 'product') {
       //   return () => import('./components/ProductFeature.vue');
       // } else if (type === 'video') {
       //   return () => import('./components/VideoFeature.vue');
       // }
-      
+
       return null;
     },
 
@@ -669,7 +609,7 @@ export default {
 
     containerStyle() {
       if (!this.isSplitScreen || this.isMobile) return {};
-      
+
       return {
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
@@ -694,11 +634,11 @@ export default {
 
     featureStyle() {
       if (!this.splitScreenSettings) return {};
-      
+
       return {
         backgroundColor: this.splitScreenSettings.background_color || '#ffffff',
-        backgroundImage: this.splitScreenSettings.feature_image 
-          ? `url(${this.splitScreenSettings.feature_image})` 
+        backgroundImage: this.splitScreenSettings.feature_image
+          ? `url(${this.splitScreenSettings.feature_image})`
           : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center'
@@ -707,17 +647,17 @@ export default {
 
     featureComponent() {
       if (!this.splitScreenSettings) return null;
-      
+
       const componentMap = {
         'banner': 'BannerFeature',
         'product': 'ProductFeature',
         'video': 'VideoFeature'
       };
-      
+
       return componentMap[this.splitScreenSettings.feature_type] || 'BannerFeature';
     }
 
-  }, 
+  },
   // computed: mapState({
   //   preloaderLoading: (state) => state.preloaderLoading,
   //   mode: (state) => state.mode,
@@ -756,11 +696,11 @@ export default {
   beforeUnmount() {
     // NEW: Clean up listeners
     window.removeEventListener('resize', this.handleResize);
-    
+
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
     }
-    
+
     if (this.resizeTimeout) {
       clearTimeout(this.resizeTimeout);
     }
@@ -801,39 +741,39 @@ export default {
      * Check customer authentication
      */
     checkCustomerAuthentication() {
-  // console.log("checkCustomerAuthentication method called!!!");
-  // console.log("customer token: ", this.customerToken);
-  
-  const fullUrl = "/api/v1/ecommerce-core/auth/customer-refresh-auth";
-  // const fullUrl = "/api/v1/ecommerce-core/auth/test-refresh";
-  // console.log("🌐 Full URL:", fullUrl);
-  // console.log("🏠 Base URL:", axios.defaults.baseURL);
-  // console.log("🔗 Complete URL:", window.location.origin + fullUrl);
-  
-  axios
-    .post(fullUrl, null, {
-      headers: {
-        Authorization: `Bearer ${this.customerToken}`,
-      },
-    })
-    .then((response) => {
-      // console.log("✅ Response received:", response);
+      // console.log("checkCustomerAuthentication method called!!!");
+      // console.log("customer token: ", this.customerToken);
 
-      if (response.data.success) {
+      const fullUrl = "/api/v1/ecommerce-core/auth/customer-refresh-auth";
+      // const fullUrl = "/api/v1/ecommerce-core/auth/test-refresh";
+      // console.log("🌐 Full URL:", fullUrl);
+      // console.log("🏠 Base URL:", axios.defaults.baseURL);
+      // console.log("🔗 Complete URL:", window.location.origin + fullUrl);
+
+      axios
+        .post(fullUrl, null, {
+          headers: {
+            Authorization: `Bearer ${this.customerToken}`,
+          },
+        })
+        .then((response) => {
+          // console.log("✅ Response received:", response);
+
+          if (response.data.success) {
             this.$store.dispatch("customerLogin", response.data);
             this.$store.dispatch("getCustomerCartItems");
           } else {
             console.log(".then triggers customer Logout");
             this.$store.dispatch("customerLogout");
           }
-    })
-    .catch((error) => {
-      console.log("❌ Error caught:", error);
-      console.log("Error response:", error.response);
-      console.log("Error status:", error.response?.status);
-      console.log("Error data:", error.response?.data);
-    });
-},
+        })
+        .catch((error) => {
+          console.log("❌ Error caught:", error);
+          console.log("Error response:", error.response);
+          console.log("Error status:", error.response?.status);
+          console.log("Error data:", error.response?.data);
+        });
+    },
     // checkCustomerAuthentication() {
     //   console.log("checkCustomerAuthentication method called!!!");
     //   console.log("customer token: ", this.customerToken);
@@ -969,7 +909,7 @@ export default {
             }
           }
         })
-        .catch((error) => {});
+        .catch((error) => { });
     },
 
     /**
@@ -986,7 +926,7 @@ export default {
         .get("/api/theme/tlcommerce/v1/get-theme-style", {
           headers: headers,
         })
-        .then((response) => {          
+        .then((response) => {
           if (response.data.success) {
             this.headerStyle = response.data.headerOptions;
             this.headerLogoStyle = response.data.headerLogoStyles;
@@ -1024,12 +964,12 @@ export default {
           }
         })
         .catch((error) => {
-           console.error("=== API FAILED ===");
-      console.error("Error:", error);
-      console.error("Error response:", error.response);
+          console.error("=== API FAILED ===");
+          console.error("Error:", error);
+          console.error("Error response:", error.response);
         });
 
-          // console.log("=== getThemeStyle END (async call initiated) ===");
+      // console.log("=== getThemeStyle END (async call initiated) ===");
 
     },
     // getThemeStyle() {
@@ -1046,7 +986,7 @@ export default {
 
     //       console.log("=== API Response ===", response.data);
     //       console.log("Banner properties:", response.data.top_bar_banner_properties);
-          
+
     //       if (response.data.success) {
     //         this.headerStyle = response.data.headerOptions;
     //         this.headerLogoStyle = response.data.headerLogoStyles;
@@ -1179,26 +1119,33 @@ export default {
 .modal-dialog.modal-dialog-centered {
   background-color: red;
 }
+
 .modal.website-popup-modal .modal-content {
   border-radius: 0px !important;
 }
+
 .custom-modal-btn {
   top: -15px;
   right: -15px;
 }
+
 .footer {
   display: block;
   padding: 0;
 }
+
 .main_content {
   min-height: 100vh;
 }
+
 .header-btn-group {
   .btn-circle {
     .material-icons {
       font-size: 22px;
     }
+
     &:hover {
+
       .icon-wrapper svg,
       .icon-wrapper .icon {
         color: #fff;
@@ -1209,8 +1156,8 @@ export default {
 
 .split-screen-container {
   width: 100%;
-   align-items: flex-start;
-   height: fit-content;
+  align-items: flex-start;
+  height: fit-content;
   min-height: unset;
 }
 
@@ -1221,7 +1168,7 @@ export default {
   padding: 0 !important;
   margin: 0 !important;
   height: fit-content;
-  min-height: unset; 
+  min-height: unset;
 }
 
 .split-screen-feature {
@@ -1240,12 +1187,12 @@ export default {
   .layout-split-screen {
     display: block !important;
   }
-  
+
   .split-screen-container {
     display: block !important;
     grid-template-columns: none !important;
   }
-  
+
   .split-screen-content,
   .split-screen-feature {
     width: 100% !important;
@@ -1292,11 +1239,12 @@ export default {
 
 /* Override any media queries that might show desktop elements */
 @media (min-width: 992px) {
+
   .mobile-content-wrapper .d-none.d-lg-block,
   .mobile-content-wrapper .d-lg-block {
     display: none !important;
   }
-  
+
   .mobile-content-wrapper .d-block.d-lg-none,
   .mobile-content-wrapper .d-lg-none {
     display: block !important;
@@ -1305,12 +1253,13 @@ export default {
 
 .forced-mobile-context {
   /* 1. Force the container to a mobile width if necessary */
-  max-width: 100%; /* Or 100% depending on your split design */
+  max-width: 100%;
+  /* Or 100% depending on your split design */
   margin: 0 auto;
 }
 
 /* 2. Nuclear option: Force hide desktop elements and show mobile elements */
-.forced-mobile-context :deep(.d-lg-block), 
+.forced-mobile-context :deep(.d-lg-block),
 .forced-mobile-context :deep(.d-xl-block),
 .forced-mobile-context :deep(.hide-on-mobile) {
   display: none !important;
@@ -1319,10 +1268,9 @@ export default {
 .forced-mobile-context :deep(.d-none),
 .forced-mobile-context :deep(.show-on-mobile) {
   /* Only show it if it's meant to be visible on mobile */
-  display: block !important; 
+  display: block !important;
 }
 
 // .content-split-nudge {
 //    margin-top: 50px !important; /* This physically pushes the site content down from the top */
-// }
-</style>
+// }</style>

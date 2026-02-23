@@ -48,11 +48,11 @@ export default {
       });;
     }
 
-    console.log("isCustomerLogin: ", this.state.isCustomerLogin);
+    // console.log("isCustomerLogin: ", this.state.isCustomerLogin);
 
-    console.log("siteSettings: ", this.state.siteSettings);
+    // console.log("siteSettings: ", this.state.siteSettings);
 
-    console.log("enable_guest_checkout: ", this.state.siteSettings?.enable_guest_checkout);
+    // console.log("enable_guest_checkout: ", this.state.siteSettings?.enable_guest_checkout);
 
     if (!this.state.isCustomerLogin || (this.state.siteSettings != null && this.state.siteSettings?.enable_guest_checkout == 1)) {
       // Add to cart if logged in OR guest checkout is enabled
@@ -125,6 +125,7 @@ export default {
    * Store shipping details
    */
   storeShippingDetails(context, data) {
+    // console.log("storeShippingDetails action.js called: ", data);
     context.commit("storeShippingDetails", data);
   },
   /**

@@ -1,55 +1,33 @@
 <template>
   <div class="shadow-card mb-30">
-    <div
-      class="d-flex flex-wrap align-items-center justify-content-between mb-3"
-    >
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
       <h3 class="checkout-title">{{ $t("Delivery & Shipping") }}</h3>
-      <router-link
-        to="/dashboard/address"
-        class="btn_underline"
-        v-if="isCustomerLogin"
-        >{{ $t("Manage Address") }}</router-link
-      >
+      <router-link to="/dashboard/address" class="btn_underline" v-if="isCustomerLogin">{{ $t("Manage Address")
+      }}</router-link>
     </div>
 
     <!--Delivery Options-->
     <div class="row mt-3">
       <div class="col-12">
-        <ul
-          class="form-selector-list hide-radio justify-content-between list-unstyled mb-3"
-        >
+        <ul class="form-selector-list hide-radio justify-content-between list-unstyled mb-3">
           <li class="m-0 m-w-100 mb-3 single-form-selector">
-            <span
-              class="custom-radio-btn"
-              :class="{ active: isActiveHomeDelivery }"
-            >
+            <span class="custom-radio-btn" :class="{ active: isActiveHomeDelivery }">
               <label>
-                <input
-                  type="radio"
-                  value="Pickup"
-                  class="shipping-method delivery-type-pickup"
-                  name="delivery-options"
-                  :checked="isActiveHomeDelivery"
-                  v-on:change="
+                <input type="radio" value="Pickup" class="shipping-method delivery-type-pickup" name="delivery-options"
+                  :checked="isActiveHomeDelivery" v-on:change="
                     () => {
                       isActiveHomeDelivery = true;
                       isActivePickupPoint = false;
                       errors = [];
                     }
-                  "
-                />
-                <span class="icon-wrap"
-                  ><span class="material-icons"> local_shipping </span></span
-                >
+                  " />
+                <span class="icon-wrap"><span class="material-icons"> local_shipping </span></span>
                 <span class="label-title">{{ $t("Home Delivery") }}</span>
               </label>
             </span>
           </li>
-           <li
-            class="m-0 m-w-100 mb-3 single-form-selector"
-            v-if="true"
-          >
-          <!-- <li
+          <li class="m-0 m-w-100 mb-3 single-form-selector" v-if="true">
+            <!-- <li
             class="m-0 m-w-100 mb-3 single-form-selector"
             v-if="
               config?.enable_pickuppoint_in_checkout == enums.status.ACTIVE &&
@@ -60,7 +38,7 @@
               class="custom-radio-btn"
               :class="{ active: isActivePickupPoint }"
             > -->
-              <!-- <label>
+            <!-- <label>
                 <input
                   type="radio"
                   value="Delivery"
@@ -98,32 +76,17 @@
           <div class="col-12">
             <h5>{{ $t("Shipping Details") }}</h5>
             <div class="save-adderss row" v-if="customerAddress.length > 0">
-              <div
-                class="col-lg-12 mb-4"
-                v-for="address in customerAddress"
-                :key="address.name"
-              >
-                <span
-                  class="custom-radio-btn"
-                  ref="addressRadio"
-                  :class="{
-                    active:
-                      customerShippingInfo != null &&
-                      address.id == customerShippingInfo.id,
-                  }"
-                >
+              <div class="col-lg-12 mb-4" v-for="address in customerAddress" :key="address.name">
+                <span class="custom-radio-btn" ref="addressRadio" :class="{
+                  active:
+                    customerShippingInfo != null &&
+                    address.id == customerShippingInfo.id,
+                }">
                   <label class="radio-label">
-                    <input
-                      name="customerShippingAddress"
-                      type="radio"
-                      :value="address"
-                      v-model="customerShippingInfo"
-                      @change.prevent="checkedAddress"
-                      :checked="
-                        customerShippingInfo != null &&
+                    <input name="customerShippingAddress" type="radio" :value="address" v-model="customerShippingInfo"
+                      @change.prevent="checkedAddress" :checked="customerShippingInfo != null &&
                         address.id == customerShippingInfo.id
-                      "
-                    />
+                        " />
                     <span class="radio-text">
                       <span class="font-weight-bold">{{ address.name }}</span>
                       <br />
@@ -161,43 +124,25 @@
         </div>
         <!--End Shipping Address-->
         <!--Billing Address-->
-        <div
-          class="row"
-          v-if="
-            config?.enable_billing_address == enums.status.ACTIVE &&
-            config?.use_shipping_address_as_billing_address !=
-              enums.status.ACTIVE
-          "
-        >
+        <div class="row" v-if="
+          config?.enable_billing_address == enums.status.ACTIVE &&
+          config?.use_shipping_address_as_billing_address !=
+          enums.status.ACTIVE
+        ">
           <div class="col-12">
             <h5>{{ $t("Billing Details") }}</h5>
             <div class="save-adderss row">
-              <div
-                class="col-lg-12 mb-4"
-                v-for="address in customerAddress"
-                :key="address.name"
-              >
-                <span
-                  class="custom-radio-btn"
-                  ref="billingAddressRadio"
-                  :class="{
-                    active:
-                      customerBillingInfo != null &&
-                      address.id == customerBillingInfo.id,
-                  }"
-                >
+              <div class="col-lg-12 mb-4" v-for="address in customerAddress" :key="address.name">
+                <span class="custom-radio-btn" ref="billingAddressRadio" :class="{
+                  active:
+                    customerBillingInfo != null &&
+                    address.id == customerBillingInfo.id,
+                }">
                   <label class="radio-label">
-                    <input
-                      name="customerBillingAddress"
-                      type="radio"
-                      :value="address"
-                      v-model="customerBillingInfo"
-                      @change.prevent="checkedBillingAddress"
-                      :checked="
-                        customerBillingInfo != null &&
+                    <input name="customerBillingAddress" type="radio" :value="address" v-model="customerBillingInfo"
+                      @change.prevent="checkedBillingAddress" :checked="customerBillingInfo != null &&
                         address.id == customerBillingInfo.id
-                      "
-                    />
+                        " />
                     <span class="radio-text">
                       <span class="font-weight-bold">{{ address.name }}</span>
                       <br />
@@ -238,98 +183,54 @@
           "
         > -->
 
-        <div
-          class="row"
-         
-        >
-        
+        <div class="row">
+
           <h5>{{ $t("Personal Information") }}</h5>
           <div class="form-group mb-20 col-lg-6">
-            <input
-              type="text"
-              v-bind:placeholder="$t('Your Name')"
-              class="theme-input-style"
-              v-model="guestCustomerInfo.name"
-            />
+            <input type="text" v-bind:placeholder="$t('Your Name')" class="theme-input-style"
+              v-model="guestCustomerInfo.name" />
             <div v-for="error in errors" :key="error.customer_name">
-              <p
-                class="text-danger validation-error"
-                v-if="error.customer_name"
-              >
+              <p class="text-danger validation-error" v-if="error.customer_name">
                 {{ error.customer_name }}
               </p>
             </div>
           </div>
           <div class="form-group mb-20 col-lg-6">
-            <input
-              type="email"
-              v-bind:placeholder="$t('Email')"
-              v-model="guestCustomerInfo.email"
-              class="theme-input-style"
-            />
+            <input type="email" v-bind:placeholder="$t('Email')" v-model="guestCustomerInfo.email"
+              class="theme-input-style" />
             <div v-for="error in errors" :key="error.customer_email">
-              <p
-                class="text-danger validation-error"
-                v-if="error.customer_email"
-              >
+              <p class="text-danger validation-error" v-if="error.customer_email">
                 {{ error.customer_email }}
               </p>
             </div>
           </div>
-          <div
-            class="form-group mb-20 col-lg-6"
-            v-if="
-              config?.create_account_in_guest_checkout == enums.status.ACTIVE
-            "
-          >
+          <div class="form-group mb-20 col-lg-6" v-if="
+            config?.create_account_in_guest_checkout == enums.status.ACTIVE
+          ">
             <label class="d-flex gap-1 radio-label">
-              <input
-                name="createNewAccount"
-                type="checkbox"
-                @change="isActiveCreateNewAccount = !isActiveCreateNewAccount"
-                :checked="isActiveCreateNewAccount"
-              />
+              <input name="createNewAccount" type="checkbox"
+                @change="isActiveCreateNewAccount = !isActiveCreateNewAccount" :checked="isActiveCreateNewAccount" />
               <span class="radio-text"> {{ $t("Create an Account") }} ? </span>
             </label>
           </div>
-          <div
-            class="row m-0 p-0"
-            v-if="
-              isActiveCreateNewAccount &&
-              config?.create_account_in_guest_checkout == enums.status.ACTIVE
-            "
-          >
+          <div class="row m-0 p-0" v-if="
+            isActiveCreateNewAccount &&
+            config?.create_account_in_guest_checkout == enums.status.ACTIVE
+          ">
             <div class="form-group mb-20 col-lg-6">
-              <input
-                type="password"
-                placeholder="Password"
-                class="theme-input-style"
-                v-model="guestCustomerInfo.password"
-              />
+              <input type="password" placeholder="Password" class="theme-input-style"
+                v-model="guestCustomerInfo.password" />
               <div v-for="error in errors" :key="error.customer_password">
-                <p
-                  class="text-danger validation-error"
-                  v-if="error.customer_password"
-                >
+                <p class="text-danger validation-error" v-if="error.customer_password">
                   {{ error.customer_password }}
                 </p>
               </div>
             </div>
             <div class="form-group mb-20 col-lg-6">
-              <input
-                type="password"
-                placeholder="Confirm Password"
-                v-model="guestCustomerInfo.confirm_password"
-                class="theme-input-style"
-              />
-              <div
-                v-for="error in errors"
-                :key="error.customer_confirm_password"
-              >
-                <p
-                  class="text-danger validation-error"
-                  v-if="error.customer_confirm_password"
-                >
+              <input type="password" placeholder="Confirm Password" v-model="guestCustomerInfo.confirm_password"
+                class="theme-input-style" />
+              <div v-for="error in errors" :key="error.customer_confirm_password">
+                <p class="text-danger validation-error" v-if="error.customer_confirm_password">
                   {{ error.customer_confirm_password }}
                 </p>
               </div>
@@ -341,42 +242,22 @@
           <div class="col-12">
             <h5>{{ $t("Shipping Details") }}</h5>
           </div>
-          <div
-            class="form-group mb-20 col-lg-6"
-            v-if="config?.enable_name_in_checkout == enums.status.ACTIVE"
-          >
-          
-            <input
-              type="text"
-              v-bind:placeholder="$t('Your Name')"
-              v-model="guestShippingInfo.name"
-              class="theme-input-style"
-            />
+          <div class="form-group mb-20 col-lg-6" v-if="config?.enable_name_in_checkout == enums.status.ACTIVE">
+
+            <input type="text" v-bind:placeholder="$t('Your Name')" v-model="guestShippingInfo.name"
+              class="theme-input-style" />
             <div v-for="error in errors" :key="error.shipping_name">
-              <p
-                class="text-danger validation-error"
-                v-if="error.shipping_name"
-              >
+              <p class="text-danger validation-error" v-if="error.shipping_name">
                 {{ error.shipping_name }}
               </p>
             </div>
           </div>
-          <div
-            class="form-group mb-20 col-lg-6"
-            v-if="config?.enable_email_in_checkout == enums.status.ACTIVE"
-          >
-          
-            <input
-              type="email"
-              v-bind:placeholder="$t('Email Address')"
-              v-model="guestShippingInfo.email"
-              class="theme-input-style"
-            />
+          <div class="form-group mb-20 col-lg-6" v-if="config?.enable_email_in_checkout == enums.status.ACTIVE">
+
+            <input type="email" v-bind:placeholder="$t('Email Address')" v-model="guestShippingInfo.email"
+              class="theme-input-style" />
             <div v-for="error in errors" :key="error.shipping_email">
-              <p
-                class="text-danger validation-error"
-                v-if="error.shipping_email"
-              >
+              <p class="text-danger validation-error" v-if="error.shipping_email">
                 {{ error.shipping_email }}
               </p>
             </div>
@@ -385,20 +266,11 @@
             class="form-group mb-20 col-lg-6"
             v-if="config?.enable_phone_in_checkout == enums.status.ACTIVE"
           > -->
-          <div
-            class="form-group mb-20 col-lg-6"
-          >
-            <input
-              type="tel"
-              v-bind:placeholder="$t('Phone Number')"
-              v-model="guestShippingInfo.phone"
-              class="theme-input-style"
-            />
+          <div class="form-group mb-20 col-lg-6">
+            <input type="tel" v-bind:placeholder="$t('Phone Number')" v-model="guestShippingInfo.phone"
+              class="theme-input-style" />
             <div v-for="error in errors" :key="error.shipping_phone">
-              <p
-                class="text-danger validation-error"
-                v-if="error.shipping_phone"
-              >
+              <p class="text-danger validation-error" v-if="error.shipping_phone">
                 {{ error.shipping_phone }}
               </p>
             </div>
@@ -407,135 +279,89 @@
             class="form-group mb-20 col-lg-6"
             v-if="config?.enable_address_in_checkout == enums.status.ACTIVE"
           > -->
-          <div
-            class="form-group mb-20 col-lg-6"
-          >
-            <input
-              type="text"
-              class="theme-input-style"
-              v-bind:placeholder="$t('Address')"
-              v-model="guestShippingInfo.address"
-            />
+          <div class="form-group mb-20 col-lg-6">
+            <input type="text" class="theme-input-style" v-bind:placeholder="$t('Address')"
+              v-model="guestShippingInfo.address" />
             <div v-for="error in errors" :key="error.shipping_address">
-              <p
-                class="text-danger validation-error"
-                v-if="error.shipping_address"
-              >
+              <p class="text-danger validation-error" v-if="error.shipping_address">
                 {{ error.shipping_address }}
               </p>
             </div>
           </div>
 
-          <div
-            v-if="config?.enable_post_code_in_checkout == enums.status.ACTIVE"
-            :class="
-              config?.hide_country_state_city_in_checkout == enums.status.ACTIVE
-                ? 'form-group mb-20 col-lg-12'
-                : 'form-group mb-20 col-lg-6'
-            "
-          >
-            <input
-              type="text"
-              class="theme-input-style"
-              v-bind:placeholder="$t('Postal Code')"
-              v-model="guestShippingInfo.postal_code"
-            />
+          <div v-if="config?.enable_post_code_in_checkout == enums.status.ACTIVE" :class="config?.hide_country_state_city_in_checkout == enums.status.ACTIVE
+            ? 'form-group mb-20 col-lg-12'
+            : 'form-group mb-20 col-lg-6'
+            ">
+            <input type="text" class="theme-input-style" v-bind:placeholder="$t('Postal Code')"
+              v-model="guestShippingInfo.postal_code" />
             <div v-for="error in errors" :key="error.shipping_postal_code">
-              <p
-                class="text-danger validation-error"
-                v-if="error.shipping_postal_code"
-              >
+              <p class="text-danger validation-error" v-if="error.shipping_postal_code">
                 {{ error.shipping_postal_code }}
               </p>
             </div>
           </div>
 
-          <div
-            class="form-group mb-20 col-lg-6"
-            v-if="
-              config?.hide_country_state_city_in_checkout !=
-                enums.status.ACTIVE && countries.length > 1
-            "
-          >
-            <v-select
-              :options="countries"
-              v-model="guestShippingInfo.country"
-              label="name"
-              :clearable="false"
-            ></v-select>
+          <div class="form-group mb-20 col-lg-6" v-if="
+            config?.hide_country_state_city_in_checkout !=
+            enums.status.ACTIVE && countries.length > 1
+          ">
+            <v-select :options="countries" v-model="guestShippingInfo.country" label="name"
+              :clearable="false"></v-select>
             <div v-for="error in errors" :key="error.shipping_country">
-              <p
-                class="text-danger validation-error"
-                v-if="error.shipping_country"
-              >
+              <p class="text-danger validation-error" v-if="error.shipping_country">
                 {{ error.shipping_country }}
               </p>
             </div>
           </div>
-          <div
-            class="form-group mb-20 col-lg-6"
-            v-if="
-              config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
-            "
-          >
-            <v-select
-              :options="guestShippingInfo.states_options"
-              v-model="guestShippingInfo.state"
-              label="name"
-              :clearable="false"
-            ></v-select>
+          <div class="form-group mb-20 col-lg-6" v-if="
+            config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
+          ">
+            <v-select :options="guestShippingInfo.states_options" v-model="guestShippingInfo.state" label="name"
+              :clearable="false"></v-select>
             <div v-for="error in errors" :key="error.shipping_state">
-              <p
-                class="text-danger validation-error"
-                v-if="error.shipping_state"
-              >
+              <p class="text-danger validation-error" v-if="error.shipping_state">
                 {{ error.shipping_state }}
               </p>
             </div>
           </div>
-          <div
-            class="form-group mb-20 col-lg-6"
-            v-if="
-              config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
-            "
-          >
-            <v-select
-              :options="guestShippingInfo.cities_options"
-              v-model="guestShippingInfo.city"
-              label="name"
-              :clearable="false"
-            ></v-select>
+          <div class="form-group mb-20 col-lg-6" v-if="
+            config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
+          ">
+            <v-select :options="guestShippingInfo.cities_options" v-model="guestShippingInfo.city" label="name"
+              :clearable="false" @option:selected="goNextStep"></v-select>
             <div v-for="error in errors" :key="error.shipping_city">
-              <p
-                class="text-danger validation-error"
-                v-if="error.shipping_city"
-              >
+              <p class="text-danger validation-error" v-if="error.shipping_city">
                 {{ error.shipping_city }}
               </p>
             </div>
           </div>
+          <!-- <div class="form-group mb-20 col-lg-6" v-if="
+            config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
+          ">
+            <v-select :options="guestShippingInfo.cities_options" v-model="guestShippingInfo.city" label="name"
+              :clearable="false"></v-select>
+            <div v-for="error in errors" :key="error.shipping_city">
+              <p class="text-danger validation-error" v-if="error.shipping_city">
+                {{ error.shipping_city }}
+              </p>
+            </div>
+          </div> -->
         </div>
         <!--End Guest Shipping Address-->
         <!--Bill to different Address-->
-        <div
-          class="row"
-          v-if="
-            config?.use_shipping_address_as_billing_address !=
-              enums.status.ACTIVE &&
-            config?.enable_billing_address == enums.status.ACTIVE
-          "
-        >
+        <div class="row" v-if="
+          config?.use_shipping_address_as_billing_address !=
+          enums.status.ACTIVE &&
+          config?.enable_billing_address == enums.status.ACTIVE
+        ">
           <div class="col-12">
             <div class="form-group mb-20 col-lg-6" v-if="isActiveHomeDelivery">
               <label class="d-flex gap-1 radio-label">
-                <input
-                  name="billToDifferentAddress"
-                  type="checkbox"
-                  @change="
-                    isActiveBillToDifferentAddress =
-                      !isActiveBillToDifferentAddress
-                  "
-                />
+                <input name="billToDifferentAddress" type="checkbox" @change="
+                  isActiveBillToDifferentAddress =
+                  !isActiveBillToDifferentAddress
+                  " />
                 <span class="radio-text">
                   {{ $t("Bill to Different Address") }} ?
                 </span>
@@ -545,25 +371,18 @@
         </div>
         <!--End Bill to different Address-->
         <!--Guest Billing Address-->
-        <div
-          class="row guest-billing-address"
-          v-if="
-            config?.enable_billing_address == enums.status.ACTIVE &&
-            config?.use_shipping_address_as_billing_address !=
-              enums.status.ACTIVE &&
-            isActiveBillToDifferentAddress
-          "
-        >
+        <div class="row guest-billing-address" v-if="
+          config?.enable_billing_address == enums.status.ACTIVE &&
+          config?.use_shipping_address_as_billing_address !=
+          enums.status.ACTIVE &&
+          isActiveBillToDifferentAddress
+        ">
           <div class="col-12">
             <h5>{{ $t("Billing Details") }}</h5>
           </div>
           <div class="form-group mb-20 col-lg-6">
-            <input
-              type="text"
-              v-bind:placeholder="$t('Your Name')"
-              v-model="guestBillingInfo.name"
-              class="theme-input-style"
-            />
+            <input type="text" v-bind:placeholder="$t('Your Name')" v-model="guestBillingInfo.name"
+              class="theme-input-style" />
             <div v-for="error in errors" :key="error.billing_name">
               <p class="text-danger validation-error" v-if="error.billing_name">
                 {{ error.billing_name }}
@@ -571,129 +390,71 @@
             </div>
           </div>
           <div class="form-group mb-20 col-lg-6">
-            <input
-              type="email"
-              v-bind:placeholder="$t('Email Address')"
-              v-model="guestBillingInfo.email"
-              class="theme-input-style"
-            />
+            <input type="email" v-bind:placeholder="$t('Email Address')" v-model="guestBillingInfo.email"
+              class="theme-input-style" />
             <div v-for="error in errors" :key="error.billing_email">
-              <p
-                class="text-danger validation-error"
-                v-if="error.billing_email"
-              >
+              <p class="text-danger validation-error" v-if="error.billing_email">
                 {{ error.billing_email }}
               </p>
             </div>
           </div>
           <div class="form-group mb-20 col-lg-6">
-            <input
-              type="tel"
-              v-bind:placeholder="$t('Phone Number')"
-              v-model="guestBillingInfo.phone"
-              class="theme-input-style"
-            />
+            <input type="tel" v-bind:placeholder="$t('Phone Number')" v-model="guestBillingInfo.phone"
+              class="theme-input-style" />
             <div v-for="error in errors" :key="error.billing_phone">
-              <p
-                class="text-danger validation-error"
-                v-if="error.billing_phone"
-              >
+              <p class="text-danger validation-error" v-if="error.billing_phone">
                 {{ error.billing_phone }}
               </p>
             </div>
           </div>
           <div class="form-group mb-20 col-lg-6">
-            <input
-              type="text"
-              class="theme-input-style"
-              v-bind:placeholder="$t('Address')"
-              v-model="guestBillingInfo.address"
-            />
+            <input type="text" class="theme-input-style" v-bind:placeholder="$t('Address')"
+              v-model="guestBillingInfo.address" />
             <div v-for="error in errors" :key="error.billing_address">
-              <p
-                class="text-danger validation-error"
-                v-if="error.billing_address"
-              >
+              <p class="text-danger validation-error" v-if="error.billing_address">
                 {{ error.billing_address }}
               </p>
             </div>
           </div>
-          <div
-            :class="
-              config?.hide_country_state_city_in_checkout == enums.status.ACTIVE
-                ? 'form-group mb-20 col-lg-12'
-                : 'form-group mb-20 col-lg-6'
-            "
-          >
-            <input
-              type="text"
-              class="theme-input-style"
-              v-bind:placeholder="$t('Postal Code')"
-              v-model="guestBillingInfo.postal_code"
-            />
+          <div :class="config?.hide_country_state_city_in_checkout == enums.status.ACTIVE
+            ? 'form-group mb-20 col-lg-12'
+            : 'form-group mb-20 col-lg-6'
+            ">
+            <input type="text" class="theme-input-style" v-bind:placeholder="$t('Postal Code')"
+              v-model="guestBillingInfo.postal_code" />
             <div v-for="error in errors" :key="error.billing_postal_code">
-              <p
-                class="text-danger validation-error"
-                v-if="error.billing_postal_code"
-              >
+              <p class="text-danger validation-error" v-if="error.billing_postal_code">
                 {{ error.billing_postal_code }}
               </p>
             </div>
           </div>
-          <div
-            class="form-group mb-20 col-lg-6"
-            v-if="
-              config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
-            "
-          >
-            <v-select
-              :options="countries"
-              v-model="guestBillingInfo.country"
-              label="name"
-              :clearable="false"
-            ></v-select>
+          <div class="form-group mb-20 col-lg-6" v-if="
+            config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
+          ">
+            <v-select :options="countries" v-model="guestBillingInfo.country" label="name"
+              :clearable="false"></v-select>
             <div v-for="error in errors" :key="error.billing_country">
-              <p
-                class="text-danger validation-error"
-                v-if="error.billing_country"
-              >
+              <p class="text-danger validation-error" v-if="error.billing_country">
                 {{ error.billing_country }}
               </p>
             </div>
           </div>
-          <div
-            class="form-group mb-20 col-lg-6"
-            v-if="
-              config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
-            "
-          >
-            <v-select
-              :options="guestBillingInfo.states_options"
-              v-model="guestBillingInfo.state"
-              label="name"
-              :clearable="false"
-            ></v-select>
+          <div class="form-group mb-20 col-lg-6" v-if="
+            config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
+          ">
+            <v-select :options="guestBillingInfo.states_options" v-model="guestBillingInfo.state" label="name"
+              :clearable="false"></v-select>
             <div v-for="error in errors" :key="error.billing_state">
-              <p
-                class="text-danger validation-error"
-                v-if="error.billing_state"
-              >
+              <p class="text-danger validation-error" v-if="error.billing_state">
                 {{ error.billing_state }}
               </p>
             </div>
           </div>
-          <div
-            class="form-group mb-20 col-lg-6"
-            v-if="
-              config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
-            "
-          >
-            <v-select
-              :options="guestBillingInfo.cities_options"
-              v-model="guestBillingInfo.city"
-              :clearable="false"
-              label="name"
-            ></v-select>
+          <div class="form-group mb-20 col-lg-6" v-if="
+            config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
+          ">
+            <v-select :options="guestBillingInfo.cities_options" v-model="guestBillingInfo.city" :clearable="false"
+              label="name"></v-select>
             <div v-for="error in errors" :key="error.billing_city">
               <p class="text-danger validation-error" v-if="error.billing_city">
                 {{ error.billing_city }}
@@ -839,19 +600,16 @@
     <!--End Pickup Point Selector-->
 
     <!--Delivery not available alert-->
-    <div
-      class="row m-0"
-      v-if="
-        (deliveryNotAvailable &&
-          guestShippingInfo &&
-          guestShippingInfo.city &&
-          guestShippingInfo.city.id) ||
-        (deliveryNotAvailable &&
-          customerShippingInfo &&
-          customerShippingInfo.city &&
-          customerShippingInfo.city.id)
-      "
-    >
+    <div class="row m-0" v-if="
+      (deliveryNotAvailable &&
+        guestShippingInfo &&
+        guestShippingInfo.city &&
+        guestShippingInfo.city.id) ||
+      (deliveryNotAvailable &&
+        customerShippingInfo &&
+        customerShippingInfo.city &&
+        customerShippingInfo.city.id)
+    ">
       <div class="alert alert-danger col-12">
         <p class="d-flex align-items-center justify-content-center">
           {{ $t("Delivery not available at this location") }}
@@ -863,20 +621,13 @@
     <!--Action area-->
     <div class="row">
       <div class="col-12 d-flex flex-wrap justify-content-between">
-        <button
-          type="button"
-          class="btn btn_border m-w-100 mb-10 justify-content-center"
-          @click.prevent="goPreviousStep"
-        >
+        <button type="button" class="btn btn_border m-w-100 mb-10 justify-content-center"
+          @click.prevent="goPreviousStep">
           <span class="material-icons me-2"> arrow_back </span>
           {{ $t("Previous") }}
         </button>
-        <button
-          type="button"
-          class="btn btn_fill m-w-100 mb-10 justify-content-center"
-          :disabled="deliveryNotAvailable"
-          @click.prevent="goNextStep"
-        >
+        <button type="button" class="btn btn_fill m-w-100 mb-10 justify-content-center" :disabled="deliveryNotAvailable"
+          @click.prevent="goNextStep">
           {{ $t("Continue") }}
           <span class="material-icons ms-2"> arrow_forward </span>
         </button>
@@ -885,25 +636,18 @@
     <!--End Action Area-->
 
     <!--Shipping mot available Product modal-->
-    <CModal
-      :visible="notAvailableProductsModal"
-      size="lg"
-      @close.prevent="
-        () => {
-          notAvailableProductsModal = false;
-        }
-      "
-    >
+    <CModal :visible="notAvailableProductsModal" size="lg" @close.prevent="
+      () => {
+        notAvailableProductsModal = false;
+      }
+    ">
       <CModalHeader>
         <CModalTitle>{{ $t("Shipping not available products") }}</CModalTitle>
-        <button
-          class="btn-circle bg-black size-35"
-          @click.prevent="
-            () => {
-              notAvailableProductsModal = false;
-            }
-          "
-        >
+        <button class="btn-circle bg-black size-35" @click.prevent="
+          () => {
+            notAvailableProductsModal = false;
+          }
+        ">
           <base-icon-svg name="close" :width="10" :height="10" />
         </button>
       </CModalHeader>
@@ -917,19 +661,11 @@
                   <td>{{ $t("Quantity") }}</td>
                   <td class="text-right">{{ $t("Total") }}</td>
                 </tr>
-                <tr
-                  class="products"
-                  v-for="tdata in shippingNotAvailableProducts"
-                  :key="tdata.id"
-                >
+                <tr class="products" v-for="tdata in shippingNotAvailableProducts" :key="tdata.id">
                   <td>
                     <div class="d-flex align-items-center">
                       <router-link to="#">
-                        <img
-                          :src="tdata.image"
-                          :alt="tdata.name"
-                          class="cart-image mr-10 rounded-circle"
-                        />
+                        <img :src="tdata.image" :alt="tdata.name" class="cart-image mr-10 rounded-circle" />
                       </router-link>
                       <span>
                         <router-link to="#" class="product-name">{{
@@ -949,9 +685,7 @@
                     {{ tdata.quantity }}
                   </td>
                   <td>
-                    <the-currency
-                      :amount="tdata.unitPrice * tdata.quantity"
-                    ></the-currency>
+                    <the-currency :amount="tdata.unitPrice * tdata.quantity"></the-currency>
                   </td>
                 </tr>
               </tbody>
@@ -970,6 +704,7 @@
 </template>
 <script>
 import axios from "axios";
+// import { mapState } from "vuex";
 import {
   CModal,
   CModalHeader,
@@ -1037,10 +772,32 @@ export default {
           (address) => address.default_billing === this.enums.status.ACTIVE
         ) || null,
       errors: [],
+      isRestoringShipping: false
     };
   },
   mounted() {
-    this.getPreviousData();
+
+    console.log("shipping details test: ", this.$store.state.shippingDetails);
+
+    if (this.$store.state.shippingDetails != null && !this.isCustomerLogin) {
+
+      this.isRestoringShipping = true;
+
+      this.guestShippingInfo = JSON.parse(
+        JSON.stringify(this.$store.state.shippingDetails)
+      );
+
+      // console.log("guestShippingInfo 0: ", this.guestShippingInfo);
+
+
+      this.getStates("shipping_info");
+
+      // this.isRestoringShipping = false;
+
+
+    }
+
+    // this.getPreviousData();
     this.getCounties();
     this.$store.dispatch("setFinalShippingCost", 0);
     if (
@@ -1050,6 +807,7 @@ export default {
     ) {
       this.getShippingOptions();
     }
+
   },
   watch: {
     "customerShippingInfo.id"() {
@@ -1065,16 +823,41 @@ export default {
       this.guestBillingInfo.city = this.$t("Select City");
       this.getCities("billing_info");
     },
+
+
+    // "guestShippingInfo.country"() {
+    //   this.guestShippingInfo.state = this.$t("Select State");
+    //   this.guestShippingInfo.city = this.$t("Select City");
+    //   this.guestShippingInfo.cities_options = [];
+    //   this.getStates("shipping_info");
+    // },
+    // "guestShippingInfo.state"() {
+    //   this.guestShippingInfo.city = this.$t("Select City");
+    //   this.getCities("shipping_info");
+    // },
+
+
     "guestShippingInfo.country"() {
+
+      if (this.isRestoringShipping) return;
+
       this.guestShippingInfo.state = this.$t("Select State");
       this.guestShippingInfo.city = this.$t("Select City");
       this.guestShippingInfo.cities_options = [];
+
       this.getStates("shipping_info");
     },
+
     "guestShippingInfo.state"() {
+
+      if (this.isRestoringShipping) return;
+
       this.guestShippingInfo.city = this.$t("Select City");
+
       this.getCities("shipping_info");
     },
+
+
     "guestShippingInfo.city"() {
       this.getShippingOptions();
     },
@@ -1114,8 +897,8 @@ export default {
         country: this.$t("Select Country"),
       };
 
-      console.log("store: ", this.$store);
-      
+      // console.log("store: ", this.$store);
+
       this.isActivePickupPoint = this.$store.state.isActivePickupPoint;
       this.isActiveHomeDelivery = this.$store.state.isActiveHomeDelivery;
 
@@ -1145,32 +928,35 @@ export default {
             ? this.$store.state.billingDetails
             : emptyBillingData;
 
+
         this.guestShippingInfo =
           this.$store.state.shippingDetails != null
             ? this.$store.state.shippingDetails
             : emptyShippingData;
 
+        // console.log("guestShippingInfo: ", this.guestShippingInfo);
+
         this.guestCustomerInfo =
           this.$store.state.guestCustomerInfo != null
             ? this.$store.state.guestCustomerInfo
             : {
-                name: "",
-                email: "",
-                password: "",
-                confirm_password: "",
-              };
+              name: "",
+              email: "",
+              password: "",
+              confirm_password: "",
+            };
       }
       this.selectedPickupPoints =
         this.$store.state.pickupPoint != null
           ? this.$store.state.pickupPoint
           : {
-              id: "",
-              name: this.$t("Select pickup point"),
-              location: "",
-              phone: "",
-              zone_id: "",
-              zone_name: "",
-            };
+            id: "",
+            name: this.$t("Select pickup point"),
+            location: "",
+            phone: "",
+            zone_id: "",
+            zone_name: "",
+          };
       this.loading = false;
     },
     /**
@@ -1253,7 +1039,7 @@ export default {
               shippingAddress = this.customerShippingInfo;
               billingAddress =
                 this.config?.use_shipping_address_as_billing_address ==
-                this.enums.status.ACTIVE
+                  this.enums.status.ACTIVE
                   ? this.customerShippingInfo
                   : this.customerBillingInfo;
             } else {
@@ -1261,7 +1047,7 @@ export default {
               billingAddress =
                 this.config?.use_shipping_address_as_billing_address ==
                   this.enums.status.ACTIVE ||
-                !this.isActiveBillToDifferentAddress
+                  !this.isActiveBillToDifferentAddress
                   ? this.guestShippingInfo
                   : this.guestBillingInfo;
               //set guest customer details
@@ -1412,7 +1198,7 @@ export default {
           if (
             this.config?.enable_billing_address == this.enums.status.ACTIVE &&
             this.config?.use_shipping_address_as_billing_address !=
-              this.enums.status.ACTIVE
+            this.enums.status.ACTIVE
           ) {
             if (this.customerBillingInfo == null) {
               this.errors.push({
@@ -1431,14 +1217,14 @@ export default {
           if (
             !this.guestCustomerInfo.name &&
             this.config?.enable_personal_info_guest_checkout ==
-              this.enums.status.ACTIVE
+            this.enums.status.ACTIVE
           ) {
             this.errors.push({ customer_name: this.$t("Name is required") });
           }
           if (
             !this.guestCustomerInfo.email &&
             this.config?.enable_personal_info_guest_checkout ==
-              this.enums.status.ACTIVE
+            this.enums.status.ACTIVE
           ) {
             this.errors.push({ customer_email: this.$t("Email is required") });
           }
@@ -1467,7 +1253,7 @@ export default {
           if (
             this.config?.enable_billing_address == this.enums.status.ACTIVE &&
             this.config?.use_shipping_address_as_billing_address !=
-              this.enums.status.ACTIVE &&
+            this.enums.status.ACTIVE &&
             this.isActiveBillToDifferentAddress
           ) {
             //name validation
@@ -1550,7 +1336,7 @@ export default {
           if (
             !this.guestShippingInfo.address &&
             this.config?.enable_address_in_checkout ==
-              this.enums.status.ACTIVE &&
+            this.enums.status.ACTIVE &&
             this.config?.address_required_in_checkout == this.enums.status.ACTIVE
           ) {
             this.errors.push({
@@ -1562,9 +1348,9 @@ export default {
           if (
             !this.guestShippingInfo.postal_code &&
             this.config?.post_code_required_in_checkout ==
-              this.enums.status.ACTIVE &&
+            this.enums.status.ACTIVE &&
             this.config?.post_code_required_in_checkout ==
-              this.enums.status.ACTIVE
+            this.enums.status.ACTIVE
           ) {
             this.errors.push({
               shipping_postal_code: this.$t("Postal code is required"),
@@ -1612,9 +1398,22 @@ export default {
         .then((response) => {
           if (response.data.success) {
             this.countries = response.data.data.countries;
+
+            if (this.isRestoringShipping && this.guestShippingInfo.country?.id) {
+              const match = this.countries.find(
+                c => c.id === this.guestShippingInfo.country.id
+              );
+
+              if (match) {
+                this.guestShippingInfo.country = match;
+              }
+
+              return; // prevent further modification
+            }
+
             if (this.countries.length == 1) {
               this.guestShippingInfo.country = this.countries[0];
-              getStates("shipping_info");
+              this.getStates("shipping_info");
             }
           }
         })
@@ -1646,11 +1445,29 @@ export default {
               this.guestBillingInfo.states_options = response.data.data.states;
             }
             if (origin === "shipping_info") {
+              // console.log("guestShippingInfo 1: ", this.guestShippingInfo);
+
               this.guestShippingInfo.states_options = response.data.data.states;
+
+              // console.log("guestShippingInfo 2: ", this.guestShippingInfo);
+
+              if (this.guestShippingInfo.state?.id) {
+                const match =
+                  this.guestShippingInfo.states_options.find(
+                    s => s.id === this.guestShippingInfo.state.id
+                  );
+
+                if (match) {
+                  this.guestShippingInfo.state = match;
+
+                  // Now that state is rebound → load cities
+                  this.getCities("shipping_info");
+                }
+              }
             }
           }
         })
-        .catch((error) => {});
+        .catch((error) => { });
     },
     /**
      * Will get cities list of a state
@@ -1678,10 +1495,23 @@ export default {
 
             if (origin === "shipping_info") {
               this.guestShippingInfo.cities_options = response.data.data.cities;
+
+              if (this.guestShippingInfo.city?.id) {
+                const match =
+                  this.guestShippingInfo.cities_options.find(
+                    c => c.id === this.guestShippingInfo.city.id
+                  );
+
+                if (match) {
+                  this.guestShippingInfo.city = match;
+                }
+              }
+
+              this.isRestoringShipping = false;
             }
           }
         })
-        .catch((error) => {});
+        .catch((error) => { });
     },
   },
 };

@@ -1,18 +1,15 @@
 <template>
   <Dashboard>
     <div class="address" :class="{
-    'force-mobile-layout': forcedMobile,
-    'mobile-content-wrapper': forcedMobile
-  }">
+      'force-mobile-layout': forcedMobile,
+      'mobile-content-wrapper': forcedMobile
+    }">
       <page-header class="py-3 mb-3" whiteBg :items="bItems" />
       <template v-if="!loading">
         <div class="row">
           <div class="col-12 mb-3" v-if="tableData.length > 0">
             <div class="table-responsive">
-              <CTable
-                class="style1 mb-0"
-                :class="tableData.length == 1 ? 't-mh-160' : ''"
-              >
+              <CTable class="style1 mb-0" :class="tableData.length == 1 ? 't-mh-160' : ''">
                 <CTableHead>
                   <CTableRow>
                     <CTableHeaderCell>{{ $t("Name") }}</CTableHeaderCell>
@@ -27,43 +24,25 @@
                     <CTableDataCell>{{ tdata.name }}</CTableDataCell>
                     <CTableDataCell>{{ tdata.address }}</CTableDataCell>
                     <CTableDataCell>
-                      {{ tdata.phone_code + "" + tdata.phone }}</CTableDataCell
-                    >
+                      {{ tdata.phone_code + "" + tdata.phone }}</CTableDataCell>
 
-                    <CTableDataCell
-                      ><button
-                        type="button"
-                        class="status-btn badge"
-                        :class="tdata.status"
-                      >
+                    <CTableDataCell><button type="button" class="status-btn badge" :class="tdata.status">
                         {{ tdata.status }}
                       </button>
-                      <p
-                        v-if="tdata.default_shipping == 1"
-                        class="text-info mb-0"
-                      >
+                      <p v-if="tdata.default_shipping == 1" class="text-info mb-0">
                         {{ $t("Default Shipping") }}
                       </p>
-                      <p
-                        v-if="tdata.default_billing == 1"
-                        class="text-info mb-0"
-                      >
+                      <p v-if="tdata.default_billing == 1" class="text-info mb-0">
                         {{ $t("Default Billing") }}
                       </p>
                     </CTableDataCell>
                     <CTableDataCell>
                       <CDropdown>
-                        <CDropdownToggle
-                          ><span class="material-icons">
+                        <CDropdownToggle><span class="material-icons">
                             more_vert
-                          </span></CDropdownToggle
-                        >
+                          </span></CDropdownToggle>
                         <CDropdownMenu>
-                          <CDropdownItem
-                            href="#"
-                            @click="EditAddress(tdata.id)"
-                            >{{ $t("Edit") }}</CDropdownItem
-                          >
+                          <CDropdownItem href="#" @click="EditAddress(tdata.id)">{{ $t("Edit") }}</CDropdownItem>
                         </CDropdownMenu>
                       </CDropdown>
                     </CTableDataCell>
@@ -77,15 +56,12 @@
           </div>
 
           <div class="col-12 mb-3">
-            <button
-              class="btn btn_fill"
-              @click.prevent="
-                () => {
-                  visibleNewAddressModal = true;
-                  errors = [];
-                }
-              "
-            >
+            <button class="btn btn_fill" @click.prevent="
+              () => {
+                visibleNewAddressModal = true;
+                errors = [];
+              }
+            ">
               {{ $t("Add new address") }}
             </button>
           </div>
@@ -97,26 +73,18 @@
       </template>
     </div>
     <!--New Address Modal -->
-    <CModal
-      scrollable
-      :visible="visibleNewAddressModal"
-      size="lg"
-      @close="
-        () => {
-          visibleNewAddressModal = false;
-        }
-      "
-    >
+    <CModal scrollable :visible="visibleNewAddressModal" size="lg" @close="
+      () => {
+        visibleNewAddressModal = false;
+      }
+    ">
       <CModalHeader>
         <CModalTitle>{{ $t("Address Information") }}</CModalTitle>
-        <button
-          class="btn-circle bg-black size-35"
-          @click="
-            () => {
-              visibleNewAddressModal = false;
-            }
-          "
-        >
+        <button class="btn-circle bg-black size-35" @click="
+          () => {
+            visibleNewAddressModal = false;
+          }
+        ">
           <base-icon-svg name="close" :width="10" :height="10" />
         </button>
       </CModalHeader>
@@ -124,44 +92,25 @@
         <div class="row mb-20">
           <div class="form-group col-sm-6">
             <label class="font-weight-bold fz-12 mb-2">
-              {{ $t("Name") }} <span class="text-danger">*</span></label
-            >
-            <input
-              type="text"
-              v-bind:placeholder="$t('Your Name')"
-              class="theme-input-style"
-              v-model="addressInfo.name"
-            />
+              {{ $t("Name") }} <span class="text-danger">*</span></label>
+            <input type="text" v-bind:placeholder="$t('Your Name')" class="theme-input-style"
+              v-model="addressInfo.name" />
             <template v-if="errors.name">
-              <p
-                class="fz-12 text-danger mt-1"
-                v-for="(error, index) in errors.name"
-                :key="index"
-              >
+              <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.name" :key="index">
                 {{ error }}
               </p>
             </template>
           </div>
           <div class="form-group col-sm-6">
             <label class="font-weight-bold fz-12 mb-2">
-              {{ $t("Phone") }} <span class="text-danger">*</span></label
-            >
+              {{ $t("Phone") }} <span class="text-danger">*</span></label>
             <div class="">
               <div class="phone-number-wrap d-flex">
-                <input
-                  type="tel"
-                  v-bind:placeholder="$t('Phone Number')"
-                  class="theme-input-style"
-                  required
-                  v-model="addressInfo.phone"
-                />
+                <input type="tel" v-bind:placeholder="$t('Phone Number')" class="theme-input-style" required
+                  v-model="addressInfo.phone" />
               </div>
               <template v-if="errors.phone">
-                <p
-                  class="fz-12 text-danger mt-1"
-                  v-for="(error, index) in errors.phone"
-                  :key="index"
-                >
+                <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.phone" :key="index">
                   {{ error }}
                 </p>
               </template>
@@ -172,26 +121,16 @@
           class="row mb-20"
           v-if="configuration?.hide_country_state_city_in_checkout != 1"
         > -->
-        <div
-          class="row mb-20"
-        >
+        <div class="row mb-20">
           <!-- <div class="form-group col-lg-6 mb-20" v-if="countries.length > 1"> -->
           <div class="form-group col-lg-6 mb-20">
             <label class="font-weight-bold fz-12 mb-2">
               {{ $t("Country") }} <span class="text-danger">*</span>
             </label>
             <div class="col">
-              <v-select
-                :options="countries"
-                v-model="addressInfo.country"
-                label="name"
-              ></v-select>
+              <v-select :options="countries" v-model="addressInfo.country" label="name"></v-select>
               <template v-if="errors.country">
-                <p
-                  class="fz-12 text-danger mt-1"
-                  v-for="(error, index) in errors.country"
-                  :key="index"
-                >
+                <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.country" :key="index">
                   {{ error }}
                 </p>
               </template>
@@ -203,75 +142,41 @@
               {{ $t("State") }} <span class="text-danger">*</span>
             </label>
             <div class="col">
-              <v-select
-                :options="addressInfo.states_options"
-                v-model="addressInfo.state"
-                label="name"
-              ></v-select>
+              <v-select :options="addressInfo.states_options" v-model="addressInfo.state" label="name"></v-select>
               <template v-if="errors.state">
-                <p
-                  class="fz-12 text-danger mt-1"
-                  v-for="(error, index) in errors.state"
-                  :key="index"
-                >
+                <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.state" :key="index">
                   {{ error }}
                 </p>
               </template>
             </div>
           </div>
 
-          <div
-            class="form-group col-lg-6 mb-20"
-            v-if="configuration?.hide_country_state_city_in_checkout != 1"
-          >
+          <div class="form-group col-lg-6 mb-20" v-if="configuration?.hide_country_state_city_in_checkout != 1">
             <label class="font-weight-bold fz-12 mb-2">
               {{ $t("City") }} <span class="text-danger">*</span>
             </label>
             <div class="col">
-              <v-select
-                :options="addressInfo.cities_options"
-                v-model="addressInfo.city"
-                label="name"
-              ></v-select>
+              <v-select :options="addressInfo.cities_options" v-model="addressInfo.city" label="name"></v-select>
               <template v-if="errors.city">
-                <p
-                  class="fz-12 text-danger mt-1"
-                  v-for="(error, index) in errors.city"
-                  :key="index"
-                >
+                <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.city" :key="index">
                   {{ error }}
                 </p>
               </template>
             </div>
           </div>
 
-          <div
-            :class="
-              configuration?.hide_country_state_city_in_checkout == 1
-                ? 'form-group col-lg-12 mb-20'
-                : 'form-group col-lg-6 mb-20'
-            "
-          >
+          <div :class="configuration?.hide_country_state_city_in_checkout == 1
+            ? 'form-group col-lg-12 mb-20'
+            : 'form-group col-lg-6 mb-20'
+            ">
             <label class="font-weight-bold fz-12 mb-2">
               {{ $t("Postal Code") }}
-              <span
-                class="text-danger"
-                v-if="configuration?.post_code_required_in_checkout == 1"
-                >*</span
-              >
+              <span class="text-danger" v-if="configuration?.post_code_required_in_checkout == 1">*</span>
             </label>
-            <input
-              type="text"
-              v-bind:placeholder="$t('Postal code')"
-              class="theme-input-style"
-              v-model="addressInfo.postal_code"
-            />
+            <input type="text" v-bind:placeholder="$t('Postal code')" class="theme-input-style"
+              v-model="addressInfo.postal_code" />
             <template v-if="errors.postal_code">
-              <p
-                class="fz-12 text-danger mt-1"
-                v-for="(error, index) in errors.postal_code"
-                :key="index"
-              >
+              <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.postal_code" :key="index">
                 {{ error }}
               </p>
             </template>
@@ -281,16 +186,11 @@
         <div class="row mb-20">
           <div class="form-group col-12">
             <label class="font-weight-bold fz-12 mb-2">
-              {{ $t("Address") }} <span class="text-danger">*</span></label
-            >
+              {{ $t("Address") }} <span class="text-danger">*</span></label>
             <textarea class="theme-input-style" v-model="addressInfo.address">
-            </textarea>
+        </textarea>
             <template v-if="errors.address">
-              <p
-                class="fz-12 text-danger mt-1"
-                v-for="(error, index) in errors.address"
-                :key="index"
-              >
+              <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.address" :key="index">
                 {{ error }}
               </p>
             </template>
@@ -298,11 +198,7 @@
         </div>
       </CModalBody>
       <CModalFooter>
-        <button
-          class="btn btn_fill"
-          @click.prevent="saveAddress"
-          :disabled="new_address_submitting"
-        >
+        <button class="btn btn_fill" @click.prevent="saveAddress" :disabled="new_address_submitting">
           <span v-if="new_address_submitting">
             <CSpinner component="span" size="sm" aria-hidden="true" />
             {{ $t("Please wait") }}
@@ -316,25 +212,18 @@
     <!-- End New Address Modal -->
 
     <!--Edit Address Modal -->
-    <CModal
-      :visible="visibleEditAddressModal"
-      size="lg"
-      @close="
-        () => {
-          visibleEditAddressModal = false;
-        }
-      "
-    >
+    <CModal :visible="visibleEditAddressModal" size="lg" @close="
+      () => {
+        visibleEditAddressModal = false;
+      }
+    ">
       <CModalHeader>
         <CModalTitle>{{ $t("Address Details") }}</CModalTitle>
-        <button
-          class="btn-circle bg-black size-35"
-          @click="
-            () => {
-              visibleEditAddressModal = false;
-            }
-          "
-        >
+        <button class="btn-circle bg-black size-35" @click="
+          () => {
+            visibleEditAddressModal = false;
+          }
+        ">
           <base-icon-svg name="close" :width="10" :height="10" />
         </button>
       </CModalHeader>
@@ -342,20 +231,11 @@
         <div class="row mb-20">
           <div class="form-group col-sm-6">
             <label class="font-weight-bold fz-12 mb-2">
-              {{ $t("Name") }} <span class="text-danger">*</span></label
-            >
-            <input
-              type="text"
-              v-bind:placeholder="$t('Your Name')"
-              class="theme-input-style"
-              v-model="editAddressInfo.name"
-            />
+              {{ $t("Name") }} <span class="text-danger">*</span></label>
+            <input type="text" v-bind:placeholder="$t('Your Name')" class="theme-input-style"
+              v-model="editAddressInfo.name" />
             <template v-if="errors.name">
-              <p
-                class="fz-12 text-danger mt-1"
-                v-for="(error, index) in errors.name"
-                :key="index"
-              >
+              <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.name" :key="index">
                 {{ error }}
               </p>
             </template>
@@ -363,51 +243,30 @@
 
           <div class="form-group col-sm-6">
             <label class="font-weight-bold fz-12 mb-2">
-              {{ $t("Phone") }} <span class="text-danger">*</span></label
-            >
+              {{ $t("Phone") }} <span class="text-danger">*</span></label>
             <div class="">
               <div class="phone-number-wrap d-flex">
-                <input
-                  type="tel"
-                  v-bind:placeholder="$t('Phone Number')"
-                  class="theme-input-style"
-                  required
-                  v-model="editAddressInfo.phone"
-                />
+                <input type="tel" v-bind:placeholder="$t('Phone Number')" class="theme-input-style" required
+                  v-model="editAddressInfo.phone" />
               </div>
               <template v-if="errors.phone">
-                <p
-                  class="fz-12 text-danger mt-1"
-                  v-for="(error, index) in errors.phone"
-                  :key="index"
-                >
+                <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.phone" :key="index">
                   {{ error }}
                 </p>
               </template>
             </div>
           </div>
         </div>
-        <div
-          class="row mb-20"
-          v-if="configuration?.hide_country_state_city_in_checkout != 1"
-        >
+        <div class="row mb-20" v-if="configuration?.hide_country_state_city_in_checkout != 1">
           <div class="form-group col-lg-6" v-if="countries.length > 1">
             <label class="font-weight-bold fz-12 mb-2">
               {{ $t("Country") }} <span class="text-danger">*</span>
             </label>
             <div class="col">
-              <v-select
-                :options="countries"
-                v-model="editAddressInfo.country"
-                @update:modelValue="changeAddressCountry"
-                label="name"
-              ></v-select>
+              <v-select :options="countries" v-model="editAddressInfo.country" @update:modelValue="changeAddressCountry"
+                label="name"></v-select>
               <template v-if="errors.country">
-                <p
-                  class="fz-12 text-danger mt-1"
-                  v-for="(error, index) in errors.country"
-                  :key="index"
-                >
+                <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.country" :key="index">
                   {{ error }}
                 </p>
               </template>
@@ -418,75 +277,43 @@
               {{ $t("State") }} <span class="text-danger">*</span>
             </label>
             <div class="col">
-              <v-select
-                :options="editAddressInfo.states_options"
-                v-model="editAddressInfo.state"
-                label="name"
-              ></v-select>
+              <v-select :options="editAddressInfo.states_options" v-model="editAddressInfo.state"
+                label="name"></v-select>
               <template v-if="errors.state">
-                <p
-                  class="fz-12 text-danger mt-1"
-                  v-for="(error, index) in errors.state"
-                  :key="index"
-                >
+                <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.state" :key="index">
                   {{ error }}
                 </p>
               </template>
             </div>
           </div>
 
-          <div
-            class="form-group col-lg-6"
-            v-if="configuration?.hide_country_state_city_in_checkout != 1"
-          >
+          <div class="form-group col-lg-6" v-if="configuration?.hide_country_state_city_in_checkout != 1">
             <label class="font-weight-bold fz-12 mb-2">
               {{ $t("City") }} <span class="text-danger">*</span>
             </label>
             <div class="col">
-              <v-select
-                :options="editAddressInfo.cities_options"
-                v-model="editAddressInfo.city"
-                label="name"
-              ></v-select>
+              <v-select :options="editAddressInfo.cities_options" v-model="editAddressInfo.city"
+                label="name"></v-select>
               <template v-if="errors.city">
-                <p
-                  class="fz-12 text-danger mt-1"
-                  v-for="(error, index) in errors.city"
-                  :key="index"
-                >
+                <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.city" :key="index">
                   {{ error }}
                 </p>
               </template>
             </div>
           </div>
 
-          <div
-            :class="
-              configuration?.hide_country_state_city_in_checkout == 1
-                ? 'form-group col-lg-12'
-                : 'form-group col-lg-6'
-            "
-          >
+          <div :class="configuration?.hide_country_state_city_in_checkout == 1
+            ? 'form-group col-lg-12'
+            : 'form-group col-lg-6'
+            ">
             <label class="font-weight-bold fz-12 mb-2">
               {{ $t("Postal Code") }}
-              <span
-                class="text-danger"
-                v-if="configuration?.post_code_required_in_checkout == 1"
-                >*</span
-              >
+              <span class="text-danger" v-if="configuration?.post_code_required_in_checkout == 1">*</span>
             </label>
-            <input
-              type="text"
-              v-bind:placeholder="$t('Postal code')"
-              class="theme-input-style"
-              v-model="editAddressInfo.postal_code"
-            />
+            <input type="text" v-bind:placeholder="$t('Postal code')" class="theme-input-style"
+              v-model="editAddressInfo.postal_code" />
             <template v-if="errors.postal_code">
-              <p
-                class="fz-12 text-danger mt-1"
-                v-for="(error, index) in errors.postal_code"
-                :key="index"
-              >
+              <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.postal_code" :key="index">
                 {{ error }}
               </p>
             </template>
@@ -496,19 +323,11 @@
         <div class="row mb-20">
           <div class="form-group col-12">
             <label class="font-weight-bold fz-12 mb-2">
-              {{ $t("Address") }} <span class="text-danger">*</span></label
-            >
-            <textarea
-              class="theme-input-style"
-              v-model="editAddressInfo.address"
-            >
-            </textarea>
+              {{ $t("Address") }} <span class="text-danger">*</span></label>
+            <textarea class="theme-input-style" v-model="editAddressInfo.address">
+        </textarea>
             <template v-if="errors.address">
-              <p
-                class="fz-12 text-danger mt-1"
-                v-for="(error, index) in errors.address"
-                :key="index"
-              >
+              <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.address" :key="index">
                 {{ error }}
               </p>
             </template>
@@ -517,102 +336,55 @@
         <div class="row mb-20">
           <div class="form-group col-12">
             <label class="font-weight-bold fz-12 mb-2">
-              {{ $t("Status") }}</label
-            >
+              {{ $t("Status") }}</label>
             <div class="col">
-              <input
-                id="active"
-                type="radio"
-                name="status"
-                class="me-2"
-                value="1"
-                v-model="editAddressInfo.status"
-                :checked="editAddressInfo.status == 1"
-              />
+              <input id="active" type="radio" name="status" class="me-2" value="1" v-model="editAddressInfo.status"
+                :checked="editAddressInfo.status == 1" />
               <label for="active" class="mr-30">{{ $t("Active") }}</label>
-              <input
-                id="inactive"
-                type="radio"
-                name="status"
-                class="me-2"
-                value="2"
-                v-model="editAddressInfo.status"
-                :checked="editAddressInfo.status == 2"
-              /><label for="inactive">{{ $t("Inactive") }}</label>
+              <input id="inactive" type="radio" name="status" class="me-2" value="2" v-model="editAddressInfo.status"
+                :checked="editAddressInfo.status == 2" /><label for="inactive">{{ $t("Inactive") }}</label>
             </div>
           </div>
         </div>
         <div class="row mb-20">
           <div class="form-group col-12">
             <label class="font-weight-bold fz-12 mb-2">
-              {{ $t("Default Shipping Address") }}</label
-            >
+              {{ $t("Default Shipping Address") }}</label>
             <div class="col">
-              <input
-                id="active_default_shipping"
-                type="radio"
-                name="default_shipping"
-                class="me-2"
-                value="1"
-                v-model="editAddressInfo.default_shipping"
-                :checked="editAddressInfo.default_shipping == 1"
-              />
+              <input id="active_default_shipping" type="radio" name="default_shipping" class="me-2" value="1"
+                v-model="editAddressInfo.default_shipping" :checked="editAddressInfo.default_shipping == 1" />
               <label for="active_default_shipping" class="mr-30">{{
                 $t("Active")
-              }}</label>
-              <input
-                id="inactive_default_shipping"
-                type="radio"
-                name="default_shipping"
-                class="me-2"
-                value="2"
-                v-model="editAddressInfo.default_shipping"
-                :checked="editAddressInfo.default_shipping == 2"
-              /><label for="inactive_default_shipping">{{
-                $t("Inactive")
-              }}</label>
+                }}</label>
+              <input id="inactive_default_shipping" type="radio" name="default_shipping" class="me-2" value="2"
+                v-model="editAddressInfo.default_shipping" :checked="editAddressInfo.default_shipping == 2" /><label
+                for="inactive_default_shipping">{{
+                  $t("Inactive")
+                }}</label>
             </div>
           </div>
         </div>
         <div class="row mb-20">
           <div class="form-group col-12">
             <label class="font-weight-bold fz-12 mb-2">
-              {{ $t("Default Billing Address") }}</label
-            >
+              {{ $t("Default Billing Address") }}</label>
             <div class="col">
-              <input
-                id="active_default_billing"
-                type="radio"
-                name="default_billing"
-                class="me-2"
-                value="1"
-                v-model="editAddressInfo.default_billing"
-                :checked="editAddressInfo.default_billing == 1"
-              />
+              <input id="active_default_billing" type="radio" name="default_billing" class="me-2" value="1"
+                v-model="editAddressInfo.default_billing" :checked="editAddressInfo.default_billing == 1" />
               <label for="active_default_billing" class="mr-30">{{
                 $t("Active")
-              }}</label>
-              <input
-                id="inactive_default_billing"
-                type="radio"
-                name="default_billing"
-                class="me-2"
-                value="2"
-                v-model="editAddressInfo.default_billing"
-                :checked="editAddressInfo.default_billing == 2"
-              /><label for="inactive_default_billing">{{
-                $t("Inactive")
-              }}</label>
+                }}</label>
+              <input id="inactive_default_billing" type="radio" name="default_billing" class="me-2" value="2"
+                v-model="editAddressInfo.default_billing" :checked="editAddressInfo.default_billing == 2" /><label
+                for="inactive_default_billing">{{
+                  $t("Inactive")
+                }}</label>
             </div>
           </div>
         </div>
       </CModalBody>
       <CModalFooter>
-        <button
-          class="btn btn_fill"
-          @click.prevent="updateAddress"
-          :disabled="update_address_submitting"
-        >
+        <button class="btn btn_fill" @click.prevent="updateAddress" :disabled="update_address_submitting">
           <span v-if="update_address_submitting">
             <CSpinner component="span" size="sm" aria-hidden="true" />
             {{ $t("Please wait") }}
@@ -701,19 +473,19 @@ export default {
   },
   computed: {
     ...mapState({
-    customerToken: (state) => state.customerToken,
-    configuration: (state) => state.siteSettings,
-  }),
+      customerToken: (state) => state.customerToken,
+      configuration: (state) => state.siteSettings,
+    }),
 
-   ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
 
-  forcedMobile() {
-    // identical intent to MainLayout.vue
-    if (this.isSplitScreen) {
-      return true;
-    }
-    return this.isMobile;
-  },
+    forcedMobile() {
+      // identical intent to MainLayout.vue
+      if (this.isSplitScreen) {
+        return true;
+      }
+      return this.isMobile;
+    },
   },
   // computed: mapState({
   //   customerToken: (state) => state.customerToken,
@@ -797,7 +569,7 @@ export default {
      * Will get customer all address
      */
     getCustomerAddress() {
-      console.log("getCustomerAddress method called!!!");
+      // console.log("getCustomerAddress method called!!!");
       this.loading = true;
       axios
         // .get("/api/v1/ecommerce-core/customer/get-customer-all-address", {
@@ -996,7 +768,7 @@ export default {
      * Get counties list
      */
     getCounties() {
-      console.log("getCountries method called!!!");
+      // console.log("getCountries method called!!!");
       axios
         // .get("/api/v1/ecommerce-core/get-countries")
         .post("/api/v1/ecommerce-core/get-countries")
@@ -1017,7 +789,7 @@ export default {
      * Will get state list of a country
      */
     getStates(origin) {
-    console.log("get states method called!!!");
+      // console.log("get states method called!!!");
       let country_id = "";
       if (origin === "new") {
         country_id = this.addressInfo.country
@@ -1041,7 +813,7 @@ export default {
             }
           }
         })
-        .catch((error) => {});
+        .catch((error) => { });
     },
     /**
      * Will get cities list of a state
@@ -1069,7 +841,7 @@ export default {
             }
           }
         })
-        .catch((error) => {});
+        .catch((error) => { });
     },
     resetData() {
       this.addressInfo.name = "";
@@ -1082,8 +854,7 @@ export default {
 </script>
 
 <style scoped>
-
-  .force-mobile-layout .row > [class*="col-"] {
+.force-mobile-layout .row>[class*="col-"] {
   flex: 0 0 100% !important;
   max-width: 100% !important;
 }
@@ -1119,6 +890,4 @@ export default {
   flex-wrap: wrap !important;
   justify-content: space-between !important;
 }
-
-
 </style>

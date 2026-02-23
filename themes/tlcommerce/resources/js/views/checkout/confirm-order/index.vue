@@ -10,11 +10,7 @@
         <div class="row" v-if="!dataLoading">
           <div class="col-12" v-if="success">
             <div class="shadow-card py-5 text-center mb-30">
-              <img
-                src="/themes/tlcommerce/assets/images/icons/completed-order.svg"
-                class="mb-4"
-                alt="Order"
-              />
+              <img src="/themes/tlcommerce/assets/images/icons/completed-order.svg" class="mb-4" alt="Order" />
               <!-- <img
                 src="/public/themes/tlcommerce/assets/img/complete-order.png"
                 class="mb-4"
@@ -29,10 +25,7 @@
 
               <div class="row mt-4">
                 <div class="col-lg-6">
-                  <ul
-                    class="order-summery-list"
-                    v-if="orderDetails.pickup_point == null"
-                  >
+                  <ul class="order-summery-list" v-if="orderDetails.pickup_point == null">
                     <li>
                       <span>{{ $t("Order Code") }}:</span>
                       <span>{{ orderDetails.order_code }}</span>
@@ -49,28 +42,21 @@
                       <li>
                         <span>{{ $t("Address") }}:</span>
                         <p>
-                          <span
-                            v-if="orderDetails.shipping_details.address != null"
-                            >{{ orderDetails.shipping_details.address }},</span
-                          >
-                          <span
-                            v-if="orderDetails.shipping_details.city != null"
-                            >{{ orderDetails.shipping_details.city }},</span
-                          >
-                          <span
-                            v-if="orderDetails.shipping_details.state != null"
-                            >{{ orderDetails.shipping_details.state }},</span
-                          >
-                          <span v-if="orderDetails.shipping_details.country"
-                            >{{ orderDetails.shipping_details.country }}.</span
-                          >
+                          <span v-if="orderDetails.shipping_details.address != null">{{
+                            orderDetails.shipping_details.address }},</span>
+                          <span v-if="orderDetails.shipping_details.city != null">{{ orderDetails.shipping_details.city
+                            }},</span>
+                          <span v-if="orderDetails.shipping_details.state != null">{{
+                            orderDetails.shipping_details.state }},</span>
+                          <span v-if="orderDetails.shipping_details.country">{{ orderDetails.shipping_details.country
+                            }}.</span>
                         </p>
                       </li>
                       <li>
                         <span>{{ $t("Postal Code") }}:</span>
                         <span>{{
                           orderDetails.shipping_details.postal_code
-                        }}</span>
+                          }}</span>
                       </li>
                     </template>
                   </ul>
@@ -102,28 +88,26 @@
                       <span>{{ orderDetails.order_date }}</span>
                     </li>
                     <li class="text-capitalize">
-                      <span>{{ $t("Total Amount") }}:</span
-                      ><the-currency
-                        :amount="orderDetails.total_payable_amount"
-                      ></the-currency>
+                      <span>{{ $t("Total Amount") }}:</span><the-currency
+                        :amount="orderDetails.total_payable_amount"></the-currency>
                     </li>
                     <li class="text-capitalize">
                       <span>{{ $t("Order Status") }}:</span>
                       <span class="text-info">{{
                         orderDetails.delivery_status_label
-                      }}</span>
+                        }}</span>
                     </li>
                     <li class="text-capitalize">
                       <span>{{ $t("Payment Status") }}:</span>
                       <span class="text-info">{{
                         orderDetails.payment_status_label
-                      }}</span>
+                        }}</span>
                     </li>
                     <li class="text-capitalize">
                       <span>{{ $t("Payment method") }}:</span>
                       <span class="text-info">{{
                         orderDetails.payment_method
-                      }}</span>
+                        }}</span>
                     </li>
                   </ul>
                 </div>
@@ -139,55 +123,37 @@
                     <CTableRow>
                       <CTableHeaderCell>{{
                         $t("Product Name")
-                      }}</CTableHeaderCell>
+                        }}</CTableHeaderCell>
                       <CTableHeaderCell>{{
                         $t("Price") + "/" + $t("Unit")
-                      }}</CTableHeaderCell>
+                        }}</CTableHeaderCell>
                       <CTableHeaderCell>{{ $t("Quantity") }}</CTableHeaderCell>
                       <CTableHeaderCell>{{ $t("Total") }}</CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
                   <CTableBody>
-                    <CTableRow
-                      v-for="product in orderDetails.products.data"
-                      :key="product.id"
-                    >
+                    <CTableRow v-for="product in orderDetails.products.data" :key="product.id">
                       <CTableDataCell class="w-50">
                         <div class="d-flex align-items-center">
                           <router-link :to="`/products/${product.permalink}`">
-                            <img
-                              :src="product.image"
-                              :alt="product.name"
-                              class="cart-image mr-10 rounded-circle"
-                            />
+                            <img :src="product.image" :alt="product.name" class="cart-image mr-10 rounded-circle" />
                           </router-link>
                           <div class="item-info">
                             <!--Item Name-->
-                            <router-link
-                              :title="`${product.name}`"
-                              :to="`/products/${product.permalink}`"
-                              class="cart-product-name product-name text-capitalize"
-                            >
+                            <router-link :title="`${product.name}`" :to="`/products/${product.permalink}`"
+                              class="cart-product-name product-name text-capitalize">
                               {{ product.name }}
                             </router-link>
                             <!--End Item Name-->
                             <!--Variant-->
-                            <div
-                              class="product-variant extra-addons-wrap d-flex flex-wrap"
-                              v-if="product.variant != null"
-                            >
-                              <product-variant
-                                class="font-weight-medium fz-12"
-                                :variant="product.variant"
-                                tag="p"
-                              ></product-variant>
+                            <div class="product-variant extra-addons-wrap d-flex flex-wrap"
+                              v-if="product.variant != null">
+                              <product-variant class="font-weight-medium fz-12" :variant="product.variant"
+                                tag="p"></product-variant>
                             </div>
                             <!--End Variant-->
                             <!--Shop-->
-                            <div
-                              class="extra-addons-wrap d-flex flex-wrap"
-                              v-if="product.shop != null"
-                            >
+                            <div class="extra-addons-wrap d-flex flex-wrap" v-if="product.shop != null">
                               <!-- <p class="product-shop fz-12">
                                 {{ $t("Sold By") }}
                                 <router-link
@@ -203,17 +169,11 @@
                           </div>
                         </div>
                       </CTableDataCell>
-                      <CTableDataCell
-                        ><the-currency
-                          :amount="product.unit_price"
-                        ></the-currency>
+                      <CTableDataCell><the-currency :amount="product.unit_price"></the-currency>
                       </CTableDataCell>
                       <CTableDataCell>{{ product.quantity }}</CTableDataCell>
-                      <CTableDataCell class="fw-medium"
-                        ><the-currency
-                          :amount="product.unit_price * product.quantity"
-                        ></the-currency
-                      ></CTableDataCell>
+                      <CTableDataCell class="fw-medium"><the-currency
+                          :amount="product.unit_price * product.quantity"></the-currency></CTableDataCell>
                     </CTableRow>
                   </CTableBody>
                 </CTable>
@@ -225,67 +185,39 @@
                       <tr class="cart-subtotal">
                         <td>{{ $t("Subtotal") }}</td>
                         <td>
-                          <span class="woocommerce-Price-amount amount"
-                            ><bdi
-                              ><span
-                                class="woocommerce-Price-currencySymbol"
-                              ></span>
-                              <the-currency
-                                :amount="orderDetails.sub_total"
-                              ></the-currency> </bdi
-                          ></span>
+                          <span class="woocommerce-Price-amount amount"><bdi><span
+                                class="woocommerce-Price-currencySymbol"></span>
+                              <the-currency :amount="orderDetails.sub_total"></the-currency> </bdi></span>
                         </td>
                       </tr>
                       <tr class="shipping-cost font-weight-regular">
                         <td>{{ $t("Shipping Cost") }}</td>
                         <td>
-                          <span class="woocommerce-Price-amount amount"
-                            ><bdi
-                              ><span class="woocommerce-Price-currencySymbol"
-                                >+</span
-                              >
-                              <the-currency
-                                :amount="orderDetails.total_delivery_cost"
-                              ></the-currency> </bdi
-                          ></span>
+                          <span class="woocommerce-Price-amount amount"><bdi><span
+                                class="woocommerce-Price-currencySymbol">+</span>
+                              <the-currency :amount="orderDetails.total_delivery_cost"></the-currency> </bdi></span>
                         </td>
                       </tr>
-                      <tr
-                        class="order-tax font-weight-regular"
-                        v-if="orderDetails.total_tax > 0"
-                      >
+                      <tr class="order-tax font-weight-regular" v-if="orderDetails.total_tax > 0">
                         <td>
                           {{ $t("Tax") }}
                         </td>
                         <td>
                           <span class="woocommerce-Price-amount amount">
-                            <bdi
-                              ><span class="woocommerce-Price-currencySymbol"
-                                >+</span
-                              >
-                              <the-currency
-                                :amount="orderDetails.total_tax"
-                              ></the-currency>
+                            <bdi><span class="woocommerce-Price-currencySymbol">+</span>
+                              <the-currency :amount="orderDetails.total_tax"></the-currency>
                             </bdi>
                           </span>
                         </td>
                       </tr>
-                      <tr
-                        class="order-savings font-weight-regular"
-                        v-if="orderDetails.total_discount > 0"
-                      >
+                      <tr class="order-savings font-weight-regular" v-if="orderDetails.total_discount > 0">
                         <td>
                           {{ $t("Discount") }}
                         </td>
                         <td>
                           <span class="woocommerce-Price-amount amount">
-                            <bdi
-                              ><span class="woocommerce-Price-currencySymbol"
-                                >-</span
-                              >
-                              <the-currency
-                                :amount="orderDetails.total_discount"
-                              ></the-currency>
+                            <bdi><span class="woocommerce-Price-currencySymbol">-</span>
+                              <the-currency :amount="orderDetails.total_discount"></the-currency>
                             </bdi>
                           </span>
                         </td>
@@ -296,12 +228,8 @@
                         <td>
                           <span class="woocommerce-Price-amount amount c1">
                             <bdi>
-                              <span
-                                class="woocommerce-Price-currencySymbol"
-                              ></span>
-                              <the-currency
-                                :amount="orderDetails.total_payable_amount"
-                              ></the-currency>
+                              <span class="woocommerce-Price-currencySymbol"></span>
+                              <the-currency :amount="orderDetails.total_payable_amount"></the-currency>
                             </bdi>
                           </span>
                         </td>
@@ -311,10 +239,7 @@
                 </div>
               </div>
               <div class="mt-3 d-flex flex-wrap justify-content-between">
-                <router-link
-                  to="/dashboard/purchase-history"
-                  class="btn btn_fill mb-1"
-                >
+                <router-link to="/dashboard/purchase-history" class="btn btn_fill mb-1">
                   {{ $t("View Orders") }}
                 </router-link>
                 <router-link to="/products" class="btn btn_fill mb-1">
@@ -389,19 +314,19 @@ export default {
   },
   computed: {
     ...mapState({
-    customerToken: (state) => state.customerToken,
-    isCustomerLogin: (state) => state.isCustomerLogin,
-  }),
+      customerToken: (state) => state.customerToken,
+      isCustomerLogin: (state) => state.isCustomerLogin,
+    }),
 
-  ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
 
-  forcedMobile() {
-    // identical intent to MainLayout.vue
-    if (this.isSplitScreen) {
-      return true;
-    }
-    return this.isMobile;
-  },
+    forcedMobile() {
+      // identical intent to MainLayout.vue
+      if (this.isSplitScreen) {
+        return true;
+      }
+      return this.isMobile;
+    },
 
   },
   // computed: mapState({
@@ -476,27 +401,26 @@ export default {
     },
 
     trackMetaPurchase(order) {
-        if (window.fbq) {
-            // Extracting product IDs from the order items
-            const productIds = order.details.map(item => item.id);
-            
-            window.fbq('track', 'Purchase', {
-                content_ids: productIds,
-                content_type: 'product',
-                value: order.total_payable_amount, // Ensure this matches your API field name
-                currency: 'KD', // Replace with order.currency if available
-                num_items: order.details.length
-            });
-            console.log('Meta Purchase Tracked');
-        }
+      if (window.fbq) {
+        // Extracting product IDs from the order items
+        const productIds = order.details.map(item => item.id);
+
+        window.fbq('track', 'Purchase', {
+          content_ids: productIds,
+          content_type: 'product',
+          value: order.total_payable_amount, // Ensure this matches your API field name
+          currency: 'KD', // Replace with order.currency if available
+          num_items: order.details.length
+        });
+        // console.log('Meta Purchase Tracked');
+      }
     }
   },
 };
 </script>
 
 <style scoped>
-
-  .force-mobile-layout .row > [class*="col-"] {
+.force-mobile-layout .row>[class*="col-"] {
   flex: 0 0 100% !important;
   max-width: 100% !important;
 }
@@ -532,6 +456,4 @@ export default {
   flex-wrap: wrap !important;
   justify-content: space-between !important;
 }
-
-
 </style>

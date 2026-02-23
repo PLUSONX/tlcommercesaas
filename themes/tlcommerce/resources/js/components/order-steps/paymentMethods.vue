@@ -5,14 +5,10 @@
         <h3 class="checkout-title">{{ $t("Payment method") }}:</h3>
       </div>
       <!--Order Note-->
-      <div
-        class="col-lg-12"
-        v-if="config?.enable_order_note_in_checkout == enums.status.ACTIVE"
-      >
+      <div class="col-lg-12" v-if="config?.enable_order_note_in_checkout == enums.status.ACTIVE">
         <div class="form-group mb-20">
           <label class="font-weight-bold fz-12 mb-2">
-            {{ $t("Order Note") }}</label
-          >
+            {{ $t("Order Note") }}</label>
           <textarea class="theme-input-style" v-model="additional_order_note">
           </textarea>
         </div>
@@ -24,22 +20,11 @@
           $t("Payment method")
         }}</label>
         <ul class="list-unstyled form-selector-list mb-3">
-          <li
-            class="single-form-selector"
-            v-for="(payment, index) in paymentMethods"
-            :key="index"
-          >
+          <li class="single-form-selector" v-for="(payment, index) in paymentMethods" :key="index">
             <span class="custom-radio-btn">
               <label>
-                <input
-                  type="radio"
-                  :value="payment"
-                  class="shipping-method"
-                  name="payment-method"
-                  v-model="selected_payment_method"
-                  @click="takeBankDetails"
-                  @input="!pay_wallet"
-                />
+                <input type="radio" :value="payment" class="shipping-method" name="payment-method"
+                  v-model="selected_payment_method" @click="takeBankDetails" @input="!pay_wallet" />
                 <span class="label-title" v-if="payment.logo">
                   <img :src="payment.logo" :alt="payment.name" />
                 </span>
@@ -59,38 +44,24 @@
       <!--End Selected payment instruction-->
 
       <!--Bank Transaction Info-->
-      <div
-        class="col-12 mb-3"
-        v-if="
+      <div class="col-12 mb-3" v-if="
+        selected_payment_method != null &&
+        selected_payment_method.id + '' == '9'
+      ">
+        <div class="bank-t-info" v-if="
           selected_payment_method != null &&
-          selected_payment_method.id + '' == '9'
-        "
-      >
-        <div
-          class="bank-t-info"
-          v-if="
-            selected_payment_method != null &&
-            selected_payment_method.id + '' == '9' &&
-            selected_payment_method.additional == 1
-          "
-        >
+          selected_payment_method.id + '' == '9' &&
+          selected_payment_method.additional == 1
+        ">
           <h5>{{ $t("Transaction Information") }}</h5>
           <div class="form-group mb-20">
             <label class="fz-14">
               {{ $t("Account Name") }}
             </label>
-            <input
-              class="theme-input-style"
-              type="text"
-              v-model="bankDetails.accountName"
-              v-bind:placeholder="$t('Account Name')"
-            />
+            <input class="theme-input-style" type="text" v-model="bankDetails.accountName"
+              v-bind:placeholder="$t('Account Name')" />
             <template v-if="errors.account_name">
-              <p
-                class="fz-12 text-danger mt-1"
-                v-for="(error, index) in errors.account_name"
-                :key="index"
-              >
+              <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.account_name" :key="index">
                 {{ error }}
               </p>
             </template>
@@ -99,18 +70,10 @@
             <label class="fz-14">
               {{ $t("Account Number") }}
             </label>
-            <input
-              class="theme-input-style"
-              type="text"
-              v-model="bankDetails.accountNumber"
-              v-bind:placeholder="$t('Account Number')"
-            />
+            <input class="theme-input-style" type="text" v-model="bankDetails.accountNumber"
+              v-bind:placeholder="$t('Account Number')" />
             <template v-if="errors.account_number">
-              <p
-                class="fz-12 text-danger mt-1"
-                v-for="(error, index) in errors.account_number"
-                :key="index"
-              >
+              <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.account_number" :key="index">
                 {{ error }}
               </p>
             </template>
@@ -119,18 +82,10 @@
             <label class="fz-14">
               {{ $t("Bank Name") }}
             </label>
-            <input
-              class="theme-input-style"
-              type="text"
-              v-model="bankDetails.bankName"
-              v-bind:placeholder="$t('Bank Name')"
-            />
+            <input class="theme-input-style" type="text" v-model="bankDetails.bankName"
+              v-bind:placeholder="$t('Bank Name')" />
             <template v-if="errors.bank_name">
-              <p
-                class="fz-12 text-danger mt-1"
-                v-for="(error, index) in errors.bank_name"
-                :key="index"
-              >
+              <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.bank_name" :key="index">
                 {{ error }}
               </p>
             </template>
@@ -139,18 +94,10 @@
             <label class="fz-14">
               {{ $t("Branch Name") }}
             </label>
-            <input
-              class="theme-input-style"
-              type="text"
-              v-model="bankDetails.branchName"
-              v-bind:placeholder="$t('Branch Name')"
-            />
+            <input class="theme-input-style" type="text" v-model="bankDetails.branchName"
+              v-bind:placeholder="$t('Branch Name')" />
             <template v-if="errors.branch_name">
-              <p
-                class="fz-12 text-danger mt-1"
-                v-for="(error, index) in errors.branch_name"
-                :key="index"
-              >
+              <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.branch_name" :key="index">
                 {{ error }}
               </p>
             </template>
@@ -159,18 +106,10 @@
             <label class="fz-14">
               {{ $t("Transaction Number") }}
             </label>
-            <input
-              class="theme-input-style"
-              type="text"
-              v-model="bankDetails.transactionNumber"
-              v-bind:placeholder="$t('Transaction Number')"
-            />
+            <input class="theme-input-style" type="text" v-model="bankDetails.transactionNumber"
+              v-bind:placeholder="$t('Transaction Number')" />
             <template v-if="errors.transaction_number">
-              <p
-                class="fz-12 text-danger mt-1"
-                v-for="(error, index) in errors.transaction_number"
-                :key="index"
-              >
+              <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.transaction_number" :key="index">
                 {{ error }}
               </p>
             </template>
@@ -181,18 +120,9 @@
           <label class="fz-14">
             {{ $t("Attach Receipt") }}
           </label>
-          <base-file-input
-            id="reviewImages"
-            name="reviewImages"
-            single
-            v-on:getFileInput="returnImages($event)"
-          />
+          <base-file-input id="reviewImages" name="reviewImages" single v-on:getFileInput="returnImages($event)" />
           <template v-if="errors.receipt">
-            <p
-              class="fz-12 text-danger mt-1"
-              v-for="(error, index) in errors.receipt"
-              :key="index"
-            >
+            <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.receipt" :key="index">
               {{ error }}
             </p>
           </template>
@@ -201,25 +131,18 @@
       <!--End Bank Transaction Info-->
 
       <!--Wallet area-->
-      <div
-        class="col-12 mb-5 text-center"
-        v-if="
-          config?.enable_wallet_in_checkout == enums.status.ACTIVE &&
-          isCustomerLogin &&
-          config?.is_active_wallet == enums.status.ACTIVE &&
-          wallet_available_balance >= totalPayableAmount
-        "
-      >
+      <div class="col-12 mb-5 text-center" v-if="
+        config?.enable_wallet_in_checkout == enums.status.ACTIVE &&
+        isCustomerLogin &&
+        config?.is_active_wallet == enums.status.ACTIVE &&
+        wallet_available_balance >= totalPayableAmount
+      ">
         <p>{{ $t("OR") }}</p>
         <p>
           {{ $t("Wallet Balance") }}
           <the-currency :amount="wallet_available_balance"></the-currency>
         </p>
-        <button
-          type="submit"
-          class="btn btn_fill m-w-100 justify-content-center"
-          @click.prevent="payWithWallet"
-        >
+        <button type="submit" class="btn btn_fill m-w-100 justify-content-center" @click.prevent="payWithWallet">
           {{ $t("Pay with wallet") }}
         </button>
       </div>
@@ -228,25 +151,18 @@
       <!--Action Area-->
       <div class="col-12">
         <div class="d-flex flex-wrap justify-content-between">
-          <button
-            type="button"
-            class="btn btn_border mb-20 m-w-100 justify-content-center"
-            @click.prevent="goPreviousStep"
-          >
+          <button type="button" class="btn btn_border mb-20 m-w-100 justify-content-center"
+            @click.prevent="goPreviousStep">
             <span class="material-icons me-2"> arrow_back </span>
             {{ $t("Previous") }}
           </button>
-          <button
-            type="submit"
-            class="btn btn_fill mb-20 m-w-100 justify-content-center"
-            :disabled="orderCreating"
+          <button type="submit" class="btn btn_fill mb-20 m-w-100 justify-content-center" :disabled="orderCreating"
             @click.prevent="
               () => {
                 pay_wallet = false;
                 createOrder();
               }
-            "
-          >
+            ">
             <span v-if="orderCreating">
               <CSpinner component="span" size="sm" aria-hidden="true" />
               {{ $t("Please wait") }}
@@ -260,18 +176,9 @@
       <!--End action area-->
     </div>
     <div v-if="loading">
-      <skeleton
-        class="col-12 mb-20 single-package border-bottom"
-        height="70px"
-      ></skeleton>
-      <skeleton
-        class="col-12 mb-20 mt-2 single-package border-bottom"
-        height="150px"
-      ></skeleton>
-      <skeleton
-        class="col-12 mb-2 mt-2 single-package border-bottom"
-        height="80px"
-      ></skeleton>
+      <skeleton class="col-12 mb-20 single-package border-bottom" height="70px"></skeleton>
+      <skeleton class="col-12 mb-20 mt-2 single-package border-bottom" height="150px"></skeleton>
+      <skeleton class="col-12 mb-2 mt-2 single-package border-bottom" height="80px"></skeleton>
     </div>
   </div>
 </template>
@@ -426,11 +333,10 @@ export default {
       }
       if (this.isCustomerLogin) {
         this.customerCheckout();
-      } 
-      else if (this.config?.enable_guest_checkout == this.enums.status.ACTIVE) 
-      {
+      }
+      else if (this.config?.enable_guest_checkout == this.enums.status.ACTIVE) {
         this.guestCheckout();
-      } 
+      }
       else {
         this.guestCheckout();
         // this.$router.push("/login");
@@ -441,7 +347,7 @@ export default {
      * Customer checkout
      */
     customerCheckout() {
-      console.log("Customer Checkout Called!!!");
+      // console.log("Customer Checkout Called!!!");
       let formData = new FormData();
       formData.append(
         "coupon_discounts",
@@ -475,7 +381,7 @@ export default {
         if (
           this.config?.enable_billing_address == this.enums.status.ACTIVE &&
           this.config?.use_shipping_address_as_billing_address ==
-            this.enums.status.ACTIVE
+          this.enums.status.ACTIVE
         ) {
           formData.append(
             "billing_address",
@@ -486,7 +392,7 @@ export default {
         if (
           this.config?.enable_billing_address == this.enums.status.ACTIVE &&
           this.config?.use_shipping_address_as_billing_address !=
-            this.enums.status.ACTIVE
+          this.enums.status.ACTIVE
         ) {
           formData.append(
             "billing_address",
@@ -558,7 +464,7 @@ export default {
      * Guest checkout
      */
     guestCheckout() {
-      console.log("Guest Checkout Called!!!");
+      // console.log("Guest Checkout Called!!!");
 
       let formData = new FormData();
       formData.append(
@@ -591,32 +497,63 @@ export default {
         );
       }
       //Home Delivery
-      if (!this.isActivePickupPoint && this.isActiveHomeDelivery) {
-        let shippingAddress = this.getAddressData(
-          this.$store.state.shippingDetails
-        );
-        formData.append("shipping_address", JSON.stringify(shippingAddress));
-        //Billing address
-        if (this.config?.enable_billing_address == this.enums.status.ACTIVE) {
-          //Shipping address as billing address
-          if (
-            this.config?.use_shipping_address_as_billing_address ==
-            this.enums.status.ACTIVE
-          ) {
-            formData.append("billing_address", JSON.stringify(shippingAddress));
-          }
-          //Billing address as billing address
-          if (
-            this.config?.use_shipping_address_as_billing_address !=
-            this.enums.status.ACTIVE
-          ) {
-            let billingAddress = this.getAddressData(
-              this.$store.state.billingDetails
-            );
-            formData.append("billing_address", JSON.stringify(billingAddress));
-          }
+
+      // if (!this.isActivePickupPoint && this.isActiveHomeDelivery) {
+      let shippingAddress = this.getAddressData(
+        this.$store.state.shippingDetails
+      );
+
+      // console.log("shippingAdress: ", shippingAddress)
+
+      formData.append("shipping_address", JSON.stringify(shippingAddress));
+      //Billing address
+      if (this.config?.enable_billing_address == this.enums.status.ACTIVE) {
+        //Shipping address as billing address
+        if (
+          this.config?.use_shipping_address_as_billing_address ==
+          this.enums.status.ACTIVE
+        ) {
+          formData.append("billing_address", JSON.stringify(shippingAddress));
+        }
+        //Billing address as billing address
+        if (
+          this.config?.use_shipping_address_as_billing_address !=
+          this.enums.status.ACTIVE
+        ) {
+          let billingAddress = this.getAddressData(
+            this.$store.state.billingDetails
+          );
+          formData.append("billing_address", JSON.stringify(billingAddress));
         }
       }
+      // }
+
+      // if (!this.isActivePickupPoint && this.isActiveHomeDelivery) {
+      //   let shippingAddress = this.getAddressData(
+      //     this.$store.state.shippingDetails
+      //   );
+      //   formData.append("shipping_address", JSON.stringify(shippingAddress));
+      //   //Billing address
+      //   if (this.config?.enable_billing_address == this.enums.status.ACTIVE) {
+      //     //Shipping address as billing address
+      //     if (
+      //       this.config?.use_shipping_address_as_billing_address ==
+      //       this.enums.status.ACTIVE
+      //     ) {
+      //       formData.append("billing_address", JSON.stringify(shippingAddress));
+      //     }
+      //     //Billing address as billing address
+      //     if (
+      //       this.config?.use_shipping_address_as_billing_address !=
+      //       this.enums.status.ACTIVE
+      //     ) {
+      //       let billingAddress = this.getAddressData(
+      //         this.$store.state.billingDetails
+      //       );
+      //       formData.append("billing_address", JSON.stringify(billingAddress));
+      //     }
+      //   }
+      // }
 
       if (
         this.selected_payment_method != null &&
@@ -640,7 +577,7 @@ export default {
         .then((response) => {
           if (response.data.success) {
             if (response.data.response_url) {
-              console.log("response_url: ", response.data.response_url);
+              // console.log("response_url: ", response.data.response_url);
               this.$store.dispatch("flushCartData").then(() => {
                 window.location.href = response.data.response_url;
               });

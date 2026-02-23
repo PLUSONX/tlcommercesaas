@@ -2,19 +2,13 @@
   <!-- Product Details Content -->
   <div class="product-details-content">
     <!--Flash deal info-->
-    <div
-      class="d-flex flash-deal flex-wrap justify-content-between mb-20 p-2 text-white"
-      v-if="product.has_deal != null"
-    >
+    <div class="d-flex flash-deal flex-wrap justify-content-between mb-20 p-2 text-white"
+      v-if="product.has_deal != null">
       <div class="align-items-center d-flex deal-title">
         <h5 class="text-white mb-0">{{ product.has_deal.deal_title }}</h5>
       </div>
       <div class="deal-dead-line">
-        <countdown
-          class="justify-content-lg-end"
-          :deadline="product.has_deal.end_date"
-          titleColor="white"
-        />
+        <countdown class="justify-content-lg-end" :deadline="product.has_deal.end_date" titleColor="white" />
       </div>
     </div>
     <!--End flash deal info-->
@@ -22,14 +16,8 @@
     <h1 class="product-title">{{ product.name }}</h1>
     <!--End Title-->
     <!-- Rating -->
-    <div
-      class="align-items-center d-flex rating-wrap"
-      v-if="config?.enable_product_reviews == enums.status.ACTIVE"
-    >
-      <div
-        class="d-flex align-items-center mr-15"
-        v-if="config?.enable_product_star_rating == enums.status.ACTIVE"
-      >
+    <div class="align-items-center d-flex rating-wrap" v-if="config?.enable_product_reviews == enums.status.ACTIVE">
+      <div class="d-flex align-items-center mr-15" v-if="config?.enable_product_star_rating == enums.status.ACTIVE">
         <div class="product-rating-wrapper">
           <i :data-star="product.rating" :title="product.rating"></i>
         </div>
@@ -49,14 +37,11 @@
     <!--End Summary-->
     <hr class="divider bg-secondary" />
     <!--Price Range-->
-    <div
-      class="product-price price-range"
-      v-if="
-        product.price_range_min &&
-        product.price_range_max &&
-        product.price_range_min != product.price_range_max
-      "
-    >
+    <div class="product-price price-range" v-if="
+      product.price_range_min &&
+      product.price_range_max &&
+      product.price_range_min != product.price_range_max
+    ">
       <h6 class="mb-1">{{ $t("Price Range") }}</h6>
       <div class="align-items-center d-flex flex-wrap price">
         <h3 class="mb-0 mr-20">
@@ -65,10 +50,8 @@
           <the-currency :amount="product.price_range_max"></the-currency>
         </h3>
         <del v-if="product.price_range_min_old && product.price_range_max_old">
-          <the-currency
-            v-if="product.price_range_min_old > product.price_range_min"
-            :amount="product.price_range_min_old"
-          ></the-currency>
+          <the-currency v-if="product.price_range_min_old > product.price_range_min"
+            :amount="product.price_range_min_old"></the-currency>
           <span v-if="product.price_range_max_old > product.price_range_max">
             -
             <the-currency :amount="product.price_range_max_old"></the-currency>
@@ -81,17 +64,9 @@
     <div class="product-price unit-price mt-25">
       <h6 class="mb-1">{{ $t("Price") }}</h6>
       <div class="price d-flex align-items-center">
-        <the-currency
-          :amount="product.price"
-          tag="h3"
-          class="mb-0"
-        ></the-currency>
-        <the-currency
-          v-if="product.oldPrice > product.price"
-          :amount="product.oldPrice"
-          tag="del"
-          class="ml-20"
-        ></the-currency>
+        <the-currency :amount="product.price" tag="h3" class="mb-0"></the-currency>
+        <the-currency v-if="product.oldPrice > product.price" :amount="product.oldPrice" tag="del"
+          class="ml-20"></the-currency>
       </div>
     </div>
     <!-- End Total Price -->
@@ -102,38 +77,23 @@
         <div class="mb-3">
           <label class="option-label font-weight-bold text-capitalize">{{
             attr.title
-          }}</label>
+            }}</label>
 
           <!-- Option List -->
           <div class="checkbox-group d-flex flex-wrap">
             <div v-for="(option, j) in attr.options" :key="j">
-              <label
-                class="custom-checkbox--two position-relative"
-                :for="`${attr.title}-option-${j + 1}`"
-              >
-                <input
-                  :id="`${attr.title}-option-${j + 1}`"
-                  type="radio"
-                  :name="`product_${attr.title}`"
-                  :value="option"
-                  :checked="attr.options[j].id == attr.options[0].id"
-                  v-on:change="updateSelectedVariant(option)"
-                />
+              <label class="custom-checkbox--two position-relative" :for="`${attr.title}-option-${j + 1}`">
+                <input :id="`${attr.title}-option-${j + 1}`" type="radio" :name="`product_${attr.title}`"
+                  :value="option" :checked="attr.options[j].id == attr.options[0].id"
+                  v-on:change="updateSelectedVariant(option)" />
 
                 <template v-if="attr.title == 'color'">
-                  <span
-                    class="checkmark p-0"
-                    :style="{
-                      backgroundColor: option.value,
-                      height: '50px',
-                      width: '50px',
-                    }"
-                  >
-                    <img
-                      :src="cleanImage(option.image)"
-                      :alt="`${option.name}`"
-                      v-if="option.image"
-                    />
+                  <span class="checkmark p-0" :style="{
+                    backgroundColor: option.value,
+                    height: '50px',
+                    width: '50px',
+                  }">
+                    <img :src="cleanImage(option.image)" :alt="`${option.name}`" v-if="option.image" />
                     <!-- <img
                       :src="option.image"
                       :alt="`${option.name}`"
@@ -169,27 +129,17 @@
       <div class="d-flex align-items-center">
         <!-- Quantity Input -->
         <div class="quantity-input text-center d-flex">
-          <button
-            class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
-            :disabled="quantityValue <= min_qty"
-            @click.prevent="quantityValue > 1 ? quantityValue-- : null"
-          >
+          <button class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
+            :disabled="quantityValue <= min_qty" @click.prevent="quantityValue > 1 ? quantityValue-- : null">
             <base-icon-svg name="minus" :height="12" :width="12" />
           </button>
-          <input
-            v-model="quantityValue"
-            type="number"
-            class="border-0 text-center font-weight-bold w-100"
-          />
-          <button
-            class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
-            :disabled="product.quantity < 1 || quantityValue == max_qty"
-            @click.prevent="
+          <input v-model="quantityValue" type="number" class="border-0 text-center font-weight-bold w-100" />
+          <button class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
+            :disabled="product.quantity < 1 || quantityValue == max_qty" @click.prevent="
               quantityValue > 0 && quantityValue <= product.quantity - 1
                 ? quantityValue++
                 : null
-            "
-          >
+              ">
             <base-icon-svg name="plus" :height="12" :width="12" />
           </button>
         </div>
@@ -206,27 +156,15 @@
     </div>
     <!-- End Quantity -->
     <!--Attachment-->
-    <div
-      class="mt-25 product-details-attachment-area"
-      v-if="product.attatchment_title != null"
-    >
+    <div class="mt-25 product-details-attachment-area" v-if="product.attatchment_title != null">
       <div class="align-items-center attach-input-wrapper d-flex mb-10">
         <h6 class="mb-0 mr-10 text-capitalize">
           {{ product.attatchment_title }}
         </h6>
-        <input
-          type="file"
-          name="attach"
-          ref="attachment"
-          @change="addAttachment()"
-        />
+        <input type="file" name="attach" ref="attachment" @change="addAttachment()" />
       </div>
       <template v-if="errors.attachment">
-        <p
-          class="fz-12 text-danger mt-1"
-          v-for="(error, index) in errors.attachment"
-          :key="index"
-        >
+        <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.attachment" :key="index">
           {{ error }}
         </p>
       </template>
@@ -240,34 +178,19 @@
     <div class="product-details-action-area">
       <div class="button-group d-flex align-items-center flex-wrap gap-3">
         <!--Place order button-->
-        <button
-          type="button"
-          class="btn btn_fill"
-          :disabled="product.quantity < 1"
-          @click.prevent="placeOrder"
-        >
+        <button type="button" class="btn btn_fill" :disabled="product.quantity < 1" @click.prevent="placeOrder">
           {{ $t("Place Order") }}
         </button>
         <!--End place order button-->
         <!--Add to cart button-->
-        <button
-          type="button"
-          :disabled="product.quantity < 1"
-          class="btn btn_borderd"
-          @click.prevent="addToCart"
-        >
+        <button type="button" :disabled="product.quantity < 1" class="btn btn_borderd" @click.prevent="addToCart">
           {{ $t("Add To Cart") }}
         </button>
         <!--End add to cart button-->
-        <div
-          class="btn-group-right d-flex flex-md-column align-items-center align-items-md-start"
-        >
+        <div class="btn-group-right d-flex flex-md-column align-items-center align-items-md-start">
           <!--Desktop compare button-->
-          <button
-            class="icon_btn d-none d-md-inline-flex btn-compare"
-            @click.prevent="addToCompare"
-            v-if="config?.enable_product_compare == 1"
-          >
+          <button class="icon_btn d-none d-md-inline-flex btn-compare" @click.prevent="addToCompare"
+            v-if="config?.enable_product_compare == 1">
             <div class="icon-wrapper">
               <span class="material-icons"> compare_arrows </span>
             </div>
@@ -275,25 +198,19 @@
           </button>
           <!--End Desktop compare button-->
           <!--Add to wishlist button-->
-          <button
-            :class="{ 'w-100': config?.enable_product_compare != 1 }"
-            class="icon_btn btn-wishlist mt-md-2"
-            @click.prevent="addToWishlist"
-          >
+          <button :class="{ 'w-100': config?.enable_product_compare != 1 }" class="icon_btn btn-wishlist mt-md-2"
+            @click.prevent="addToWishlist">
             <div class="icon-wrapper">
               <span class="material-icons"> favorite_border </span>
             </div>
             <strong class="d-none d-md-inline-block ms-1">{{
               $t("Add to wishlist")
-            }}</strong>
+              }}</strong>
           </button>
           <!--End Add to wishlist button-->
           <!--Mobile add to compare button-->
-          <button
-            class="icon_btn btn-chat d-inline-flex d-md-none"
-            @click.prevent="addToCompare"
-            v-if="config?.enable_product_compare == 1"
-          >
+          <button class="icon_btn btn-chat d-inline-flex d-md-none" @click.prevent="addToCompare"
+            v-if="config?.enable_product_compare == 1">
             <div class="icon-wrapper">
               <span class="material-icons"> compare_arrows </span>
             </div>
@@ -330,7 +247,7 @@ export default {
       attachment: null,
       quantityValue:
         this.product.min_item_on_purchase != null &&
-        this.product.min_item_on_purchase > 0
+          this.product.min_item_on_purchase > 0
           ? parseInt(this.product.min_item_on_purchase)
           : 1,
     };
@@ -384,7 +301,7 @@ export default {
       return this.product.max_item_on_purchase != null &&
         parseInt(this.product.max_item_on_purchase) > 0 &&
         parseInt(this.product.max_item_on_purchase) <
-          parseInt(this.product.quantity)
+        parseInt(this.product.quantity)
         ? parseInt(this.product.max_item_on_purchase)
         : this.product.quantity;
     },
@@ -441,7 +358,7 @@ export default {
             this.product.oldPrice = response.data.oldPrice;
           }
         })
-        .catch((error) => {});
+        .catch((error) => { });
     },
     /**
      * Add attachment with order
@@ -507,7 +424,7 @@ export default {
           this.product.shopInfo != null ? this.product.shopInfo.slug : null,
       };
 
-      console.log("cart-item-DetailsContent: ", cart_item);
+      // console.log("cart-item-DetailsContent: ", cart_item);
 
       this.$store.dispatch("addToCart", cart_item);
       this.$router.push("/cart");
@@ -589,18 +506,22 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "../../assets/sass/00-abstracts/01-variables";
+
 .option-label {
   font-weight: 700;
   line-height: 1;
   margin-bottom: 10px;
   font-family: $title-font;
 }
+
 .button-group {
   margin-top: -15px;
+
   .btn {
     padding: 10px 22px;
     margin-right: 15px;
   }
+
   .btn-wishlist,
   .btn-compare {
     .material-icons {
@@ -608,9 +529,11 @@ export default {
       font-size: 18px;
     }
   }
-  > * {
+
+  >* {
     margin-top: 15px;
   }
+
   @media only screen and (max-width: 767px) {
     margin: 0;
     position: fixed;
@@ -623,6 +546,7 @@ export default {
     height: 60px;
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
     gap: 0 !important;
+
     .btn {
       padding: 8px 16px;
       margin-right: 0;
@@ -630,32 +554,40 @@ export default {
       border-radius: 0;
       height: 100%;
       line-height: 1.2;
+
       &:hover {
         background-color: $c1;
       }
+
       &:nth-child(2) {
         background-color: #f2380f;
+
         &:hover {
           background-color: #f2380f;
         }
       }
     }
+
     .btn-wishlist,
     .btn-compare {
       .material-icons {
         color: #fff;
       }
     }
+
     .btn-group-right {
       width: 30%;
+
       .icon_btn {
         background-color: #f26110;
         width: 50%;
         height: 60px;
+
         &.btn-chat {
           background-color: #ff7624;
         }
       }
+
       .icon-wrapper {
         width: 35px;
         height: 35px;
@@ -667,17 +599,20 @@ export default {
         justify-content: center;
       }
     }
-    > * {
+
+    >* {
       margin-top: 0px;
     }
   }
 }
+
 .product-title {
   margin-top: -1px;
   margin-bottom: 15px;
   font-size: 24px;
   font-weight: 500;
 }
+
 .btn:disabled {
   color: white;
   pointer-events: none;
@@ -685,24 +620,30 @@ export default {
   border-color: var(--bs-btn-disabled-border-color);
   opacity: var(--bs-btn-disabled-opacity);
 }
+
 .deal-title {
   font-size: 20px;
   font-weight: 600;
   color: #ffffff;
 }
+
 .flash-deal {
   background-color: $c1;
 }
+
 .mt3px {
   margin-top: 3px;
 }
+
 .mt5px {
   margin-top: 5px;
 }
+
 .divider {
   margin-top: 25px !important;
   margin-bottom: 25px !important;
 }
+
 .mt-25 {
   margin-top: 25px;
 }

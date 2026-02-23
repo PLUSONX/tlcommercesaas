@@ -1,18 +1,10 @@
 <template>
   <div class="button-group d-flex align-items-center justify-content-between" v-if="item">
-    <button
-      type="button"
-      class="btn btn_fill btn-xs rounded"
-      @click.prevent="placeOrder"
-    >
+    <button type="button" class="btn btn_fill btn-xs rounded" @click.prevent="placeOrder">
       {{ $t("Place Order") }}
     </button>
 
-    <button
-      type="button"
-      class="btn btn_borderd btn-xs rounded"
-      @click.prevent="addToCart"
-    >
+    <button type="button" class="btn btn_borderd btn-xs rounded" @click.prevent="addToCart">
       {{ $t("Add To Cart") }}
     </button>
   </div>
@@ -32,16 +24,16 @@ export default {
       default: 1
     }
   },
-  
+
   methods: {
 
     /**
      * Place order
      */
     placeOrder() {
-      console.log("-----PlaceOrder method called!!-----");
+      // console.log("-----PlaceOrder method called!!-----");
 
-      console.log("item: ", this.item);
+      // console.log("item: ", this.item);
 
       let image = "";
       if (this.item.galleryImages[0].type == "image") {
@@ -76,7 +68,7 @@ export default {
           content_ids: this.item.id,
           content_name: this.item.name,
           content_type: 'product',
-          value: this.item.price , // Total value for the items added
+          value: this.item.price, // Total value for the items added
           currency: 'KD' // You can pass this as a prop if you have multi-currency
         });
       };
@@ -91,9 +83,9 @@ export default {
      */
     addToCart() {
 
-      console.log('addToCart called in CustomFooter Vue');
+      // console.log('addToCart called in CustomFooter Vue');
 
-      console.log("item: ", this.item);
+      // console.log("item: ", this.item);
 
       let image = "";
       if (this.item.galleryImages[0].type == "image") {
@@ -122,7 +114,7 @@ export default {
           this.item.shopInfo != null ? this.item.shopInfo.slug : null,
       };
 
-       console.log("cart_item: ", cart_item);
+      console.log("cart_item: ", cart_item);
 
       if (window.fbq) {
         window.fbq('track', 'Add to cart', {
@@ -186,16 +178,19 @@ export default {
   display: flex;
   /* Combines safe area for iPhones and standard padding */
   padding: 10px 10px calc(env(safe-area-inset-bottom, 0px) + 10px) 10px;
-  background: #fff; /* Ensure it's visible over content */
+  background: #fff;
+  /* Ensure it's visible over content */
   position: sticky;
   bottom: 0;
 }
 
 .btn {
-  flex: 1; /* Makes buttons equal width */
+  flex: 1;
+  /* Makes buttons equal width */
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 45px; /* Consistent height */
+  height: 45px;
+  /* Consistent height */
 }
 </style>

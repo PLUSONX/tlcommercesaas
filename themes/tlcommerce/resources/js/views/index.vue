@@ -5,13 +5,8 @@
     </div>
 
     <!-- From Page Builder -->
-    <builder-section
-        :page="page"
-        :sections="page_section"
-        :widgets="page_builder_widgets"
-        @section-loaded="loaded"
-        v-if="active_pagebuilder && page.page_type == 'builder'"
-    />
+    <builder-section :page="page" :sections="page_section" :widgets="page_builder_widgets" @section-loaded="loaded"
+        v-if="active_pagebuilder && page.page_type == 'builder'" />
 
     <div class="pt-30 pt-lg-60 pb-60 light-bg" v-else-if="active_pagebuilder && page.page_type == 'default'">
         <div class="custom-container2">
@@ -21,10 +16,7 @@
                     <article class="post-details">
                         <!-- Page Header -->
                         <header class="entry-header">
-                            <div
-                                class="entry-thumbnail"
-                                v-if="page.page_image != null"
-                            >
+                            <div class="entry-thumbnail" v-if="page.page_image != null">
                                 <img :src="cleanImage(page.page_image)" alt="" />
                                 <!-- <img :src="page.page_image" alt="" /> -->
                             </div>
@@ -36,10 +28,7 @@
                         <!-- End Page Header -->
 
                         <!-- Page Content -->
-                        <div
-                            class="entry-content mb-40"
-                            v-html="page.content"
-                        ></div>
+                        <div class="entry-content mb-40" v-html="page.content"></div>
                         <!-- End Page Content -->
                     </article>
                 </div>
@@ -49,106 +38,73 @@
 
     <div class="home__two" v-else>
         <!-- Banner -->
-        <section
-            class="product-banner product-banner-overflow-auto mt-30 mb-30"
-           v-if="dataAvailable"
-        >
-            <div v-if="sliderLoading">
-                <div class="desktop">
-                    <div class="d-flex">
-                        <skeleton height="450px" class="w-25"></skeleton>
-                        <skeleton
-                            height="450px"
-                            class="slider-container mx-4 skeleton"
-                        ></skeleton>
-                        <skeleton height="450px" class="w-25"></skeleton>
+        <!-- <section class="product-banner product-banner-overflow-auto mt-30 mb-30" v-if="dataAvailable"> -->
+        <div class="mt-50">
+            <section class="product-banner product-banner-overflow-auto" v-if="dataAvailable && !isSplitScreen">
+
+
+                <div v-if="sliderLoading">
+                    <div class="desktop">
+                        <div class="d-flex">
+                            <skeleton height="450px" class="w-25"></skeleton>
+                            <skeleton height="450px" class="slider-container mx-4 skeleton"></skeleton>
+                            <skeleton height="450px" class="w-25"></skeleton>
+                        </div>
+                    </div>
+                    <div class="mobile">
+                        <skeleton height="120px" class="w-100"></skeleton>
                     </div>
                 </div>
-                <div class="mobile">
-                    <skeleton height="120px" class="w-100"></skeleton>
+                <div class="slider-container" v-else>
+                    <swiper v-if="banners && banners.length > 0" :slidesPerView="'auto'" :loop="true" :spaceBetween="20"
+                        :centeredSlides="true" :modules="modules" :autoplay="{
+                            delay: 4000,
+                            disableOnInteraction: false,
+                            pauseOnMouseEnter: true,
+                        }" :pagination="{
+                            clickable: true,
+                        }" class="mySwiper theme-slider-dots dots-bottom-30">
+                        <swiper-slide v-for="(slide, index) in banners" :key="`slide-${index}`">
+                            <product-banner :content="slide" />
+                        </swiper-slide>
+                    </swiper>
                 </div>
-            </div>
-            <div class="slider-container" v-else>
-                <swiper
-                    v-if="banners && banners.length > 0"
-                    :slidesPerView="'auto'"
-                    :loop="true"
-                    :spaceBetween="20"
-                    :centeredSlides="true"
-                    :modules="modules"
-                    :autoplay="{
-                        delay: 4000,
-                        disableOnInteraction: false,
-                        pauseOnMouseEnter: true,
-                    }"
-                    :pagination="{
-                        clickable: true,
-                    }"
-                    class="mySwiper theme-slider-dots dots-bottom-30"
-                >
-                    <swiper-slide
-                        v-for="(slide, index) in banners"
-                        :key="`slide-${index}`"
-                    >
-                        <product-banner :content="slide" />
-                    </swiper-slide>
-                </swiper>
-            </div>
-        </section>
+
+            </section>
+        </div>
         <!-- End Banner -->
         <!--Dynamic Sections-->
         <div v-for="(section, index) in sections" :key="index">
-            <deal-section
-                v-if="section.layout === 'flashdeal'"
-                :content="section.content"
-                :properties="section.properties"
-            ></deal-section>
+            <deal-section v-if="section.layout === 'flashdeal'" :content="section.content"
+                :properties="section.properties"></deal-section>
 
-            <collection-section
-                v-if="section.layout === 'product_collection'"
-                :content="section.content"
-                :properties="section.properties"
-            >
+            <collection-section v-if="section.layout === 'product_collection'" :content="section.content"
+                :properties="section.properties">
             </collection-section>
 
-            <custom-product-section
-                v-if="section.layout === 'custom_product_section'"
-                :content="section.content"
-                :properties="section.properties"
-            >
+            <custom-product-section v-if="section.layout === 'custom_product_section'" :content="section.content"
+                :properties="section.properties">
             </custom-product-section>
 
-            <category-section
-                v-if="section.layout === 'category_slider'"
-                :content="section.content"
-                :properties="section.properties"
-            ></category-section>
+            <category-section v-if="section.layout === 'category_slider'" :content="section.content"
+                :properties="section.properties"></category-section>
 
-            <ads-section
-                v-if="section.layout === 'ads'"
-                :content="section.content"
-                :properties="section.properties"
-            ></ads-section>
+            <ads-section v-if="section.layout === 'ads'" :content="section.content"
+                :properties="section.properties"></ads-section>
 
-            <cta-section
-                v-if="section.layout === 'featured_product'"
-                :content="section.content"
-                :properties="section.properties"
-            ></cta-section>
+            <cta-section v-if="section.layout === 'featured_product'" :content="section.content"
+                :properties="section.properties"></cta-section>
 
-            <blog-section
-                v-if="section.layout === 'blogs'"
-                :content="section.content"
-                :properties="section.properties"
-            ></blog-section>
+            <blog-section v-if="section.layout === 'blogs'" :content="section.content"
+                :properties="section.properties"></blog-section>
 
-            <top-sellers
-                v-if="section.layout === 'seller_list'"
-                :content="section.content"
-                :properties="section.properties"
-            ></top-sellers>
+            <top-sellers v-if="section.layout === 'seller_list'" :content="section.content"
+                :properties="section.properties"></top-sellers>
         </div>
         <!--End Dynamic Sections-->
+
+        <HomePageDeliveryShipping v-if="showContactInfo" :enums="enums" :config="configuration"
+            :customer-address="customerAddress" :is-customer-login="isCustomerLogin" :pickup-points="pickupPoints" />
 
         <ProductPage />
 
@@ -202,6 +158,10 @@ const TopSellers = defineAsyncComponent(() =>
 
 import ProductPage from '@/views/products/index.vue';
 
+import HomePageDeliveryShipping from '@/components/order-steps/homePageDeliveryShipping.vue';
+// import HomePageDeliveryShipping from "../components/order-steps/homePageDeliveryShipping.vue";
+import enums from "../enums/enums";
+import { mapState, mapGetters } from "vuex";
 const axios = require("axios").default;
 export default {
     components: {
@@ -217,7 +177,8 @@ export default {
         CustomProductSection,
         TopSellers,
         BuilderSection,
-        ProductPage
+        ProductPage,
+        HomePageDeliveryShipping
     },
     setup() {
         return {
@@ -236,11 +197,42 @@ export default {
             page_section: {},
             active_pagebuilder: false,
             page_builder_widgets: {},
+
+            // HomePageDeliveryShipping
+            showContactInfo: true,
+            enums: enums,
+            customerAddress: [],
+            pickupPoints: [],
         };
+    },
+    computed: {
+
+        ...mapState({
+            customerToken: (state) => state.customerToken,
+            isCustomerLogin: (state) => state.isCustomerLogin,
+            configuration: (state) => state.siteSettings,
+        }),
+
+        ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+        forcedMobile() {
+            // identical intent to MainLayout.vue
+            if (this.isSplitScreen) {
+                return true;
+            }
+            return this.isMobile;
+        },
+
     },
     mounted() {
         document.title = localStorage.getItem("site_title");
         this.getSections();
+
+        // console.log("isCustomerLogin: ", this.isCustomerLogin);
+
+        if (this.isCustomerLogin) {
+            this.getCustomerAddress();
+        }
 
         if (window.fbq) {
             window.fbq('track', 'Page View');
@@ -266,7 +258,7 @@ export default {
 
         cleanImage(img) {
             if (!img) return '';
-            
+
             // Only remove '/public' prefix, keep the leading '/'
             return img.replace(/^\/public/, '');
         },
@@ -286,12 +278,12 @@ export default {
                             response.data.active_pagebuilder ?? false;
                         this.page_builder_widgets =
                             response.data.page_builder_widgets ?? {};
-                        if(!this.active_pagebuilder){
+                        if (!this.active_pagebuilder) {
                             this.loaded();
                         }
 
                         // if(this.sections != null) {
-            
+
                         //     for (var i = 0; i < this.sections.length; i++) {
 
                         //         if(this.sections[i].layout == 'custom_product_section') {
@@ -311,15 +303,45 @@ export default {
         /**
          * Make Preloader False
          */
-         loaded() {
+        loaded() {
             this.pageLoading = false;
-        }
+        },
+
+        //-------- HomePageDeliveryShipping --------
+
+        /**
+        * Will get customer address
+        */
+        getCustomerAddress() {
+            this.dataLoading = true;
+            // console.log("cusomter token: ", this.customerToken);
+            axios
+                // .get("/api/v1/ecommerce-core/customer/get-customer-all-address", {
+                .post("/api/v1/ecommerce-core/customer/get-customer-all-address", null, {
+                    headers: {
+                        Authorization: `Bearer ${this.customerToken}`,
+                    },
+                })
+                .then((response) => {
+                    if (response.data.success) {
+                        this.customerAddress = response.data.data;
+                    } else {
+                        this.customerAddress = [];
+                    }
+                    this.dataLoading = false;
+                })
+                .catch((error) => {
+                    this.dataLoading = false;
+                    this.customerAddress = [];
+                });
+        },
     },
 };
 </script>
 <style lang="scss">
 .product-banner-overflow-auto {
     overflow: hidden;
+
     .swiper {
         overflow: initial;
     }

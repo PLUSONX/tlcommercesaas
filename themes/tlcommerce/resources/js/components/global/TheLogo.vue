@@ -1,12 +1,8 @@
 <template>
   <!-- Logo -->
   <router-link to="/" class="logo">
-    <img
-      v-if="logo"
-      :src="cleanLogo"
-      :alt="title"
-      :class="this.headerLogoStyle.custom_header_logo == 1 ? 'custom-logo' : ''"
-    />
+    <img v-if="logo" :src="cleanLogo" :alt="title"
+      :class="this.headerLogoStyle.custom_header_logo == 1 ? 'custom-logo' : ''" />
     <!-- <img
       v-if="logo"
       :src="logo"
@@ -45,11 +41,11 @@ export default {
       return this.logo?.replace('/public', '');
     },
   },
-  mounted() {
-    console.log('TheLogo mounted');
-    console.log('Original logo:', this.logo);
-    console.log('Clean logo:', this.cleanLogo);
-  },
+  // mounted() {
+  //   console.log('TheLogo mounted');
+  //   console.log('Original logo:', this.logo);
+  //   console.log('Clean logo:', this.cleanLogo);
+  // },
 };
 </script>
 <!-- <script>
@@ -82,5 +78,4 @@ export default {
   },
 };
 </script> -->
-<style scoped>
-</style>
+<style scoped></style>

@@ -133,6 +133,7 @@ export default {
    * Will store shipping details
    */
   storeShippingDetails(state, data) {
+    // console.log("storeShippingDetails mutations.js called")
     state.shippingDetails = data;
     localStorage.setItem("shippingDetails", JSON.stringify(state.shippingDetails));
   },
@@ -304,7 +305,7 @@ export default {
   * Logout customer
   */
   customerLogout(state) {
-    console.log("customer logout method called!!!!");
+    // console.log("customer logout method called!!!!");
     console.trace();
     console.log("state: ", state);
     state.isCustomerLogin = false;

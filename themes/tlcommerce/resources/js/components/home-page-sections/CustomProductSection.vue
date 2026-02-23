@@ -8,34 +8,18 @@
   <pre>{{ properties[0].products.data.length }}</pre>
 </section> -->
 
-  <section
-    class="collection-section home-page-section"
-    :style="styleObject"
-    v-if="properties[0].products.data.length"
-  >
+  <section class="collection-section home-page-section" :style="styleObject" v-if="properties[0].products.data.length">
     <div class="custom-container2">
       <div class="row align-items-center">
         <div class="col-md-6">
-          <section-title
-            class="mb-30 section-title"
-            :title="
-              properties[0]?.category_info != null
-                ? properties[0]?.category_info.name
-                : (properties?.title ? $t(properties.title) : '')
-            "
-            :titleColor="properties?.title_color"
-          />
+          <section-title class="mb-30 section-title" :title="properties[0]?.category_info != null
+              ? properties[0]?.category_info.name
+              : (properties?.title ? $t(properties.title) : '')
+            " :titleColor="properties?.title_color" />
         </div>
-        <div
-          class="col-md-6 text-md-end"
-          v-if="properties?.content == 'category'"
-        >
-          <router-link
-            v-if="properties[0]?.category_info != null"
-            class="btn btn-sm rounded-0 mb-30 section_btn"
-            :style="styleObject"
-            :to="`/products/category/${properties[0]?.category_info.slug}`"
-          >
+        <div class="col-md-6 text-md-end" v-if="properties?.content == 'category'">
+          <router-link v-if="properties[0]?.category_info != null" class="btn btn-sm rounded-0 mb-30 section_btn"
+            :style="styleObject" :to="`/products/category/${properties[0]?.category_info.slug}`">
             {{
               properties.btn_title != null
                 ? properties.btn_title
@@ -44,22 +28,14 @@
           </router-link>
         </div>
       </div>
-      <swiper
-        v-if="properties[0].products.data.length"
-        :slidesPerView="6"
-        :modules="modules"
-        :spaceBetween="1"
+      <swiper v-if="properties[0].products.data.length" :slidesPerView="6" :modules="modules" :spaceBetween="1"
         :autoplay="{
           delay: 4000,
           disableOnInteraction: false,
           pauseOnMouseEnter: true,
-        }"
-        :loop="true"
-        :pagination="{
+        }" :loop="true" :pagination="{
           clickable: true,
-        }"
-        class="product-grid-slider theme-slider-dots"
-        :breakpoints="{
+        }" class="product-grid-slider theme-slider-dots" :breakpoints="{
           '0': {
             slidesPerView: 2,
           },
@@ -72,12 +48,8 @@
           '1024': {
             slidesPerView: 6,
           },
-        }"
-      >
-        <swiper-slide
-          v-for="(item, index) in properties[0].products.data"
-          :key="`slide-${index}`"
-        >
+        }">
+        <swiper-slide v-for="(item, index) in properties[0].products.data" :key="`slide-${index}`">
           <single-product :item="item" />
         </swiper-slide>
       </swiper>
@@ -126,18 +98,16 @@ export default {
       return {
         //Section
         "--section-background-color": this.properties.bg_color,
-        "--section-background-image": `url(${
-          this.properties.bg_image?.startsWith('/public')
+        "--section-background-image": `url(${this.properties.bg_image?.startsWith('/public')
             ? this.properties.bg_image.slice(7)
             : this.properties.bg_image
-        })`,
+          })`,
         // "--section-background-image": `url(${this.properties.bg_image})`,
         "--section-background-image-position":
           this.properties.background_position,
         "--section-background-image-size": this.properties.background_size,
         "--section-background-image-repeat": this.properties.background_repeat,
-        "--section-padding": `${
-          this.properties.padding_top +
+        "--section-padding": `${this.properties.padding_top +
           "px " +
           this.properties.padding_right +
           "px " +
@@ -145,9 +115,8 @@ export default {
           "px " +
           this.properties.padding_left +
           "px"
-        }`,
-        "--section-margin": `${
-          this.properties.margin_top +
+          }`,
+        "--section-margin": `${this.properties.margin_top +
           "px " +
           this.properties.margin_right +
           "px " +
@@ -155,7 +124,7 @@ export default {
           "px " +
           this.properties.margin_left +
           "px"
-        }`,
+          }`,
         //Button
         "--button-color": this.properties.btn_color,
         "--button-background-color": this.properties.btn_bg_color,
@@ -171,11 +140,11 @@ export default {
     },
   },
   mounted() {
-    console.log("CustomProductSection: Component Mounted");
-    console.log("Full Properties:", this.properties);
-    if (this.properties[0]) {
-        console.log("Products Object:", this.properties[0].products);
-    }
+    // console.log("CustomProductSection: Component Mounted");
+    // console.log("Full Properties:", this.properties);
+    // if (this.properties[0]) {
+    //     console.log("Products Object:", this.properties[0].products);
+    // }
 
   },
 };
@@ -187,11 +156,13 @@ export default {
   border: var(--button-border);
   border-color: var(--button-border-color);
 }
+
 .section_btn:hover {
   color: var(--button-hover-color);
   background-color: var(--button-hover-bg-color);
   border-color: var(--button-hover-border-color);
 }
+
 .collection-section {
   background-image: var(--section-background-image);
   background-color: var(--section-background-color);

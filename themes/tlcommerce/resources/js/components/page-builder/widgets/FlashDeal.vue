@@ -5,10 +5,7 @@
                 <section-title class="section-title" :title="title" />
             </div>
             <div class="col-md-6">
-                <countdown
-                    class="justify-content-md-end"
-                    :deadline="dealDetails.deadline"
-                />
+                <countdown class="justify-content-md-end" :deadline="dealDetails.deadline" />
             </div>
         </div>
         <!-- <swiper
@@ -47,20 +44,12 @@
                 },
             }"
         > -->
-        <swiper
-            v-if="dealProducts.length && properties.style == 'slider'"
-            :slidesPerView="slider_items.desktop"
-            :modules="modules"
-            :spaceBetween="1"
-            :autoplay="{
+        <swiper v-if="dealProducts.length && properties.style == 'slider'" :slidesPerView="slider_items.desktop"
+            :modules="modules" :spaceBetween="1" :autoplay="{
                 delay: 2500,
                 disableOnInteraction: false,
                 pauseOnMouseEnter: true,
-            }"
-            :loop="true"
-            :pagination="pagination"
-            class="product-grid-slider theme-slider-dots"
-            :breakpoints="{
+            }" :loop="true" :pagination="pagination" class="product-grid-slider theme-slider-dots" :breakpoints="{
                 '0': {
                     slidesPerView: slider_items.mobile,
                 },
@@ -70,21 +59,13 @@
                 '1024': {
                     slidesPerView: slider_items.desktop,
                 },
-            }"
-        > 
-            <swiper-slide
-                v-for="(item, index) in dealProducts"
-                :key="`slide-${index}`"
-            >
+            }">
+            <swiper-slide v-for="(item, index) in dealProducts" :key="`slide-${index}`">
                 <single-product :item="item" />
             </swiper-slide>
         </swiper>
         <div class="row mx-0" v-else>
-            <div
-                v-for="(item, index) in dealProducts"
-                :key="`product-${index}`"
-                :class="product_column + ' ' + 'px-1'"
-            >
+            <div v-for="(item, index) in dealProducts" :key="`product-${index}`" :class="product_column + ' ' + 'px-1'">
                 <single-product :item="item" />
             </div>
         </div>
@@ -140,13 +121,13 @@ export default {
     computed: {
 
         verticalSliderHeight() {
-        // Approximate product card height (adjust based on your design)
-        const cardHeight = 200; // adjust this value
-        const spaceBetween = 20;
-        const visibleSlides = this.slider_items?.desktop || 3;
-        
-        return (cardHeight * visibleSlides) + (spaceBetween * (visibleSlides - 1));
-    }
+            // Approximate product card height (adjust based on your design)
+            const cardHeight = 200; // adjust this value
+            const spaceBetween = 20;
+            const visibleSlides = this.slider_items?.desktop || 3;
+
+            return (cardHeight * visibleSlides) + (spaceBetween * (visibleSlides - 1));
+        }
 
     },
 
@@ -157,7 +138,7 @@ export default {
             this.properties["products"] && this.properties["products"]["data"]
                 ? this.properties["products"]["data"]
                 : [];
-        
+
         this.product_column = this.properties["column"] ?? this.product_column;
         this.pagination = this.properties["pagination"] ? this.pagination : false;
 
@@ -165,12 +146,10 @@ export default {
         this.slider_items.tab = this.properties['slide_item_md'] ? parseInt(this.properties['slide_item_md']) : this.slider_items.tab;
         this.slider_items.desktop = this.properties['slide_item_lg'] ? parseInt(this.properties['slide_item_lg']) : this.slider_items.desktop;
 
-        console.log("slider_items.desktop: ", this.slider_items.desktop);
-        console.log("slide_item_lg: ", parseInt(this.properties['slide_item_lg']));
+        // console.log("slider_items.desktop: ", this.slider_items.desktop);
+        // console.log("slide_item_lg: ", parseInt(this.properties['slide_item_lg']));
     },
 
     methods: {},
 };
 </script>
-
-
