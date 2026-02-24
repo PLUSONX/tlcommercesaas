@@ -67,15 +67,33 @@ class ProductController extends Controller
      */
     public function products(Request $request)
     {
+
+        $categoryId = $request->input('category_id');
+
+        \Log::info('Products data', [
+                'request' => json_encode($request->all()),
+                // 'category_id' => json_encode($category_id)
+        ]);
         
         // echo "<script>console.log('request:', " . json_encode($request) . ");</script>";
-        \Log::info('Products request', $request->all());
+        // \Log::info('Products request', $request->all());
+
+        // $categoryId = $request->input('category_id');
+
+        // \Log::info('categoryId', $categoryId);
+        
 
         // $query = $this->product_repository->filterProducts($request);
 
         $query = Product::query()
             ->where('status', 1);
         // \Log::info('query', $query);
+
+        if (!empty($categoryId)) {
+        $query->whereHas('product_categories', function ($q) use ($categoryId) {
+            $q->where('category_id', $categoryId);
+        });
+}
 
 
         //sorting by newest items
@@ -113,6 +131,66 @@ class ProductController extends Controller
 
         return new ProductCollection($products);
     }
+    // public function products(Request $request)
+    // {
+
+    //     $categoryId = $request->input('category_id');
+
+    //     \Log::info('Products data', [
+    //             'request' => json_encode($request->all()),
+    //             // 'category_id' => json_encode($category_id)
+    //     ]);
+        
+    //     // echo "<script>console.log('request:', " . json_encode($request) . ");</script>";
+    //     // \Log::info('Products request', $request->all());
+
+    //     // $categoryId = $request->input('category_id');
+
+    //     // \Log::info('categoryId', $categoryId);
+        
+
+    //     // $query = $this->product_repository->filterProducts($request);
+
+    //     $query = Product::query()
+    //         ->where('status', 1);
+    //     // \Log::info('query', $query);
+
+
+    //     //sorting by newest items
+    //     if ($request->has('sorting') && $request['sorting'] == 'newest') {
+    //         $query = $query->orderBy('id', 'DESC');
+    //     }
+    //     //sorting by popular items
+    //     if ($request->has('sorting') && $request['sorting'] == 'popular') {
+    //         $query = $query->withCount('orders as number_of_order')
+    //             ->orderBy('number_of_order', 'desc');
+    //     }
+    //     //Price low to high
+    //     if ($request->has('sorting') && $request['sorting'] == 'lowToHigh') {
+    //         $products = $query->paginate($request->perPage);
+    //         $sortedResult = $products->getCollection()->sortBy('unit_price')->values();
+    //         $products->setCollection($sortedResult);
+    //         return new ProductCollection($products);
+    //     }
+    //     //Price high to low
+    //     if ($request->has('sorting') && $request['sorting'] == 'highToLow') {
+    //         $products = $query->paginate($request->perPage);
+    //         $sortedResult = $products->getCollection()->sortByDesc('unit_price')->values();
+    //         $products->setCollection($sortedResult);
+    //         return new ProductCollection($products);
+    //     }
+
+        
+        
+    //     $products = $query->paginate($request->perPage);
+        
+    //     \Log::info('Products data', [
+    //             'query' => $query,
+    //             'products' => json_encode($products),
+    //     ]);
+
+    //     return new ProductCollection($products);
+    // }
 
     /**
      * Will return product search results

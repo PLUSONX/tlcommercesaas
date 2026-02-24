@@ -8,7 +8,7 @@
     <div class="pt-30 pt-lg-60 pb-60 light-bg">
       <div class="custom-container2">
         <div class="row">
-          <div class="col-lg-3">
+          <!-- <div class="col-lg-3">
             <div class="widget_wrap" :class="{ active: wToggle }">
               <button class="close-btn btn-circle d-lg-none" @click.prevent="wToggle = !wToggle">
                 <span class="material-icons"> close </span>
@@ -23,7 +23,7 @@
                 <WidgetPrice :selected-option="price_filter" @filter="addPriceFilter" />
               </div>
             </div>
-          </div>
+          </div> -->
 
           <div class="col-lg-9">
             <div class="row">
@@ -57,8 +57,8 @@
                   </div>
 
                   <!-- Brand Collapse Box -->
-                  <brand-collapse-box :brands="brands" :brand-loading="brandLoading" @select-brand="addBrandFilter"
-                    v-if="!brandLoading && brands?.length > 0"></brand-collapse-box>
+                  <!-- <brand-collapse-box :brands="brands" :brand-loading="brandLoading" @select-brand="addBrandFilter"
+                    v-if="!brandLoading && brands?.length > 0"></brand-collapse-box> -->
                   <!-- End Brand Collapse Box -->
                   <!--Filter items-->
                   <div class="filter-tag-wrap" v-if="
@@ -72,7 +72,7 @@
                       <div class="ant-tag" v-if="brand_filter.id">
                         <span class="ant-tag-text">{{
                           brand_filter.name
-                        }}</span>
+                          }}</span>
                         <span class="material-icons" @click.prevent="removeTag('brand')">close</span>
                       </div>
 
@@ -90,7 +90,7 @@
 
                       <span class="clear-all" @click.prevent="removeAllTag">{{
                         $t("CLEAR ALL")
-                      }}</span>
+                        }}</span>
                     </div>
                   </div>
                   <!--End filter items-->
@@ -269,6 +269,8 @@ export default {
     getProducts() {
       window.scrollTo(0, 0);
       this.productsLoading = true;
+
+      console.log("categoryId: ", this.categoryDetails.id);
       axios
         .post("/api/v1/ecommerce-core/products", {
           perPage: this.perPage,
