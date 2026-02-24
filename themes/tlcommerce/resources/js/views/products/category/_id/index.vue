@@ -1,5 +1,8 @@
 <template>
-  <div class="">
+  <div class="" :class="{
+    'force-mobile-layout': forcedMobile,
+    'mobile-content-wrapper': forcedMobile
+  }">
     <!-- <page-header :items="bItems" /> -->
 
     <div class="pt-30 pt-lg-60 pb-60 light-bg">
@@ -7,33 +10,17 @@
         <div class="row">
           <div class="col-lg-3">
             <div class="widget_wrap" :class="{ active: wToggle }">
-              <button
-                class="close-btn btn-circle d-lg-none"
-                @click.prevent="wToggle = !wToggle"
-              >
+              <button class="close-btn btn-circle d-lg-none" @click.prevent="wToggle = !wToggle">
                 <span class="material-icons"> close </span>
               </button>
               <div class="widget_wrap-inner">
-                <WidgetBrand
-                  v-if="!brandLoading"
-                  :brands="brands"
-                  :selected-brand="brand_filter"
-                  @filter="addBrandFilter"
-                />
-                <div
-                  v-if="brandLoading"
-                  class="widget widget-style-1 widget_top_category mb-4"
-                >
+                <WidgetBrand v-if="!brandLoading" :brands="brands" :selected-brand="brand_filter"
+                  @filter="addBrandFilter" />
+                <div v-if="brandLoading" class="widget widget-style-1 widget_top_category mb-4">
                   <skeleton height="300px"></skeleton>
                 </div>
-                <WidgetRating
-                  :selected-item="rating_filter"
-                  @filter="addRatingFilter"
-                />
-                <WidgetPrice
-                  :selected-option="price_filter"
-                  @filter="addPriceFilter"
-                />
+                <WidgetRating :selected-item="rating_filter" @filter="addRatingFilter" />
+                <WidgetPrice :selected-option="price_filter" @filter="addPriceFilter" />
               </div>
             </div>
           </div>
@@ -49,19 +36,11 @@
                           {{ categoryDetails.name }}
                         </h3>
                         <h3 class="product_header" v-if="categoryLoading">
-                          <skeleton
-                            border-radius="5px"
-                            width="200px"
-                            height="30px"
-                          ></skeleton>
+                          <skeleton border-radius="5px" width="200px" height="30px"></skeleton>
                         </h3>
                         <div v-if="categoryLoading">
                           <p class="mt-1">
-                            <skeleton
-                              border-radius="5px"
-                              width="80px"
-                              height="10px"
-                            ></skeleton>
+                            <skeleton border-radius="5px" width="80px" height="10px"></skeleton>
                           </p>
                         </div>
                         <div v-if="!categoryLoading">
@@ -72,32 +51,21 @@
                         </div>
                       </div>
                     </div>
-                    <sorting-option
-                      class="col-lg-6 order-0 order-lg-1 text-lg-right"
-                      :data-loading="categoryLoading"
-                      :selected-item="sorting_by"
-                      @sorting-items="sortingItems"
-                      @filter-toggle="wToggle = !wToggle"
-                    ></sorting-option>
+                    <sorting-option class="col-lg-6 order-0 order-lg-1 text-lg-right" :data-loading="categoryLoading"
+                      :selected-item="sorting_by" @sorting-items="sortingItems"
+                      @filter-toggle="wToggle = !wToggle"></sorting-option>
                   </div>
 
                   <!-- Brand Collapse Box -->
-                  <brand-collapse-box
-                    :brands="brands"
-                    :brand-loading="brandLoading"
-                    @select-brand="addBrandFilter"
-                    v-if="!brandLoading && brands?.length > 0"
-                  ></brand-collapse-box>
+                  <brand-collapse-box :brands="brands" :brand-loading="brandLoading" @select-brand="addBrandFilter"
+                    v-if="!brandLoading && brands?.length > 0"></brand-collapse-box>
                   <!-- End Brand Collapse Box -->
                   <!--Filter items-->
-                  <div
-                    class="filter-tag-wrap"
-                    v-if="
-                      brand_filter.id ||
-                      price_filter.max ||
-                      rating_filter != null
-                    "
-                  >
+                  <div class="filter-tag-wrap" v-if="
+                    brand_filter.id ||
+                    price_filter.max ||
+                    rating_filter != null
+                  ">
                     <div class="filter-tags">
                       <h6 class="filtered-by mb-0">{{ $t("Filtered By") }}:</h6>
 
@@ -105,38 +73,19 @@
                         <span class="ant-tag-text">{{
                           brand_filter.name
                         }}</span>
-                        <span
-                          class="material-icons"
-                          @click.prevent="removeTag('brand')"
-                          >close</span
-                        >
+                        <span class="material-icons" @click.prevent="removeTag('brand')">close</span>
                       </div>
 
                       <div class="ant-tag" v-if="rating_filter != null">
-                        <span class="ant-tag-text"
-                          >{{ rating_filter }} Star</span
-                        >
-                        <span
-                          class="material-icons"
-                          @click.prevent="removeTag('rating')"
-                          >close</span
-                        >
+                        <span class="ant-tag-text">{{ rating_filter }} Star</span>
+                        <span class="material-icons" @click.prevent="removeTag('rating')">close</span>
                       </div>
                       <div class="ant-tag" v-if="price_filter.max">
                         <span class="ant-tag-text">
-                          <the-currency
-                            :amount="price_filter.min"
-                          ></the-currency
-                          >-
-                          <the-currency
-                            :amount="price_filter.max"
-                          ></the-currency>
+                          <the-currency :amount="price_filter.min"></the-currency>-
+                          <the-currency :amount="price_filter.max"></the-currency>
                         </span>
-                        <span
-                          class="material-icons"
-                          @click.prevent="removeTag('price')"
-                          >close</span
-                        >
+                        <span class="material-icons" @click.prevent="removeTag('price')">close</span>
                       </div>
 
                       <span class="clear-all" @click.prevent="removeAllTag">{{
@@ -149,20 +98,12 @@
               </div>
             </div>
             <div class="row mobile-gap-10" v-if="productsLoading">
-              <div
-                class="col-lg-3 col-6"
-                v-for="(item, index) in productSkeletons"
-                :key="index"
-              >
+              <div class="col-lg-3 col-6" v-for="(item, index) in productSkeletons" :key="index">
                 <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
               </div>
             </div>
             <div class="row mobile-gap-10" v-else>
-              <div
-                v-for="product in paginatedItems"
-                :key="product.id"
-                class="col-lg-3 col-6"
-              >
+              <div v-for="product in paginatedItems" :key="product.id" class="col-lg-3 col-6">
                 <single-product :item="product" styleEight />
               </div>
             </div>
@@ -170,25 +111,14 @@
             <div class="row align-items-center mt-10" v-if="!productsLoading">
               <div class="col-md-6">
                 <!-- Showing Per Page -->
-                <ShowingPerPage
-                  class="text-center text-md-start"
-                  :items-per-page="perPage"
-                  :total-items="totalItems"
-                  :current-page="currentPage"
-                />
+                <ShowingPerPage class="text-center text-md-start" :items-per-page="perPage" :total-items="totalItems"
+                  :current-page="currentPage" />
                 <!-- Showing Per Page -->
               </div>
-              <div
-                class="col-md-6 d-flex justify-content-center justify-content-md-end mt-3 mt-md-0"
-              >
+              <div class="col-md-6 d-flex justify-content-center justify-content-md-end mt-3 mt-md-0">
                 <!-- Pagination -->
-                <pagination
-                  :options="paginationOptions"
-                  v-model="currentPage"
-                  :records="totalItems"
-                  :per-page="perPage"
-                  @paginate="getProducts"
-                />
+                <pagination :options="paginationOptions" v-model="currentPage" :records="totalItems" :per-page="perPage"
+                  @paginate="getProducts" />
                 <!-- End Pagination -->
               </div>
             </div>
@@ -210,6 +140,7 @@ import Pagination from "v-pagination-3";
 import BrandCollapseBox from "../../../../components/product/BrandCollapseBox.vue";
 import SortingOption from "../../../../components/product/SortingOption.vue";
 const axios = require("axios").default;
+import { mapState, mapGetters } from "vuex";
 export default {
   name: "CategoryProducts",
   components: {
@@ -276,6 +207,19 @@ export default {
         },
       ],
     };
+  },
+  computed: {
+
+    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+    forcedMobile() {
+      // identical intent to MainLayout.vue
+      if (this.isSplitScreen) {
+        return true;
+      }
+      return this.isMobile;
+    },
+
   },
   mounted() {
     this.getCategoryDetails();
@@ -397,3 +341,42 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.force-mobile-layout .row>[class*="col-"] {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+.force-mobile-layout .product-content .image,
+.force-mobile-layout .product-content .product-img {
+  min-width: 0 !important;
+  max-width: 100px;
+}
+
+
+
+.force-mobile-layout .cart-image-review {
+  max-width: 100% !important;
+  height: auto !important;
+  flex-shrink: 1 !important;
+}
+
+.force-mobile-layout .d-none.d-lg-block,
+.force-mobile-layout .d-lg-block {
+  display: none !important;
+}
+
+.force-mobile-layout .d-block.d-lg-none,
+.force-mobile-layout .d-lg-none {
+  display: block !important;
+}
+
+
+.force-mobile-layout .d-block.d-lg-none.col-12 {
+  width: 100% !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
+}
+</style>

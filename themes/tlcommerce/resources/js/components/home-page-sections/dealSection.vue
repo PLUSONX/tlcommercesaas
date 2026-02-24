@@ -1,101 +1,49 @@
 <template>
-  <section
-    class="pt-15 pb-15 deals-section home-page-section"
-    :style="styleObject"
-  >
+  <section class="pt-15 pb-15 deals-section home-page-section" :style="styleObject" :class="{
+    'force-mobile-layout': forcedMobile,
+    'mobile-content-wrapper': forcedMobile
+  }">
     <div class="custom-container2" v-if="success && !dataLoading">
       <div class="row align-items-center my-3">
         <div class="col-md-6 mb-2 mb-md-0">
-          <section-title
-            class="section-title"
-            :title="dealDetails.title"
-            :titleColor="properties.title_color"
-          />
+          <section-title class="section-title" :title="dealDetails.title" :titleColor="properties.title_color" />
         </div>
         <div class="col-md-6">
-          <countdown
-            class="justify-content-md-end"
-            :deadline="dealDetails.deadline"
-            :titleColor="properties.title_color"
-          />
+          <countdown class="justify-content-md-end" :deadline="dealDetails.deadline"
+            :titleColor="properties.title_color" />
         </div>
       </div>
-      <swiper
-        v-if="dealProducts.length"
-        direction="vertical"
-        :style="{ 
-          height: '800px',
-          maxHeight: '150vh' 
-        }"
-        :slidesPerView="1"
-        :modules="modules"
-        :spaceBetween="15"
-        :autoplay="{
-          delay: 2500,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: true,
-        }"
-        :loop="true"
-        :pagination="{
-          clickable: true,
-        }"
-        :navigation="true"
-        class="product-grid-slider theme-slider-dots vertical-product-slider"
-        :breakpoints="{
-          '0': {
-            slidesPerView: 1,
-            spaceBetween: 10,
-          },
-          '768': {
-            slidesPerView: 1,
-            spaceBetween: 12,
-          },
-          '1024': {
-            slidesPerView: 1,
-            spaceBetween: 50,
-          },
-        }"
-      >
-      <!-- <swiper
-        v-if="dealProducts.length"
-        :slidesPerView="6"
-        :modules="modules"
-        :spaceBetween="1"
-        :autoplay="{
-          delay: 2500,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: true,
-        }"
-        :loop="true"
-        :pagination="{
-          clickable: true,
-        }"
-        class="product-grid-slider theme-slider-dots"
-        :breakpoints="{
-          '0': {
-            slidesPerView: 2,
-          },
-          '768': {
-            slidesPerView: 3,
-          },
-          '1024': {
-            slidesPerView: 3,
-          },
-        }"
-      > -->
-        <swiper-slide
-          v-for="(item, index) in dealProducts"
-          :key="`slide-${index}`"
-        >
+      <!-- <swiper v-if="dealProducts.length" :slidesPerView="6" :modules="modules" :spaceBetween="1" :autoplay="{
+        delay: 2500,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true,
+      }" :loop="true" :pagination="{
+        clickable: true,
+      }" class="product-grid-slider theme-slider-dots" :breakpoints="{
+        '0': {
+          slidesPerView: 2,
+        },
+        '768': {
+          slidesPerView: 3,
+        },
+        '1024': {
+          slidesPerView: 6,
+        },
+      }"> -->
+      <swiper v-if="dealProducts.length" :slidesPerView="6" :modules="modules" :spaceBetween="1" :autoplay="{
+        delay: 2500,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true,
+      }" :loop="true" :pagination="{
+        clickable: true,
+      }" class="product-grid-slider theme-slider-dots" :breakpoints="swiperBreakpoints">
+        <swiper-slide v-for="(item, index) in dealProducts" :key="`slide-${index}`">
           <single-product :item="item" />
         </swiper-slide>
-      </swiper> 
+      </swiper>
       <div class="col-md-12 text-center mt-20">
-        <router-link
-          class="btn btn-sm rounded-0 mb-30 section_btn"
-          :style="styleObject"
-          :to="`/deals/${dealDetails.permalink}`"
-        >
+        <router-link class="btn btn-sm rounded-0 mb-30 section_btn" :style="styleObject"
+          :to="`/deals/${dealDetails.permalink}`">
           {{
             properties.btn_title != null ? properties.btn_title : $t("View All")
           }}
@@ -108,13 +56,14 @@
 <script>
 import { defineAsyncComponent } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
-import { Autoplay, Pagination, Navigation } from "swiper";
+import { Autoplay, Pagination } from "swiper";
 const SingleProduct = defineAsyncComponent(() =>
   import("../product/SingleProduct.vue")
 );
 const Countdown = defineAsyncComponent(() => import("../ui/Countdown.vue"));
 import sectionPreloader from "./sectionPreloader.vue";
 const axios = require("axios").default;
+import { mapState, mapGetters } from "vuex";
 export default {
   name: "DealSection",
   components: {
@@ -136,7 +85,7 @@ export default {
   },
   setup() {
     return {
-      modules: [Autoplay, Pagination, Navigation],
+      modules: [Autoplay, Pagination],
     };
   },
   data() {
@@ -157,8 +106,7 @@ export default {
           this.properties.background_position,
         "--section-background-image-size": this.properties.background_size,
         "--section-background-image-repeat": this.properties.background_repeat,
-        "--section-padding": `${
-          this.properties.padding_top +
+        "--section-padding": `${this.properties.padding_top +
           "px " +
           this.properties.padding_right +
           "px " +
@@ -166,9 +114,8 @@ export default {
           "px " +
           this.properties.padding_left +
           "px"
-        }`,
-        "--section-margin": `${
-          this.properties.margin_top +
+          }`,
+        "--section-margin": `${this.properties.margin_top +
           "px " +
           this.properties.margin_right +
           "px " +
@@ -176,7 +123,7 @@ export default {
           "px " +
           this.properties.margin_left +
           "px"
-        }`,
+          }`,
         //Button
         "--button-color": this.properties.btn_color,
         "--button-background-color": this.properties.btn_bg_color,
@@ -188,6 +135,29 @@ export default {
         "--button-hover-border-color": this.properties.btn_border_hover_color,
         "--button-hover-bg-color": this.properties.btn_bg_hover_color,
         "--button-hover-color": this.properties.btn_hover_color,
+      };
+    },
+
+    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+    forcedMobile() {
+      // identical intent to MainLayout.vue
+      if (this.isSplitScreen) {
+        return true;
+      }
+      return this.isMobile;
+    },
+
+    swiperBreakpoints() {
+      if (this.forcedMobile) {
+        return {
+          '0': { slidesPerView: 2 },
+        };
+      }
+      return {
+        '0': { slidesPerView: 2 },
+        '768': { slidesPerView: 3 },
+        '1024': { slidesPerView: 6 },
       };
     },
   },
@@ -226,11 +196,13 @@ export default {
   border: var(--button-border);
   border-color: var(--button-border-color);
 }
+
 .section_btn:hover {
   color: var(--button-hover-color);
   background-color: var(--button-hover-bg-color);
   border-color: var(--button-hover-border-color);
 }
+
 .deals-section {
   background-image: var(--section-background-image);
   background-color: var(--section-background-color);
@@ -241,50 +213,42 @@ export default {
   background-repeat: var(--section-background-image-repeat);
 }
 
-/* Vertical slider styles */
-.vertical-product-slider {
-  width: 100%;
+
+
+.force-mobile-layout .row>[class*="col-"] {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
 }
 
-.vertical-product-slider :deep(.swiper-button-next),
-.vertical-product-slider :deep(.swiper-button-prev) {
-  left: 50%;
-  transform: translateX(-50%);
-  right: auto;
-  width: 40px;
-  height: 40px;
+.force-mobile-layout .product-content .image,
+.force-mobile-layout .product-content .product-img {
+  min-width: 0 !important;
+  max-width: 100px;
 }
 
-.vertical-product-slider :deep(.swiper-button-next) {
-  top: auto;
-  bottom: -50px;
+
+
+.force-mobile-layout .cart-image-review {
+  max-width: 100% !important;
+  height: auto !important;
+  flex-shrink: 1 !important;
 }
 
-.vertical-product-slider :deep(.swiper-button-prev) {
-  bottom: auto;
-  top: -50px;
+.force-mobile-layout .d-none.d-lg-block,
+.force-mobile-layout .d-lg-block {
+  display: none !important;
 }
 
-.vertical-product-slider :deep(.swiper-button-next::after),
-.vertical-product-slider :deep(.swiper-button-prev::after) {
-  font-size: 20px;
+.force-mobile-layout .d-block.d-lg-none,
+.force-mobile-layout .d-lg-none {
+  display: block !important;
 }
 
-.vertical-product-slider :deep(.swiper-pagination) {
-  left: auto;
-  right: -20px;
-  width: auto;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
 
-@media (max-width: 768px) {
-  .vertical-product-slider {
-    height: 500px !important;
-    max-height: 70vh !important;
-  }
+.force-mobile-layout .d-block.d-lg-none.col-12 {
+  width: 100% !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
 }
 </style>
