@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="product-banner-item d-flex align-items-center justify-content-center"
-  >
+  <div class="product-banner-item d-flex align-items-center justify-content-center">
     <!-- Image -->
     <div class="slide-img desktop">
       <a :href="content.url">
@@ -43,7 +41,7 @@ export default {
       const img = this.content?.mobile;
       if (!img) return '';
 
-      
+
       return img.startsWith('/public')
         ? img.slice(7)
         : img;
@@ -70,15 +68,27 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../assets/sass/00-abstracts/01-variables";
+
 .slide-img.desktop {
   @media (max-width: 767px) {
     display: none;
   }
 }
+
 .slide-img.mobile {
   display: none;
+
   @media (max-width: 767px) {
     display: block;
   }
+}
+
+// .product-banner-item {
+//   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+// }
+
+.slide-img {
+  border-radius: 12px;
+  overflow: hidden;
 }
 </style>

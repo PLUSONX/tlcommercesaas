@@ -39,7 +39,8 @@
     <div class="home__two" v-else>
         <!-- Banner -->
         <!-- <section class="product-banner product-banner-overflow-auto mt-30 mb-30" v-if="dataAvailable"> -->
-        <div class="mt-50">
+        <!-- <div class="mt-50"> -->
+        <div :class="mtClass">
             <section class="product-banner product-banner-overflow-auto" v-if="dataAvailable && !isSplitScreen">
 
 
@@ -223,6 +224,16 @@ export default {
             return this.isMobile;
         },
 
+        mtClass() {
+
+            if (this.isSplitScreen) {
+                return 'mt-50';
+            }
+            else {
+                return 'mt-1';
+            }
+        }
+
     },
     mounted() {
         document.title = localStorage.getItem("site_title");
@@ -345,5 +356,10 @@ export default {
     .swiper {
         overflow: initial;
     }
+}
+
+.swiper-slide {
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 </style>

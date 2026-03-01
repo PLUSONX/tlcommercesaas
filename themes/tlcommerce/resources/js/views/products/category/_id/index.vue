@@ -1,14 +1,15 @@
 <template>
-  <div class="" :class="{
+  <div :class="mtClass">
+    <!-- <div class="" :class="{
     'force-mobile-layout': forcedMobile,
     'mobile-content-wrapper': forcedMobile
-  }">
+  }"> -->
     <!-- <page-header :items="bItems" /> -->
 
-    <div class="pt-30 pt-lg-60 pb-60 light-bg">
-      <div class="custom-container2">
-        <div class="row">
-          <!-- <div class="col-lg-3">
+    <!-- <div class="pt-30 pt-lg-60 pb-60 light-bg"> -->
+    <div class="custom-container2">
+      <!-- <div class="row"> -->
+      <!-- <div class="col-lg-3">
             <div class="widget_wrap" :class="{ active: wToggle }">
               <button class="close-btn btn-circle d-lg-none" @click.prevent="wToggle = !wToggle">
                 <span class="material-icons"> close </span>
@@ -25,79 +26,79 @@
             </div>
           </div> -->
 
-          <div class="col-lg-9">
+      <!-- <div class="col-lg-9"> -->
+      <div class="row">
+        <div class="col-12">
+          <div class="mb-40 shadow-card">
             <div class="row">
-              <div class="col-12">
-                <div class="mb-40 shadow-card">
-                  <div class="row">
-                    <div class="col-lg-6 order-1 order-lg-0 col-xl-6">
-                      <div class="section-header">
-                        <h3 class="product_header" v-if="!categoryLoading">
-                          {{ categoryDetails.name }}
-                        </h3>
-                        <h3 class="product_header" v-if="categoryLoading">
-                          <skeleton border-radius="5px" width="200px" height="30px"></skeleton>
-                        </h3>
-                        <div v-if="categoryLoading">
-                          <p class="mt-1">
-                            <skeleton border-radius="5px" width="80px" height="10px"></skeleton>
-                          </p>
-                        </div>
-                        <div v-if="!categoryLoading">
-                          <p v-if="totalItems > 0">
-                            {{ totalItems }} {{ $t("items found") }}
-                          </p>
-                          <p v-else>{{ $t("No item found") }}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <sorting-option class="col-lg-6 order-0 order-lg-1 text-lg-right" :data-loading="categoryLoading"
-                      :selected-item="sorting_by" @sorting-items="sortingItems"
-                      @filter-toggle="wToggle = !wToggle"></sorting-option>
+              <div class="col-lg-6 order-1 order-lg-0 col-xl-6">
+                <div class="section-header">
+                  <h3 class="product_header" v-if="!categoryLoading">
+                    {{ categoryDetails.name }}
+                  </h3>
+                  <h3 class="product_header" v-if="categoryLoading">
+                    <skeleton border-radius="5px" width="200px" height="30px"></skeleton>
+                  </h3>
+                  <div v-if="categoryLoading">
+                    <p class="mt-1">
+                      <skeleton border-radius="5px" width="80px" height="10px"></skeleton>
+                    </p>
                   </div>
-
-                  <!-- Brand Collapse Box -->
-                  <!-- <brand-collapse-box :brands="brands" :brand-loading="brandLoading" @select-brand="addBrandFilter"
-                    v-if="!brandLoading && brands?.length > 0"></brand-collapse-box> -->
-                  <!-- End Brand Collapse Box -->
-                  <!--Filter items-->
-                  <div class="filter-tag-wrap" v-if="
-                    brand_filter.id ||
-                    price_filter.max ||
-                    rating_filter != null
-                  ">
-                    <div class="filter-tags">
-                      <h6 class="filtered-by mb-0">{{ $t("Filtered By") }}:</h6>
-
-                      <div class="ant-tag" v-if="brand_filter.id">
-                        <span class="ant-tag-text">{{
-                          brand_filter.name
-                          }}</span>
-                        <span class="material-icons" @click.prevent="removeTag('brand')">close</span>
-                      </div>
-
-                      <div class="ant-tag" v-if="rating_filter != null">
-                        <span class="ant-tag-text">{{ rating_filter }} Star</span>
-                        <span class="material-icons" @click.prevent="removeTag('rating')">close</span>
-                      </div>
-                      <div class="ant-tag" v-if="price_filter.max">
-                        <span class="ant-tag-text">
-                          <the-currency :amount="price_filter.min"></the-currency>-
-                          <the-currency :amount="price_filter.max"></the-currency>
-                        </span>
-                        <span class="material-icons" @click.prevent="removeTag('price')">close</span>
-                      </div>
-
-                      <span class="clear-all" @click.prevent="removeAllTag">{{
-                        $t("CLEAR ALL")
-                        }}</span>
-                    </div>
+                  <div v-if="!categoryLoading">
+                    <p v-if="totalItems > 0">
+                      {{ totalItems }} {{ $t("items found") }}
+                    </p>
+                    <p v-else>{{ $t("No item found") }}</p>
                   </div>
-                  <!--End filter items-->
                 </div>
               </div>
+              <sorting-option class="col-lg-6 order-0 order-lg-1 text-lg-right" :data-loading="categoryLoading"
+                :selected-item="sorting_by" @sorting-items="sortingItems"
+                @filter-toggle="wToggle = !wToggle"></sorting-option>
             </div>
-            <div class="row mobile-gap-10" v-if="productsLoading">
+
+            <!-- Brand Collapse Box -->
+            <!-- <brand-collapse-box :brands="brands" :brand-loading="brandLoading" @select-brand="addBrandFilter"
+                    v-if="!brandLoading && brands?.length > 0"></brand-collapse-box> -->
+            <!-- End Brand Collapse Box -->
+            <!--Filter items-->
+            <div class="filter-tag-wrap" v-if="
+              brand_filter.id ||
+              price_filter.max ||
+              rating_filter != null
+            ">
+              <div class="filter-tags">
+                <h6 class="filtered-by mb-0">{{ $t("Filtered By") }}:</h6>
+
+                <div class="ant-tag" v-if="brand_filter.id">
+                  <span class="ant-tag-text">{{
+                    brand_filter.name
+                  }}</span>
+                  <span class="material-icons" @click.prevent="removeTag('brand')">close</span>
+                </div>
+
+                <div class="ant-tag" v-if="rating_filter != null">
+                  <span class="ant-tag-text">{{ rating_filter }} Star</span>
+                  <span class="material-icons" @click.prevent="removeTag('rating')">close</span>
+                </div>
+                <div class="ant-tag" v-if="price_filter.max">
+                  <span class="ant-tag-text">
+                    <the-currency :amount="price_filter.min"></the-currency>-
+                    <the-currency :amount="price_filter.max"></the-currency>
+                  </span>
+                  <span class="material-icons" @click.prevent="removeTag('price')">close</span>
+                </div>
+
+                <span class="clear-all" @click.prevent="removeAllTag">{{
+                  $t("CLEAR ALL")
+                }}</span>
+              </div>
+            </div>
+            <!--End filter items-->
+          </div>
+        </div>
+      </div>
+      <!-- <div class="row mobile-gap-10" v-if="productsLoading">
               <div class="col-lg-3 col-6" v-for="(item, index) in productSkeletons" :key="index">
                 <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
               </div>
@@ -106,26 +107,38 @@
               <div v-for="product in paginatedItems" :key="product.id" class="col-lg-3 col-6">
                 <single-product :item="product" styleEight />
               </div>
-            </div>
+            </div> -->
 
-            <div class="row align-items-center mt-10" v-if="!productsLoading">
-              <div class="col-md-6">
-                <!-- Showing Per Page -->
-                <ShowingPerPage class="text-center text-md-start" :items-per-page="perPage" :total-items="totalItems"
-                  :current-page="currentPage" />
-                <!-- Showing Per Page -->
-              </div>
-              <div class="col-md-6 d-flex justify-content-center justify-content-md-end mt-3 mt-md-0">
-                <!-- Pagination -->
-                <pagination :options="paginationOptions" v-model="currentPage" :records="totalItems" :per-page="perPage"
-                  @paginate="getProducts" />
-                <!-- End Pagination -->
-              </div>
-            </div>
-          </div>
+      <div class="row mobile-gap-10" v-if="productsLoading">
+        <div class="col-lg-3 col-6" v-for="(item, index) in productSkeletons" :key="index">
+          <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
         </div>
       </div>
+      <div class="row mobile-gap-10" v-else>
+        <div v-for="product in paginatedItems" :key="product.id" class="col-6">
+          <single-product :item="product" styleEight />
+        </div>
+      </div>
+
+      <!-- <div class="row align-items-center mt-10" v-if="!productsLoading">
+              <div class="col-md-6"> -->
+      <!-- Showing Per Page -->
+      <!-- <ShowingPerPage class="text-center text-md-start" :items-per-page="perPage" :total-items="totalItems" -->
+      <!-- :current-page="currentPage" /> -->
+      <!-- Showing Per Page -->
+      <!-- </div> -->
+      <!-- <div class="col-md-6 d-flex justify-content-center justify-content-md-end mt-3 mt-md-0"> -->
+      <!-- Pagination -->
+      <!-- <pagination :options="paginationOptions" v-model="currentPage" :records="totalItems" :per-page="perPage"
+                  @paginate="getProducts" /> -->
+      <!-- End Pagination -->
+      <!-- </div> -->
+      <!-- </div> -->
     </div>
+    <!-- </div> -->
+    <!-- </div> -->
+    <!-- </div> -->
+    <!-- </div> -->
   </div>
 </template>
 
@@ -219,6 +232,16 @@ export default {
       }
       return this.isMobile;
     },
+
+    mtClass() {
+
+      if (this.isSplitScreen) {
+        return 'mt-50';
+      }
+      else {
+        return 'mt-1';
+      }
+    }
 
   },
   mounted() {

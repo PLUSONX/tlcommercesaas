@@ -1270,7 +1270,4 @@ export default {
   /* Only show it if it's meant to be visible on mobile */
   display: block !important;
 }
-
-// .content-split-nudge {
-//    margin-top: 50px !important; /* This physically pushes the site content down from the top */
-// }</style>
+</style>

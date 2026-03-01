@@ -1,15 +1,8 @@
 <template>
   <div class="banner-feature">
-    <!-- <p>Banner Feature Component Loaded!</p>
-    <p>Image Path: {{ imagePath }}</p>
-    <p>Settings: {{ settings }}</p> -->
-    
-    <img 
-      v-if="imagePath" 
-      :src="`/${imagePath}`"
-      :alt="settings?.feature_image_name || 'Feature Banner'"
-      class="feature-image"
-    />
+
+    <img v-if="imagePath" :src="`/${imagePath}`" :alt="settings?.feature_image_name || 'Feature Banner'"
+      class="feature-image" />
     <div v-else class="placeholder">
       No image available
     </div>
@@ -29,11 +22,6 @@ export default {
       default: null
     }
   },
-  mounted() {
-    // console.log("Banner Feature Vue mounted!!!");
-    // console.log("Image path:", this.imagePath);
-    // console.log("Settings:", this.settings);
-  }
 }
 </script>
 
@@ -45,6 +33,11 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  /*
+  border-radius: 12px;
+  overflow: hidden;
+  */
 }
 
 .feature-image {
