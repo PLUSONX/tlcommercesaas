@@ -1,14 +1,12 @@
 <template>
-  <div class="">
+  <!-- <div class=""> -->
+  <div :class="mtClass">
     <!-- <page-header :items="bItems" /> -->
     <div class="pb-60 light-bg">
       <template v-if="!loadingDetails">
         <template v-if="dealsInfo != null">
-          <div
-            class="flash-deals-banner p-0"
-            :style="{ background: dealsInfo.background_color }"
-            v-if="dealsInfo.banner"
-          >
+          <div class="flash-deals-banner p-0" :style="{ background: dealsInfo.background_color }"
+            v-if="dealsInfo.banner">
             <div class="text-center">
               <img :src="cleanImage(dealsInfo.banner)" :alt="dealsInfo.title" />
               <!-- <img :src="dealsInfo.banner" :alt="dealsInfo.title" /> -->
@@ -23,10 +21,7 @@
                   </h3>
                 </div>
                 <div class="col-md-7">
-                  <countdown
-                    class="justify-content-md-end"
-                    :deadline="dealsInfo.deadline"
-                  />
+                  <countdown class="justify-content-md-end" :deadline="dealsInfo.deadline" />
                 </div>
               </div>
             </div>
@@ -38,11 +33,12 @@
       </template>
       <div class="custom-container2" v-if="!loadingProducts">
         <div class="row mobile-gap-10">
-          <div
+          <!-- <div
             v-for="product in paginatedItems"
             :key="product.id"
             class="col-lg-2 col-md-3 col-6"
-          >
+          > -->
+          <div v-for="product in paginatedItems" :key="product.id" class="col-6">
             <single-product :item="product" styleEight />
           </div>
         </div>
@@ -50,37 +46,21 @@
         <div class="row align-items-center mt-10">
           <div class="col-md-6">
             <!-- Showing Per Page -->
-            <ShowingPerPage
-              class="text-center text-md-start"
-              :items-per-page="perPage"
-              :total-items="totalItems"
-              :current-page="currentPage"
-            />
+            <ShowingPerPage class="text-center text-md-start" :items-per-page="perPage" :total-items="totalItems"
+              :current-page="currentPage" />
             <!-- Showing Per Page -->
           </div>
-          <div
-            class="col-md-6 d-flex justify-content-center justify-content-md-end mt-3 mt-md-0"
-          >
+          <div class="col-md-6 d-flex justify-content-center justify-content-md-end mt-3 mt-md-0">
             <!-- Pagination -->
-            <pagination
-              v-if="totalItems > 0"
-              :options="paginationOptions"
-              v-model="currentPage"
-              :records="totalItems"
-              :per-page="perPage"
-              @paginate="getProducts"
-            />
+            <pagination v-if="totalItems > 0" :options="paginationOptions" v-model="currentPage" :records="totalItems"
+              :per-page="perPage" @paginate="getProducts" />
             <!-- End Pagination -->
           </div>
         </div>
       </div>
       <div class="custom-container2" v-if="loadingProducts">
         <div class="row mobile-gap-10">
-          <div
-            class="col-lg-2 col-md-3 col-6"
-            v-for="(item, index) in productSkeletons"
-            :key="index"
-          >
+          <div class="col-lg-2 col-md-3 col-6" v-for="(item, index) in productSkeletons" :key="index">
             <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
           </div>
         </div>
@@ -96,6 +76,7 @@ import ShowingPerPage from "@/components/ui/ShowingPerPage.vue";
 import Countdown from "@/components/ui/Countdown.vue";
 import Pagination from "v-pagination-3";
 const axios = require("axios").default;
+import { mapState, mapGetters } from "vuex";
 export default {
   name: "DealProducts",
   components: {
@@ -157,6 +138,29 @@ export default {
     };
   },
 
+  computed: {
+
+    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+    forcedMobile() {
+      // identical intent to MainLayout.vue
+      if (this.isSplitScreen) {
+        return true;
+      }
+      return this.isMobile;
+    },
+
+    mtClass() {
+
+      if (this.isSplitScreen) {
+        return 'mt-50';
+      }
+      else {
+        return 'mt-1';
+      }
+    }
+
+  },
   mounted() {
     this.getDealsInfo();
   },
@@ -165,7 +169,7 @@ export default {
 
     cleanImage(img) {
       if (!img) return '';
-      
+
       // Only remove '/public' prefix, keep the leading '/'
       return img.replace(/^\/public/, '');
     },

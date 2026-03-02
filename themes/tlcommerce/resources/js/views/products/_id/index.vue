@@ -222,7 +222,7 @@
 
     </div>
 
-    <custom-footer :item="productData" />
+    <custom-footer v-if="!isMobileView" :item="productData" />
 
     <!-- <custom-footer :item="product ? product.data : null" /> -->
 
@@ -348,6 +348,7 @@ export default {
       galleryKey: 1,
       sectionTitle: this.$t("Related Products"),
       productLoading: true,
+      isMobileView: false
     };
   },
   computed: {
@@ -360,14 +361,21 @@ export default {
     forcedMobile() {
       // identical intent to MainLayout.vue
       if (this.isSplitScreen) {
+        this.isMobileView = false;
         return true;
       }
+
+      this.isMobileView = true;
       return this.isMobile;
     },
+
+
 
     productData() {
       return this.product ?? null
     }
+
+
   },
   // computed: mapState({
   //   site_config: (state) => state.siteSettings,

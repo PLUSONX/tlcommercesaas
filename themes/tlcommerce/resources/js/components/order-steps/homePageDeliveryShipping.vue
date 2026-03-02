@@ -80,7 +80,7 @@
                                 <p class="alert alert-danger">{{ $t("No address found") }}</p>
                                 <router-link to="/dashboard/address" class="btn_underline">{{
                                     $t("Add new address")
-                                    }}</router-link>
+                                }}</router-link>
                             </div>
                         </div>
                     </div>
@@ -726,6 +726,15 @@ export default {
 </script>
 
 <style>
+@media (max-width: 768px) {
+
+    :deep(.v-select .vs__search),
+    :deep(.v-select .vs__selected),
+    :deep(.v-select input) {
+        font-size: 16px !important;
+    }
+}
+
 .address-card {
     position: relative;
     padding: 1.25rem;

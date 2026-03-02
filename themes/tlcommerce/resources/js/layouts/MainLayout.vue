@@ -1172,15 +1172,29 @@ export default {
 }
 
 .split-screen-feature {
-  position: relative;
+  position: sticky;
+  /* Adjust this value to match your header's actual height */
+  top: 80px;
+
+  /* The height should be the full viewport MINUS the header height */
+  height: calc(100vh - 80px);
+
   display: flex;
   align-items: center;
   justify-content: center;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  margin-top: 50px;
+  overflow: hidden;
 }
+
+// .split-screen-feature {
+//   position: absolute;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   position: sticky;
+//   top: 0;
+//   height: 100vh;
+//   // margin-top: 50px;
+// }
 
 /* Mobile: Force default layout */
 @media (max-width: 768px) {

@@ -127,23 +127,69 @@ export default {
 
     swiperBreakpoints() {
       if (this.forcedMobile) {
-        // Force 2 slides regardless of actual screen width
         return {
-          '0': { slidesPerView: 2, spaceBetween: 16 },
+          // Show 4 small icons instead of 2 on mobile
+          '0': { slidesPerView: 4, spaceBetween: 10 },
         };
       }
       return {
-        '0': { slidesPerView: 2, spaceBetween: 16 },
-        '768': { slidesPerView: 3, spaceBetween: 20 },
-        '1024': { slidesPerView: 4, spaceBetween: 20 },
-        '1440': { slidesPerView: 5, spaceBetween: 20 },
+        '0': { slidesPerView: 4, spaceBetween: 10 },   // Mobile
+        '768': { slidesPerView: 6, spaceBetween: 15 },  // Tablet
+        '1024': { slidesPerView: 8, spaceBetween: 20 }, // Laptop
+        '1440': { slidesPerView: 10, spaceBetween: 20 }, // Desktop
       };
     },
+
+    // swiperBreakpoints() {
+    //   if (this.forcedMobile) {
+    //     // Force 2 slides regardless of actual screen width
+    //     return {
+    //       '0': { slidesPerView: 2, spaceBetween: 16 },
+    //     };
+    //   }
+    //   return {
+    //     '0': { slidesPerView: 2, spaceBetween: 16 },
+    //     '768': { slidesPerView: 3, spaceBetween: 20 },
+    //     '1024': { slidesPerView: 4, spaceBetween: 20 },
+    //     '1440': { slidesPerView: 5, spaceBetween: 20 },
+    //   };
+    // },
 
   },
 };
 </script>
 <style scoped>
+/* .category-slider {
+
+  .swiper-slide,
+  .swiper-slide * {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .swiper-slide {
+    padding: 0 !important;
+    display: flex;
+    justify-content: center;
+  }
+} */
+
+:deep(.category-slider .swiper-slide) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  /* Ensure no 'dimming' effect on inactive slides */
+  opacity: 1 !important;
+}
+
+/* Force the router-link inside to be transparent always */
+:deep(.category-card) {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
 .category-section {
   background-image: var(--section-bg-image);
   background-color: var(--section-background-color);
