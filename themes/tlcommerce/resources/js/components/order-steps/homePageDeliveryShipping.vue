@@ -80,7 +80,7 @@
                                 <p class="alert alert-danger">{{ $t("No address found") }}</p>
                                 <router-link to="/dashboard/address" class="btn_underline">{{
                                     $t("Add new address")
-                                }}</router-link>
+                                    }}</router-link>
                             </div>
                         </div>
                     </div>
@@ -726,12 +726,22 @@ export default {
 </script>
 
 <style>
-@media (max-width: 768px) {
+@media screen and (max-width: 768px) {
 
+    /* 1. Force the font to 16px to satisfy the browser's zoom-check */
     :deep(.v-select .vs__search),
     :deep(.v-select .vs__selected),
     :deep(.v-select input) {
         font-size: 16px !important;
+    }
+
+    /* 2. If the text now looks too big, scale it back down visually */
+    /* This keeps the "hit box" large but the text small */
+    :deep(.v-select .vs__dropdown-toggle) {
+        transform: scale(0.9);
+        transform-origin: left center;
+        width: 111%;
+        /* Compensate for the scale-down to keep it full width */
     }
 }
 
