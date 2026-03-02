@@ -89,7 +89,10 @@
         <link rel="shortcut icon" href="{{ asset('backend/assets/img/favicon.png') }}">
         <!-- <link rel="shortcut icon" href="{{ asset('/public/backend/assets/img/favicon.png') }}"> -->
     @endif
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
 
     @yield('seo')
     <meta property="og:image:width" content="1200" />
