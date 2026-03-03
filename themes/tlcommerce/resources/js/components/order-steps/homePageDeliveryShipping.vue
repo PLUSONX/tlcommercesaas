@@ -95,10 +95,12 @@
 
 
                 <!--Guest Shipping Address-->
+                <!-- <div class="row guest-shipping-address p-1 mb-0" v-if="isActiveHomeDelivery"> -->
                 <div class="row guest-shipping-address p-1 mb-0" v-if="isActiveHomeDelivery">
-                    <div class="col-12">
+                    <!-- <div class="col-12"> -->
+                    <div class="header-title px-4">
                         <!-- <h5>{{ $t("Shipping Details") }}</h5> -->
-                        <h3>{{ $t("Deliver To") }}</h3>
+                        <h3 class="product_header mb-0">{{ $t("Deliver To") }}</h3>
                     </div>
                     <!--
                     <div class="form-group mb-20 col-lg-6"
