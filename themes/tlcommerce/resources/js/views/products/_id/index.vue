@@ -761,9 +761,9 @@ export default {
 .page-container {
   display: flex;
   flex-direction: column;
-  height: 95vh;
+  // height: 95vh;
   // height: 100dvh; 
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  //padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .productDetails {

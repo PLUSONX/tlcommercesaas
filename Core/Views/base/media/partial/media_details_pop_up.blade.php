@@ -25,7 +25,8 @@
         </div>
         <div class="word-break">
             <span class="font-weight-bolder">{{ translate('File URL:') }} </span>
-            <input class="theme-input-style" id="file_url" type="text" value="{{ url($details->path) }}" readonly>
+            <!-- <input class="theme-input-style" id="file_url" type="text" value="{{ url($details->path) }}" readonly> -->
+            <input class="theme-input-style" id="file_url" type="text" value="{{ url($media_path) }}" readonly>
         </div>
         <div>
             <span class="font-weight-bolder">{{ translate('File Type:') }} </span>
@@ -48,7 +49,9 @@
             <span id="updated_at">{{ $details->updated_at }}</span>
         </div>
         <div class="d-flex gap-10 justify-content-end flex-wrap mt-2">
-            <a type="button" id="download_file" target="_blank" href="{{ url($details->path) }}" class="btn sm "
+            <!-- <a type="button" id="download_file" target="_blank" href="{{ url($details->path) }}" class="btn sm "
+                data-clipboard-target="#attachment-details-copy-link"> -->
+            <a type="button" id="download_file" target="_blank" href="{{ url($media_path) }}" class="btn sm "
                 data-clipboard-target="#attachment-details-copy-link">
                 {{ translate('Download') }}
             </a>
