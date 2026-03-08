@@ -210,7 +210,8 @@
                 class="col-lg-5 col-6"
               > -->
     <div v-for="product in paginatedItems" :key="product.id" class="col-6">
-      <single-product :item="product" styleEight />
+      <single-product :item="product" styleEight style="transform: scaleY(0.75); transform-origin: top;" />
+      <!-- <single-product :item="product" styleEight /> -->
     </div>
   </div>
   <!-- <div class="row align-items-center mt-10" v-if="!productsLoading">
