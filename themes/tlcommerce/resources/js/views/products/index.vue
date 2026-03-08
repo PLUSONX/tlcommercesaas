@@ -210,7 +210,6 @@
                 class="col-lg-5 col-6"
               > -->
     <div v-for="product in paginatedItems" :key="product.id" class="col-6">
-      <!-- <single-product :item="product" styleEight style="max-height: 300px; overflow: hidden;" /> -->
       <single-product :item="product" styleEight />
     </div>
   </div>
