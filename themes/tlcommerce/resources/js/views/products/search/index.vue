@@ -100,13 +100,13 @@
                       <div class="ant-tag" v-if="brand_filter.id">
                         <span class="ant-tag-text">{{
                           brand_filter.name
-                        }}</span>
+                          }}</span>
                         <span class="material-icons" @click.prevent="removeTag('brand')">close</span>
                       </div>
                       <div class="ant-tag" v-if="category_filter.id">
                         <span class="ant-tag-text">{{
                           category_filter.name
-                        }}</span>
+                          }}</span>
                         <span class="material-icons" @click.prevent="removeTag('category')">close</span>
                       </div>
                       <div class="ant-tag" v-if="rating_filter != null">
@@ -123,7 +123,7 @@
 
                       <span class="clear-all" @click.prevent="removeAllTag">{{
                         $t("CLEAR ALL")
-                      }}</span>
+                        }}</span>
                     </div>
                   </div>
                   <!--End Filter items-->
@@ -136,7 +136,10 @@
               </div>
             </div>
             <div class="row mobile-gap-10" v-if="!productsLoading">
-              <div v-for="product in paginatedItems" :key="product.id" class="col-lg-3 col-6">
+              <!-- <div v-for="product in paginatedItems" :key="product.id" class="col-lg-3 col-6">
+                <single-product :item="product" styleEight />
+              </div> -->
+              <div v-for="product in paginatedItems" :key="product.id" class="col-6">
                 <single-product :item="product" styleEight />
               </div>
             </div>
