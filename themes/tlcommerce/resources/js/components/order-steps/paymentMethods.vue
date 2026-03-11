@@ -18,7 +18,7 @@
       <div class="col-12">
         <label class="font-weight-bold fz-12 mb-2">{{
           $t("Payment method")
-        }}</label>
+          }}</label>
         <ul class="list-unstyled form-selector-list mb-3">
           <li class="single-form-selector" v-for="(payment, index) in paymentMethods" :key="index">
             <span class="custom-radio-btn">
@@ -151,7 +151,9 @@
       <!--Action Area-->
       <div class="col-12">
         <div class="d-flex flex-wrap justify-content-between">
-          <button type="button" class="btn btn_border mb-20 m-w-100 justify-content-center"
+          <!-- <button type="button" class="btn btn_border mb-20 m-w-100 justify-content-center"
+            @click.prevent="goPreviousStep"> -->
+          <button type="button" class="btn btn_fill mb-20 m-w-100 justify-content-center"
             @click.prevent="goPreviousStep">
             <span class="material-icons me-2"> arrow_back </span>
             {{ $t("Previous") }}

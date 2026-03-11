@@ -1,46 +1,28 @@
 <template>
   <div class="shadow-card mb-30">
     <template v-if="!loading">
-      <div
-        class="d-flex flex-wrap align-items-center justify-content-between mb-3"
-      >
+      <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
         <h3 class="checkout-title">{{ $t("Review Order") }}</h3>
       </div>
       <!--Shipping Options-->
       <div class="row mb-4">
-        <div
-          class="col-12 mb-2 mt-2 single-package border-bottom"
-          v-for="(shipping_package, index2) in shippingPackages"
-          :key="index2"
-        >
+        <div class="col-12 mb-2 mt-2 single-package border-bottom"
+          v-for="(shipping_package, index2) in shippingPackages" :key="index2">
           <div class="row product-content mb-2">
             <div class="image col-4 col-lg-3">
-              <router-link
-                :to="`/products/${shipping_package.product.permalink}`"
-                class="product-img"
-              >
-                <img
-                  :src="shipping_package.product.image"
-                  :alt="shipping_package.product.name"
-                  class="cart-image-review"
-                />
+              <router-link :to="`/products/${shipping_package.product.permalink}`" class="product-img">
+                <img :src="shipping_package.product.image" :alt="shipping_package.product.name"
+                  class="cart-image-review" />
               </router-link>
             </div>
             <div class="description col-8 col-lg-9">
-              <router-link
-                :to="`/products/${shipping_package.product.permalink}`"
-              >
+              <router-link :to="`/products/${shipping_package.product.permalink}`">
                 <h5 class="product_name text-capitalize fz-sm-14">
                   {{ shipping_package.product.name }}
                 </h5>
               </router-link>
-              <p
-                class="product-variant mb-1 fz-sm-12"
-                v-if="shipping_package.product.variant"
-              >
-                <product-variant
-                  :variant="shipping_package.product.variant"
-                ></product-variant>
+              <p class="product-variant mb-1 fz-sm-12" v-if="shipping_package.product.variant">
+                <product-variant :variant="shipping_package.product.variant"></product-variant>
               </p>
               <p class="mb-1 fz-sm-12">
                 {{ $t("Qty") }}: {{ shipping_package.product.quantity }}
@@ -49,13 +31,10 @@
                 <the-currency :amount="shipping_package.product.unitPrice">
                 </the-currency>
               </p>
-              <div
-                class="extra-addons-wrap d-flex flex-wrap"
-                v-if="
-                  shipping_package.product.shop_name != null &&
-                  shipping_package.product.shop_slug
-                "
-              >
+              <div class="extra-addons-wrap d-flex flex-wrap" v-if="
+                shipping_package.product.shop_name != null &&
+                shipping_package.product.shop_slug
+              ">
                 <!-- <p class="product-shop fz-12">
                   {{ $t("Sold By") }}
                   <router-link
@@ -69,22 +48,16 @@
               </div>
             </div>
           </div>
-          <div
-            v-if="
-              isActiveHomeDelivery &&
-              !isActivePickupPoint &&
-              config?.shipping_option == 3
-            "
-            class="row shipping-content"
-            @click.prevent="openShippingOptionPopup(shipping_package.id)"
-          >
+          <div v-if="
+            isActiveHomeDelivery &&
+            !isActivePickupPoint &&
+            config?.shipping_option == 3
+          " class="row shipping-content" @click.prevent="openShippingOptionPopup(shipping_package.id)">
             <div class="pl-shipping large">
               <div class="pl-shipping-left">
                 <div class="pl-shipping-left-title">
                   {{ $t("Shipping") }}:
-                  <the-currency
-                    :amount="shipping_package.default_option.shipping_cost"
-                  ></the-currency>
+                  <the-currency :amount="shipping_package.default_option.shipping_cost"></the-currency>
                 </div>
                 <div class="pl-shipping-left-cost">
                   {{ $t("Estimated Delivery Time") }}:
@@ -103,20 +76,18 @@
       <!--Action area-->
       <div class="row">
         <div class="col-12 d-flex flex-wrap justify-content-between">
-          <button
+          <!-- <button
             type="button"
             class="btn btn_border mb-10 m-w-100 justify-content-center"
             @click.prevent="goPreviousStep"
-          >
+          > -->
+          <button type="button" class="btn btn_fill mb-10 m-w-100 justify-content-center"
+            @click.prevent="goPreviousStep">
             <span class="material-icons me-2"> arrow_back </span>
             {{ $t("Previous") }}
           </button>
-          <button
-            type="button"
-            class="btn btn_fill mb-10 m-w-100 justify-content-center"
-            :disabled="deliveryNotAvailable"
-            @click.prevent="goNextStep"
-          >
+          <button type="button" class="btn btn_fill mb-10 m-w-100 justify-content-center"
+            :disabled="deliveryNotAvailable" @click.prevent="goNextStep">
             {{ $t("Continue") }}
             <span class="material-icons ms-2"> arrow_forward </span>
           </button>
@@ -125,79 +96,43 @@
       <!--End Action Area-->
     </template>
     <div class="row mb-4" v-if="loading">
-      <skeleton
-        class="col-12 mb-20 single-package border-bottom"
-        height="70px"
-      ></skeleton>
-      <skeleton
-        class="col-12 mb-2 mt-2 single-package border-bottom"
-        height="150px"
-      ></skeleton>
-      <skeleton
-        class="col-12 mb-2 mt-2 single-package border-bottom"
-        height="150px"
-      ></skeleton>
+      <skeleton class="col-12 mb-20 single-package border-bottom" height="70px"></skeleton>
+      <skeleton class="col-12 mb-2 mt-2 single-package border-bottom" height="150px"></skeleton>
+      <skeleton class="col-12 mb-2 mt-2 single-package border-bottom" height="150px"></skeleton>
     </div>
 
     <!--Shipping Address picker -->
-    <CModal
-      :visible="visibleShippingOptionPicker"
-      size="md"
-      @close="
-        () => {
-          visibleShippingOptionPicker = false;
-        }
-      "
-    >
+    <CModal :visible="visibleShippingOptionPicker" size="md" @close="
+      () => {
+        visibleShippingOptionPicker = false;
+      }
+    ">
       <CModalHeader>
         <CModalTitle>{{ $t("Shipping Options") }}</CModalTitle>
-        <button
-          class="btn-circle bg-black size-35"
-          @click.prevent="
-            () => {
-              visibleShippingOptionPicker = false;
-            }
-          "
-        >
+        <button class="btn-circle bg-black size-35" @click.prevent="
+          () => {
+            visibleShippingOptionPicker = false;
+          }
+        ">
           <base-icon-svg name="close" :width="10" :height="10" />
         </button>
       </CModalHeader>
       <CModalBody>
         <div class="row save-adderss">
-          <div
-            class="col-lg-12 mb-4"
-            v-for="(option, index) in shippingOptions.options.data"
-            :key="index"
-          >
-            <span
-              class="custom-radio-btn"
-              ref="optionRadio"
-              :class="{
-                active: option.id == shippingOptions.default_option.id,
-              }"
-            >
+          <div class="col-lg-12 mb-4" v-for="(option, index) in shippingOptions.options.data" :key="index">
+            <span class="custom-radio-btn" ref="optionRadio" :class="{
+              active: option.id == shippingOptions.default_option.id,
+            }">
               <label class="radio-label">
-                <input
-                  name="shippingOption"
-                  type="radio"
-                  :value="option"
-                  v-model="shippingOptions.default_option"
-                  :checked="option.id == shippingOptions.default_option.id"
-                  @change.prevent="changeShippingOption"
-                />
+                <input name="shippingOption" type="radio" :value="option" v-model="shippingOptions.default_option"
+                  :checked="option.id == shippingOptions.default_option.id" @change.prevent="changeShippingOption" />
                 <span class="radio-text">
                   <span class="font-weight-bold"> {{ option.title }} </span>
-                  <small class="m-2" v-if="option.by"
-                    >{{ $t("via") }} {{ option.by }}</small
-                  >
+                  <small class="m-2" v-if="option.by">{{ $t("via") }} {{ option.by }}</small>
                   <br />
                   <span>
                     {{ $t("Shipping Cost") }}:
-                    <the-currency
-                      :amount="option.shipping_cost"
-                      class="ml-1"
-                    ></the-currency
-                  ></span>
+                    <the-currency :amount="option.shipping_cost" class="ml-1"></the-currency></span>
                   <br />
                   <span>
                     From {{ option.shipping_from }} to
@@ -206,10 +141,8 @@
                     {{ customerShippingInfo.country.name }}.
                   </span>
                   <br />
-                  <span v-if="option.shipping_time"
-                    >{{ $t("Estimated Delivery:") }}
-                    {{ option.shipping_time }}</span
-                  >
+                  <span v-if="option.shipping_time">{{ $t("Estimated Delivery:") }}
+                    {{ option.shipping_time }}</span>
                 </span>
               </label>
             </span>
@@ -300,13 +233,13 @@ export default {
         this.$store.state.pickupPoint != null
           ? this.$store.state.pickupPoint
           : {
-              id: "",
-              name: "",
-              location: "",
-              phone: "",
-              zone_id: null,
-              zone_name: "",
-            };
+            id: "",
+            name: "",
+            location: "",
+            phone: "",
+            zone_id: null,
+            zone_name: "",
+          };
       if (this.isActiveHomeDelivery) {
         this.city_id =
           this.customerShippingInfo.city != null
@@ -451,17 +384,21 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "../../assets/sass/00-abstracts/01-variables";
+
 .cart-image {
   width: 90px;
   height: 90px;
 }
+
 .pl-store-container .pl-shipping:last-child {
   padding-bottom: 0;
 }
+
 .pl-shipping.large {
   margin-top: 0;
   cursor: pointer;
 }
+
 .pl-shipping {
   display: -webkit-box;
   display: -webkit-flex;
@@ -482,6 +419,7 @@ export default {
   position: relative;
   padding-bottom: 12px;
 }
+
 .pl-shipping.large .pl-shipping-left {
   display: -webkit-box;
   display: -webkit-flex;
@@ -493,24 +431,29 @@ export default {
   -ms-flex-direction: column;
   flex-direction: column;
 }
+
 .pl-shipping.large .pl-shipping-left .pl-shipping-left-title {
   margin-right: 6px;
 }
+
 .pl-shipping-left-title {
   font-family: $title-font;
   font-weight: 700;
   color: #222;
   letter-spacing: 0;
 }
+
 .pl-shipping.large .pl-shipping-left .pl-shipping-left-cost {
   font-weight: 700;
 }
+
 .pl-shipping-left-cost {
   font-family: $title-font;
   font-size: 10px;
   color: #999;
   letter-spacing: 0;
 }
+
 .pl-shipping-left-tags,
 .pl-shipping-left-tags-item {
   display: -webkit-box;
@@ -518,14 +461,17 @@ export default {
   display: -ms-flexbox;
   display: flex;
 }
+
 .pl-shipping-left-tags {
   -webkit-flex-wrap: nowrap;
   -ms-flex-wrap: nowrap;
   flex-wrap: nowrap;
 }
+
 .pl-shipping-left {
   text-align: start;
 }
+
 .pl-shipping-right {
   height: -webkit-fit-content;
   height: -moz-fit-content;
@@ -542,16 +488,19 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .product-price {
   color: #3b3b3b;
   font-size: 16px;
   font-weight: 700;
 }
+
 @media (max-width: 575px) {
   .fz-sm-12 {
     font-size: 12px !important;
     line-height: 14px !important;
   }
+
   .fz-sm-14 {
     font-size: 14px !important;
     line-height: 14px !important;

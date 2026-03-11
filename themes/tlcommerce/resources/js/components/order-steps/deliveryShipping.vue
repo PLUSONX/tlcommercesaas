@@ -3,7 +3,7 @@
     <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
       <h3 class="checkout-title">{{ $t("Delivery & Shipping") }}</h3>
       <router-link to="/dashboard/address" class="btn_underline" v-if="isCustomerLogin">{{ $t("Manage Address")
-      }}</router-link>
+        }}</router-link>
     </div>
 
     <!--Delivery Options-->
@@ -117,7 +117,7 @@
                 <p class="alert alert-danger">{{ $t("No address found") }}</p>
                 <router-link to="/dashboard/address" class="btn_underline">{{
                   $t("Add new address")
-                }}</router-link>
+                  }}</router-link>
               </div>
             </div>
           </div>
@@ -621,8 +621,9 @@
     <!--Action area-->
     <div class="row">
       <div class="col-12 d-flex flex-wrap justify-content-between">
-        <button type="button" class="btn btn_border m-w-100 mb-10 justify-content-center"
-          @click.prevent="goPreviousStep">
+        <!-- <button type="button" class="btn btn_border m-w-100 mb-10 justify-content-center"
+          @click.prevent="goPreviousStep"> -->
+        <button type="button" class="btn btn_fill m-w-100 mb-10 justify-content-center" @click.prevent="goPreviousStep">
           <span class="material-icons me-2"> arrow_back </span>
           {{ $t("Previous") }}
         </button>
@@ -670,12 +671,12 @@
                       <span>
                         <router-link to="#" class="product-name">{{
                           tdata.name
-                        }}</router-link>
+                          }}</router-link>
                         <div class="extra-addons-wrap d-flex flex-wrap">
                           <span class="product-variant" v-if="tdata.variant">
                             <span class="font-weight-medium">{{
                               tdata.variant
-                            }}</span>
+                              }}</span>
                           </span>
                         </div>
                       </span>

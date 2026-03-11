@@ -1,5 +1,5 @@
 <template>
-  <div class=""  :class="{
+  <div class="" :class="{
     'force-mobile-layout': forcedMobile,
     'mobile-content-wrapper': forcedMobile
   }">
@@ -14,18 +14,10 @@
               <h3 class="checkout-title">{{ $t("Your Cart") }}</h3>
               <!--Items List-->
               <div class="row m-0">
-                <div
-                  class="align-items-center border-bottom col-12 d-flex justify-content-between pb-10 px-0"
-                >
+                <div class="align-items-center border-bottom col-12 d-flex justify-content-between pb-10 px-0">
                   <div class="d-flex gap-2 selector">
-                    <input
-                      type="checkbox"
-                      class="item-selector text-black"
-                      v-model="all_selected"
-                      :checked="all_selected"
-                      @click="selectOrDeselectItems"
-                      id="all-selector"
-                    />
+                    <input type="checkbox" class="item-selector text-black" v-model="all_selected"
+                      :checked="all_selected" @click="selectOrDeselectItems" id="all-selector" />
                     <label class="fz-12 pt-1 text-black" for="all-selector">
                       {{ $t("SELECT ALL") }}
                     </label>
@@ -38,33 +30,16 @@
                   </div>
                 </div>
 
-                <div
-                  class="col-12 mb-2 mt-2 px-0 single-package border-bottom"
-                  v-for="tdata in tableData"
-                  :key="tdata.id"
-                  :class="{
+                <div class="col-12 mb-2 mt-2 px-0 single-package border-bottom" v-for="tdata in tableData"
+                  :key="tdata.id" :class="{
                     disableCart: tdata.is_available == 2,
-                  }"
-                >
+                  }">
                   <div class="row product-content mb-2">
-                    <div
-                      class="align-items-center col-4 col-lg-2 d-flex gap-3 image"
-                    >
-                      <input
-                        type="checkbox"
-                        v-model="tdata.is_selected"
-                        :checked="tdata.is_selected"
-                        class="item-selector"
-                      />
-                      <router-link
-                        :to="`/products/${tdata.permalink}`"
-                        class="product-img d-flex align-items-center"
-                      >
-                        <img
-                          :src="tdata.image"
-                          :alt="tdata.name"
-                          class="cart-image-review"
-                        />
+                    <div class="align-items-center col-4 col-lg-2 d-flex gap-3 image">
+                      <input type="checkbox" v-model="tdata.is_selected" :checked="tdata.is_selected"
+                        class="item-selector" />
+                      <router-link :to="`/products/${tdata.permalink}`" class="product-img d-flex align-items-center">
+                        <img :src="tdata.image" :alt="tdata.name" class="cart-image-review" />
                       </router-link>
                     </div>
                     <div class="col-lg-10 col-8">
@@ -75,13 +50,8 @@
                               {{ tdata.name }}
                             </h5>
                           </router-link>
-                          <p
-                            class="product-variant mb-1 fz-sm-12"
-                            v-if="tdata.variant"
-                          >
-                            <product-variant
-                              :variant="tdata.variant"
-                            ></product-variant>
+                          <p class="product-variant mb-1 fz-sm-12" v-if="tdata.variant">
+                            <product-variant :variant="tdata.variant"></product-variant>
                           </p>
                           <p class="mb-1 product-variant fz-sm-12">
                             <span>{{ $t("Unit Price") }}: </span>
@@ -89,15 +59,11 @@
                             </the-currency>
                           </p>
                           <p class="mb-1 product-price c1 fz-sm-12">
-                            <the-currency
-                              :amount="tdata.unitPrice * tdata.quantity"
-                            >
+                            <the-currency :amount="tdata.unitPrice * tdata.quantity">
                             </the-currency>
                           </p>
-                          <div
-                            class="extra-addons-wrap d-flex flex-wrap"
-                            v-if="tdata.shop_name != null && tdata.shop_slug"
-                          >
+                          <div class="extra-addons-wrap d-flex flex-wrap"
+                            v-if="tdata.shop_name != null && tdata.shop_slug">
                             <!-- <p class="product-shop fz-12">
                               {{ $t("Sold By") }}
                               <router-link
@@ -110,10 +76,7 @@
                             </p> -->
                           </div>
                           <!--Attachment-->
-                          <div
-                            class="extra-addons-wrap d-flex flex-wrap mb-1"
-                            v-if="tdata.attachment != null"
-                          >
+                          <div class="extra-addons-wrap d-flex flex-wrap mb-1" v-if="tdata.attachment != null">
                             <div class="product-document">
                               <p class="font-weight-medium fz-12">
                                 {{ $t("Attachment :") }}
@@ -123,25 +86,18 @@
                           </div>
                           <!--End Attachment-->
                         </div>
-                        <div
-                          class="col-12 col-lg-4 d-flex justify-content-lg-end pl-0"
-                        >
+                        <div class="col-12 col-lg-4 d-flex justify-content-lg-end pl-0">
                           <div
-                            class="align-items-center cart-actions d-flex gap-4 justify-content-between justify-content-lg-end w-100"
-                          >
+                            class="align-items-center cart-actions d-flex gap-4 justify-content-between justify-content-lg-end w-100">
                             <!--Quantity-->
                             <div class="quantity-input text-center d-flex">
                               <button
                                 class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
-                                @click.prevent="decrease(tdata.uid)"
-                              >
+                                @click.prevent="decrease(tdata.uid)">
                                 <span class="material-icons"> remove </span>
                               </button>
-                              <input
-                                v-model="tdata.quantity"
-                                type="number"
-                                class="border-0 text-center font-weight-bold w-100"
-                                @change="
+                              <input v-model="tdata.quantity" type="number"
+                                class="border-0 text-center font-weight-bold w-100" @change="
                                   () => {
                                     if (tdata.quantity > tdata.max_item) {
                                       tdata.quantity = tdata.max_item;
@@ -154,21 +110,16 @@
                                     }
                                     updateCartItems(tdata);
                                   }
-                                "
-                              />
+                                " />
                               <button
                                 class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
-                                @click.prevent="increase(tdata.uid)"
-                              >
+                                @click.prevent="increase(tdata.uid)">
                                 <span class="material-icons"> add </span>
                               </button>
                             </div>
                             <!--End Quantity-->
                             <!--Remove btn-->
-                            <span
-                              class="icon-wrap d-flex bg-light btn-circle"
-                              @click.prevent="removeItem(tdata.uid)"
-                            >
+                            <span class="icon-wrap d-flex bg-light btn-circle" @click.prevent="removeItem(tdata.uid)">
                               <span class="material-icons"> delete </span>
                             </span>
                             <!--End remove btn-->
@@ -182,39 +133,24 @@
               <!--End Items-->
               <!--Minimum order amount alert-->
               <div class="col-12 d-lg-block d-lg-flex d-none flex-wrap my-2">
-                <p
-                  class="alert alert-danger text-center w-100"
-                  v-if="
-                    !proceedToCheckout &&
-                    config?.enable_minumun_order_amount == 1
-                  "
-                >
+                <p class="alert alert-danger text-center w-100" v-if="
+                  !proceedToCheckout &&
+                  config?.enable_minumun_order_amount == 1
+                ">
                   {{ $t("Minimum Order Amount") }}
-                  <the-currency
-                    :amount="config.min_order_amount"
-                    tag="span"
-                  ></the-currency>
+                  <the-currency :amount="config.min_order_amount" tag="span"></the-currency>
                 </p>
               </div>
               <!--End minimum order amount alert-->
               <!--Desktop Action Buttons-->
-              <div
-                class="d-none d-lg-block mt-3 col-12 d-lg-flex flex-wrap justify-content-between"
-              >
-                <router-link
-                  to="/products"
-                  class="btn btn_border justify-content-center m-w-100 mb-20"
-                >
+              <div class="d-none d-lg-block mt-3 col-12 d-lg-flex flex-wrap justify-content-between">
+                <router-link to="/products" class="btn btn_border justify-content-center m-w-100 mb-20">
                   <span class="material-icons me-2"> arrow_back </span>
                   {{ $t("Continue Shopping") }}
                 </router-link>
 
-                <button
-                  type="button"
-                  class="btn btn_fill mb-20 justify-content-center m-w-100"
-                  @click.prevent="createOrder"
-                  :disabled="!proceedToCheckout"
-                >
+                <button type="button" class="btn btn_fill mb-20 justify-content-center m-w-100"
+                  @click.prevent="createOrder" :disabled="!proceedToCheckout">
                   {{ $t("Checkout") }}
                   <span class="material-icons ms-2"> arrow_forward </span>
                 </button>
@@ -232,30 +168,30 @@
                   <!--Coupon Apply Area-->
                   <div v-if="enableApplyCoupon" class="coupon">
                     <div class="form-group">
-                      <input
-                        class="form-control me-1"
-                        type="text"
-                        v-model="coupon_code"
-                        v-bind:placeholder="$t('Your Coupon')"
-                      />
-                      <button
-                        type="submit"
-                        class="btn coupon-btn btn_border py-0"
-                        :disabled="couponApplying"
-                        @click.prevent="applyCoupon"
-                      >
+                      <input class="form-control me-1" type="text" v-model="coupon_code"
+                        v-bind:placeholder="$t('Your Coupon')" />
+                      <!-- <button type="submit" class="btn coupon-btn btn_border py-0" :disabled="couponApplying"
+                        @click.prevent="applyCoupon">
                         <span v-if="couponApplying">
-                          <CSpinner
-                            component="span"
-                            size="sm"
-                            aria-hidden="true"
-                          />
+                          <CSpinner component="span" size="sm" aria-hidden="true" />
+                          {{ $t("Wait") }}
+                        </span>
+                        <span v-else>
+                          {{ $t("Apply") }}
+                        </span>
+                      </button> -->
+
+                      <button type="submit" class="btn coupon-btn btn_fill py-0" :disabled="couponApplying"
+                        @click.prevent="applyCoupon">
+                        <span v-if="couponApplying">
+                          <CSpinner component="span" size="sm" aria-hidden="true" />
                           {{ $t("Wait") }}
                         </span>
                         <span v-else>
                           {{ $t("Apply") }}
                         </span>
                       </button>
+
                     </div>
                   </div>
                   <!--End Coupon apply area-->
@@ -268,50 +204,33 @@
                         <td>
                           <span class="woocommerce-Price-amount amount">
                             <bdi>
-                              <span
-                                class="woocommerce-Price-currencySymbol"
-                              ></span>
-                              <the-currency
-                                :amount="totalUnitPrice"
-                              ></the-currency>
+                              <span class="woocommerce-Price-currencySymbol"></span>
+                              <the-currency :amount="totalUnitPrice"></the-currency>
                             </bdi>
                           </span>
                         </td>
                       </tr>
                       <!--End Sub total-->
                       <!--Coupon discount-->
-                      <template
-                        v-if="
-                          couponDiscounts.length > 0 &&
-                          config?.enable_coupon_in_checkout ==
-                            this.enums.status.ACTIVE
-                        "
-                      >
-                        <tr
-                          class="order-savings font-weight-regular"
-                          v-for="(discount, index) in couponDiscounts"
-                          :key="index"
-                        >
+                      <template v-if="
+                        couponDiscounts.length > 0 &&
+                        config?.enable_coupon_in_checkout ==
+                        this.enums.status.ACTIVE
+                      ">
+                        <tr class="order-savings font-weight-regular" v-for="(discount, index) in couponDiscounts"
+                          :key="index">
                           <td class="d-flex">
                             <span class="c1">{{ discount.coupon_code }}</span>
-                            <a
-                              href="#"
-                              class="material-icons c1 mt-1"
-                              @click.prevent="
-                                removeCoupon(discount.coupon_code)
-                              "
-                              >delete
+                            <a href="#" class="material-icons c1 mt-1" @click.prevent="
+                              removeCoupon(discount.coupon_code)
+                              ">delete
                             </a>
                           </td>
                           <td>
                             <span class="woocommerce-Price-amount amount c1">
                               <bdi>
-                                <span class="woocommerce-Price-currencySymbol"
-                                  >-</span
-                                >
-                                <the-currency
-                                  :amount="discount.discount"
-                                ></the-currency>
+                                <span class="woocommerce-Price-currencySymbol">-</span>
+                                <the-currency :amount="discount.discount"></the-currency>
                               </bdi>
                             </span>
                           </td>
@@ -323,9 +242,7 @@
                           <td>
                             <span class="woocommerce-Price-amount amount">
                               <bdi>
-                                <span
-                                  class="woocommerce-Price-currencySymbol"
-                                ></span>
+                                <span class="woocommerce-Price-currencySymbol"></span>
                                 <the-currency :amount="0"></the-currency>
                               </bdi>
                             </span>
@@ -339,12 +256,8 @@
                         <td>
                           <span class="woocommerce-Price-amount amount">
                             <bdi>
-                              <span
-                                class="woocommerce-Price-currencySymbol"
-                              ></span>
-                              <the-currency
-                                :amount="totalUnitPrice - totalDiscount"
-                              ></the-currency>
+                              <span class="woocommerce-Price-currencySymbol"></span>
+                              <the-currency :amount="totalUnitPrice - totalDiscount"></the-currency>
                             </bdi>
                           </span>
                         </td>
@@ -355,39 +268,28 @@
                   <!--End Summary-->
                   <!--Minimum order amount alert-->
                   <div class="d-block d-lg-none mt-3 col-12 d-flex flex-wrap">
-                    <p
-                      class="text text-danger"
-                      v-if="
-                        !proceedToCheckout &&
-                        config?.enable_minumun_order_amount == 1
-                      "
-                    >
+                    <p class="text text-danger" v-if="
+                      !proceedToCheckout &&
+                      config?.enable_minumun_order_amount == 1
+                    ">
                       {{ $t("Minimum Order Amount") }}
-                      <the-currency
-                        :amount="config.min_order_amount"
-                        tag="span"
-                      ></the-currency>
+                      <the-currency :amount="config.min_order_amount" tag="span"></the-currency>
                     </p>
                   </div>
                   <!--End minimum order amount alert-->
                   <!--Mobile Action Buttons-->
-                  <div
-                    class="d-block d-lg-none mt-3 col-12 d-flex flex-wrap justify-content-between"
-                  >
-                    <router-link
+                  <div class="d-block d-lg-none mt-3 col-12 d-flex flex-wrap justify-content-between">
+                    <!-- <router-link
                       to="/products"
                       class="btn btn_border justify-content-center m-w-100 mb-20"
-                    >
+                    > -->
+                    <router-link to="/products" class="btn btn_fill justify-content-center m-w-100 mb-20">
                       <span class="material-icons me-2"> arrow_back </span>
                       {{ $t("Continue Shopping") }}
                     </router-link>
 
-                    <button
-                      type="button"
-                      class="btn btn_fill mb-20 justify-content-center m-w-100"
-                      @click.prevent="createOrder"
-                      :disabled="!proceedToCheckout"
-                    >
+                    <button type="button" class="btn btn_fill mb-20 justify-content-center m-w-100"
+                      @click.prevent="createOrder" :disabled="!proceedToCheckout">
                       {{ $t("Checkout") }}
                       <span class="material-icons ms-2"> arrow_forward </span>
                     </button>
@@ -404,10 +306,7 @@
             <div class="alert alert-danger">
               <p class="d-flex align-items-center justify-content-between">
                 {{ $t("The Cart is Empty") }}
-                <router-link
-                  to="/products"
-                  class="ml-4 font-weight-medium btn_underline"
-                >
+                <router-link to="/products" class="ml-4 font-weight-medium btn_underline">
                   {{ $t("Back to Products") }}
                 </router-link>
               </p>
@@ -421,18 +320,8 @@
           <div class="col-12 col-lg-8">
             <skeleton class="w-100 mb-20" height="350px"></skeleton>
             <div class="mt-3 d-flex flex-wrap justify-content-between">
-              <skeleton
-                class="justify-content-center m-w-100 mb-20"
-                tag="a"
-                height="40px"
-                width="150px"
-              ></skeleton>
-              <skeleton
-                class="justify-content-center m-w-100 mb-20"
-                tag="a"
-                height="40px"
-                width="150px"
-              ></skeleton>
+              <skeleton class="justify-content-center m-w-100 mb-20" tag="a" height="40px" width="150px"></skeleton>
+              <skeleton class="justify-content-center m-w-100 mb-20" tag="a" height="40px" width="150px"></skeleton>
             </div>
           </div>
           <div class="col-12 col-lg-4">
@@ -500,75 +389,75 @@ export default {
   },
 
   computed: {
-  // 1. Map Vuex state
-  ...mapState({
-    customerToken: (state) => state.customerToken,
-    isCustomerLogin: (state) => state.isCustomerLogin,
-    customer_id: (state) => state.customerInfo != null ? state.customerInfo.id : null,
-    config: (state) => state.siteSettings,
-    couponDiscounts: (state) => state.couponDiscount ? state.couponDiscount : [],
-  }),
+    // 1. Map Vuex state
+    ...mapState({
+      customerToken: (state) => state.customerToken,
+      isCustomerLogin: (state) => state.isCustomerLogin,
+      customer_id: (state) => state.customerInfo != null ? state.customerInfo.id : null,
+      config: (state) => state.siteSettings,
+      couponDiscounts: (state) => state.couponDiscount ? state.couponDiscount : [],
+    }),
 
-  ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
 
-  forcedMobile() {
-    // identical intent to MainLayout.vue
-    if (this.isSplitScreen) {
-      return true;
-    }
-    return this.isMobile;
-  },
-
-  // 2. Map layout getters
-  // ...mapGetters('layout', ['isSplitScreen']),
-
-  // isMobile() {
-  //     console.log("Checking mobile status in Cart index.vue");
-  //     return this.isSplitScreen || window.innerWidth < 768;
-  //   },
-
-
-
-  // 3. Your custom computed properties (NOT inside mapState!)
-  totalUnitPrice() {
-    return this.tableData.reduce((accum, item) => {
-      if (item.is_available == 2 || !item.is_selected) {
-        return parseFloat(accum);
-      }
-      return parseFloat(accum) + parseFloat(item.unitPrice * item.quantity);
-    }, 0.0);
-  },
-
-  totalDiscount() {
-    return this.couponDiscounts.reduce((accum, item) => {
-      return parseFloat(accum) + parseFloat(item.discount);
-    }, 0.0);
-  },
-
-  enableApplyCoupon() {
-    if (
-      this.config?.is_active_coupon == this.enums.status.ACTIVE &&
-      this.config?.enable_coupon_in_checkout == this.enums.status.ACTIVE
-    ) {
-      if (
-        this.couponDiscounts.length > 0 &&
-        this.config?.enable_multiple_coupon_in_checkout == this.enums.status.IN_ACTIVE
-      ) {
-        return false;
-      } else if (
-        this.config?.enable_coupon_in_checkout == this.enums.status.IN_ACTIVE
-      ) {
-        return false;
-      } else {
+    forcedMobile() {
+      // identical intent to MainLayout.vue
+      if (this.isSplitScreen) {
         return true;
       }
-    } else {
-      return false;
-    }
-  },
+      return this.isMobile;
+    },
 
- 
-},
+    // 2. Map layout getters
+    // ...mapGetters('layout', ['isSplitScreen']),
+
+    // isMobile() {
+    //     console.log("Checking mobile status in Cart index.vue");
+    //     return this.isSplitScreen || window.innerWidth < 768;
+    //   },
+
+
+
+    // 3. Your custom computed properties (NOT inside mapState!)
+    totalUnitPrice() {
+      return this.tableData.reduce((accum, item) => {
+        if (item.is_available == 2 || !item.is_selected) {
+          return parseFloat(accum);
+        }
+        return parseFloat(accum) + parseFloat(item.unitPrice * item.quantity);
+      }, 0.0);
+    },
+
+    totalDiscount() {
+      return this.couponDiscounts.reduce((accum, item) => {
+        return parseFloat(accum) + parseFloat(item.discount);
+      }, 0.0);
+    },
+
+    enableApplyCoupon() {
+      if (
+        this.config?.is_active_coupon == this.enums.status.ACTIVE &&
+        this.config?.enable_coupon_in_checkout == this.enums.status.ACTIVE
+      ) {
+        if (
+          this.couponDiscounts.length > 0 &&
+          this.config?.enable_multiple_coupon_in_checkout == this.enums.status.IN_ACTIVE
+        ) {
+          return false;
+        } else if (
+          this.config?.enable_coupon_in_checkout == this.enums.status.IN_ACTIVE
+        ) {
+          return false;
+        } else {
+          return true;
+        }
+      } else {
+        return false;
+      }
+    },
+
+
+  },
   // computed: {
   //    ...mapState({
   //   customerToken: (state) => state.customerToken,
@@ -627,7 +516,7 @@ export default {
 
   //     // 1. Check Injection (from Layout)
   //     if (this.forceMobileView) return true;
-      
+
   //     // 2. Check Vuex (via the renamed getter)
   //     if (this.storeIsMobile || this.storeIsSplitScreen) return true;
 
@@ -635,10 +524,10 @@ export default {
   //     return window.innerWidth < 768;
   //   },
 
- 
+
 
   // }
-  
+
   mounted() {
     console.log("isSplitScreen: ", this.isSplitScreen);
     document.title = this.$t("Cart");
@@ -978,7 +867,6 @@ export default {
 };
 </script>
 <style scoped>
-
 /* ============================================
    FORCE MOBILE STYLES WHEN SPLIT SCREEN ACTIVE
    ============================================ */
@@ -1035,7 +923,7 @@ export default {
   width: 100%;
 }
 
-.force-mobile-layout .row > [class*="col-"] {
+.force-mobile-layout .row>[class*="col-"] {
   flex: 0 0 100% !important;
   max-width: 100% !important;
 }
@@ -1077,12 +965,15 @@ export default {
   min-width: 14px;
   cursor: pointer;
 }
+
 .pl-0 {
   padding-left: 0;
 }
+
 .disableCart {
   position: relative;
 }
+
 .disableCart:after {
   content: "Not Available";
   text-align: center;
@@ -1099,6 +990,7 @@ export default {
   z-index: 1;
   line-height: 77px;
 }
+
 .close-btn {
   position: relative;
   z-index: 99;
@@ -1117,11 +1009,13 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .product-price {
   color: #3b3b3b;
   font-size: 16px;
   font-weight: 700;
 }
+
 .quantity-input {
   border: 1px solid #e5e5e5;
 }
@@ -1131,15 +1025,18 @@ export default {
     font-size: 12px !important;
     line-height: 14px !important;
   }
+
   .fz-sm-14 {
     font-size: 14px !important;
     line-height: 14px !important;
   }
+
   .quantity-input input {
     height: 34px;
     font-size: 14px;
   }
 }
+
 .icon-wrap {
   z-index: 9;
   cursor: pointer;
