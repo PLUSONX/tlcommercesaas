@@ -294,7 +294,8 @@ class AuthenticationController extends Controller
 
         // Handle case where user is already logged out
         if (!$user) {
-            return redirect()->route('subscriber.login');
+            // return redirect()->route('subscriber.login');
+            return redirect()->route('core.login');
         }
 
         $user_type = $user->user_type;

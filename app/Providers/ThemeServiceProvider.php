@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Log;
 use Composer\Autoload\ClassLoader;
 use Illuminate\Support\ServiceProvider;
 
@@ -117,8 +118,16 @@ class ThemeServiceProvider extends ServiceProvider
 
     public function boot()
     {
-        if (env('IS_USER_REGISTERED') == 1) {
+
+    Log::info('----inside themeServiceProvider ----');
+
+        // if (env('IS_USER_REGISTERED') == 1) {
             $active_theme = getActiveTheme();
+
+            Log::info('themeServiceProvider settings', [
+                'active_theme' => json_encode($active_theme),
+            ]);
+
             //Merge config
             $has_config = file_exists(base_path('themes/' . $active_theme->location .  '/config/config.php'));
             if ($has_config) {
@@ -137,6 +146,6 @@ class ThemeServiceProvider extends ServiceProvider
             $loader->register(true);
             //Load view
             $this->loadViewsFrom(base_path('themes/' . $active_theme->location . '/resources/views'), 'theme/' . $active_theme->location);
-        }
+        // }
     }
 }

@@ -1,5 +1,11 @@
 @php
-    $active_theme = getActiveTheme();
+/* $active_theme = getActiveTheme(); */
+   
+$active_theme = \Core\Models\Themes::on('mysql')->first();
+
+  /* dd($active_theme); */
+
+    
 @endphp
 @if ($active_theme->location == 'default')
     @extends('theme/default::frontend.layout.master')
@@ -92,6 +98,7 @@
             </div>
         </div>
     @endsection
+    
 @endif
 @section('custom-js')
     <script>
