@@ -36,6 +36,7 @@ const store = createStore({
       couponCode: JSON.parse(localStorage.getItem("couponCode") || null),
       mode: localStorage.getItem("mode") || null,
       preloaderLoading: false,
+      deliveryData: {}
     };
   },
   mutations,

@@ -5,6 +5,12 @@ import router from '../router/index'
 const $toast = useToast();
 export default {
   /**
+ * Set Location
+ */
+  setDeliveryData(context, payload) {
+    context.commit("SET_DELIVERY_DATA", payload);
+  },
+  /**
  * Set site settings
  */
   siteSettings(context, payload) {

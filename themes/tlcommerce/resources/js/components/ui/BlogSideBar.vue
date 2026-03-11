@@ -7,8 +7,10 @@
             <v-runtime-template :template="widget_html"></v-runtime-template>
         </div>
         <div class="blog-sidebar mt-5 mt-lg-0" v-if="blog_widget_loading">
-            <skeleton height="370px" class="w-100 mb-10"> </skeleton>
-            <skeleton height="370px" class="w-100 mb-10"> </skeleton>
+            <skeleton :height="370" class="w-100 mb-10"> </skeleton>
+            <!-- <skeleton height="370px" class="w-100 mb-10"> </skeleton> -->
+            <skeleton :height="370" class="w-100 mb-10"> </skeleton>
+            <!-- <skeleton height="370px" class="w-100 mb-10"> </skeleton> -->
         </div>
     </div>
 </template>
@@ -126,7 +128,7 @@ export default {
                             response.data.subscriptionFormStyle;
                     }
                 })
-                .catch((error) => {});
+                .catch((error) => { });
         },
     },
 };

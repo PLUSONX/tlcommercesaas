@@ -71,14 +71,16 @@
               {{ $t("Products") }}
             </h3>
             <h3 class="product_header mb-0" v-if="categoryLoading">
-              <skeleton border-radius="5px" width="150px" height="30px"></skeleton>
+              <skeleton :border-radius="5" :width="150" :height="30"></skeleton>
+              <!-- <skeleton border-radius="5px" width="150px" height="30px"></skeleton> -->
             </h3>
           </div>
 
           <div class="header-count">
             <div v-if="categoryLoading">
               <p class="mb-0">
-                <skeleton border-radius="5px" width="50px" height="10px"></skeleton>
+                <skeleton :border-radius="5" :width="50" :height="10"></skeleton>
+                <!-- <skeleton border-radius="5px" width="50px" height="10px"></skeleton> -->
               </p>
             </div>
             <div v-if="!categoryLoading">
@@ -209,7 +211,10 @@
                 :key="product.id"
                 class="col-lg-5 col-6"
               > -->
-    <div v-for="product in paginatedItems" :key="product.id" class="col-6">
+    <!-- <div v-for="product in paginatedItems" :key="product.id" class="col-6">
+      <single-product :item="product" />
+    </div> -->
+    <div v-for="product in paginatedItems" :key="product.id" class="col-6 compact-card">
       <single-product :item="product" styleEight />
     </div>
   </div>
@@ -481,5 +486,13 @@ export default {
   /* Optional: square edges for full width */
   box-shadow: none;
   /* Optional: cleaner look */
+}
+
+.compact-card :deep(img) {
+  height: auto !important;
+  width: 60% !important;
+  /* adjust this */
+  display: block;
+  margin: 0 auto;
 }
 </style>

@@ -5,6 +5,8 @@ import axios from "axios";
 const i18n = createI18n({
     locale: localStorage.getItem("locale") || "en",
     fallbackLocale: "en",
+    missingWarn: false, // This hides the "Not found" warnings
+    fallbackWarn: false, // This hides warnings when it falls back to another language
     legacy: false,
     messages: {}
 

@@ -1,18 +1,14 @@
 <template>
   <div class="">
     <div class="light-bg" v-if="pageLoading">
-      <skeleton height="100vh" class="w-100 pt-20"></skeleton>
+      <skeleton style="height: 100vh;" class="w-100 pt-20"></skeleton>
+      <!-- <skeleton height="100vh" class="w-100 pt-20"></skeleton> -->
     </div>
 
     <!-- <page-header :items="bItems" v-if="is_breadcrumb" :title="page.title" /> -->
 
-    <builder-section
-      :page="page"
-      :sections="page_section"
-      :widgets="page_builder_widgets"
-      @section-loaded="loaded"
-      v-if="active_pagebuilder && page.page_type == 'builder'"
-    />
+    <builder-section :page="page" :sections="page_section" :widgets="page_builder_widgets" @section-loaded="loaded"
+      v-if="active_pagebuilder && page.page_type == 'builder'" />
 
     <div class="pt-30 pt-lg-60 pb-60 light-bg" v-else>
       <div class="custom-container2">

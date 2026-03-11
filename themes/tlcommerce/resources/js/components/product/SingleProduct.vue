@@ -922,9 +922,22 @@ export default {
     }
   }
 
+  /*
   .product-summary {
     padding: 20px;
     padding-top: 24px;
+    min-height: 134px;
+
+    @media (max-width: 479px) {
+      padding: 14px;
+      padding-top: 18px;
+    }
+  }
+*/
+
+  .product-summary {
+    padding: 10px;
+    // padding-top: 5px;
     min-height: 134px;
 
     @media (max-width: 479px) {

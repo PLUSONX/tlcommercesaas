@@ -1,7 +1,8 @@
 <template>
 
     <div class="light-bg" v-if="pageLoading">
-        <skeleton height="100vh" class="w-100 pt-20"></skeleton>
+        <Skeleton class="w-100 pt-20" style="height: 100vh;"></skeleton>
+        <!-- <skeleton height="100vh" class="w-100 pt-20"></skeleton> -->
     </div>
 
     <!-- From Page Builder -->

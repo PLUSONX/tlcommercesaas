@@ -121,6 +121,11 @@ const router = createRouter({
       component: () => import(/* webpackChunkName: "ShippingCart" */ '../views/cart/index.vue'),
     },
     {
+      path: "/select/location",
+      name: "Location",
+      component: () => import(/* webpackChunkName: "ShippingCart" */ '../views/location/index.vue'),
+    },
+    {
       path: "/checkout",
       name: "Checkout",
       component: () => import(/* webpackChunkName: "CustomerCheckout" */ '../views/checkout/index.vue'),

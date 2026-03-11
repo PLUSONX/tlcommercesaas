@@ -2,7 +2,10 @@
   <!-- <div class=""> -->
   <div :class="mtClass">
     <!-- <page-header :items="bItems" /> -->
-    <div class="pb-60 light-bg">
+    <div class="pb-60 light-bg" :class="{
+      'force-mobile-layout': forcedMobile,
+      'mobile-content-wrapper': forcedMobile
+    }">
       <template v-if="!loadingDetails">
         <template v-if="dealsInfo != null">
           <div class="flash-deals-banner p-0" :style="{ background: dealsInfo.background_color }"
@@ -221,3 +224,43 @@ export default {
   },
 };
 </script>
+
+
+<style scoped>
+.force-mobile-layout .row>[class*="col-"] {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+.force-mobile-layout .product-content .image,
+.force-mobile-layout .product-content .product-img {
+  min-width: 0 !important;
+  max-width: 100px;
+}
+
+
+
+.force-mobile-layout .cart-image-review {
+  max-width: 100% !important;
+  height: auto !important;
+  flex-shrink: 1 !important;
+}
+
+.force-mobile-layout .d-none.d-lg-block,
+.force-mobile-layout .d-lg-block {
+  display: none !important;
+}
+
+.force-mobile-layout .d-block.d-lg-none,
+.force-mobile-layout .d-lg-none {
+  display: block !important;
+}
+
+
+.force-mobile-layout .d-block.d-lg-none.col-12 {
+  width: 100% !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
+}
+</style>

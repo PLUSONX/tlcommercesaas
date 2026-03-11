@@ -3,6 +3,12 @@ import 'vue-toast-notification/dist/theme-sugar.css';
 const $toast = useToast();
 export default {
   /**
+ * Set Location
+ */
+  SET_DELIVERY_DATA(state, payload) {
+    state.deliveryData = payload;
+  },
+  /**
  * Set site settings
  */
   siteSettings(state, data) {
