@@ -1,6 +1,6 @@
 <template>
   <!--Product Page style-->
-  <div v-if="styleEight" class="single-product-item d-inline-block mb-4 style--eight">
+  <div v-if="styleEight" class="single-product-item d-inline-block style--eight">
     <div class="position-relative overflow-hidden">
       <!-- Thumb -->
       <router-link :to="`/products/${item.slug}`" class="d-block">
@@ -834,7 +834,7 @@ export default {
 
 .single-product-item {
   background-color: #f7f8fa;
-  margin-bottom: 30px;
+  /* margin-bottom: 30px; */
   border-radius: 12px;
 
   .badge-container {

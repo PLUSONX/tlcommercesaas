@@ -1,100 +1,100 @@
 <template>
-  <!-- <div class=""> -->
-  <!-- <page-header :items="bItems" /> -->
-  <!-- <div class="pt-30 pt-lg-60 pb-60 light-bg"> -->
-  <!-- <div class="light-bg"> -->
-  <div class="custom-container2">
-    <!-- <div class="row"> -->
-    <!-- <div class="col-lg-3">
+  <div :class="mtClass">
+    <!-- <page-header :items="bItems" /> -->
+    <!-- <div class="pt-30 pt-lg-60 pb-60 light-bg"> -->
+    <!-- <div class="light-bg"> -->
+    <div class="custom-container2">
+      <!-- <div class="row"> -->
+      <!-- <div class="col-lg-3">
             <div class="widget_wrap" :class="{ active: wToggle }"> -->
-    <!-- <button
+      <!-- <button
                 class="close-btn btn-circle d-lg-none"
                 @click.prevent="wToggle = !wToggle"
               >
                 <span class="material-icons"> close </span>
               </button> -->
-    <!-- <div class="widget_wrap-inner"> -->
-    <!-- <WidgetTopCategory
+      <!-- <div class="widget_wrap-inner"> -->
+      <!-- <WidgetTopCategory
                   v-if="!categoryLoading"
                   :categories="categories"
                   :selected-cat="category_filter"
                   @filter="addCategoryFilter"
                 /> -->
-    <!-- <div
+      <!-- <div
                   v-if="categoryLoading"
                   class="widget widget-style-1 widget_top_category mb-4"
                 >
                   <skeleton height="300px"></skeleton>
                 </div> -->
-    <!-- <WidgetBrand
+      <!-- <WidgetBrand
                   v-if="!brandLoading"
                   :brands="brands"
                   :selected-brand="brand_filter"
                   @filter="addBrandFilter"
                 /> -->
-    <!-- <div
+      <!-- <div
                   v-if="brandLoading"
                   class="widget widget-style-1 widget_top_category mb-4"
                 >
                   <skeleton height="300px"></skeleton>
                 </div> -->
-    <!-- <WidgetRating
+      <!-- <WidgetRating
                   :selected-item="rating_filter"
                   @filter="addRatingFilter"
                 /> -->
-    <!-- <WidgetPrice
+      <!-- <WidgetPrice
                   :selected-option="price_filter"
                   @filter="addPriceFilter"
                 /> -->
-    <!-- </div> -->
-    <!-- </div>
+      <!-- </div> -->
+      <!-- </div>
           </div> -->
-    <!-- <div class="col-lg-9">
+      <!-- <div class="col-lg-9">
             <div class="row">
               <div class="col-12">
                 <div class="mb-40 shadow-card">
                   <div class="row">
                     <div class="col-lg-6 order-1 order-lg-0 col-xl-6">
                       <div class="section-header"> -->
-    <!-- <div class="col-lg-9"> -->
-    <!-- <div class="row"> -->
-    <!-- <div class="col-12"> -->
-    <!-- <div class="mb-40 shadow-card"> -->
-    <!-- <div class="row"> -->
-    <div class="card mb-3">
+      <!-- <div class="col-lg-9"> -->
+      <!-- <div class="row"> -->
+      <!-- <div class="col-12"> -->
+      <!-- <div class="mb-40 shadow-card"> -->
+      <!-- <div class="row"> -->
+      <div class="card mb-3">
 
-      <div class="col-lg-12">
-        <div class="section-header d-flex justify-content-between align-items-center">
+        <div class="col-lg-12">
+          <div class="section-header d-flex justify-content-between align-items-center">
 
-          <div class="header-title">
-            <h3 class="product_header mb-0" v-if="!categoryLoading">
-              {{ $t("Products") }}
-            </h3>
-            <h3 class="product_header mb-0" v-if="categoryLoading">
-              <skeleton :border-radius="5" :width="150" :height="30"></skeleton>
-              <!-- <skeleton border-radius="5px" width="150px" height="30px"></skeleton> -->
-            </h3>
-          </div>
-
-          <div class="header-count">
-            <div v-if="categoryLoading">
-              <p class="mb-0">
-                <skeleton :border-radius="5" :width="50" :height="10"></skeleton>
-                <!-- <skeleton border-radius="5px" width="50px" height="10px"></skeleton> -->
-              </p>
+            <div class="header-title">
+              <h3 class="product_header mb-0" v-if="!categoryLoading">
+                {{ $t("Products") }}
+              </h3>
+              <h3 class="product_header mb-0" v-if="categoryLoading">
+                <skeleton :border-radius="5" :width="150" :height="30"></skeleton>
+                <!-- <skeleton border-radius="5px" width="150px" height="30px"></skeleton> -->
+              </h3>
             </div>
-            <div v-if="!categoryLoading">
-              <p class="mb-0" v-if="totalItems > 0">
-                {{ totalItems }} {{ $t("items found") }}
-              </p>
-              <p class="mb-0" v-else>{{ $t("No item found") }}</p>
-            </div>
-          </div>
 
+            <div class="header-count">
+              <div v-if="categoryLoading">
+                <p class="mb-0">
+                  <skeleton :border-radius="5" :width="50" :height="10"></skeleton>
+                  <!-- <skeleton border-radius="5px" width="50px" height="10px"></skeleton> -->
+                </p>
+              </div>
+              <div v-if="!categoryLoading">
+                <p class="mb-0" v-if="totalItems > 0">
+                  {{ totalItems }} {{ $t("items found") }}
+                </p>
+                <p class="mb-0" v-else>{{ $t("No item found") }}</p>
+              </div>
+            </div>
+
+          </div>
         </div>
-      </div>
 
-      <!-- <div class="col-lg-4 order-1 order-lg-0 col-xl-6">
+        <!-- <div class="col-lg-4 order-1 order-lg-0 col-xl-6">
             <div class="section-header">
               <h3 class="product_header" v-if="!categoryLoading">
                 {{ $t("Products") }}
@@ -115,24 +115,24 @@
               </div>
             </div>
           </div> -->
-      <!-- <sorting-option
+        <!-- <sorting-option
                       class="col-lg-6 order-0 order-lg-1 text-lg-right"
                       :data-loading="categoryLoading"
                       :selected-item="sorting_by"
                       @sorting-items="sortingItems"
                       @filter-toggle="wToggle = !wToggle"
                     ></sorting-option> -->
-      <!-- </div> -->
-      <!-- Brand Collapse Box -->
-      <!-- <brand-collapse-box
+        <!-- </div> -->
+        <!-- Brand Collapse Box -->
+        <!-- <brand-collapse-box
                     :brands="brands"
                     :brand-loading="brandLoading"
                     @select-brand="addBrandFilter"
                     v-if="!brandLoading && brands?.length > 0"
                   ></brand-collapse-box> -->
-      <!-- End Brand Collapse Box -->
-      <!--Filter items-->
-      <!-- <div
+        <!-- End Brand Collapse Box -->
+        <!--Filter items-->
+        <!-- <div
                     class="filter-tag-wrap"
                     v-if="
                       brand_filter.id ||
@@ -141,7 +141,7 @@
                       rating_filter != null
                     "
                   > -->
-      <!-- <div class="filter-tags">
+        <!-- <div class="filter-tags">
                       <h6 class="filtered-by mb-0">{{ $t("Filtered By") }}:</h6>
 
                       <div class="ant-tag" v-if="brand_filter.id">
@@ -195,30 +195,33 @@
                         $t("CLEAR ALL")
                       }}</span>
                     </div> -->
+      </div>
+      <!--End filter items-->
+      <!-- </div> -->
+      <!-- </div> -->
     </div>
-    <!--End filter items-->
-    <!-- </div> -->
-    <!-- </div> -->
-  </div>
-  <div class="row mobile-gap-10" v-if="productsLoading">
-    <div class="col-lg-3 col-6" v-for="(item, index) in productSkeletons" :key="index">
+    <div class="row g-0 mobile-gap-10" v-if="productsLoading">
+      <!-- <div class="col-lg-3 col-6" v-for="(item, index) in productSkeletons" :key="index">
       <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
+    </div> -->
+      <div class="col-6" v-for="(item, index) in productSkeletons" :key="index">
+        <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
+      </div>
     </div>
-  </div>
-  <div class="row g-0" v-else>
-    <!-- <div
+    <div class="row g-0 mobile-gap-10" v-else>
+      <!-- <div
                 v-for="product in paginatedItems"
                 :key="product.id"
                 class="col-lg-5 col-6"
               > -->
-    <!-- <div v-for="product in paginatedItems" :key="product.id" class="col-6">
+      <!-- <div v-for="product in paginatedItems" :key="product.id" class="col-6">
       <single-product :item="product" />
     </div> -->
-    <div v-for="product in paginatedItems" :key="product.id" class="col-6 compact-card p-2">
-      <single-product :item="product" styleEight />
+      <div v-for="product in paginatedItems" :key="product.id" class="col-6 compact-card p-2 pb-0">
+        <single-product :item="product" styleEight />
+      </div>
     </div>
-  </div>
-  <!-- <div class="row align-items-center mt-10" v-if="!productsLoading">
+    <!-- <div class="row align-items-center mt-10" v-if="!productsLoading">
               <div class="col-md-6">
                 <ShowingPerPage
                   class="text-center text-md-start"
@@ -239,11 +242,11 @@
                 />
               </div>
             </div> -->
-  <!-- </div> -->
-  <!-- </div> -->
-  <!-- </div> -->
-  <!-- </div> -->
-  <!-- </div> -->
+    <!-- </div> -->
+    <!-- </div> -->
+    <!-- </div> -->
+    <!-- </div> -->
+  </div>
 </template>
 
 <script>
@@ -258,6 +261,7 @@ import BrandCollapseBox from "../../components/product/BrandCollapseBox.vue";
 import SortingOption from "../../components/product/SortingOption.vue";
 import Pagination from "v-pagination-3";
 const axios = require("axios").default;
+import { mapState, mapGetters } from "vuex";
 export default {
   name: "Products",
   components: {
@@ -272,7 +276,12 @@ export default {
     BrandCollapseBox,
     SortingOption,
   },
-
+  props: {
+    disableMargin: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       productsLoading: true,
@@ -325,6 +334,23 @@ export default {
         },
       ],
     };
+  },
+  computed: {
+
+    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+    mtClass() {
+
+      if (this.disableMargin) return '';
+
+      if (this.isSplitScreen) {
+        return 'mt-50';
+      }
+      else {
+        return 'mt-1';
+      }
+    }
+
   },
   mounted() {
     this.getCategories();

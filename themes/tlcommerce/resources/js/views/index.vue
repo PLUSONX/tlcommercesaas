@@ -108,7 +108,7 @@
         <HomePageDeliveryShipping v-if="showContactInfo" :enums="enums" :config="configuration"
             :customer-address="customerAddress" :is-customer-login="isCustomerLogin" :pickup-points="pickupPoints" />
 
-        <ProductPage />
+        <ProductPage :disable-margin="true" />
 
     </div>
 </template>

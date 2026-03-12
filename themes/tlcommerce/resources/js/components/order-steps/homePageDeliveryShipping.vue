@@ -1,8 +1,88 @@
 <template>
+    <div class="p-1">
+        <div class="delivery-container">
 
-    <div class="mb-2">
+            <div v-if="!isCustomerLogin" class="delivery-card">
 
-        <div v-if="!isCustomerLogin">
+                <div class="delivery-field" @click="goToLocation">
+                    <div class="delivery-field__left">
+                        <span class="material-icons delivery-field__icon">motorcycle</span>
+                        <span class="delivery-field__label">{{ $t("Select Delivery Location") }}</span>
+                    </div>
+
+                    <div class="delivery-field__location" v-if="selectedCity">
+                        <span class="material-icons delivery-field__pin">place</span>
+                        <span class="delivery-field__city">
+                            {{ selectedCity.name }}<template v-if="selectedState">, {{ selectedState.name }}</template>
+                        </span>
+                        <span class="material-icons delivery-field__chevron">chevron_right</span>
+                    </div>
+
+                    <div class="delivery-field__location delivery-field__location--empty" v-else>
+                        <span class="delivery-field__prompt">{{ $t("Tap to choose") }}</span>
+                        <span class="material-icons delivery-field__chevron">chevron_right</span>
+                    </div>
+                </div>
+
+                <hr class="delivery-card__divider">
+
+                <div class="delivery-arrival">
+                    <div class="d-flex align-items-center">
+                        <span class="material-icons mr-2">schedule</span>
+                        <span class="text-muted small">{{ $t('Earliest Arrival') }}</span>
+                    </div>
+                    <div v-if="selectedCity" class="arrival-time">
+                        <strong>1 {{ $t('Hour') }}</strong>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</template>
+
+<!-- <template>
+
+    <div class="mb-0"> -->
+
+<!-- <div v-if="!isCustomerLogin" class="delivery-card">
+
+            <div class="delivery-field" @click="goToLocation">
+                <div class="delivery-field__left">
+                    <span class="material-icons delivery-field__icon">motorcycle</span>
+                    <span class="delivery-field__label">{{ $t("Select Delivery Location") }}</span>
+                </div>
+
+                <div class="delivery-field__location" v-if="selectedCity">
+                    <span class="material-icons delivery-field__pin">place</span>
+                    <span class="delivery-field__city">
+                        {{ selectedCity.name }}<template v-if="selectedState">, {{ selectedState.name }}</template>
+                    </span>
+                    <span class="material-icons delivery-field__chevron">chevron_right</span>
+                </div>
+
+                <div class="delivery-field__location delivery-field__location--empty" v-else>
+                    <span class="delivery-field__prompt">{{ $t("Tap to choose") }}</span>
+                    <span class="material-icons delivery-field__chevron">chevron_right</span>
+                </div>
+            </div>
+
+            <hr class="delivery-card__divider">
+
+            <div class="delivery-arrival">
+                <div class="d-flex align-items-center">
+                    <span class="material-icons mr-5">schedule</span>
+                    <span class="text-muted small">{{ $t('Earliest Arrival') }}</span>
+                </div>
+                <div v-if="selectedCity" class="arrival-time">
+                    <strong>1 {{ $t('Hour') }}</strong>
+                </div>
+            </div>
+
+        </div> -->
+
+<!-- <div v-if="!isCustomerLogin">
 
             <div class="delivery-field" @click="goToLocation">
 
@@ -43,10 +123,10 @@
                 </div>
             </div>
 
-        </div>
-    </div>
+        </div> -->
+<!-- </div>
 
-</template>
+</template> -->
 
 <script>
 
@@ -95,6 +175,98 @@ export default {
 </script>
 
 <style scoped>
+.delivery-container {
+    margin: 0;
+    padding: 0;
+}
+
+/* The main wrapper - handles the "Card" look */
+.delivery-card {
+    background: #f8f9fa;
+    border: 1px solid #e2e2e2;
+    border-radius: 8px;
+    overflow: hidden;
+    /* Important: keeps child backgrounds inside the rounded corners */
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+/* Internal shared styles */
+.delivery-field,
+.delivery-arrival {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    width: 100%;
+}
+
+/* Specific styling for the clickable top area */
+.delivery-field {
+    cursor: pointer;
+    background: transparent;
+    /* Changed from #f8f9fa */
+    border: none;
+    /* Removed individual border */
+}
+
+.delivery-field:hover {
+    background: #f1f1f1;
+}
+
+/* Bottom area styling */
+.delivery-arrival {
+    background: rgba(0, 0, 0, 0.03);
+    /* Subtle contrast from top section */
+}
+
+.delivery-card__divider {
+    margin: 0;
+    border: 0;
+    border-top: 1px solid #e2e2e2;
+}
+
+/* Icon & Text logic */
+.delivery-field__left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.delivery-field__location {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+}
+
+.delivery-field__city {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #4a90e2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
+.mr-2 {
+    margin-right: 8px;
+}
+
+.material-icons {
+    font-size: 18px;
+    vertical-align: middle;
+    color: #6c757d;
+}
+
+.delivery-field__pin {
+    color: #4a90e2;
+}
+</style>
+
+<!-- <style scoped>
 .delivery-field {
     width: 100%;
     display: flex;
@@ -171,4 +343,50 @@ export default {
     font-weight: 400;
     color: #a0aec0;
 }
-</style>
+
+/* The main wrapper */
+.delivery-card {
+    background: #f8f9fa;
+    /* Light grey background */
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    /* margin: 10px 0; */
+    /* Vertical spacing only */
+    overflow: hidden;
+    /* Ensures no content bleeds out */
+    width: 100%;
+}
+
+/* Location Section */
+.delivery-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    cursor: pointer;
+}
+
+/* Arrival Section */
+.delivery-arrival {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.02);
+    /* Slight contrast for the bottom half */
+}
+
+/* Subtle divider between the two sections */
+.delivery-card__divider {
+    margin: 0;
+    border: 0;
+    border-top: 1px solid #eee;
+}
+
+/* Icon consistency */
+.material-icons {
+    font-size: 18px;
+    vertical-align: middle;
+    color: #6c757d;
+}
+</style> -->

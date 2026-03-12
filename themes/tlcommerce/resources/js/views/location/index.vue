@@ -107,6 +107,45 @@
                                 'state-tile--selected': guestShippingInfo.state && guestShippingInfo.state.id === state.id && guestShippingInfo.city && guestShippingInfo.city.id > 0
                             }">
                             <!-- State header row -->
+
+                            <div class="state-tile__header" @click="toggleState(state)">
+                                <div class="state-tile__label">
+                                    <span class="material-icons state-icon">place</span>
+                                    <span>{{ state.name }}</span>
+
+                                    <span
+                                        v-if="guestShippingInfo.state && guestShippingInfo.state.id === state.id && guestShippingInfo.city && guestShippingInfo.city.id > 0"
+                                        class="city-selected-chip">
+                                        {{ guestShippingInfo.city.name }}
+                                    </span>
+                                </div>
+
+                                <span class="material-icons state-tile__chevron">
+                                    {{ expandedStateId === state.id ? 'expand_less' : 'expand_more' }}
+                                </span>
+                            </div>
+
+                            <transition name="cities-expand">
+                                <div class="cities-grid" v-if="expandedStateId === state.id">
+
+                                    <div v-if="loadingCities" class="cities-loading">
+                                        <span class="material-icons spin-animation">refresh</span>
+                                        {{ $t("Loading cities...") }}
+                                    </div>
+
+                                    <div v-else class="city-tile" v-for="city in expandedStateCities" :key="city.id"
+                                        :class="{ 'city-tile--selected': guestShippingInfo.city && guestShippingInfo.city.id === city.id }"
+                                        @click="selectCity(state, city)">
+
+                                        <span class="material-icons city-tile__icon">location_city</span>
+                                        <span>{{ city.name }}</span>
+
+                                        <span v-if="guestShippingInfo.city && guestShippingInfo.city.id === city.id"
+                                            class="material-icons city-tile__check">check</span>
+                                    </div>
+                                </div>
+                            </transition>
+                            <!-- 
                             <div class="state-tile__header" @click="toggleState(state)">
                                 <div class="state-tile__label">
                                     <i class="fas fa-map-marker-alt state-icon"></i>
@@ -120,8 +159,10 @@
                                 <i class="fas state-tile__chevron"
                                     :class="expandedStateId === state.id ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
                             </div>
+                        -->
 
                             <!-- City tiles (shown when state is expanded) -->
+                            <!--
                             <transition name="cities-expand">
                                 <div class="cities-grid" v-if="expandedStateId === state.id">
                                     <div v-if="loadingCities" class="cities-loading">
@@ -137,6 +178,7 @@
                                     </div>
                                 </div>
                             </transition>
+                        -->
                         </div>
                     </div>
 
@@ -908,5 +950,25 @@ export default {
         display: none;
         /* icon-only on very small screens */
     }
+}
+
+.spin-animation {
+    animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Spacing fix for icons next to labels */
+.state-icon,
+.city-tile__icon {
+    margin-right: 8px;
 }
 </style>
