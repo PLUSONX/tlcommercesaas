@@ -205,7 +205,7 @@
       <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
     </div>
   </div>
-  <div class="row mobile-gap-10" v-else>
+  <div class="row g-0" v-else>
     <!-- <div
                 v-for="product in paginatedItems"
                 :key="product.id"
@@ -214,7 +214,7 @@
     <!-- <div v-for="product in paginatedItems" :key="product.id" class="col-6">
       <single-product :item="product" />
     </div> -->
-    <div v-for="product in paginatedItems" :key="product.id" class="col-6 compact-card">
+    <div v-for="product in paginatedItems" :key="product.id" class="col-6 compact-card p-2">
       <single-product :item="product" styleEight />
     </div>
   </div>
