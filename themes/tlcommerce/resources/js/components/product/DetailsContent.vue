@@ -77,7 +77,7 @@
         <div class="mb-3">
           <label class="option-label font-weight-bold text-capitalize">{{
             attr.title
-          }}</label>
+            }}</label>
 
           <!-- Option List -->
           <div class="checkbox-group d-flex flex-wrap">
@@ -178,14 +178,14 @@
     <div class="product-details-action-area">
       <div class="button-group d-flex align-items-center flex-wrap gap-3">
         <!--Place order button-->
-        <!-- <button type="button" class="btn btn_fill" :disabled="product.quantity < 1" @click.prevent="placeOrder">
+        <button type="button" class="btn btn_fill" :disabled="product.quantity < 1" @click.prevent="placeOrder">
           {{ $t("Place Order") }}
-        </button> -->
+        </button>
         <!--End place order button-->
         <!--Add to cart button-->
-        <!-- <button type="button" :disabled="product.quantity < 1" class="btn btn_borderd" @click.prevent="addToCart">
+        <button type="button" :disabled="product.quantity < 1" class="btn btn_borderd" @click.prevent="addToCart">
           {{ $t("Add To Cart") }}
-        </button> -->
+        </button>
         <!--End add to cart button-->
         <div class="btn-group-right d-flex flex-md-column align-items-center align-items-md-start">
           <!--Desktop compare button-->
@@ -205,7 +205,7 @@
             </div>
             <strong class="d-none d-md-inline-block ms-1">{{
               $t("Add to wishlist")
-            }}</strong>
+              }}</strong>
           </button>
           <!--End Add to wishlist button-->
           <!--Mobile add to compare button-->

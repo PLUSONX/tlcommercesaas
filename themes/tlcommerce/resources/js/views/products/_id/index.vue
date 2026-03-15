@@ -222,7 +222,7 @@
 
     </div>
 
-    <custom-footer v-if="!isMobileView" :item="productData" />
+    <custom-footer class="custom-footer" v-if="!isMobileView" :item="productData" />
 
     <!-- <custom-footer :item="product ? product.data : null" /> -->
 
@@ -780,5 +780,13 @@ export default {
     padding-bottom: 8px;
     /* just a little breathing room */
   }
+}
+
+.custom-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  z-index: 100;
 }
 </style>
