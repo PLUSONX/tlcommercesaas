@@ -22,8 +22,12 @@
                                         <!-- User Avatar -->
                                         <div class="user-avatar">
                                             @if (auth()->user()->image != null)
-                                                <img src="{{ asset(getFilePath(auth()->user()->image)) }}"
-                                                    alt="{{ auth()->user()->name }}">
+                                                <!-- <img src="{{ asset(getFilePath(auth()->user()->image)) }}"
+                                                    alt="{{ auth()->user()->name }}"> -->
+
+                                                <img src="{{ str_replace('/public', '', asset(getFilePath(auth()->user()->image)) ) }}"
+                                            
+                                            alt="{{ auth()->user()->name }}">
                                             @else
                                                 <img src="{{ asset('backend/assets/img/avatar/avatar-user.png') }}"
                                                     alt="{{ auth()->user()->name }}">
