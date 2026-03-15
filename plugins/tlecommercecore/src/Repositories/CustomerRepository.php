@@ -2,6 +2,7 @@
 
 namespace Plugin\TlcommerceCore\Repositories;
 
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -364,9 +365,10 @@ class CustomerRepository
      * @param String $email
      * @return bool
      */
-    public function customerResetPasswordLink($email)
+     public function customerResetPasswordLink($email)
     {
         try {
+            Log::info('-----customerResetPasswordLink-----');
             $customer = Customers::where('email', $email)->first();
             $id_crypt = Crypt::encryptString($customer->id);
             $token = substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(10 / strlen($x)))), 1, 10);
@@ -386,14 +388,61 @@ class CustomerRepository
             $customer->reset_password = $token;
             $customer->save();
 
+            MailConfigService::applyTenantMailConfig();
+
+             \Log::info('Before Mail::send()', [
+                'smtp_host' => config('mail.mailers.smtp.host'),
+                'smtp_port' => config('mail.mailers.smtp.port'),
+                'mailer' => config('mail.default')
+            ]);
+
+            Log::info('mail data:', [
+                'mail_data' => json_encode($mail_data),
+            ]);
+
+            \Log::info('Attempting to send mail to: ' . $email);
             Mail::to($email)->send(new CustomerForgotPassword($mail_data));
+            \Log::info('Mail sent successfully to: ' . $email);
+            
             return true;
         } catch (\Exception $e) {
+            \Log::error('Password reset failed: ' . $e->getMessage());
             return false;
         } catch (\Error $e) {
+            \Log::error('Password reset error: ' . $e->getMessage());
             return false;
         }
     }
+    // public function customerResetPasswordLink($email)
+    // {
+    //     try {
+    //         $customer = Customers::where('email', $email)->first();
+    //         $id_crypt = Crypt::encryptString($customer->id);
+    //         $token = substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(10 / strlen($x)))), 1, 10);
+    //         $email_crypt = Crypt::encryptString($customer->email);
+    //         $verification_code = $id_crypt . '.' . $email_crypt . '.' . $token;
+    //         $url = url('/') . '/password/reset?u=' . $verification_code;
+
+    //         $mail_data = [
+    //             'template_id' => 7,
+    //             'keywords' => getEmailTemplateVariables(7, true),
+    //             'subject' => 'Password Reset Request',
+    //             '_system_name_' =>  getGeneralSetting('site_title'),
+    //             '_customer_email_' => $email,
+    //             '_reset_url_' => $url,
+    //         ];
+
+    //         $customer->reset_password = $token;
+    //         $customer->save();
+
+    //         Mail::to($email)->send(new CustomerForgotPassword($mail_data));
+    //         return true;
+    //     } catch (\Exception $e) {
+    //         return false;
+    //     } catch (\Error $e) {
+    //         return false;
+    //     }
+    // }
     /**
      * Send customer reset email link
      *

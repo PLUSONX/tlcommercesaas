@@ -8,7 +8,8 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 
-class CustomerForgotPassword extends Mailable implements ShouldQueue
+// class CustomerForgotPassword extends Mailable implements ShouldQueue
+class CustomerForgotPassword extends Mailable
 {
     use Queueable, SerializesModels;
 

@@ -788,5 +788,6 @@ export default {
   left: 0;
   width: 50%;
   z-index: 100;
+  background: transparent;
 }
 </style>
