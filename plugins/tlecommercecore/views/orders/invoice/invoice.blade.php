@@ -95,6 +95,8 @@
         .table-borderless td {
             border-top: 0px !important;
         }
+
+        .logo-img { max-width: 150px; height: auto; }
     </style>
 </head>
 
@@ -102,10 +104,14 @@
     <table class="table table-borderless invoice-top section">
         <tbody>
             <tr>
-                <td>
-                    @if ($order_info['system_properties']['logo'] != null)
+                <td width="30%">
+                    @if (!empty($order_info['system_properties']['logo']))
                         <img src="{{ $order_info['system_properties']['logo'] }}"
-                            alt="{{ $order_info['system_properties']['title'] }}">
+                            alt="{{ $order_info['system_properties']['title'] }}"
+                            class="logo-img">
+
+                            <!-- <img src="{{ str_replace('\public', '', $order_info['system_properties']['logo']) }}"
+                                            alt="{{ $order_info['system_properties']['title'] }}"> -->
                     @else
                         <h2>{{ $order_info['system_properties']['title'] }}</h2>
                     @endif
@@ -181,7 +187,8 @@
                     @endif
                 </td>
                 <td class="text-right">
-                    <img src="data:image/png;base64, {!! $qr_code !!}" class="qr-code">
+                    <img src="{{ $qr_code }}" class="qr-code">
+                    <!-- <img src="data:image/png;base64, {!! $qr_code !!}" class="qr-code"> -->
                 </td>
             </tr>
         </tbody>
