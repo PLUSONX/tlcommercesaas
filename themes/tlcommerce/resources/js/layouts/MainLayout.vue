@@ -23,7 +23,11 @@
             <slot></slot>
           </div>
 
+          <!-- <company-footer class="company-footer" /> -->
+
         </div>
+
+
 
         <!-- Feature Side (Banner/Product/Video) -->
         <div class="split-screen-feature" :class="featureSideClass" :style="featureStyle">
@@ -120,6 +124,8 @@
         <div class="main_content light-bg">
           <slot />
         </div>
+
+        <!-- <company-footer v-if="isMobileView" class="company-footer" /> -->
 
         <!-- <StickyFooter v-if="!isSingleProduct" /> -->
 
@@ -342,6 +348,7 @@ import {
   CModalTitle,
   CModalBody,
 } from "@coreui/vue";
+import CompanyFooter from "../components/ui/CompanyFooter.vue";
 
 export default {
   name: "MainLayout",
@@ -371,6 +378,7 @@ export default {
     VRuntimeTemplate,
     Preloader,
     BannerFeature,
+    CompanyFooter
   },
   setup() {
     const data = reactive({
@@ -1283,5 +1291,13 @@ export default {
 .forced-mobile-context :deep(.show-on-mobile) {
   /* Only show it if it's meant to be visible on mobile */
   display: block !important;
+}
+
+.company-footer {
+  // position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
 }
 </style>

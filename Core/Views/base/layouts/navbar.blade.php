@@ -7,17 +7,6 @@
     $allPermissions = $user ? $user->getAllPermissions() : collect();
 @endphp
 
-<!-- <script>
-    console.log('=== AUTH DEBUG ===');
-    console.log('User:', @json($user));
-    console.log('User Roles:', @json($roles));
-    console.log('Direct Permissions:', @json($permissions));
-    console.log('All Permissions (via roles):', @json($allPermissions));
-    console.log('Can Manage Dashboard:', @json($user ? $user->can('Manage Dashboard') : false));
-    console.log('Has Role 4:', @json($user ? $user->hasRole(4) : false));
-    console.log('Tenant Initialized:', @json(tenancy()->initialized ?? false));
-    console.log('Current Database:', '{{ DB::connection()->getDatabaseName() }}');
-</script> -->
 <nav class="sidebar" data-trigger="scrollbar">
     <!--Search Options-->
     <div class="sidebar-search-bar m-2">

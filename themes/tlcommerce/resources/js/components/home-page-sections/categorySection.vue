@@ -1,7 +1,7 @@
 <template>
   <!-- Categories -->
   <!-- <h1>Test</h1> -->
-  <section class="pt-15 pb-15 category-section home-page-section" :style="styleObject" :class="{
+  <section class="pt-5 pb-5 category-section home-page-section" :style="styleObject" :class="{
     'force-mobile-layout': forcedMobile,
     'mobile-content-wrapper': forcedMobile
   }">
@@ -129,14 +129,14 @@ export default {
       if (this.forcedMobile) {
         return {
           // Show 4 small icons instead of 2 on mobile
-          '0': { slidesPerView: 4, spaceBetween: 10 },
+          '0': { slidesPerView: 4, spaceBetween: 2 },
         };
       }
       return {
-        '0': { slidesPerView: 4, spaceBetween: 10 },   // Mobile
-        '768': { slidesPerView: 6, spaceBetween: 15 },  // Tablet
-        '1024': { slidesPerView: 8, spaceBetween: 20 }, // Laptop
-        '1440': { slidesPerView: 10, spaceBetween: 20 }, // Desktop
+        '0': { slidesPerView: 4, spaceBetween: 2 },   // Mobile
+        '768': { slidesPerView: 8, spaceBetween: 0 },  // Tablet
+        '1024': { slidesPerView: 10, spaceBetween: 0 }, // Laptop
+        '1440': { slidesPerView: 12, spaceBetween: 0 }, // Desktop
       };
     },
 
@@ -175,12 +175,21 @@ export default {
   }
 } */
 
-:deep(.category-slider .swiper-slide) {
+/* :deep(.category-slider .swiper-slide) {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
   /* Ensure no 'dimming' effect on inactive slides */
+/* opacity: 1 !important; */
+/* } */
+
+:deep(.category-slider .swiper-slide) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   opacity: 1 !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 /* Force the router-link inside to be transparent always */

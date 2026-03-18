@@ -222,6 +222,8 @@
 
     </div>
 
+    <!-- <custom-footer class="custom-footer" v-if="!isMobileView" :item="productData" /> -->
+
     <custom-footer class="custom-footer" v-if="!isMobileView" :item="productData" />
 
     <!-- <custom-footer :item="product ? product.data : null" /> -->
@@ -761,6 +763,9 @@ export default {
 .page-container {
   display: flex;
   flex-direction: column;
+  // bottom: 80px !important;
+  // margin-bottom: 40px !important;
+  // padding-bottom: 40px !important;
   // height: 95vh;
   // height: 100dvh; 
   //padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -784,10 +789,11 @@ export default {
 
 .custom-footer {
   position: fixed;
-  bottom: 0;
+  bottom: 0px;
   left: 0;
   width: 50%;
   z-index: 100;
   background: transparent;
+  // padding-bottom: 40px;
 }
 </style>

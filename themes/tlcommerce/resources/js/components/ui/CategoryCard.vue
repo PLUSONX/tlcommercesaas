@@ -63,13 +63,13 @@ export default {
     padding: 5px;
     border-radius: 50%;
     margin: 0 0 10px 0; // space below image
-    width: 60px;
-    height: 60px;
+    width: 85px;
+    height: 85px;
     object-fit: cover;
   }
 
   span {
-    font-size: 16px;
+    font-size: 12px;
     font-weight: 500;
   }
 
@@ -81,7 +81,7 @@ export default {
     }
 
     span {
-      font-size: 14px;
+      font-size: 12px;
     }
   }
 }

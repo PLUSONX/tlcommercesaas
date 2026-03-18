@@ -529,7 +529,7 @@ export default {
   // }
 
   mounted() {
-    console.log("isSplitScreen: ", this.isSplitScreen);
+    // console.log("isSplitScreen: ", this.isSplitScreen);
     document.title = this.$t("Cart");
     this.validateCartItems();
   },

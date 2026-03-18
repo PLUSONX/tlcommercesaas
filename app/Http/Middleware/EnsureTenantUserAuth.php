@@ -23,7 +23,8 @@ class EnsureTenantUserAuth
                 $request->session()->regenerateToken();
                 
                 toastNotification('error', translate("Please login with a valid store account"));
-                return redirect()->route('core.login');
+                return redirect()->away('http://127.0.0.1:8000/admin/login');
+                // return redirect()->route('core.login');
             }
             
             // Re-authenticate with tenant user

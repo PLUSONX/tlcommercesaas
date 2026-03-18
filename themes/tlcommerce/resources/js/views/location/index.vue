@@ -46,7 +46,7 @@
                             <div class="col-lg-12 mb-4">
                                 <p class="alert alert-danger">{{ $t("No address found") }}</p>
                                 <router-link to="/dashboard/address" class="btn_underline">{{ $t("Add new address")
-                                }}</router-link>
+                                    }}</router-link>
                             </div>
                         </div>
                     </div>
@@ -304,10 +304,10 @@ export default {
     },
 
     mounted() {
-        console.log("Full Store State:", this.$store.state);
-        console.log("Vuex state:", this.$store.state.deliveryData);
-        console.log("Customer Address:", this.customerAddress);
-        console.log("Enums:", this.enums);
+        // console.log("Full Store State:", this.$store.state);
+        // console.log("Vuex state:", this.$store.state.deliveryData);
+        // console.log("Customer Address:", this.customerAddress);
+        // console.log("Enums:", this.enums);
 
         this.getCounties();
         this.$store.dispatch("setFinalShippingCost", 0);
@@ -562,7 +562,7 @@ export default {
                 .then((response) => {
                     if (response.data.success) {
                         this.countries = response.data.data.countries;
-                        console.log("countries: ", this.countries);
+                        // console.log("countries: ", this.countries);
                         if (this.countries.length >= 1) {
                             // Auto-select the first (or only) country
                             this.guestShippingInfo = {
@@ -583,7 +583,7 @@ export default {
          * Get states for selected country
          */
         getStates(origin) {
-            console.log("----getStates method called!!!");
+            // console.log("----getStates method called!!!");
             let country_id = "";
             if (origin === "billing_info") {
                 country_id = this.guestBillingInfo.country ? this.guestBillingInfo.country.id : "";
@@ -591,14 +591,14 @@ export default {
                 country_id = this.guestShippingInfo.country ? this.guestShippingInfo.country.id : "";
             }
 
-            console.log("country_id: ", country_id);
+            // console.log("country_id: ", country_id);
             this.loadingStates = true;
 
             axios
                 .post("/api/v1/ecommerce-core/get-states-of-countries", { country_id })
                 .then((response) => {
                     if (response.data.success) {
-                        console.log("states_response: ", response.data);
+                        // console.log("states_response: ", response.data);
                         if (origin === "billing_info") {
                             this.guestBillingInfo.states_options = response.data.data.states;
                         }

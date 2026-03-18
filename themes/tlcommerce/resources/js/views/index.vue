@@ -111,12 +111,16 @@
         <ProductPage :disable-margin="true" />
 
     </div>
+
+    <company-footer v-if="isSplitScreen || isMobile" class="company-footer" />
+
 </template>
 
 <script>
 import { defineAsyncComponent } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Autoplay, Pagination } from "swiper";
+import CompanyFooter from '@/components/ui/CompanyFooter.vue'
 
 const BuilderSection = defineAsyncComponent(() =>
     import("@/components/page-builder/BuilderSection.vue")
@@ -164,6 +168,7 @@ import HomePageDeliveryShipping from '@/components/order-steps/homePageDeliveryS
 // import HomePageDeliveryShipping from "../components/order-steps/homePageDeliveryShipping.vue";
 import enums from "../enums/enums";
 import { mapState, mapGetters } from "vuex";
+// import CompanyFooter from "../components/ui/CompanyFooter.vue";
 const axios = require("axios").default;
 export default {
     components: {
@@ -180,7 +185,8 @@ export default {
         TopSellers,
         BuilderSection,
         ProductPage,
-        HomePageDeliveryShipping
+        HomePageDeliveryShipping,
+        CompanyFooter
     },
     setup() {
         return {
@@ -362,5 +368,14 @@ export default {
 .swiper-slide {
     border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.company-footer {
+    // position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+    // background: black;
 }
 </style>

@@ -35,24 +35,7 @@ use Plugin\Saas\Http\Controllers\Admin\StoreController;
 use App\Models\Tenant;
 use App\Models\User;
 
-// Route::get('/tenant-redirect/{tenant}/{token}', function($tenantId, $loginToken) {
-//     $tenant = \App\Models\Tenant::findOrFail($tenantId);
-    
-//     // Build tenant login URL
-//     $domain = $tenant->domains()->first();
-    
-//     if (!$domain) {
-//         abort(404, 'No domain configured for tenant');
-//     }
-    
-//     $protocol = request()->secure() ? 'https://' : 'http://';
-//     $tenantUrl = $protocol . $domain->domain . '/auth/token-login';
-    
-//     return view('auth.tenant-redirect', [
-//         'tenantUrl' => $tenantUrl,
-//         'loginToken' => $loginToken
-//     ]);
-// })->name('tenant.redirect');
+
 
 Route::get('/auth/token-login', function () {
     \Log::info('Token login route hit');
@@ -103,158 +86,23 @@ Route::get('/auth/token-login', function () {
 
 })->name('auth.token-login');
 
-// Route::get('/auth/token-login', function () {
-//     $token = request()->input('login_token');
 
-//     if (!$token) {
-//         return redirect()->route('login')->with('error', 'Invalid login token');
-//     }
 
-//     // Verify token in central database
-//     $tokenData = \DB::connection('mysql')->table('tenant_login_tokens')
-//         ->where('token', hash('sha256', $token))
-//         ->where('tenant_id', tenant('id'))
-//         ->where('expires_at', '>', now())
-//         ->first();
+// Route::get('/test-tenant', function() {
 
-//     if (!$tokenData) {
-//         return redirect()->route('login')->with('error', 'Token expired or invalid');
-//     }
-
-//     // Find user in tenant database
-//     $user = \App\Models\User::where('email', $tokenData->email)->first();
-
-//     if (!$user) {
-//         return redirect()->route('login')->with('error', 'User not found');
-//     }
-
-//     // Delete the used token
-//     \DB::connection('mysql')->table('tenant_login_tokens')
-//         ->where('token', hash('sha256', $token))
-//         ->delete();
-
-//     // Log the user in
-//     \Auth::login($user);
-
-//     // Redirect to dashboard
-//     return redirect('/admin/dashboard');
-
-// })->name('auth.token-login');
-
-// Token-based login handler (accepts POST)
-// Route::post('/auth/token-login', function () {
-//     $token = request()->input('login_token');
-
-//     if (!$token) {
-//         return redirect()->route('login')->with('error', 'Invalid login token');
-//     }
-
-//     // Verify token in central database
-//     $tokenData = \DB::connection('mysql')->table('tenant_login_tokens')
-//         ->where('token', hash('sha256', $token))
-//         ->where('tenant_id', tenant('id'))
-//         ->where('expires_at', '>', now())
-//         ->first();
-
-//     if (!$tokenData) {
-//         return redirect()->route('login')->with('error', 'Token expired or invalid');
-//     }
-
-//     // Find user in tenant database
-//     $user = \App\Models\User::where('email', $tokenData->email)->first();
-
-//     if (!$user) {
-//         return redirect()->route('login')->with('error', 'User not found');
-//     }
-
-//     // Delete the used token
-//     \DB::connection('mysql')->table('tenant_login_tokens')
-//         ->where('token', hash('sha256', $token))
-//         ->delete();
-
-//     // Log the user in
-//     \Auth::login($user);
-
-//     // Redirect to dashboard
-//     return redirect('/admin/dashboard');
-
-// })->middleware(['web'])->name('auth.token-login');
-
-// Route::group(['prefix' => getSuperAdminPrefix(), 'middleware' => ['tenant']], function () {
-
-    
-
-//     Route::get('/test-tenant', function() {
-
-//         $user_id = 2;
-
-//         $subscriber = User::find($user_id);
-    
+//     $tenant = tenant();
+//     // $user = User::find($tenant->user_id);
 //     return [
-//         'user' => $subscriber
+//         'tenant_initialized' => tenancy()->initialized,
+//         'middlewares' => routeApplicableMiddlewares(),
+//         'active_theme' => getActiveTheme()
+//         // 'tenant_id' => tenant('id'),
+//         // 'tenant_data' => tenant(),
+//         // 'user' => $user,
+//         // 'domain' => request()->getHost(),
+//         // 'full_url' => request()->url(),
 //     ];
 // });
-
-
-// Route::prefix('superadmin')->group(function () {
-
-//      Route::get('/test-user', function() {
-
-//         $user_id = 2;
-
-//         $subscriber = User::find($user_id);
-    
-//     return [
-//         'user' => $subscriber
-//     ];
-
-//     });
-// });
-
-// Route::get('/debug-aid', function() {
-//     $tenant_id = '7d0b0bbb-1ff2-4c50-b8d1-7901ff0c20bc';
-//     $tenant = Tenant::find($tenant_id);
-    
-//     // Check the database schema
-//     $columns = Schema::getColumnListing('tenants');
-//     $columnTypes = DB::select('DESCRIBE tenants');
-    
-//     // Check if there's a migration file that explains it
-//     // Also check the Tenant model for any hints
-    
-//     return [
-//         'tenant' => $tenant,
-//         'all_columns' => $columns,
-//         'column_details' => $columnTypes,
-//         'tenant_aid' => $tenant->aid,
-//         'user_with_aid_1' => User::find(1),
-        
-//         // Let's also check if there are other tenants
-//         'all_tenants' => Tenant::all(),
-        
-//         // Check the Tenant model casts/attributes
-//         'model_casts' => (new Tenant)->getCasts(),
-//     ];
-// });
-
-
-// Route::prefix('admin')->group(function () {
-
-    Route::get('/test-tenant', function() {
-    
-        $tenant = tenant();
-        // $user = User::find($tenant->user_id);
-        return [
-            'tenant_initialized' => tenancy()->initialized,
-            'middlewares' => routeApplicableMiddlewares(),
-            'active_theme' => getActiveTheme()
-            // 'tenant_id' => tenant('id'),
-            // 'tenant_data' => tenant(),
-            // 'user' => $user,
-            // 'domain' => request()->getHost(),
-            // 'full_url' => request()->url(),
-        ];
-    });
 
 
 Route::get('/test-user', function() {

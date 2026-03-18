@@ -317,32 +317,78 @@ class AuthenticationController extends Controller
         request()->session()->invalidate();
         request()->session()->regenerateToken();
 
+        tenancy()->end();
+
+        // $centralDomain = config('tenancy.central_domains')[0];
+        // $scheme = request()->isSecure() ? 'https' : 'http';
+        // $port = request()->getPort();
+        // $adminPrefix = trim(getAdminPrefix(), '/');
+
+        // $portSuffix = (($scheme === 'http' && $port != 80) || ($scheme === 'https' && $port != 443))
+        //     ? ':' . $port
+        //     : '';
+
+        // return redirect()->away($scheme . '://' . $centralDomain . $portSuffix . '/' . $adminPrefix . '/login');
+
+        return redirect()->away('https://platepilots.com/admin/login');
+        // return redirect()->away('http://127.0.0.1:8000/admin/login');
+
+        // // Bypass Laravel's response pipeline entirely
+        // header('Location: http://127.0.0.1:8000/admin/login', true, 302);
+        // exit();
+
+        //  \Log::info('LOGOUT STEP 2 - After auth logout');
+    
+        // $response = redirect()->away('http://127.0.0.1:8000/admin/login');
+        
+        // \Log::info('LOGOUT STEP 3 - Redirect created', [
+        //     'location' => $response->getTargetUrl()
+        // ]);
+        
+        // return $response;
+
+        
+        
+        // \Log::info('Redirect target', ['url' => 'http://127.0.0.1:8000/admin/login']);
+        // return response()->make('', 302, ['Location' => 'http://127.0.0.1:8000/admin/login']);
+        
+        // tenancy()->end();
+        
+        // return response('<script>window.location.href="http://127.0.0.1:8000/admin/login";</script>');
+        
+
+
         // Determine redirect based on user type and context
-        if ($user_type == 4) { // Subscriber/Tenant user
-            if (str_starts_with($currentPath, getSaasPrefix())) {
-                // Central subscriber dashboard logout
-                return redirect()->route('subscriber.login');
-            }
+        // if ($user_type == 4) { // Subscriber/Tenant user
+        //     if (str_starts_with($currentPath, getSaasPrefix())) {
+        //         // Central subscriber dashboard logout
+        //         return redirect()->route('subscriber.login');
+        //     }
 
-            if (str_starts_with($currentPath, getAdminPrefix())) {
-                // Store-specific dashboard logout (tenant context)
-                return redirect()->route('core.login');
-            }
+        //     if (str_starts_with($currentPath, getAdminPrefix())) {
+        //         // Store-specific dashboard logout (tenant context)
+        //         return redirect()->route('core.login');
+        //     }
 
-            // Default fallback for subscribers
-            // return redirect()->route('subscriber.login');
+        //     // Default fallback for subscribers
+        //     // return redirect()->route('subscriber.login');
 
-        } else if ($user_type == 1) { // Super admin
-            if (str_starts_with($currentPath, getAdminPrefix())) {
-                return redirect()->route('core.login'); // or 'superadmin.login' if different
-            }
+        // } else if ($user_type == 1) { // Super admin
+        //     // if (str_starts_with($currentPath, getAdminPrefix())) {
+        //     //     return redirect()->route('core.login'); // or 'superadmin.login' if different
+        //     // }
 
-            // return redirect()->route('tenant.login');
+        //     if (str_starts_with($currentPath, getAdminPrefix())) {
+        //         return redirect()->away('http://127.0.0.1:8000' . getAdminPrefix() . '/login');
+        //     }
 
-        } else {
-            // Any other user type
-            return redirect()->route('subscriber.login');
-        }
+        //     // return redirect()->route('tenant.login');
+
+        // } else {
+        //     // Any other user type
+        //     // return redirect()->route('subscriber.login');
+        //     // return redirect()->route('core.login');
+        // }
     }
 
     /**

@@ -8,6 +8,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use App\Http\MiddleWare\HandleTenantLoginToken;
+use Core\Http\Controllers\Auth\AuthenticationController;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -51,6 +52,14 @@ class RouteServiceProvider extends ServiceProvider
                         ->prefix('admin') // hardcoded for clarity
                         ->group(base_path('core/routes/core.php'));
                 } else {
+
+                    // Logout must be outside tenant middleware
+                    // Route::middleware(['web'])
+                    //     ->prefix('admin')
+                    //     ->group(function () {
+                    //         Route::get('/logout', [AuthenticationController::class, 'logout'])->name('core.logout');
+                    //     });
+
                     Route::middleware(['web', 'tenant']) // Added 'tenant' middleware
                         ->prefix('admin')
                         ->group(base_path('core/routes/core.php'));
@@ -58,6 +67,12 @@ class RouteServiceProvider extends ServiceProvider
                     Route::middleware(['web', 'tenant'])
                         ->prefix('payment')
                         ->group(base_path('plugins/tlecommercecore/routes/web.php'));
+
+                    Route::middleware(['web'])
+                        ->prefix('admin')
+                        ->group(function () {
+                            Route::get('/logout', [AuthenticationController::class, 'logout'])->name('core.logout');
+                        });
                 }
                 //      Route::middleware(['web', 'tenant']) // Added 'tenant' middleware
                 // ->prefix('admin')

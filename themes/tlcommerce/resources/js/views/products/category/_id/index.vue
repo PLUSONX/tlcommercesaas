@@ -73,7 +73,7 @@
                 <div class="ant-tag" v-if="brand_filter.id">
                   <span class="ant-tag-text">{{
                     brand_filter.name
-                  }}</span>
+                    }}</span>
                   <span class="material-icons" @click.prevent="removeTag('brand')">close</span>
                 </div>
 
@@ -91,7 +91,7 @@
 
                 <span class="clear-all" @click.prevent="removeAllTag">{{
                   $t("CLEAR ALL")
-                }}</span>
+                  }}</span>
               </div>
             </div>
             <!--End filter items-->
@@ -293,7 +293,7 @@ export default {
       window.scrollTo(0, 0);
       this.productsLoading = true;
 
-      console.log("categoryId: ", this.categoryDetails.id);
+      // console.log("categoryId: ", this.categoryDetails.id);
       axios
         .post("/api/v1/ecommerce-core/products", {
           perPage: this.perPage,

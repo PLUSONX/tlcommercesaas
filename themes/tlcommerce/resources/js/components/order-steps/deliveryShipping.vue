@@ -3,7 +3,7 @@
     <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
       <h3 class="checkout-title">{{ $t("Delivery & Shipping") }}</h3>
       <router-link to="/dashboard/address" class="btn_underline" v-if="isCustomerLogin">{{ $t("Manage Address")
-        }}</router-link>
+      }}</router-link>
     </div>
 
     <!--Delivery Options-->
@@ -117,7 +117,7 @@
                 <p class="alert alert-danger">{{ $t("No address found") }}</p>
                 <router-link to="/dashboard/address" class="btn_underline">{{
                   $t("Add new address")
-                  }}</router-link>
+                }}</router-link>
               </div>
             </div>
           </div>
@@ -671,12 +671,12 @@
                       <span>
                         <router-link to="#" class="product-name">{{
                           tdata.name
-                          }}</router-link>
+                        }}</router-link>
                         <div class="extra-addons-wrap d-flex flex-wrap">
                           <span class="product-variant" v-if="tdata.variant">
                             <span class="font-weight-medium">{{
                               tdata.variant
-                              }}</span>
+                            }}</span>
                           </span>
                         </div>
                       </span>
@@ -778,7 +778,7 @@ export default {
   },
   mounted() {
 
-    console.log("shipping details test: ", this.$store.state.shippingDetails);
+    // console.log("shipping details test: ", this.$store.state.shippingDetails);
 
     if (this.$store.state.shippingDetails != null && !this.isCustomerLogin) {
 

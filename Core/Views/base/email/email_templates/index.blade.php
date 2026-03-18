@@ -301,7 +301,7 @@
             "use strict";
             // let system_logo = "{{ asset(getFilePath(getGeneralSetting('admin_logo'))) }}"
             let system_logo = "{{ url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))) }}"
-            console.log("system_logo: ", system_logo);
+            // console.log("system_logo: ", system_logo);
             let copyright_text = `{{ getGeneralSetting('copyright_text') }}`
             let site_url = `{{ URL::to('/') }}`
 
