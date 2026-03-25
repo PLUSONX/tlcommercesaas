@@ -16,21 +16,21 @@ class PushNotificationService
      */
     public function sendToUser(int $userId, string $title, string $body, array $data = []): void
     {
-        \Log::info('sendToUser method called !!!!');
+        // \Log::info('sendToUser method called !!!!');
         // dd($userId);
         // Get all active device tokens for this user
         $deviceTokens = DeviceToken::forUser($userId)
          ->active()
             ->get();
 
-        \Log::info('Device Token data', [
-                'deviceTokens' => json_encode($deviceTokens),
-        ]);
+        // \Log::info('Device Token data', [
+        //         'deviceTokens' => json_encode($deviceTokens),
+        // ]);
 
         // dd($deviceTokens);
 
         if ($deviceTokens->isEmpty()) {
-            Log::info("No device tokens found for user {$userId}");
+            // Log::info("No device tokens found for user {$userId}");
             return;
         }
 
@@ -41,7 +41,7 @@ class PushNotificationService
         
                 $this->sendToToken($deviceToken->token, $title, $body, $data);
 
-                \Log::info('notification Successfully Sent to firebase!!!!');
+                // \Log::info('notification Successfully Sent to firebase!!!!');
 
 
                 $deviceToken->markAsUsed();
@@ -165,9 +165,11 @@ class PushNotificationService
             'apns' => [
                 'payload' => [
                     'aps' => [
+                        'alert' => [
+                            'title' => $title,   // <-- add this
+                            'body'  => $body,    // <-- add this
+                        ],
                         'sound' => 'default',
-                        'content-available' => 1,
-                        'mutable-content' => 1,
                     ],
                 ],
                 'headers' => [
@@ -181,23 +183,23 @@ class PushNotificationService
     ];
     
     // DEBUG: Log what we're actually sending
-    \Log::info('FCM Request Details', [
-        'url' => $this->fcmUrl,
-        'authorization_header_present' => isset($headers['Authorization']),
-        'authorization_starts_with_bearer' => str_starts_with($headers['Authorization'] ?? '', 'Bearer '),
-        'token_length' => strlen($accessToken),
-        'headers' => array_map(function($h) {
-            return substr($h, 0, 30) . '...';
-        }, $headers),
-    ]);
+    // \Log::info('FCM Request Details', [
+    //     'url' => $this->fcmUrl,
+    //     'authorization_header_present' => isset($headers['Authorization']),
+    //     'authorization_starts_with_bearer' => str_starts_with($headers['Authorization'] ?? '', 'Bearer '),
+    //     'token_length' => strlen($accessToken),
+    //     'headers' => array_map(function($h) {
+    //         return substr($h, 0, 30) . '...';
+    //     }, $headers),
+    // ]);
 
     $response = Http::withHeaders($headers)->post($this->fcmUrl, $payload);
 
     // DEBUG: Log the actual request that was sent
-    \Log::info('FCM Response Details', [
-        'status' => $response->status(),
-        'request_headers_sent' => $response->transferStats?->getRequest()?->getHeaders() ?? 'Not available',
-    ]);
+    // \Log::info('FCM Response Details', [
+    //     'status' => $response->status(),
+    //     'request_headers_sent' => $response->transferStats?->getRequest()?->getHeaders() ?? 'Not available',
+    // ]);
 
     if ($response->failed()) {
         \Log::error("FCM request failed", [
@@ -210,7 +212,7 @@ class PushNotificationService
         throw new \Exception("FCM Error: " . $response->body());
     }
     
-    \Log::info('FCM notification sent successfully');
+    // \Log::info('FCM notification sent successfully');
 }
 
 
@@ -224,12 +226,12 @@ class PushNotificationService
         
         $jsonContent = json_decode(file_get_contents($keyPath), true);
 
-        \Log::info('Service Account Info', [
-            'project_id' => $jsonContent['project_id'] ?? 'MISSING',
-            'client_email' => $jsonContent['client_email'] ?? 'MISSING',
-            'private_key_exists' => isset($jsonContent['private_key']),
-            'type' => $jsonContent['type'] ?? 'MISSING',
-        ]);
+        // \Log::info('Service Account Info', [
+        //     'project_id' => $jsonContent['project_id'] ?? 'MISSING',
+        //     'client_email' => $jsonContent['client_email'] ?? 'MISSING',
+        //     'private_key_exists' => isset($jsonContent['private_key']),
+        //     'type' => $jsonContent['type'] ?? 'MISSING',
+        // ]);
 
         if (!isset($jsonContent['type']) || $jsonContent['type'] !== 'service_account') {
             throw new \Exception("Invalid JSON: not a service_account type");
@@ -251,12 +253,12 @@ class PushNotificationService
 
         $token = $credentials->fetchAuthToken(HttpHandlerFactory::build());
 
-        \Log::info('Token Response', [
-            'has_access_token' => isset($token['access_token']),
-            'token_type' => $token['token_type'] ?? 'N/A',
-            'expires_in' => $token['expires_in'] ?? 'N/A',
-            'error' => $token['error'] ?? null,
-        ]);
+        // \Log::info('Token Response', [
+        //     'has_access_token' => isset($token['access_token']),
+        //     'token_type' => $token['token_type'] ?? 'N/A',
+        //     'expires_in' => $token['expires_in'] ?? 'N/A',
+        //     'error' => $token['error'] ?? null,
+        // ]);
 
         if (!isset($token['access_token'])) {
             throw new \Exception("Auth failed: " . ($token['error_description'] ?? 'Unknown Error'));

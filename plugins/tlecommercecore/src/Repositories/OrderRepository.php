@@ -1196,7 +1196,7 @@ class OrderRepository
     public function guestCheckout($request)
     {
         try {
-            \Log::info('Guest Checkout Respository Method!!!');
+            // \Log::info('Guest Checkout Respository Method!!!');
 
             DB::beginTransaction();
             $shipping_address = $request->has('shipping_address') ? json_decode($request['shipping_address'], true) : [];
@@ -1218,7 +1218,7 @@ class OrderRepository
             } else {
                 //Create guest customer
 
-                \Log::info('Respository Method: in guest customer region!!!');
+                // \Log::info('Respository Method: in guest customer region!!!');
 
                 $guest_customer = new GuestCustomers();
                 $guest_customer->name = !empty($customer_name) ? $customer_name : 'Guest Customer';
@@ -1227,19 +1227,19 @@ class OrderRepository
                 $guest_customer->save();
                 $guest_customer_id = $guest_customer->id;
             }
-            \Log::info('Respository Method: out guest customer region!!!');
+            // \Log::info('Respository Method: out guest customer region!!!');
             $shipping_address_id = NULL;
             $billing_address_id = NULL;
             //Store shipping address
             if ($request->has('shipping_address')) {
 
-                \Log::info('Respository Method: In shipping address region!!!');
+                // \Log::info('Respository Method: In shipping address region!!!');
 
                 $shipping_address = json_decode($request['shipping_address'], true);
 
-                \Log::info('Shipping Address data', [
-                        'shipping_address' => json_encode($shipping_address),
-                ]);
+                // \Log::info('Shipping Address data', [
+                //         'shipping_address' => json_encode($shipping_address),
+                // ]);
 
                 $customer_address = new CustomerAddress;
                 $customer_address->customer_id = $customer_id;
@@ -1271,12 +1271,12 @@ class OrderRepository
                 $shipping_address_id = $customer_address->id;
             }
 
-                \Log::info('Respository Method: Out shipping address region!!!');
+                // \Log::info('Respository Method: Out shipping address region!!!');
 
             //Store billing address
             if ($request->has('billing_address')) {
 
-                \Log::info('Respository Method: In billing address region!!!');
+                // \Log::info('Respository Method: In billing address region!!!');
 
                 $shipping_address = json_decode($request['billing_address'], true);
 
@@ -1310,7 +1310,7 @@ class OrderRepository
                 $billing_address_id = $customer_address->id;
             }
 
-            \Log::info('Respository Method: out billing address region!!!');
+            // \Log::info('Respository Method: out billing address region!!!');
 
 
             $products = json_decode($request['products'], true);
@@ -1334,7 +1334,7 @@ class OrderRepository
             $order->payment_status = config('tlecommercecore.order_payment_status.unpaid');
             $order->delivery_status = config('tlecommercecore.order_delivery_status.pending');
 
-            \Log::info('Respository Method: Before Saving Order!!!');
+            // \Log::info('Respository Method: Before Saving Order!!!');
 
 
             $order->save();
@@ -1343,12 +1343,12 @@ class OrderRepository
                 $guest_customer = GuestCustomers::where('id', $guest_customer_id)->first();
                 $guest_customer->order_id = $order->id;
 
-                \Log::info('Respository Method: Before Saving Guest Customer!!!');
+                // \Log::info('Respository Method: Before Saving Guest Customer!!!');
 
                 $guest_customer->save();
             }
 
-            \Log::info('Respository Method: After Saving Guest Customer!!!');
+            // \Log::info('Respository Method: After Saving Guest Customer!!!');
             
             //store order products
             $this->storeOrderProducts($order->id, $products, null);
@@ -1364,16 +1364,16 @@ class OrderRepository
             }
             //Send new order notification to admin
 
-            \Log::info('Respository Method: before sending notification to admin!!!');
+            // \Log::info('Respository Method: before sending notification to admin!!!');
 
             EcommerceNotification::sendNewOrderNotification($order);
 
-            \Log::info('Respository Method: after sending notification to admin!!!');
+            // \Log::info('Respository Method: after sending notification to admin!!!');
 
             DB::commit();
             if ($request['payment_id'] == config('tlecommercecore.payment_methods.bank')) {
 
-                \Log::info('Respository Method: before storing bank payment info!!!');
+                // \Log::info('Respository Method: before storing bank payment info!!!');
 
                 $this->storeBankPaymentInfo($request, $order->id);
             }
@@ -2448,10 +2448,10 @@ class OrderRepository
 
             $payment_method = null;
 
-            \Log::info('payment method data', [
-                'payment_method' => $order_info->payment_method,
-                'payment_method_in_config' => config('tlecommercecore.payment_methods.payzah'),
-            ]);
+            // \Log::info('payment method data', [
+            //     'payment_method' => $order_info->payment_method,
+            //     'payment_method_in_config' => config('tlecommercecore.payment_methods.payzah'),
+            // ]);
 
             if ($order_info->payment_method == config('tlecommercecore.payment_methods.payzah')) {
                 $payment_method = 'Payzah';

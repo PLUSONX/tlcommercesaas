@@ -25,7 +25,7 @@ class SettingsController extends Controller
      */
     public function siteProperties(Request $request)
     {
-        \Log::info('siteProperties method called!!!!');
+        // \Log::info('siteProperties method called!!!!');
 
         try {
             $languages = Cache::rememberForever('-active-languages', function () {

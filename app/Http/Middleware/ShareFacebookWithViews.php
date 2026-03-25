@@ -15,13 +15,13 @@ class ShareFacebookWithViews
         $response = $next($request);
         // By the time this runs, Tenancy middleware has already finished!
         if (tenant()) {
-            Log::info("Middleware sharing pixel for Tenant: " . tenant('id'));
+            // Log::info("Middleware sharing pixel for Tenant: " . tenant('id'));
 
             $facebook = DB::table('tl_com_social_media_integrations')
                 ->where('provider', 'facebook_pixel')
                 ->first();
 
-            Log::info("facebook: " . json_encode($facebook));
+            // Log::info("facebook: " . json_encode($facebook));
 
 
             // Share this variable with ALL views globally

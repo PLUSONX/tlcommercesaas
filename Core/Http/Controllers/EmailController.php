@@ -122,56 +122,56 @@ class EmailController extends Controller
      */
      public function sendTestMail(TestEmailRequest $request)
     {
-        Log::info('=== sendTestMail START ===');
+        // Log::info('=== sendTestMail START ===');
 
         try {
 
-            Log::info('Step 1: Validated request received', [
-                'email' => $request->email,
-                'subject_length' => strlen($request->subject ?? ''),
-                'message_length' => strlen($request->message ?? '')
-            ]);
+            // Log::info('Step 1: Validated request received', [
+            //     'email' => $request->email,
+            //     'subject_length' => strlen($request->subject ?? ''),
+            //     'message_length' => strlen($request->message ?? '')
+            // ]);
 
             $mailData = [
                 "message" => xss_clean($request['message']),
                 "subject" => xss_clean($request['subject'])
             ];
 
-            Log::info('Step 2: Mail data prepared');
+            // Log::info('Step 2: Mail data prepared');
 
             if (isTenant()) {
-                Log::info('Step 3: Tenant detected, changing email configuration');
+                // Log::info('Step 3: Tenant detected, changing email configuration');
 
                 $this->changeEmailConfiguration();
 
-                Log::info('Step 3.1: Config Verify', ['host' => config('mail.mailers.smtp.host')]);
+                // Log::info('Step 3.1: Config Verify', ['host' => config('mail.mailers.smtp.host')]);
 
-                Log::info('Step 3.2: Purging Mailer Instance');
+                // Log::info('Step 3.2: Purging Mailer Instance');
 
-                Log::info('Step 4: Clearing mailers cache');
+                // Log::info('Step 4: Clearing mailers cache');
                 
                 app()->make(\Illuminate\Mail\MailManager::class)->forgetMailers();
             } else {
                 Log::info('Step 3: Not a tenant');
             }
 
-            Log::info('Step 4.5: Current SMTP Host', ['host' => config('mail.mailers.smtp.host')]);
+            // Log::info('Step 4.5: Current SMTP Host', ['host' => config('mail.mailers.smtp.host')]);
 
-            Log::info('Step 4.5.1: Current SMTP Host', ['host' => getGeneralSetting('mail_host')]);
+            // Log::info('Step 4.5.1: Current SMTP Host', ['host' => getGeneralSetting('mail_host')]);
 
-            Log::info('Step 4.5.2: Current SMTP Post', ['port' => getGeneralSetting('mail_port')]);
+            // Log::info('Step 4.5.2: Current SMTP Post', ['port' => getGeneralSetting('mail_port')]);
 
-            Log::info('Step 5: Attempting to send email', [
-                'to' => $request->email
-            ]);
+            // Log::info('Step 5: Attempting to send email', [
+            //     'to' => $request->email
+            // ]);
 
             Mail::to($request['email'])->send(new TestEmail($mailData));
 
-            Log::info('Step 6: Email sent successfully');
+            // Log::info('Step 6: Email sent successfully');
 
             toastNotification('success', translate('A new email sending successfully'));
 
-            Log::info('=== sendTestMail END SUCCESS ===');
+            // Log::info('=== sendTestMail END SUCCESS ===');
 
             return redirect()->route('core.email.smtp.configuration');
 

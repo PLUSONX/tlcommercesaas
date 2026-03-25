@@ -79,10 +79,10 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
         Route::post('customer-login', [CustomerController::class, 'customerLogin']);
         Route::post('customer-refresh-auth', [CustomerController::class, 'refresh']);
         Route::get('customer-logout', [CustomerController::class, 'customerLogout']);
-        Route::get('/test-refresh', function() {
-            \Log::info('Test refresh route hit!');
-            return response()->json(['message' => 'Test route works!']);
-        });
+        // Route::get('/test-refresh', function() {
+        //     \Log::info('Test refresh route hit!');
+        //     return response()->json(['message' => 'Test route works!']);
+        // });
     });
 
     /**

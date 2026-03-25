@@ -48,12 +48,12 @@
              <span class="link-title"> {{ translate('Products') }}</span>
          </a>
          <ul class="nav sub-menu">
-             @if (auth()->user()->can('Manage Add New Product'))
+             <!-- @if (auth()->user()->can('Manage Add New Product'))
                  <li class="{{ Request::routeIs(['plugin.tlcommercecore.product.add.new']) ? 'active ' : '' }}">
                      <a
                          href="{{ route('plugin.tlcommercecore.product.add.new') }}">{{ translate('Add New Product') }}</a>
                  </li>
-             @endif
+             @endif -->
              @if (auth()->user()->can('Manage Inhouse Products'))
                  <li class="{{ Request::routeIs(['plugin.tlcommercecore.product.list']) ? 'active ' : '' }}">
                      <a href="{{ route('plugin.tlcommercecore.product.list') }}">
@@ -68,18 +68,18 @@
                      @includeIf('plugin/multivendor::includes.submenu.products')
                  @endif
              @endif
-             @if (auth()->user()->can('Manage Colors'))
+             <!-- @if (auth()->user()->can('Manage Colors'))
                  <li
                      class="{{ Request::routeIs(['plugin.tlcommercecore.product.colors.edit', 'plugin.tlcommercecore.product.colors.list', 'plugin.tlcommercecore.product.colors.new']) ? 'active ' : '' }}">
                      <a href="{{ route('plugin.tlcommercecore.product.colors.list') }}">{{ translate('Colors') }}</a>
                  </li>
-             @endif
-             @if (auth()->user()->can('Manage Brands'))
+             @endif -->
+             <!-- @if (auth()->user()->can('Manage Brands'))
                  <li
                      class="{{ Request::routeIs(['plugin.tlcommercecore.product.brand.edit', 'plugin.tlcommercecore.product.brand.list', 'plugin.tlcommercecore.product.brand.new']) ? 'active ' : '' }}">
                      <a href="{{ route('plugin.tlcommercecore.product.brand.list') }}">{{ translate('Brands') }}</a>
                  </li>
-             @endif
+             @endif -->
 
              @if (auth()->user()->can('Manage Categories'))
                  <li
@@ -89,13 +89,13 @@
                  </li>
              @endif
 
-             @if (auth()->user()->can('Manage Attributes'))
+             <!-- @if (auth()->user()->can('Manage Attributes'))
                  <li
                      class="{{ Request::routeIs(['plugin.tlcommercecore.product.attributes.values.edit', 'plugin.tlcommercecore.product.attributes.values', 'plugin.tlcommercecore.product.attributes.edit', 'plugin.tlcommercecore.product.attributes.add', 'plugin.tlcommercecore.product.attributes.list']) ? 'active ' : '' }}">
                      <a
                          href="{{ route('plugin.tlcommercecore.product.attributes.list') }}">{{ translate('Attributes') }}</a>
                  </li>
-             @endif
+             @endif -->
 
              @if (auth()->user()->can('Manage Units'))
                  <li
@@ -111,21 +111,21 @@
                  </li>
              @endif
 
-             @if (auth()->user()->can('Manage Product collections'))
+             <!-- @if (auth()->user()->can('Manage Product collections'))
                  <li
                      class="{{ Request::routeIs(['plugin.tlcommercecore.product.collection.list']) ? 'active ' : '' }}">
                      <a
                          href="{{ route('plugin.tlcommercecore.product.collection.list') }}">{{ translate('Product collections') }}</a>
                  </li>
-             @endif
+             @endif -->
 
-             @if (auth()->user()->can('Manage Product Tags'))
+             <!-- @if (auth()->user()->can('Manage Product Tags'))
                  <li
                      class="{{ Request::routeIs(['plugin.tlcommercecore.product.tags.edit', 'plugin.tlcommercecore.product.tags.add.new', 'plugin.tlcommercecore.product.tags.list']) ? 'active ' : '' }}">
                      <a
                          href="{{ route('plugin.tlcommercecore.product.tags.list') }}">{{ translate('Product Tags') }}</a>
                  </li>
-             @endif
+             @endif -->
 
              @if (auth()->user()->can('Manage Product conditions'))
                  <li

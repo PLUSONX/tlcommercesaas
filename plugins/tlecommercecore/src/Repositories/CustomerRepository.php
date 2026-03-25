@@ -254,27 +254,27 @@ class CustomerRepository
                 ];
 
 
-                 \Log::info('Email data during customer registration!!!', [
-                    'mail_data: ' => json_encode($mail_data),
-                    'email in request: ' => $request['email'],
-                ]);
+                //  \Log::info('Email data during customer registration!!!', [
+                //     'mail_data: ' => json_encode($mail_data),
+                //     'email in request: ' => $request['email'],
+                // ]);
 
                 try {
 
-                    \Log::info('=== Customer Registration Email START ===');
+                    // \Log::info('=== Customer Registration Email START ===');
 
                     MailConfigService::applyTenantMailConfig();
 
-                    \Log::info('Before Mail::send()', [
-                        'smtp_host' => config('mail.mailers.smtp.host'),
-                        'smtp_port' => config('mail.mailers.smtp.port'),
-                        'mailer' => config('mail.default')
-                    ]);
+                    // \Log::info('Before Mail::send()', [
+                    //     'smtp_host' => config('mail.mailers.smtp.host'),
+                    //     'smtp_port' => config('mail.mailers.smtp.port'),
+                    //     'mailer' => config('mail.default')
+                    // ]);
 
                     Mail::to($request['email'])
                         ->send(new CustomerEmailVerification($mail_data));
 
-                    \Log::info('Customer verification email sent successfully.');
+                    // \Log::info('Customer verification email sent successfully.');
 
                 } catch (\Throwable $e) {
 
@@ -368,7 +368,7 @@ class CustomerRepository
      public function customerResetPasswordLink($email)
     {
         try {
-            Log::info('-----customerResetPasswordLink-----');
+            // Log::info('-----customerResetPasswordLink-----');
             $customer = Customers::where('email', $email)->first();
             $id_crypt = Crypt::encryptString($customer->id);
             $token = substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(10 / strlen($x)))), 1, 10);
@@ -390,19 +390,19 @@ class CustomerRepository
 
             MailConfigService::applyTenantMailConfig();
 
-             \Log::info('Before Mail::send()', [
-                'smtp_host' => config('mail.mailers.smtp.host'),
-                'smtp_port' => config('mail.mailers.smtp.port'),
-                'mailer' => config('mail.default')
-            ]);
+            //  \Log::info('Before Mail::send()', [
+            //     'smtp_host' => config('mail.mailers.smtp.host'),
+            //     'smtp_port' => config('mail.mailers.smtp.port'),
+            //     'mailer' => config('mail.default')
+            // ]);
 
-            Log::info('mail data:', [
-                'mail_data' => json_encode($mail_data),
-            ]);
+            // Log::info('mail data:', [
+            //     'mail_data' => json_encode($mail_data),
+            // ]);
 
-            \Log::info('Attempting to send mail to: ' . $email);
+            // \Log::info('Attempting to send mail to: ' . $email);
             Mail::to($email)->send(new CustomerForgotPassword($mail_data));
-            \Log::info('Mail sent successfully to: ' . $email);
+            // \Log::info('Mail sent successfully to: ' . $email);
             
             return true;
         } catch (\Exception $e) {
@@ -605,7 +605,7 @@ class CustomerRepository
      */
     public function verifyCustomerEmail($verification_code)
     {
-        \Log::info('verifyCustomerEmail method called with: ' . $verification_code);
+        // \Log::info('verifyCustomerEmail method called with: ' . $verification_code);
 
         try {
             $code_array = explode('.', $verification_code);
@@ -622,7 +622,7 @@ class CustomerRepository
             $decryptedRaw = Crypt::decryptString($code_array[1]);
             $id = (int) trim($decryptedRaw);
 
-            \Log::info("Attempting lookup - Table: customers, ID: $id, Code: $identifier");
+            // \Log::info("Attempting lookup - Table: customers, ID: $id, Code: $identifier");
             // Double check your column name here: 'varification_code' vs 'verification_code'
             $customer = Customers::where('id', $id)
                                 ->first();
@@ -633,7 +633,7 @@ class CustomerRepository
                 $customer->verified_at = now(); // Cleaner Laravel way for dates
                 $customer->save();
                 
-                \Log::info('Customer verified successfully ID: ' . $id);
+                // \Log::info('Customer verified successfully ID: ' . $id);
                 return $customer;
             }
 

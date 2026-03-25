@@ -251,11 +251,11 @@ class ProductController extends Controller
      */
     public function productDetails(Request $request)
     {
-        \Log::info('Product Details Method Called!!!!');
+        // \Log::info('Product Details Method Called!!!!');
 
-        \Log::info('Request Data', [
-            'data' => $request->all() 
-        ]);
+        // \Log::info('Request Data', [
+        //     'data' => $request->all() 
+        // ]);
 
         if ($request->has('preview') && $request['preview'] == 1) {
             $product = Product::with(['single_price', 'variations', 'choices', 'reviews', 'gallery_images'])
@@ -268,11 +268,11 @@ class ProductController extends Controller
                 ->where('is_approved', config('settings.general_status.active'))
                 ->first();
 
-            \Log::info('Product Data', [
-                'product' => json_encode($product) 
-            ]);
+            // \Log::info('Product Data', [
+            //     'product' => json_encode($product) 
+            // ]);
 
-            \Log::info('Final check before return', ['is_null' => is_null($product)]);
+            // \Log::info('Final check before return', ['is_null' => is_null($product)]);
 
             if ($product != null) {
                 return new SingleProductCollection($product);

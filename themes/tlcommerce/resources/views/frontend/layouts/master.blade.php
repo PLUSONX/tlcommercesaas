@@ -44,8 +44,7 @@
         ->where('provider', 'facebook_pixel')
         ->first();
     
-    \Log::info('facebook_integration: ' . json_encode($facebook_integration ?? 'NOT SET'));
-
+    
 @endphp
 
 <!DOCTYPE html>
@@ -58,7 +57,6 @@
         $fbSettings = json_decode($facebook_integration->settings, true);
         $fbPixelId = $fbSettings['pixel_id'] ?? null;
 
-        \Log::info('fbPixelId: ' . $fbPixelId);
     @endphp
 
     @if($fbPixelId)

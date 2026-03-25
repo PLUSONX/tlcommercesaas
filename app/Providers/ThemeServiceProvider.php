@@ -119,14 +119,14 @@ class ThemeServiceProvider extends ServiceProvider
     public function boot()
     {
 
-    Log::info('----inside themeServiceProvider ----');
+    // Log::info('----inside themeServiceProvider ----');
 
         // if (env('IS_USER_REGISTERED') == 1) {
             $active_theme = getActiveTheme();
 
-            Log::info('themeServiceProvider settings', [
-                'active_theme' => json_encode($active_theme),
-            ]);
+            // Log::info('themeServiceProvider settings', [
+            //     'active_theme' => json_encode($active_theme),
+            // ]);
 
             //Merge config
             $has_config = file_exists(base_path('themes/' . $active_theme->location .  '/config/config.php'));

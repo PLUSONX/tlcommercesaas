@@ -133,6 +133,14 @@ class AuthenticationController extends Controller
 
                                 tenancy()->end();
 
+                                if (!empty($credentials['token'])) {
+
+                                    Log::info('Inside of the If condition');
+
+                                    $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $tenantUser->id, tenant('id'));
+
+                                }
+
                                 // Build URL with token
                                 // $tenantUrl = $this->buildTenantDashboardUrl($tenant) . '?login_token=' . $loginToken;
                                 $tenantUrl = $this->buildTenantLoginUrl($tenant) . '?login_token=' . $loginToken;
@@ -141,17 +149,6 @@ class AuthenticationController extends Controller
                                  
                                  toastNotification('success', translate("Welcome back!"));
                                  return redirect()->away($tenantUrl);
-                                //  $tenantUrl = $this->buildTenantLoginUrl($tenant);
-                                 
-                                // return view('auth.tenant-redirect', [
-                                //     'tenantUrl' => $tenantUrl,
-                                //     'loginToken' => $loginToken
-                                // ]);
-
-                                // return redirect()->route('tenant.redirect', [
-                                //     'tenant' => $tenant->id,
-                                //     'token' => $loginToken
-                                // ]);
                             }
 
                             tenancy()->end();
@@ -165,8 +162,8 @@ class AuthenticationController extends Controller
                 // User not in central DB or wrong password - might be a tenant-only user
                 // Check if this email exists in any tenant's database through tl_saas_accounts
                 $saasAccounts = \DB::connection('mysql')->table('tl_saas_accounts')
-                    ->join('users', 'tl_saas_accounts.user_id', '=', 'users.id')
-                    ->where('users.email', $credentials['email'])
+                    ->join('tl_users', 'tl_saas_accounts.user_id', '=', 'tl_users.id')
+                    ->where('tl_users.email', $credentials['email'])
                     ->select('tl_saas_accounts.*')
                     ->get();
 
@@ -295,7 +292,9 @@ class AuthenticationController extends Controller
         // Handle case where user is already logged out
         if (!$user) {
             // return redirect()->route('subscriber.login');
-            return redirect()->route('core.login');
+            // return redirect()->route('core.login');
+        return redirect()->away('https://platepilots.com/admin/login');
+
         }
 
         $user_type = $user->user_type;
@@ -319,6 +318,9 @@ class AuthenticationController extends Controller
 
         tenancy()->end();
 
+        // redirect()->away(config('app.central_domain') . '/admin/login');
+        return redirect()->away('https://platepilots.com/admin/login');
+
         // $centralDomain = config('tenancy.central_domains')[0];
         // $scheme = request()->isSecure() ? 'https' : 'http';
         // $port = request()->getPort();
@@ -330,7 +332,6 @@ class AuthenticationController extends Controller
 
         // return redirect()->away($scheme . '://' . $centralDomain . $portSuffix . '/' . $adminPrefix . '/login');
 
-        return redirect()->away('https://platepilots.com/admin/login');
         // return redirect()->away('http://127.0.0.1:8000/admin/login');
 
         // // Bypass Laravel's response pipeline entirely

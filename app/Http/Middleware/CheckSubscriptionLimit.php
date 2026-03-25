@@ -105,17 +105,17 @@ class CheckSubscriptionLimit
                 $total_customers = Customers::count();
                 $total_customers_creation = $package_privilege->package_privileges_customers;
 
-                session()->put('customer_limit_over', 1);
+                // session()->put('customer_limit_over', 0);
 
-                // if ($total_customers_creation != '-1') {
-                //     if ($total_customers >= intval($total_customers_creation)) {
-                //         session()->put('customer_limit_over', 1);
-                //     } else {
-                //         session()->put('customer_limit_over', 0);
-                //     }
-                // } else {
-                //     session()->put('customer_limit_over', 0);
-                // }
+                if ($total_customers_creation != '-1') {
+                    if ($total_customers >= intval($total_customers_creation)) {
+                        session()->put('customer_limit_over', 1);
+                    } else {
+                        session()->put('customer_limit_over', 0);
+                    }
+                } else {
+                    session()->put('customer_limit_over', 0);
+                }
             }
         }
         return $next($request);

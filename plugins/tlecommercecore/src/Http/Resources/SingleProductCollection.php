@@ -17,11 +17,11 @@ class SingleProductCollection extends JsonResource
 
     public function toArray($request)
     {
-        \Log::info('SingleProductCollection ToArray Called!!!!');
+        // \Log::info('SingleProductCollection ToArray Called!!!!');
 
-        \Log::info('Request Data', [
-                'data' => $request->all() 
-            ]);
+        // \Log::info('Request Data', [
+        //         'data' => $request->all() 
+        //     ]);
 
         return [
             'id' => $this->id,

@@ -58,9 +58,9 @@ class LayoutSettingsRepository {
                 )
                 ->first();
 
-            \Log::info('splitScreenSettings data!!!', [
-                'splitScreenSettings' => $splitScreenSettings,
-            ]);
+            // \Log::info('splitScreenSettings data!!!', [
+            //     'splitScreenSettings' => $splitScreenSettings,
+            // ]);
 
             return [
                 'id' => $layout->id,
@@ -148,7 +148,7 @@ class LayoutSettingsRepository {
      */
     public function updateSplitScreenProperties(array $data)
     {
-        \Log::info('updateSplitScreenProperties method called!!!');
+        // \Log::info('updateSplitScreenProperties method called!!!');
         // Get the active layout ID
         $layoutId = DB::table('tl_store_layouts')
                         ->where('is_active', 1)
@@ -183,14 +183,14 @@ class LayoutSettingsRepository {
             $updateData['background_color'] = $data['background_color'];
         }
 
-        \Log::info('Before updating the split screen properties!!!');
+        // \Log::info('Before updating the split screen properties!!!');
 
         // Update the record
         $updated = DB::table('tl_store_layouts_split_screen_properties')
                     ->where('layout_id', $layoutId)
                     ->update($updateData);
 
-        \Log::info('After updating the split screen properties!!!');
+        // \Log::info('After updating the split screen properties!!!');
         
 
         return $updated > 0;

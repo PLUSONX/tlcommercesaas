@@ -44,10 +44,10 @@ class SettingsController extends Controller
     public function updateEcommerceSettings(Request $request)
     {
         $tenant = tenant(); 
-        Log::info('Tenant resolved', [
-            'tenant' => $tenant ? $tenant->toArray() : null,
-            'tenant_slug' => $tenant->shop_slug
-        ]);
+        // Log::info('Tenant resolved', [
+        //     'tenant' => $tenant ? $tenant->toArray() : null,
+        //     'tenant_slug' => $tenant->shop_slug
+        // ]);
 
         if (!$request->filled('shop_slug')) {
             $request->merge([

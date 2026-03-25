@@ -61,7 +61,7 @@ class RolePermissionController extends Controller{
     try {
         $roleId = $request->input('id');
         
-        \Log::info('Step 1: Finding role', ['role_id' => $roleId]);
+        // \Log::info('Step 1: Finding role', ['role_id' => $roleId]);
         
         if (!$roleId) {
             return response()->json([
@@ -72,7 +72,7 @@ class RolePermissionController extends Controller{
         
         $role = Role::find($roleId);
         
-        \Log::info('Step 2: Role found', ['role' => $role]);
+        // \Log::info('Step 2: Role found', ['role' => $role]);
         
         if (!$role) {
             return response()->json([
@@ -85,7 +85,7 @@ class RolePermissionController extends Controller{
             ->where('role_id', '=', $roleId)
             ->pluck('permission_id');
         
-        \Log::info('Step 3: Permissions fetched', ['permissions' => $permissions]);
+        // \Log::info('Step 3: Permissions fetched', ['permissions' => $permissions]);
         
         $modules = DB::table('permission_module')
             ->select(['id'])

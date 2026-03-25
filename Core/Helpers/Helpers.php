@@ -249,20 +249,20 @@ if (!function_exists('saveFileInStorage')) {
      */
     function saveFileInStorage($file, $cropping = false, $static_path = null)
     {
-        \Log::info('=== saveFileInStorage CALLED ===');
+        // \Log::info('=== saveFileInStorage CALLED ===');
 
-          \Log::info('--- INSIDE saveFileInStorage ---', [
-                'is_object' => is_object($file),
-                'class'     => get_class($file),
-                'temp_path' => $file->getPathname(),
-                'exists'    => file_exists($file->getPathname()) ? 'YES' : 'NO',
-                'error_code'=> $file->getError() // 0 is success
-            ]);
+        //   \Log::info('--- INSIDE saveFileInStorage ---', [
+        //         'is_object' => is_object($file),
+        //         'class'     => get_class($file),
+        //         'temp_path' => $file->getPathname(),
+        //         'exists'    => file_exists($file->getPathname()) ? 'YES' : 'NO',
+        //         'error_code'=> $file->getError() // 0 is success
+        //     ]);
 
-        \Log::info('=== saveFileInStorage CALLED ===', [
-            'file: ' => json_encode($file)
-            // 'request_id' => $request->input('id')
-        ]);
+        // \Log::info('=== saveFileInStorage CALLED ===', [
+        //     'file: ' => json_encode($file)
+        //     // 'request_id' => $request->input('id')
+        // ]);
         try {
             $upload_path = "storage";
             $tenant_id = isTenant();

@@ -178,14 +178,14 @@ class OrderController extends Controller
                 return redirect()->back();
             }
 
-            \Log::info('=== printShippingLabel START ===', [
-                'order_id' => $request['order_id'],
-                'shipping_label_products' => $request['shipping_label_products'],
-                'action' => $request['action'],
-            ]);
+            // \Log::info('=== printShippingLabel START ===', [
+            //     'order_id' => $request['order_id'],
+            //     'shipping_label_products' => $request['shipping_label_products'],
+            //     'action' => $request['action'],
+            // ]);
 
             $shipping_label_content = $this->order_repository->getShippingLabelContent($request['order_id'], $request['shipping_label_products']);
-            \Log::info('Shipping label content retrieved', ['content' => $shipping_label_content]);
+            // \Log::info('Shipping label content retrieved', ['content' => $shipping_label_content]);
 
             $qr_data = collect($shipping_label_content)->toJson();
 
@@ -193,11 +193,11 @@ class OrderController extends Controller
             $qr_svg_content = QrCode::format('svg')->size(200)->errorCorrection('H')->generate($qr_data);
             $qr_temp = public_path('temp_qr_' . $shipping_label_content['order_code'] . '.svg');
             file_put_contents($qr_temp, $qr_svg_content);
-            \Log::info('QR code generated successfully');
+            // \Log::info('QR code generated successfully');
 
             $order_code_bar_code = DNS1D::getBarcodePNG($shipping_label_content['order_code'], 'C39+', 1, 85);
             $tracking_id_bar_code = DNS1D::getBarcodePNG($shipping_label_content['tracking_id'], 'C39+', 1, 50);
-            \Log::info('Barcodes generated successfully');
+            // \Log::info('Barcodes generated successfully');
 
             $order_bar_temp = public_path('temp_bar_order_' . $shipping_label_content['order_code'] . '.png');
             $tracking_bar_temp = public_path('temp_bar_tracking_' . $shipping_label_content['order_code'] . '.png');
@@ -263,9 +263,9 @@ class OrderController extends Controller
                         'currency_font'       => $currency_font,
                     ];
 
-                    Log::info('data check', [
-                        'data' => json_encode($data)
-                    ]);
+                    // Log::info('data check', [
+                    //     'data' => json_encode($data)
+                    // ]);
 
                     $default_language = getLocale();
                     $is_rtl = DB::table('tl_languages')
@@ -273,7 +273,7 @@ class OrderController extends Controller
                         ->where('is_rtl', '=', 1)
                         ->exists();
 
-                    \Log::info('RTL check', ['locale' => $default_language, 'is_rtl' => $is_rtl]);
+                    // \Log::info('RTL check', ['locale' => $default_language, 'is_rtl' => $is_rtl]);
 
                     if ($is_rtl) {
                         $tenant_id = isTenant();
@@ -284,7 +284,7 @@ class OrderController extends Controller
 
                         $data['qr_code'] = url('tenant/tenant' . $tenant_id . '/shipping_' . $shipping_label_content['order_code'] . 'qr_code.png');
 
-                        \Log::info('Loading RTL PDF view');
+                        // \Log::info('Loading RTL PDF view');
                         $pdf = NPDF::loadView('plugin/tlecommercecore::orders.invoice.shipping_label_rtl', $data, [], [
                             'default_font'  => 'dejavusans',
                             'mode'          => 'utf-8',
@@ -296,19 +296,19 @@ class OrderController extends Controller
                             'padding_right' => 5,
                         ]);
 
-                        \Log::info('RTL PDF generated, action: ' . $request['action']);
+                        // \Log::info('RTL PDF generated, action: ' . $request['action']);
                         return $request['action'] == 'preview'
                             ? $pdf->stream($shipping_label_content['order_code'] . '.pdf')
                             : $pdf->download($shipping_label_content['order_code'] . '.pdf');
                     }
 
-                    \Log::info('Loading LTR PDF view');
+                    // \Log::info('Loading LTR PDF view');
 
                     $view = view('plugin/tlecommercecore::orders.invoice.shipping_label', $data);
-                    \Log::info('View file path: ' . $view->getEngine()->getCompiler()->getCompiledPath(
-                        $view->getPath()
-                    ));
-                    \Log::info('View source path: ' . $view->getPath());
+                    // \Log::info('View file path: ' . $view->getEngine()->getCompiler()->getCompiledPath(
+                    //     $view->getPath()
+                    // ));
+                    // \Log::info('View source path: ' . $view->getPath());
 
                     // Render the blade view to raw HTML first so we can inspect it
                     $html = view('plugin/tlecommercecore::orders.invoice.shipping_label', $data)->render();
@@ -321,12 +321,12 @@ class OrderController extends Controller
                     // $pdf = BPDF::loadView('plugin/tlecommercecore::orders.invoice.shipping_label', $data)
                     //     ->set_option('isFontSubsettingEnabled', true);
 
-                    \Log::info('LTR PDF generated, action: ' . $request['action']);
+                    // \Log::info('LTR PDF generated, action: ' . $request['action']);
 
-                    \Log::info('Attempting PDF stream, checking output buffer', [
-                        'ob_level' => ob_get_level(),
-                        'headers_sent' => headers_sent(),
-                    ]);
+                    // \Log::info('Attempting PDF stream, checking output buffer', [
+                    //     'ob_level' => ob_get_level(),
+                    //     'headers_sent' => headers_sent(),
+                    // ]);
 
                     // Clean any buffered output before streaming
                     while (ob_get_level() > 0) {

@@ -92,12 +92,12 @@ class MediaController extends Controller
      */
     public function uploadMediaFile(Request $request)
     {
-        \Log::info('=== uploadMediaFile CALLED ===');
+        // \Log::info('=== uploadMediaFile CALLED ===');
 
-        \Log::info('=== uploadMediaFile CALLED ===', [
-            'request: ' => json_encode($request),
-            'file: ' => json_encode($request->file('file')),
-        ]);
+        // \Log::info('=== uploadMediaFile CALLED ===', [
+        //     'request: ' => json_encode($request),
+        //     'file: ' => json_encode($request->file('file')),
+        // ]);
         try {
 
             // 1. Get the file(s) from the request

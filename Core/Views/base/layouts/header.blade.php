@@ -1,110 +1,26 @@
-
-
-<header class="header white-bg fixed-top d-flex align-content-center flex-wrap">
+<header class="header white-bg fixed-top d-flex align-items-center flex-wrap">
     @include('core::base.layouts.headerLogo')
-    <!-- Main Header -->
-    <div class="main-header">
+    
+    <div class="main-header w-100">
         <div class="container-fluid">
-            <div class="row justify-content-between">
-                <div class="col-3 col-lg-1 col-xl-4">
-                    <!-- Header Left -->
-                    <div class="main-header-left h-100 d-flex align-items-center">
-                        <!-- Main Header User -->
-                        @auth
-                            <div class="main-header-user">
-                                <a href="#" class="d-flex align-items-center" data-toggle="dropdown">
-                                    <div class="menu-icon">
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                    </div>
-                                    <div class="user-profile d-lg-flex align-items-center d-none">
-                                        <!-- User Avatar -->
-                                        <div class="user-avatar">
-                                            @if (auth()->user()->image != null)
-                                                <!-- <img src="{{ asset(getFilePath(auth()->user()->image)) }}"
-                                                    alt="{{ auth()->user()->name }}"> -->
-
-                                                <img src="{{ str_replace('/public', '', asset(getFilePath(auth()->user()->image)) ) }}"
-                                            
-                                            alt="{{ auth()->user()->name }}">
-                                            @else
-                                                <img src="{{ asset('backend/assets/img/avatar/avatar-user.png') }}"
-                                                    alt="{{ auth()->user()->name }}">
-                                            @endif
-                                        </div>
-                                        <!-- End User Avatar -->
-
-                                        <!-- User Info -->
-                                        <div class="user-info">
-                                            <h4 class="user-name">{{ auth()->user()->name }}</h4>
-                                            <p class="user-email">{{ auth()->user()->email }}</p>
-                                        </div>
-                                        <!-- End User Info -->
-                                    </div>
-                                </a>
-                                <div class="dropdown-menu">
-                                    <a href="{{ route('core.profile') }}">
-                                        {{ translate('My Profile') }}
-                                    </a>
-                                    <a href="{{ route('core.logout') }}">
-                                        {{ translate('Log Out') }}
-                                    </a>
-                                </div>
-                                <!-- <div class="dropdown-menu">
-                                    <a href="{{ route('core.profile') }}">{{ translate('My Profile') }}</a>
-                                    <a href="{{ route('core.logout') }}">{{ translate('Log Out') }}</a>
-                                </div> -->
-                            </div>
-                        @endauth
-                        <!-- End Main Header User -->
-                        <!-- Main Header Menu -->
-                        <div class="main-header-menu d-block d-lg-none">
-                            <div class="header-toogle-menu">
-                                <img src="{{ asset('backend/assets/img/menu.png') }}" alt="">
-                            </div>
-                        </div>
-                        <!-- End Main Header Menu -->
-                    </div>
-                    <!-- End Header Left -->
-                </div>
-                <div class="col-9 col-lg-11 col-xl-8">
-                    <!-- Header Right -->
+            <div class="row justify-content-end align-items-center">
+                
+                <div class="col-auto">
                     <div class="main-header-right d-flex justify-content-end">
-                        <ul class="nav">
+                        <ul class="nav align-items-center">
                             <li class="d-none d-lg-flex">
-                                <!-- Main Header Time -->
-                                <div class="main-header-date-time text-right"
-                                    data-timezone="{{ getGeneralSetting('default_timezone') }}" id="dateTime">
-                                    <h3 class="time">
-                                        <span id="hours">21</span>
-                                        <span id="point">:</span>
-                                        <span id="min">06</span>
-                                    </h3>
-                                    <span class="date"><span id="date">Tue, 12 October
-                                            2019</span></span>
+                                <div class="main-header-date-time text-right" id="dateTime">
+                                    <h3 class="time mb-0"><span id="hours">21</span><span>:</span><span id="min">06</span></h3>
+                                    <span class="date"><span id="date">Tue, 12 October 2019</span></span>
                                 </div>
-                                <!-- End Main Header Time -->
                             </li>
-                            <li class="d-none d-lg-flex">
-                                <!-- Main Header Button -->
-                                <div class="main-header-btn ml-md-1">
-                                    <a href="{{ route('core.admin.clear.system.cache') }}"
-                                        class="btn">{{ translate('Clear Cache') }}</a>
-                                </div>
-                                <!-- End Main Header Button -->
-                            </li>
+
                             <li class="ml-3">
-                                <!-- Visit website -->
                                 <div class="main-header-notification">
-                                    <a href="/" target="_blank" title="Visit website"
-                                        class="header-icon notification-icon">
-                                        <img src="{{ asset('backend/assets/img/svg/globe-icon.svg') }}"
-                                            alt="bell" class="svg">
-                                    </a>
+                                    <a href="/" target="_blank" class="header-icon"><img src="{{ asset('backend/assets/img/svg/globe-icon.svg') }}" class="svg"></a>
                                 </div>
-                                <!-- End Visit website -->
                             </li>
+
                             <li class="ml-3">
                                 <!-- Main Header Language -->
                                 <div class="main-header-notification">
@@ -152,12 +68,44 @@
                                 </div>
                                 <!-- End Main Header Notification -->
                             </li>
-                        </ul>
+
+                            </ul>
                     </div>
-                    <!-- End Header Right -->
                 </div>
+
+                <div class="col-auto">
+                    <div class="main-header-left h-100 d-flex align-items-center justify-content-end">
+                        @auth
+                            <div class="main-header-user dropdown">
+                                <a href="javascript:void(0);" class="user-profile d-flex align-items-center" data-toggle="dropdown" style="text-decoration: none; color: inherit;">
+                                    <div class="user-info mr-3 text-right d-none d-sm-block"> 
+                                        <h4 class="user-name mb-0" style="font-size: 14px;">{{ auth()->user()->name }}</h4>
+                                        <p class="user-email mb-0" style="font-size: 11px;">{{ auth()->user()->email }}</p>
+                                    </div>
+                                    <div class="user-avatar">
+                                        <img src="{{ auth()->user()->image ? str_replace('/public', '', asset(getFilePath(auth()->user()->image))) : asset('backend/assets/img/avatar/avatar-user.png') }}"
+                                             class="rounded-circle" 
+                                             style="width: 40px; height: 40px; object-fit: cover; border: 1px solid #ddd;">
+                                    </div>
+                                </a>
+
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a class="dropdown-item" href="{{ route('core.profile') }}"><i class="fa fa-user mr-2"></i> {{ translate('My Profile') }}</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="{{ route('core.logout') }}"><i class="fa fa-sign-out mr-2"></i> {{ translate('Log Out') }}</a>
+                                </div>
+                            </div>
+                        @endauth
+
+                        <div class="main-header-menu d-block d-lg-none ml-3">
+                            <div class="header-toogle-menu">
+                                <img src="{{ asset('backend/assets/img/menu.png') }}" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
         </div>
     </div>
-    <!-- End Main Header -->
 </header>

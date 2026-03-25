@@ -110,7 +110,7 @@ class ThemeOptionController extends Controller
 public function layoutSettings()
 {
     try {
-         \Log::info('layoutSettings method called !!!!');
+        //  \Log::info('layoutSettings method called !!!!');
 
          $data = $this->layoutRepo->getLayOutSettings();
        
@@ -132,7 +132,7 @@ public function layoutSettings()
 public function getActiveLayout()
 {
     try {
-        \Log::info('getActiveLayout method called !!!!');
+        // \Log::info('getActiveLayout method called !!!!');
 
         $layout = $this->layoutRepo->getActiveLayout();
        
@@ -180,9 +180,9 @@ public function getActiveLayout()
      */
     public function editLayoutSettings(Request $request) 
     {
-        \Log::info('editLayoutSettings method called!!!', [
-            'request' => $request->all(),
-        ]);
+        // \Log::info('editLayoutSettings method called!!!', [
+        //     'request' => $request->all(),
+        // ]);
 
         // Validate the request
         // $request->validate([

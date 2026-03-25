@@ -192,16 +192,16 @@ class OrderController extends Controller
     public function countryList()
     {
         try {
-            \Log::info('countryList method called !!!!');
+            // \Log::info('countryList method called !!!!');
 
             $countries = Country::where('status', config('settings.general_status.active'))
             ->select('id', 'name', 'code')
             ->orderBy('name', 'ASC')
             ->get();
 
-            \Log::info('countryList data', [
-                'countries' => json_encode($countries),
-        ]);
+        //     \Log::info('countryList data', [
+        //         'countries' => json_encode($countries),
+        // ]);
             // $countries = Country::with(['country_translations'])
             //     ->where('status', config('settings.general_status.active'))
             //     ->select('id', 'name', 'code')
@@ -225,7 +225,7 @@ class OrderController extends Controller
     public function countryStates(Request $request)
     {
         try {
-             \Log::info('countryStates method called !!!!');
+            //  \Log::info('countryStates method called !!!!');
             $states = States::with(['state_translations'])->where('country_id', $request['country_id'])
                 ->select('name', 'id', 'code')
                 ->where('status', config('settings.general_status.active'))
@@ -381,7 +381,7 @@ class OrderController extends Controller
      */
     public function validateCartItems(Request $request)
     {
-        \Log::info('validateCartItems method called!!!!');
+        // \Log::info('validateCartItems method called!!!!');
 
         $items = json_decode($request['items'], true);
         $updated_cart = [];
@@ -426,7 +426,7 @@ class OrderController extends Controller
                 
             }
 
-             \Log::info('validateCartItems method middle point!!!!');
+            //  \Log::info('validateCartItems method middle point!!!!');
             // $temp['image'] = $item['image'];
             if (!empty($item['variant'])) {
                 $temp['variant'] = $item['variant'];
@@ -485,7 +485,7 @@ class OrderController extends Controller
                 $temp['shop_slug'] = $item['shop_slug'];
             }
 
-            \Log::info('validateCartItems method validation end!!!!');
+            // \Log::info('validateCartItems method validation end!!!!');
 
 
             // $temp['shop_slug'] = $item['shop_slug'];
@@ -493,7 +493,7 @@ class OrderController extends Controller
             $temp['is_selected'] = $this->checkAvailabilityCartItem($item) == 1 ? true : false;
             array_push($updated_cart, $temp);
 
-            \Log::info('validateCartItems method end!!!!');
+            // \Log::info('validateCartItems method end!!!!');
 
         }
 
@@ -839,7 +839,7 @@ class OrderController extends Controller
      */
     public function customerOrders(Request $request)
     {
-         \Log::info('customerOrders method called !!!!');
+        //  \Log::info('customerOrders method called !!!!');
          
         return new OrderCollection($this->order_repository->customerOrders($request, auth('jwt-customer')->user()->id));
     }

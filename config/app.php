@@ -189,6 +189,7 @@ return [
         SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
         Milon\Barcode\BarcodeServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -246,6 +247,7 @@ return [
         'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
         'NPDF' => niklasravnsborg\LaravelPdf\Facades\Pdf::class, // For niklasravnsborg
         'BPDF' => Barryvdh\DomPDF\Facade\Pdf::class,
-        'AppLoader' => ThemeLooks\SecureLooks\SecureLooksFacade::class
+        'AppLoader' => ThemeLooks\SecureLooks\SecureLooksFacade::class,
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class
     ])->toArray()
 ];

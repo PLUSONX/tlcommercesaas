@@ -124,7 +124,7 @@ class EcommerceNotification
 
     public static function sendNewOrderNotification($order)
     {
-        \Log::info('sendNewOrderNotification method called!!!');
+        // \Log::info('sendNewOrderNotification method called!!!');
 
         try {
             //Send notification to admin
@@ -136,23 +136,23 @@ class EcommerceNotification
         ];
         $admins = User::where('user_type', config('tlecommercecore.user_type.admin'))->where('status', config('settings.general_status.active'))->get();
         if ($admins != null) {
-                \Log::info('Admin is not null!!!');
+                // \Log::info('Admin is not null!!!');
 
-                \Log::info('Admins Data:', [
-                    'count' => count($admins),
-                    'class' => get_class($admins),
-                    'emails' => $admins->pluck('email')->toArray()
-                ]);
-                \Log::info('Payload Data:', $data);
+                // \Log::info('Admins Data:', [
+                //     'count' => count($admins),
+                //     'class' => get_class($admins),
+                //     'emails' => $admins->pluck('email')->toArray()
+                // ]);
+                // \Log::info('Payload Data:', $data);
 
                 $notification = new CustomerOrderCreateNotification($data);
                 
-                \Log::info('Notification Data', [
-                    'notification' => $notification
-                ]);
+                // \Log::info('Notification Data', [
+                //     'notification' => $notification
+                // ]);
 
             try {
-                    \Log::info('Testing manual insert...');
+                    // \Log::info('Testing manual insert...');
 
                     // $fullType = 'Plugin\TlcommerceCore\Notifications\CustomerOrderCreateNotification';
 
@@ -189,9 +189,9 @@ class EcommerceNotification
                 // \Log::info('User connection:', [
                 //     'connection' => $admins->first()->getConnectionName()
                 // ]);
-                \Log::info('About to send notification');
+                // \Log::info('About to send notification');
                 Notification::send($admins, $notification);
-                \Log::info('Notification send completed');
+                // \Log::info('Notification send completed');
 
             } catch (\Throwable $e) {
 

@@ -38,7 +38,7 @@ use App\Models\User;
 
 
 Route::get('/auth/token-login', function () {
-    \Log::info('Token login route hit');
+    \Log::info('Token login route hit, core.php');
     
     $token = request()->input('login_token');
 

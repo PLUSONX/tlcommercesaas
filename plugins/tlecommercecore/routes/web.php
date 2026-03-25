@@ -363,6 +363,8 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
         });
         Route::middleware(['can:Manage Transaction history'])->group(function () {
             Route::get('/transaction-history', [PaymentController::class, 'transactionHistory'])->name('plugin.tlcommercecore.payments.transactions.history');
+        Route::post('/print-transaction-history', [PaymentController::class, 'printTransactionHistory'])->name('plugin.tlcommercecore.payment.print.transaction.history');
+
         });
     });
 

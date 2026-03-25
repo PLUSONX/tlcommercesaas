@@ -24,13 +24,13 @@ class CustomerOrderCreateNotification extends Notification
      */
     public function __construct($data)
     {
-        \Log::info('CustomerOrderCreateNotification __construct called', [
-            'data' => $data
-        ]);
+        // \Log::info('CustomerOrderCreateNotification __construct called', [
+        //     'data' => $data
+        // ]);
 
         $this->data = $data;
 
-        \Log::info('CustomerOrderCreateNotification __construct completed');
+        // \Log::info('CustomerOrderCreateNotification __construct completed');
 
         // $this->tenantId = tenant('id');
 
@@ -45,10 +45,10 @@ class CustomerOrderCreateNotification extends Notification
      */
     public function via($notifiable)
     {
-        \Log::info('via() method called', [
-            'notifiable_id' => $notifiable->id ?? 'unknown',
-            'notifiable_class' => get_class($notifiable)
-        ]);
+        // \Log::info('via() method called', [
+        //     'notifiable_id' => $notifiable->id ?? 'unknown',
+        //     'notifiable_class' => get_class($notifiable)
+        // ]);
 
         return ['database'];
     }
@@ -75,20 +75,20 @@ class CustomerOrderCreateNotification extends Notification
      */
     public function toDatabase($notifiable)
     {
-        \Log::info('toDatabase() method called', [
-            'notifiable_id' => $notifiable->id,
-            'notifiable_type' => get_class($notifiable),
-            'data' => $this->data,
-            'current_tenant' => tenant('id'),
-            'db_connection' => \DB::connection()->getDatabaseName()
-        ]);
+        // \Log::info('toDatabase() method called', [
+        //     'notifiable_id' => $notifiable->id,
+        //     'notifiable_type' => get_class($notifiable),
+        //     'data' => $this->data,
+        //     'current_tenant' => tenant('id'),
+        //     'db_connection' => \DB::connection()->getDatabaseName()
+        // ]);
         
         $result = [
             'message' => $this->data['message'],
             'link' => $this->data['link'],
         ];
         
-        \Log::info('toDatabase() returning', ['result' => $result]);
+        // \Log::info('toDatabase() returning', ['result' => $result]);
         
         return $result;
         // \Log::info('toDatabase called', [

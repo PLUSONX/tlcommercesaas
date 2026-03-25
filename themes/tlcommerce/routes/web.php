@@ -17,7 +17,7 @@ use Theme\TLCommerce\Http\Controllers\Backend\ThemeOptionController;
 // });
 
 Route::get('/auth/token-login', function () {
-    \Log::info('Token login route hit');
+    \Log::info('Token login route hit, web.php');
     
     $token = request()->input('login_token');
 

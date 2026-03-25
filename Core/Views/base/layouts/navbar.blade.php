@@ -43,7 +43,8 @@
                 <li class="{{ Request::routeIs(['core.media.page']) ? 'active ' : '' }}">
                     <a href="{{ route('core.media.page') }}">
                         <i class="icofont-multimedia"></i>
-                        <span class="link-title">{{ translate('Media') }}</span>
+                        <span class="link-title">{{ translate('File Manager') }}</span>
+                        <!-- <span class="link-title">{{ translate('Media') }}</span> -->
                     </a>
 
                 </li>
@@ -113,7 +114,7 @@
             <!--End Blog module-->
 
             <!--Page Module-->
-            @canany(['Show Page', 'Create Page'])
+            <!-- @canany(['Show Page', 'Create Page'])
                 <li
                     class="{{ Request::routeIs(['core.page', 'core.page.add', 'core.page.edit']) ? 'active sub-menu-opened' : '' }}">
                     <a href="#">
@@ -133,7 +134,7 @@
                         @endcan
                     </ul>
                 </li>
-            @endcanany
+            @endcanany -->
             <!--End Blog module-->
             <!-- Blog & Page -->
 
@@ -152,11 +153,11 @@
                         <span class="link-title">{{ translate('Appearances') }}</span>
                     </a>
                     <ul class="nav sub-menu">
-                        @if (auth()->user()->can('Manage Themes'))
+                        <!-- @if (auth()->user()->can('Manage Themes'))
                             <li class="{{ Request::routeIs(['core.themes.index']) ? 'active ' : '' }}">
                                 <a href="{{ route('core.themes.index') }}">{{ translate('Themes') }}</a>
                             </li>
-                        @endif
+                        @endif -->
                         @if (auth()->user()->can('Manage Menus'))
                             <li class="{{ Request::routeIs(['core.manage.menus']) ? 'active ' : '' }}">
                                 <a href="{{ route('core.manage.menus') }}">{{ translate('Menus') }}</a>

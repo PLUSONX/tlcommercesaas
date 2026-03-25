@@ -2,6 +2,7 @@
 
 namespace Plugin\TlcommerceCore\Http\Controllers\Payment;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -14,9 +15,11 @@ use Plugin\TlcommerceCore\Models\Customers;
 use Plugin\TlcommerceCore\Models\PaymentMethods;
 use Plugin\TlcommerceCore\Models\OrderHasProducts;
 use Plugin\TlcommerceCore\Models\PaymentTransaction;
+use Plugin\TlcommerceCore\Models\PaymentTransactionExport;
 use Plugin\TlcommerceCore\Repositories\EcommerceNotification;
 use Plugin\TlcommerceCore\Repositories\PaymentMethodRepository;
 use Plugin\TlcommerceCore\Http\Requests\PaymentMethodCredentialRequest;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PaymentController extends Controller
 {
@@ -229,6 +232,33 @@ class PaymentController extends Controller
         session()->forget('payment_method');
         session()->forget('redirect_url');
         session()->forget('payment_method_id');
+    }
+
+    /**
+     * Will print payment transaction history
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return void
+     */
+    public function printTransactionHistory(Request $request)
+    {
+        try {
+            // \Log::info('Exporting Transaction History', ['request' => $request->all()]);
+
+            $fileName = 'payment-transactions-' . date('Y-m-d-His') . '.xlsx';
+
+            // We use the Export class we just created
+            return Excel::download(new PaymentTransactionExport($request), $fileName);
+
+        } catch (\Exception $e) {
+            \Log::error('Transaction Export Failed', [
+                'error' => $e->getMessage()
+            ]);
+            
+            toastNotification('error', 'Unable to export file. Please try again.');
+            return redirect()->back();
+        }
+
     }
 
     /**
