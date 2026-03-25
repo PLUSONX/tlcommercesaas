@@ -133,6 +133,12 @@ class AuthenticationController extends Controller
 
                                 tenancy()->end();
 
+                                \Log::info('Before attempting DeviceTokenController!!!');
+
+                                Log::info('Credentials Check', [
+                                    'credentials' => json_encode($credentials),
+                                ]);
+
                                 if (!empty($credentials['token'])) {
 
                                     Log::info('Inside of the If condition');
@@ -140,6 +146,9 @@ class AuthenticationController extends Controller
                                     $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $tenantUser->id, tenant('id'));
 
                                 }
+
+                                \Log::info('After attempting DeviceTokenController!!!');
+
 
                                 // Build URL with token
                                 // $tenantUrl = $this->buildTenantDashboardUrl($tenant) . '?login_token=' . $loginToken;
