@@ -66,6 +66,10 @@ class AuthenticationController extends Controller
             'token'
             );
 
+        Log::info('Credentials Check 1', [
+                'credentials 1' => json_encode($credentials),
+        ]);
+
         // dd($credentials);
 
         $path = $request->path();
@@ -135,8 +139,8 @@ class AuthenticationController extends Controller
 
                                 \Log::info('Before attempting DeviceTokenController!!!');
 
-                                Log::info('Credentials Check', [
-                                    'credentials' => json_encode($credentials),
+                                Log::info('Credentials Check 2', [
+                                    'credentials 2' => json_encode($credentials),
                                 ]);
 
                                 if (!empty($credentials['token'])) {
