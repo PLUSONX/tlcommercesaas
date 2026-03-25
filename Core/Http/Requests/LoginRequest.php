@@ -35,7 +35,7 @@ class LoginRequest extends FormRequest{
     {
         return [
             'email.required' => translate('Email is required'),
-            'email.exists' => translate('Invalid Email Address'),
+            // 'email.exists' => translate('Invalid Email Address'),
             'password.*' => translate('Password is required'),
         ];
     }
