@@ -176,7 +176,7 @@ class AuthenticationController extends Controller
             else {
                 // 1. Get all active tenants to search through
                 // Since you have few tenants, this overhead is minimal.
-                $tenants = \App\Models\Tenant::where('status', 'active')->get();
+                    $tenants = \App\Models\Tenant::all();
 
                 Log::info('tenants data', [
                             'tenants' => json_encode($tenants),
