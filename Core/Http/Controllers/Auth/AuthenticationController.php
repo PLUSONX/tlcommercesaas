@@ -171,46 +171,102 @@ class AuthenticationController extends Controller
                     // // User exists in central but no tenant - login normally (might be SaaS user)
                     Auth::login($centralUser);
                 }
-            } else {
-                // User not in central DB or wrong password - might be a tenant-only user
-                // Check if this email exists in any tenant's database through tl_saas_accounts
-                $saasAccounts = \DB::connection('mysql')->table('tl_saas_accounts')
-                    ->join('tl_users', 'tl_saas_accounts.user_id', '=', 'tl_users.id')
-                    ->where('tl_users.email', $credentials['email'])
-                    ->select('tl_saas_accounts.*')
-                    ->get();
+            } 
 
-                $foundTenant = null;
-                foreach ($saasAccounts as $saasAccount) {
-                    $tenant = \App\Models\Tenant::where('id', $saasAccount->tenant_id)
-                        ->where('status', 'active')
-                        ->first();
+            else {
+    // 1. Get all active tenants to search through
+    // Since you have few tenants, this overhead is minimal.
+    $tenants = \App\Models\Tenant::where('status', 'active')->get();
 
-                    if ($tenant) {
-                        tenancy()->initialize($tenant);
+    foreach ($tenants as $tenant) {
+        try {
+            // Initialize the tenant environment (switches DB connection)
+            tenancy()->initialize($tenant);
 
-                        $tenantUser = User::on('tenant')
-                            ->where('email', $credentials['email'])
-                            ->first();
+            // 2. Search for the user in the Tenant's private 'tl_users' table
+            $tenantUser = \App\Models\User::where('email', $credentials['email'])->first();
 
-                        if ($tenantUser && \Hash::check($credentials['password'], $tenantUser->password)) {
-                            // Found the correct tenant!
-                            $tenantUser->setConnection('tenant');
-                            Auth::login($tenantUser);
+            if ($tenantUser && \Hash::check($credentials['password'], $tenantUser->password)) {
+                // IMPORTANT: Tell Laravel to use the 'tenant' connection for this session
+                $tenantUser->setConnection('tenant');
+                
+                // Log the user in
+                \Auth::login($tenantUser);
 
-                            $tenantUrl = $this->buildTenantDashboardUrl($tenant);
-                            toastNotification('success', translate("Welcome back!"));
-                            // return redirect()->away($tenantUrl);
-                        }
+                if (!empty($credentials['token'])) {
 
-                        tenancy()->end();
-                    }
+                    Log::info('Inside of the If condition');
+
+                    $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $tenantUser->id, tenant('id'));
+
                 }
 
-                // Not found anywhere
-                toastNotification('error', translate("Login Credentials Does not Match"));
-                return redirect()->back()->withInput($request->only('email'));
+                // Build the specific dashboard URL for this tenant
+                $tenantUrl = $this->buildTenantDashboardUrl($tenant);
+                
+                toastNotification('success', translate("Welcome back!"));
+
+                // CRITICAL: Stop the loop and the method here by returning the redirect
+                return redirect()->away($tenantUrl);
             }
+
+            // End the tenancy context if user wasn't found in THIS tenant
+            tenancy()->end();
+
+        } catch (\Exception $e) {
+            // Log if a specific tenant DB fails to connect, but keep searching others
+            \Log::error("Failed to check login for Tenant ID: {$tenant->id}", [
+                'error' => $e->getMessage()
+            ]);
+            continue; 
+        }
+    }
+
+    // 3. If the loop finishes without returning, the user doesn't exist anywhere
+    toastNotification('error', translate("Login Credentials Does not Match"));
+    return redirect()->back()->withInput($request->only('email'));
+}
+            
+            // else {
+            //     // User not in central DB or wrong password - might be a tenant-only user
+            //     // Check if this email exists in any tenant's database through tl_saas_accounts
+            //     $saasAccounts = \DB::connection('mysql')->table('tl_saas_accounts')
+            //         ->join('tl_users', 'tl_saas_accounts.user_id', '=', 'tl_users.id')
+            //         ->where('tl_users.email', $credentials['email'])
+            //         ->select('tl_saas_accounts.*')
+            //         ->get();
+
+            //     $foundTenant = null;
+            //     foreach ($saasAccounts as $saasAccount) {
+            //         $tenant = \App\Models\Tenant::where('id', $saasAccount->tenant_id)
+            //             ->where('status', 'active')
+            //             ->first();
+
+            //         if ($tenant) {
+            //             tenancy()->initialize($tenant);
+
+            //             $tenantUser = User::on('tenant')
+            //                 ->where('email', $credentials['email'])
+            //                 ->first();
+
+            //             if ($tenantUser && \Hash::check($credentials['password'], $tenantUser->password)) {
+            //                 // Found the correct tenant!
+            //                 $tenantUser->setConnection('tenant');
+            //                 Auth::login($tenantUser);
+
+            //                 $tenantUrl = $this->buildTenantDashboardUrl($tenant);
+            //                 toastNotification('success', translate("Welcome back!"));
+            //                 // return redirect()->away($tenantUrl);
+            //             }
+
+            //             tenancy()->end();
+            //         }
+            //     }
+
+            //     // Not found anywhere
+            //     toastNotification('error', translate("Login Credentials Does not Match"));
+            //     return redirect()->back()->withInput($request->only('email'));
+            // }
         }
 
         $user = Auth::user();
