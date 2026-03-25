@@ -22,7 +22,8 @@ class LoginRequest extends FormRequest{
     public function rules()
     {
         return [
-            'email' => 'required|exists:tl_users,email',
+            // 'email' => 'required|exists:tl_users,email',
+            'email' => 'required',
             'password' => 'required',
         ];
     }
@@ -35,7 +36,7 @@ class LoginRequest extends FormRequest{
     {
         return [
             'email.required' => translate('Email is required'),
-            // 'email.exists' => translate('Invalid Email Address'),
+            'email.exists' => translate('Invalid Email Address'),
             'password.*' => translate('Password is required'),
         ];
     }
