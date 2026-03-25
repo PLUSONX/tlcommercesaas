@@ -2556,7 +2556,7 @@ class OrderRepository
      */
     public  function generateOrderPaymentLink($order_id, $customer_id, $customer_type, $payment_method, $payable_amount, $is_wallet_payment = 2)
     {
-         \Log::info('generateOrderPaymentLink Method!!!');
+        //  \Log::info('generateOrderPaymentLink Method!!!');
         $base_url = url('/');
         if ($is_wallet_payment == config('settings.general_status.active')) {
             return $base_url . '/order-success/' . $order_id;
@@ -2568,20 +2568,20 @@ class OrderRepository
 
                     return $base_url . '/order-success/' . $order_id;
                 } else {
-                    \Log::info('before finding payment method!!!');
+                    // \Log::info('before finding payment method!!!');
 
                     $payment_method = PaymentMethods::find($payment_method);
 
-                    \Log::info('Payment method data', [
-                            'payment_method' => json_encode($payment_method),
-                    ]);
+                    // \Log::info('Payment method data', [
+                    //         'payment_method' => json_encode($payment_method),
+                    // ]);
 
                     $url = $base_url . '/payment/' . Str::slug($payment_method->name) . '/pay';
 
-                    \Log::info('check url', [
-                            'base_url' => json_encode($base_url),
-                            'url' => json_encode($url),
-                    ]);
+                    // \Log::info('check url', [
+                    //         'base_url' => json_encode($base_url),
+                    //         'url' => json_encode($url),
+                    // ]);
 
                     session()->put('payment_type', 'checkout');
                     session()->put('order_id', $order_id);

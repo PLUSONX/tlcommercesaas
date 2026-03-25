@@ -217,7 +217,7 @@ class EcommerceNotification
 
             // Notification::send($admins, new CustomerOrderCreateNotification($data));
         }
-        \Log::info('Outside Admins!!!');
+        // \Log::info('Outside Admins!!!');
         //Send Email to admin
         if (SettingsRepository::getEcommerceSetting('admin_new_order_email_notification') == config('settings.general_status.active')) {
             $admin_emails = User::where('user_type', config('tlecommercecore.user_type.admin'))->where('status', config('settings.general_status.active'))->pluck('email');
