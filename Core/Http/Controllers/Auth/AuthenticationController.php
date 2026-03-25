@@ -182,44 +182,58 @@ class AuthenticationController extends Controller
                             'tenants' => json_encode($tenants),
                     ]);
 
+                    // 1. Prepare a variable to hold the valid user and tenant
+                    $identifiedUser = null;
+                    $identifiedTenant = null;
+
+                    $tenants = \App\Models\Tenant::all();
+
                     foreach ($tenants as $tenant) {
                         try {
                             tenancy()->initialize($tenant);
 
-                            // Use 'on('tenant')' to be explicit about which connection to use
+                            // Search specifically in this tenant's user table
                             $tenantUser = \App\Models\User::on('tenant')
                                 ->where('email', $credentials['email'])
                                 ->first();
 
-                            // 1. Check if user exists AND if password matches MANUALLY
+                            // MANUALLY check password without touching the Auth Guard yet
                             if ($tenantUser && \Hash::check($credentials['password'], $tenantUser->password)) {
+                                $identifiedUser = $tenantUser;
+                                $identifiedTenant = $tenant;
                                 
-                                // 2. ONLY NOW do we commit to the login
-                                $tenantUser->setConnection('tenant');
-                                \Auth::login($tenantUser);
-
-                                if (!empty($credentials['token'])) {
-
-                                    Log::info('Inside of the If condition');
-
-                                    $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $tenantUser->id, $tenant->id);
-
-                                }
-
-                                $tenantUrl = $this->buildTenantDashboardUrl($tenant);
-                                toastNotification('success', translate("Welcome back!"));
-
-                                return redirect()->away($tenantUrl);
+                                // We found our winner, break the loop immediately
+                                break; 
                             }
 
-                            // 3. Crucial: Clear the tenancy state before the next loop
                             tenancy()->end();
-
                         } catch (\Exception $e) {
-                            \Log::error("Login discovery error", ['tenant' => $tenant->id, 'error' => $e->getMessage()]);
+                            \Log::error("Login discovery failed for tenant: " . $tenant->id);
                             continue;
                         }
                     }
+
+                    // 2. Final Execution - Outside the loop
+                    if ($identifiedUser && $identifiedTenant) {
+                        // Ensure the environment is set to the correct tenant one last time
+                        tenancy()->initialize($identifiedTenant);
+                        
+                        // Explicitly set connection on the model
+                        $identifiedUser->setConnection('tenant');
+                        
+                        // NOW and ONLY NOW log them in
+                        \Auth::login($identifiedUser);
+
+                        $tenantUrl = $this->buildTenantDashboardUrl($identifiedTenant);
+                        toastNotification('success', translate("Welcome back!"));
+                        
+                        return redirect()->away($tenantUrl);
+                    }
+
+                    // 3. Fallback: If we got here, no tenant matched
+                    tenancy()->end(); // Clean up just in case
+                    toastNotification('error', translate("Login Credentials Does not Match"));
+                    return redirect()->back()->withInput($request->only('email'));
 
                 // foreach ($tenants as $tenant) {
                 //     try {
