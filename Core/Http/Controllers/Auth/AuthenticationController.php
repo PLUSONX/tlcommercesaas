@@ -174,58 +174,70 @@ class AuthenticationController extends Controller
             } 
 
             else {
-    // 1. Get all active tenants to search through
-    // Since you have few tenants, this overhead is minimal.
-    $tenants = \App\Models\Tenant::where('status', 'active')->get();
+                // 1. Get all active tenants to search through
+                // Since you have few tenants, this overhead is minimal.
+                $tenants = \App\Models\Tenant::where('status', 'active')->get();
 
-    foreach ($tenants as $tenant) {
-        try {
-            // Initialize the tenant environment (switches DB connection)
-            tenancy()->initialize($tenant);
+                Log::info('tenants data', [
+                            'tenants' => json_encode($tenants),
+                    ]);
 
-            // 2. Search for the user in the Tenant's private 'tl_users' table
-            $tenantUser = \App\Models\User::where('email', $credentials['email'])->first();
+                foreach ($tenants as $tenant) {
+                    try {
+                        // Initialize the tenant environment (switches DB connection)
+                        tenancy()->initialize($tenant);
 
-            if ($tenantUser && \Hash::check($credentials['password'], $tenantUser->password)) {
-                // IMPORTANT: Tell Laravel to use the 'tenant' connection for this session
-                $tenantUser->setConnection('tenant');
-                
-                // Log the user in
-                \Auth::login($tenantUser);
+                        // 2. Search for the user in the Tenant's private 'tl_users' table
+                        $tenantUser = \App\Models\User::where('email', $credentials['email'])->first();
 
-                if (!empty($credentials['token'])) {
+                        Log::info('tenant user data', [
+                                'tenantUser' => json_encode($tenantUser),
+                        ]);
 
-                    Log::info('Inside of the If condition');
+                        if ($tenantUser && \Hash::check($credentials['password'], $tenantUser->password)) {
+                            // IMPORTANT: Tell Laravel to use the 'tenant' connection for this session
+                            $tenantUser->setConnection('tenant');
+                            
+                            // Log the user in
+                            \Auth::login($tenantUser);
 
-                    $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $tenantUser->id, tenant('id'));
+                            if (!empty($credentials['token'])) {
 
+                                Log::info('Inside of the If condition');
+
+                                $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $tenantUser->id, $tenant->id);
+
+                            }
+
+                            // Build the specific dashboard URL for this tenant
+                            $tenantUrl = $this->buildTenantDashboardUrl($tenant);
+
+                             Log::info('tenant url data', [
+                                'tenantUrl' => $tenantUrl,
+                            ]);
+                            
+                            toastNotification('success', translate("Welcome back!"));
+
+                            // CRITICAL: Stop the loop and the method here by returning the redirect
+                            return redirect()->away($tenantUrl);
+                        }
+
+                        // End the tenancy context if user wasn't found in THIS tenant
+                        tenancy()->end();
+
+                    } catch (\Exception $e) {
+                        // Log if a specific tenant DB fails to connect, but keep searching others
+                        \Log::error("Failed to check login for Tenant ID: {$tenant->id}", [
+                            'error' => $e->getMessage()
+                        ]);
+                        continue; 
+                    }
                 }
 
-                // Build the specific dashboard URL for this tenant
-                $tenantUrl = $this->buildTenantDashboardUrl($tenant);
-                
-                toastNotification('success', translate("Welcome back!"));
-
-                // CRITICAL: Stop the loop and the method here by returning the redirect
-                return redirect()->away($tenantUrl);
+                // 3. If the loop finishes without returning, the user doesn't exist anywhere
+                toastNotification('error', translate("Login Credentials Does not Match"));
+                return redirect()->back()->withInput($request->only('email'));
             }
-
-            // End the tenancy context if user wasn't found in THIS tenant
-            tenancy()->end();
-
-        } catch (\Exception $e) {
-            // Log if a specific tenant DB fails to connect, but keep searching others
-            \Log::error("Failed to check login for Tenant ID: {$tenant->id}", [
-                'error' => $e->getMessage()
-            ]);
-            continue; 
-        }
-    }
-
-    // 3. If the loop finishes without returning, the user doesn't exist anywhere
-    toastNotification('error', translate("Login Credentials Does not Match"));
-    return redirect()->back()->withInput($request->only('email'));
-}
             
             // else {
             //     // User not in central DB or wrong password - might be a tenant-only user
