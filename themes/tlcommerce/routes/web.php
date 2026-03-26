@@ -38,7 +38,6 @@ Route::get('/auth/token-login', function () {
         return redirect()->route('login')->with('error', 'Token expired or invalid');
     }
 
-    \Log::info('Token valid, finding user: ' . $tokenData->email);
 
     // Find user in tenant database
     $user = \App\Models\User::where('email', $tokenData->email)->first();
@@ -48,17 +47,15 @@ Route::get('/auth/token-login', function () {
         return redirect()->route('login')->with('error', 'User not found');
     }
 
-    \Log::info('User found, logging in');
 
     // Delete the used token
     \DB::connection('mysql')->table('tenant_login_tokens')
         ->where('token', hash('sha256', $token))
         ->delete();
 
-    // Log the user in
-    \Auth::login($user);
-
-    \Log::info('User logged in, redirecting to dashboard');
+\Auth::login($user);
+// session()->put('password_hash_' . \Auth::getDefaultDriver(), $user->password); // ← add this
+// session()->save(); // force session save
 
     // Redirect to dashboard
     return redirect('/admin/dashboard');

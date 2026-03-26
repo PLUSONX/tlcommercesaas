@@ -60,9 +60,19 @@ class RouteServiceProvider extends ServiceProvider
                     //         Route::get('/logout', [AuthenticationController::class, 'logout'])->name('core.logout');
                     //     });
 
-                    Route::middleware(['web', 'tenant']) // Added 'tenant' middleware
-                        ->prefix('admin')
-                        ->group(base_path('core/routes/core.php'));
+                    // Route::middleware(['web', 'tenant']) // Added 'tenant' middleware
+                    //     ->prefix('admin')
+                    //     ->group(base_path('core/routes/core.php'));
+
+                    Route::middleware([
+        'web',
+        \App\Http\Middleware\InitializeTenancyByDomainCustomized::class,
+        \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
+        \App\Http\Middleware\EnsureTenantUserAuth::class,
+        \App\Http\Middleware\ShareFacebookWithViews::class,
+    ])
+    ->prefix('admin')
+    ->group(base_path('core/routes/core.php'));
                       
                     Route::middleware(['web', 'tenant'])
                         ->prefix('payment')

@@ -2,6 +2,7 @@
 
 namespace Core\Providers;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
@@ -39,13 +40,17 @@ class RouteServiceProvider extends ServiceProvider
         //         // Any other conditional routes can go here
         //     }
         // });
+
+
+        \Log::info('Web middlewares: ' . json_encode(routeApplicableMiddlewares()));
+
         $this->routes(function () {
             if (env('IS_USER_REGISTERED') == 1) {
                 $middlewares = routeApplicableMiddlewares();
 
-                 Route::middleware($middlewares['web'])
-                        ->prefix(getSuperAdminPrefix())
-                        ->group(base_path('Core/routes/core.php'));
+                //  Route::middleware($middlewares['web'])
+                //         ->prefix(getSuperAdminPrefix())
+                //         ->group(base_path('Core/routes/core.php'));
 
                     Route::middleware($middlewares['web'])
                         ->prefix(getSaasPrefix())

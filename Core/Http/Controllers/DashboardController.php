@@ -2,6 +2,7 @@
 
 namespace Core\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
@@ -15,6 +16,8 @@ class DashboardController extends Controller
 
     public function dashboard()
     {
+
+        // \Log::info('Dashboard controller reached - user: ' . \Auth::id() . ' user_type: ' . \Auth::user()->user_type);
 
         if (!isTenant()) {
             $update_config_path = base_path('updates/config.json');
