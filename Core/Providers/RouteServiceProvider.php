@@ -42,7 +42,7 @@ class RouteServiceProvider extends ServiceProvider
         // });
 
 
-        \Log::info('Web middlewares: ' . json_encode(routeApplicableMiddlewares()));
+        // \Log::info('Web middlewares: ' . json_encode(routeApplicableMiddlewares()));
 
         $this->routes(function () {
             if (env('IS_USER_REGISTERED') == 1) {

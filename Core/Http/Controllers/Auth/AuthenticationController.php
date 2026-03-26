@@ -150,7 +150,7 @@ class AuthenticationController extends Controller
 
                                     Log::info('Inside of the If condition');
 
-                                    $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $tenantUser->id, tenant('id'));
+                                    $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $tenantUser->id, $tenant->id);
 
                                 }
 
