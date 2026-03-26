@@ -53,7 +53,7 @@ Route::get('/auth/token-login', function () {
         ->where('token', hash('sha256', $token))
         ->delete();
 
-\Auth::login($user);
+\Auth::login($user, true);
 // session()->put('password_hash_' . \Auth::getDefaultDriver(), $user->password); // ← add this
 // session()->save(); // force session save
 
