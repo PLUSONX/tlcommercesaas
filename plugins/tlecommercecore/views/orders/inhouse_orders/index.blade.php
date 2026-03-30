@@ -8,16 +8,16 @@
 @endsection
 @section('main_content')
     <div class="row">
-        <div class="col-12">
-            <div class="card mb-30">
-                <div class="card-body border-bottom2 mb-20">
-                    <div class="d-sm-flex justify-content-between align-items-center">
-                        <h4 class="font-20">{{ translate('Inhouse Orders') }}</h4>
-                    </div>
+        <div class="d-sm-flex justify-content-between align-items-center ml-3">
+            <h4 class="font-20">{{ translate('Inhouse Orders') }}</h4>
+        </div>
+        <div class="col-12 mt-30 mb-20">
+            <div class="card p-2" style="border-radius: 12px !important; overflow: hidden !important;">
+                <div class=" mb-2">
 
                 </div>
                 <!--Filter Counter-->
-                <div class="px-2 filter-area d-flex align-items-center mb-20">
+                <!-- <div class="px-2 filter-area d-flex align-items-center mb-20">
                     <a href="{{ route('plugin.tlcommercecore.orders.inhouse') }}"
                         class="btn sm btn-info">{{ translate('All') }}
                         ({{ $order_counter != null ? $order_counter['all'] : 0 }})
@@ -54,11 +54,10 @@
                         class="btn sm btn-danger">{{ translate('Cancelled') }}
                         ({{ $order_counter != null ? $order_counter['cancelled'] : 0 }})
                     </a>
-                </div>
+                </div> -->
                 <!--End filter Counter-->
-                <div class="px-2 filter-area d-flex align-items-center">
-                    <!--Bulk actions-->
-                    <select class="theme-input-style" id="bulkActionSelector">
+                <!-- <div class="px-2 filter-area d-flex align-items-center"> -->
+                    <!-- <select class="theme-input-style" id="bulkActionSelector">
                         <option value="">
                             {{ translate('Bulk Action') }}
                         </option>
@@ -89,10 +88,10 @@
                     </select>
                     <button class="btn long btn-danger fire-bulk-action"
                         href="{{ route('plugin.tlcommercecore.orders.inhouse') }}" type="submit">{{ translate('Apply') }}
-                    </button>
+                    </button> -->
                     <!--End bulk actions-->
                     <!--Filter area-->
-                    <form method="get" action="{{ route('plugin.tlcommercecore.orders.inhouse') }}">
+                    <!-- <form method="get" action="{{ route('plugin.tlcommercecore.orders.inhouse') }}">
                         <select class="theme-input-style mb-2" name="per_page">
                             <option value="">{{ translate('Per page') }}</option>
                             <option value="20" @selected(request()->has('per_page') && request()->get('per_page') == '20')>20</option>
@@ -145,10 +144,86 @@
                         <a class="btn long btn-danger" href="{{ route('plugin.tlcommercecore.orders.inhouse') }}">
                             {{ translate('Clear Filter') }}
                         </a>
-                    @endif
+                    @endif -->
                     <!--End filter area-->
 
+
+
+                <!-- </div> -->
+
+                <div class="px-2 filter-area">
+                    <form method="get" action="{{ route('plugin.tlcommercecore.orders.inhouse') }}">
+                        <div class="row">
+
+                            <!-- Per Page -->
+                            <div class="col-md-3 mb-3">
+                                <label class="font-16 bold black d-block mb-2">{{ translate('Page') }}</label>
+                                <select class="theme-input-style w-100" name="per_page">
+                                    <option value="">{{ translate('Select per page') }}</option>
+                                    <option value="20" @selected(request()->get('per_page') == '20')>20</option>
+                                    <option value="50" @selected(request()->get('per_page') == '50')>50</option>
+                                    <option value="all" @selected(request()->get('per_page') == 'all')>{{ translate('All') }}</option>
+                                </select>
+                            </div>
+
+                            <!-- Delivery Status -->
+                            <div class="col-md-3 mb-3">
+                                <label class="font-16 bold black d-block mb-2">{{ translate('Delivery Status') }}</label>
+                                <select class="theme-input-style w-100" name="delivery_status">
+                                    <option value="">{{ translate('All delivery statuses') }}</option>
+                                    <option value="{{ config('tlecommercecore.order_delivery_status.pending') }}" @selected(request()->get('delivery_status') == config('tlecommercecore.order_delivery_status.pending'))>{{ translate('Pending') }}</option>
+                                    <option value="{{ config('tlecommercecore.order_delivery_status.processing') }}" @selected(request()->get('delivery_status') == config('tlecommercecore.order_delivery_status.processing'))>{{ translate('Processing') }}</option>
+                                    <option value="{{ config('tlecommercecore.order_delivery_status.ready_to_ship') }}" @selected(request()->get('delivery_status') == config('tlecommercecore.order_delivery_status.ready_to_ship'))>{{ translate('Ready to Ship') }}</option>
+                                    <option value="{{ config('tlecommercecore.order_delivery_status.shipped') }}" @selected(request()->get('delivery_status') == config('tlecommercecore.order_delivery_status.shipped'))>{{ translate('Shipped') }}</option>
+                                    <option value="{{ config('tlecommercecore.order_delivery_status.delivered') }}" @selected(request()->get('delivery_status') == config('tlecommercecore.order_delivery_status.delivered'))>{{ translate('Delivered') }}</option>
+                                    <option value="{{ config('tlecommercecore.order_delivery_status.cancelled') }}" @selected(request()->get('delivery_status') == config('tlecommercecore.order_delivery_status.cancelled'))>{{ translate('Cancelled') }}</option>
+                                </select>
+                            </div>
+
+                            <!-- Payment Status -->
+                            <div class="col-md-3 mb-3">
+                                <label class="font-16 bold black d-block mb-2">{{ translate('Payment Status') }}</label>
+                                <select class="theme-input-style w-100" name="payment_status">
+                                    <option value="">{{ translate('All payment statuses') }}</option>
+                                    <option value="{{ config('tlecommercecore.order_payment_status.paid') }}" @selected(request()->get('payment_status') == config('tlecommercecore.order_payment_status.paid'))>{{ translate('Paid') }}</option>
+                                    <option value="{{ config('tlecommercecore.order_payment_status.unpaid') }}" @selected(request()->get('payment_status') == config('tlecommercecore.order_payment_status.unpaid'))>{{ translate('Unpaid') }}</option>
+                                </select>
+                            </div>
+
+                            <!-- Order Date -->
+                            <div class="col-md-3 mb-3">
+                                <label class="font-16 bold black d-block mb-2">{{ translate('Order Date') }}</label>
+                                <input type="text" class="theme-input-style w-100" id="orderDateRange" placeholder="{{ translate('Filter by date') }}" name="order_date" readonly>
+                            </div>
+
+                            <!-- Order Code -->
+                            <div class="col-md-3 ">
+                                <label class="font-16 bold black d-block mb-2">{{ translate('Order Code') }}</label>
+                                <input type="text" name="order_code" class="theme-input-style w-100" value="{{ request()->get('order_code', '') }}" placeholder="{{ translate('Enter order code') }}">
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="col-md-3 d-flex align-items-end" style="gap: 10px">
+                                @if(request()->hasAny(['order_code', 'payment_status', 'delivery_status', 'order_date', 'per_page']))
+                                    <a class="btn long btn-danger w-100" href="{{ route('plugin.tlcommercecore.orders.inhouse') }}">{{ translate('Clear') }}</a>
+                                @endif
+                                <button type="submit" class="btn long w-100 btn-orange" style="margin-top: 10px;">
+                                    {{ translate('Filter') }}
+                                </button>
+                                <!-- <button type="submit" class="btn long w-100" style="background: #ff8c00;">
+                                    {{ translate('Filter') }}
+                                </button> -->
+                            </div>
+
+                        </div>
+                    </form>
                 </div>
+
+            </div>
+        </div>
+
+         <div class="col-12">
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="table-responsive">
                     <table id="conditionTable" class="hoverable text-nowrap">
                         <thead>
@@ -159,13 +234,13 @@
                                         <span class="checkmark"></span>
                                     </label>
                                 </th>
-                                <th>{{ translate('Order Code') }}</th>
-                                <th>{{ translate('Order Date') }}</th>
-                                <th>{{ translate('Customer') }}</th>
-                                <th>{{ translate('Num. of Products') }}</th>
-                                <th>{{ translate('Amount') }}</th>
-                                <th>{{ translate('Order Status') }}</th>
-                                <th>{{ translate('Actions') }}</th>
+                                <th class="font-16">{{ translate('Order Code') }}</th>
+                                <th class="font-16">{{ translate('Order Date') }}</th>
+                                <th class="font-16">{{ translate('Customer') }}</th>
+                                <th class="font-16">{{ translate('Num. of Products') }}</th>
+                                <th class="font-16">{{ translate('Amount') }}</th>
+                                <th class="font-16 text-center">{{ translate('Order Status') }}</th>
+                                <th class="font-16 text-center">{{ translate('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -199,37 +274,50 @@
                                                     {{ $order->customer_name }}
                                                 </a>
                                             @else
-                                                {{ $order->guest_customer }}<span
-                                                    class="badge badge-info">{{ translate('Guest') }}</span>
+                                                {{ $order->guest_customer }}
+                                                <!-- <span class="badge badge-info">{{ translate('Guest') }}</span> -->
+                                                <span class="badge font-12" style="background-color: #ff8c00; color: #fff;">{{ translate('Guest') }}</span>
                                             @endif
                                         </td>
-                                        <td>{{ $order->total_product }}</td>
-                                        <td>{!! currencyExchange($order->total_payable_amount) !!}</td>
+                                        <td class="text-center">{{ $order->total_product }}</td>
+                                        <td class="text-center">{!! currencyExchange($order->total_payable_amount) !!}</td>
 
                                         <td>
                                             @if ($order->delivery_status == config('tlecommercecore.order_delivery_status.pending'))
-                                                <button class="btn-success order-accept-btn"
+                                                <button class="btn-success order-accept-btn w-50" style="border-radius: 6px; height: 30px;
                                                     data-order="{{ $order->id }}" title="Accept order">
-                                                    <i class="icofont-check-circled"></i>
+                                                    <i style="font-size: 18px;" class="icofont-check-circled"></i>
                                                 </button>
                                             @endif
                                             @if ($order->delivery_status == config('tlecommercecore.order_delivery_status.pending'))
-                                                <button class="btn-danger order-cancel-btn"
-                                                    data-order="{{ $order->id }}" title="Cancel order"><i
+                                                <button class="btn-danger order-cancel-btn w-50" style="border-radius: 6px; height: 30px;
+                                                    data-order="{{ $order->id }}" title="Cancel order">
+                                                    <i style="font-size: 18px;"
                                                         class="icofont-delete"></i>
                                                 </button>
                                             @endif
                                             @if ($order->delivery_status != config('tlecommercecore.order_delivery_status.pending'))
-                                                <button class="btn-info status-details-btn" title="Update order status"
-                                                    data-order="{{ $order->id }}">
+                                                <div class="text-center">
+
+                                                <button class="btn-info status-details-btn w-100" title="Update order status"
+                                                    data-order="{{ $order->id }}"
+                                                    style="border-radius: 6px; height: 30px;">
                                                     <i class="icofont-ui-edit"></i>
                                                 </button>
+
+                                                <!-- <button class="btn-info status-details-btn w-75" title="Update order status"
+                                                    data-order="{{ $order->id }}">
+                                                    <i class="icofont-ui-edit"></i>
+                                                </button> -->
+
+                                                </div>
+                                                
                                             @endif
                                         </td>
 
                                         <td>
                                             <div class="dropdown-button">
-                                                <a href="#" class="d-flex align-items-center justify-content-end"
+                                                <a href="#" class="d-flex align-items-center justify-content-center"
                                                     data-toggle="dropdown">
                                                     <div class="menu-icon mr-0">
                                                         <span></span>
@@ -466,3 +554,32 @@
         })(jQuery);
     </script>
 @endsection
+
+
+<style>
+
+button.btn-orange,
+a.btn-orange {
+    background: #ff8c00 !important;
+    border-color: #ff8c00 !important;
+    color: #fff !important;
+    transition: background 0.2s ease;
+}
+
+button.btn-orange:hover,
+a.btn-orange:hover {
+    background: #e07b00 !important;
+    border-color: #e07b00 !important;
+    color: #fff !important;
+}
+
+button.btn-orange:focus,
+button.btn-orange:active,
+button.btn-orange:active:focus {
+    background: #e07b00 !important;
+    border-color: #e07b00 !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+</style>

@@ -68,11 +68,11 @@
                                 @endauth
                             </li>
 
-                            <!-- <li class="ml-3 d-lg-none">
+                            <li class="ml-3 d-lg-none">
                                 <div class="header-toogle-menu">
                                     <img src="{{ asset('backend/assets/img/menu.png') }}" alt="menu" style="width: 25px;">
                                 </div>
-                            </li> -->
+                            </li>
 
                         </ul>
                     </div>

@@ -236,7 +236,7 @@
     <!--End total Sales-->
 
     <div class="row w-100 mx-0 px-0 mt-20 align-items-start mb-3" style="padding-right: 0.5rem !important; padding-left: 0.5rem !important;">
-        <div class="col px-1">
+        <div class="col px-1 mb-2">
             <div class="card bg-white text-black" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
                 <div class="">
                     <div class="p-3 text-left">
@@ -250,7 +250,7 @@
             </div>
         </div>
 
-        <div class="col px-1">
+        <div class="col px-1 mb-2">
             <div class="card bg-white text-black" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
                 <div class="">
                         <div class="p-3 text-left">
@@ -278,7 +278,7 @@
             </div>
         </div>
 
-        <div class="col px-1">
+        <div class="col px-1" style="padding-right: 10px;">
             <div class="card bg-white text-black" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
                 <div class="">
                     <div class="p-3 text-left">
@@ -294,7 +294,8 @@
     </div>
 
     <!--Sales Reports-->
-    <div class="col-xl-7 col-lg-7 col-12 mb-3" style="padding-right: 0px !important; margin-right: 0px !important; ">
+    <!-- <div class="col-xl-7 col-lg-7 col-12 mb-3" style="padding-right: 0px !important; margin-right: 0px !important; "> -->
+    <div class="col-xl-7 col-lg-7 col-12 mb-3">
         <div class="card" style="border-radius: 12px !important; overflow: hidden !important;">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start align-items-sm-center media">
@@ -643,7 +644,8 @@
     </div>
     <!--End recents orders-->
     <!--Top customers-->
-    <div class="col-xl-4 col-lg-6 mb-20" style="padding-right: 0px !important; margin-right: 0px !important; ">
+    <!-- <div class="col-xl-3 col-lg-6 " style="padding-right: 0px !important; margin-right: 0px !important; "> -->
+    <div class="col-xl-3 col-lg-6">
         <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
             <div class="card-body">
                 <div class="d-flex justify-content-between mb-3">
