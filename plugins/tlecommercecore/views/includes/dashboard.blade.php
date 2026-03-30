@@ -9,10 +9,14 @@
     $total_sales = \Plugin\TlcommerceCore\Models\Orders::sum('total_payable_amount');
     
     $recent_orders = \Plugin\TlcommerceCore\Models\Orders::with(['customer_info', 'guest_customer'])
-        ->select('order_code', 'id', 'created_at', 'total_payable_amount', 'customer_id')
+        ->select('order_code', 'id', 'created_at', 'total_payable_amount', 'customer_id', 'delivery_status', 'payment_status')
         ->orderBy('id', 'DESC')
         ->take(5)
         ->get();
+
+    Illuminate\Support\Facades\Log::info('Orders data', [
+        'recent_orders' => $recent_orders->toArray()
+    ]);
     
     $top_customers = \Plugin\TlcommerceCore\Models\Customers::withCount('orders')
         ->orderBy('orders_count', 'DESC')
@@ -113,186 +117,11 @@
             height: 20px !important;
         }
 
-        /* added by Neo */
 
         
-     .card.glassmorphic-card {
-  background: rgba(136, 132, 132, 0.25) !important;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+ 
 
-     box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 24px 12px rgba(255, 255, 255, 1.2);
-
-    position: relative;
-    overflow: visible;
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                box-shadow 0.4s ease,
-                background 0.4s ease;
-}
-
-        .card.glassmorphic-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.8),
-                transparent
-            );
-            z-index: 2;
-        }
-
-        .card.glassmorphic-card .state::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 1px;
-            height: 100%;
-            background: linear-gradient(
-                180deg,
-                rgba(255, 255, 255, 0.6),
-                transparent,
-                rgba(255, 255, 255, 0.2)
-            );
-            z-index: 2;
-        }
-        .card.glassmorphic-card::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(
-                90deg,
-                #ff6b35 0%,
-                #ff8c42 25%,
-                #ffa726 50%,
-                #ff8c42 75%,
-                #ff6b35 100%
-            );
-            box-shadow: 
-                0 -4px 24px rgba(255, 107, 53, 0.6),
-                0 -2px 12px rgba(255, 140, 66, 0.5),
-                inset 0 1px 2px rgba(255, 255, 255, 0.4);
-            z-index: 3;
-            transition: all 0.4s ease;
-        }
-
-        .card.glassmorphic-card:hover::after {
-            height: 6px;
-            box-shadow: 
-                0 -6px 32px rgba(255, 107, 53, 0.8),
-                0 -3px 16px rgba(255, 140, 66, 0.6),
-                inset 0 1px 2px rgba(255, 255, 255, 0.5);
-        }
-
-        .card.glassmorphic-card .state::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(
-                180deg,
-                transparent 0%,
-                transparent 70%,
-                rgba(255, 107, 53, 0.02) 90%,
-                rgba(255, 140, 66, 0.04) 100%
-            );
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .card.glassmorphic-card:hover {
-            transform: scale(1.05) translateY(8px);
-            /* scale: 1.05; */
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.25),
-                inset 0 1px 0 rgba(255, 255, 255, 0.5),
-                inset 0 -1px 0 rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 140, 66, 0.3);
-            background: rgba(255, 255, 255, 0.12) !important;
-        }
-
-        .card.glassmorphic-card .state {
-            position: relative;
-            z-index: 2;
-        }
-
-        .card.glassmorphic-card .state-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .card.glassmorphic-card .state-content h2 {
-            color: #ffffff;
-            font-weight: 700;
-         
-            letter-spacing: -0.5px;
-        }
-
-        .card.glassmorphic-card .state-content p {
-            color: rgba(255, 255, 255, 0.95);
-            font-weight: 500;
-            letter-spacing: 0.3px;
-        }
-
-        @keyframes premium-shimmer {
-            0% {
-                background-position: -200% center;
-            }
-            100% {
-                background-position: 200% center;
-            }
-        }
-
-        .card.glassmorphic-card:hover::after {
-            background: linear-gradient(
-                90deg,
-                #ff6b35 0%,
-                #ff8c42 20%,
-                #ffb74d 40%,
-                #ff8c42 60%,
-                #ff6b35 80%,
-                #ff8c42 100%
-            );
-            background-size: 200% 100%;
-            animation: premium-shimmer 3s ease-in-out infinite;
-        }ound: linear-gradient(
-                90deg,
-                #ff6b35 0%,
-                #ff8c42 20%,
-                #ffb74d 40%,
-                #ff8c42 60%,
-                #ff6b35 80%,
-                #ff8c42 100%
-            );
-            background-size: 200% 100%;
-            animation: premium-shimmer 3s ease-in-out infinite;
-        }
-
-        .col-xl-3,
-.col-sm-6,
-.mb-30,
-.card,
-.state
-.row {
-    overflow: visible !important;
-} 
-
+    
     /* .glass-card {
   position: relative;
   border-radius: 18px;
@@ -330,6 +159,10 @@
     {{-- Push custom script or style bottom of body tag --}}
 @endpush
  <div class="row">
+
+    <div class="d-sm-flex justify-content-between align-items-center ml-3">
+        <h4 class="font-20">{{ translate('Dashboard') }}</h4>
+    </div>
       <!--<div class="col-xl-3 col-sm-6">
             <div class="card mb-30 bg-primary text-white glassmorphic-card">
                 <div class="state">
@@ -343,7 +176,7 @@
             </div>
         </div> -->
     <!--Total Customers-->
-    <div class="col-xl-3 col-sm-6">
+    <!-- <div class="col-xl-3 col-sm-6">
         <div class="card mb-30 bg-primary text-white">
             <div class="state">
                 <div class="align-items-center d-flex justify-content-center">
@@ -354,11 +187,11 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
    
     <!--End total customers-->
     <!--Total Orders-->
-    <div class="col-xl-3 col-sm-6">
+    <!-- <div class="col-xl-3 col-sm-6">
         <div class="card mb-30 bg-info text-white">
             <div class="state">
                 <div class="align-items-center d-flex justify-content-center">
@@ -371,10 +204,10 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     <!--End total Orders-->
     <!--Total Products-->
-    <div class="col-xl-3 col-sm-6">
+    <!-- <div class="col-xl-3 col-sm-6">
         <div class="card mb-30 bg-danger text-white">
             <div class="state">
                 <div class="align-items-center d-flex justify-content-center">
@@ -385,10 +218,10 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     <!--End Products-->
     <!--Total Sales-->
-    <div class="col-xl-3 col-sm-6">
+    <!-- <div class="col-xl-3 col-sm-6">
         <div class="card mb-30 bg-success text-white">
             <div class="state">
                 <div class="align-items-center d-flex justify-content-center">
@@ -399,18 +232,78 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     <!--End total Sales-->
 
+    <div class="row w-100 mx-0 px-0 mt-20 align-items-start mb-3" style="padding-right: 0.5rem !important; padding-left: 0.5rem !important;">
+        <div class="col px-1">
+            <div class="card bg-white text-black" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
+                <div class="">
+                    <div class="p-3 text-left">
+                        <div class="d-flex align-items-center mb-4" style="gap: 10px;">
+                            <x-lucide-users style="width: 22px; height: 22px; color: #ff8c00;" />
+                            <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Customers') }}</h4>
+                        </div>
+                        <h2 class="mb-0">{{ $total_customers }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col px-1">
+            <div class="card bg-white text-black" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
+                <div class="">
+                        <div class="p-3 text-left">
+                            <div class="d-flex align-items-center mb-4" style="gap: 10px;">
+                                <x-lucide-shopping-cart style="width: 22px; height: 22px; color: #ff8c00;" />
+                                <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Orders') }}</h4>
+                            </div>
+                            <h2 class="mb-0">{{ $order_repository->statusWiseOrderCounter() }}</h2>
+                        </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col px-1">
+            <div class="card bg-white text-black" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
+                <div class="">
+                    <div class="p-3 text-left">
+                            <div class="d-flex align-items-center mb-4" style="gap: 10px;">
+                                <x-lucide-shopping-basket style="width: 22px; height: 22px; color: #ff8c00;" />
+                                <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Products') }}</h4>
+                            </div>
+                            <h2 class="mb-0">{{ $total_products }}</h2>
+                        </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col px-1">
+            <div class="card bg-white text-black" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
+                <div class="">
+                    <div class="p-3 text-left">
+                            <div class="d-flex align-items-center mb-4" style="gap: 10px;">
+                                <x-lucide-circle-dollar-sign style="width: 22px; height: 22px; color: #ff8c00;" />
+                                <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Total Sales') }}</h4>
+                            </div>
+                            <h2 class="mb-0">{{ currencyExchange($total_sales) }}</h2>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!--Sales Reports-->
-    <div class="col-xl-8 col-12">
-        <div class="card mb-30">
+    <div class="col-xl-7 col-lg-7 col-12 mb-3" style="padding-right: 0px !important; margin-right: 0px !important; ">
+        <div class="card" style="border-radius: 12px !important; overflow: hidden !important;">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start align-items-sm-center media">
                     <div
                         class="d-flex justify-content-start justify-content-sm-between align-items-start align-items-sm-center flex-column flex-sm-row mb-sm-n3 media-body">
-                        <div class="title-content mb-4 mr-sm-5 mb-sm-0">
-                            <h4 class="">{{ translate('Sale Reports') }}</h4>
+                        <!-- <div class="title-content mb-4 mr-sm-5 mb-sm-0"> -->
+                        <div class="d-flex align-items-center title-content mb-4 mr-sm-5 mb-sm-0" style="gap: 10px;">
+                            <x-lucide-circle-dollar-sign style="width: 22px; height: 22px; color: #ff8c00;" />
+                            <h4 class="">{{ translate('Sales Report') }}</h4>
                         </div>
                         <!-- List Button -->
                         <ul class="list-inline list-button m-0 mr-sm-4">
@@ -427,13 +320,15 @@
     <!--End Sales Reports-->
 
     <!--Order Counter-->
-    <div class="col-xl-4 col-lg-5 grid-item">
-        <!-- Card -->
-        <div class="card mb-30">
-            <div class="card-body p-30">
-                <!-- Transaction History -->
+    <!-- <div class="col-xl-4 col-lg-5 grid-item">
+        <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
+            <div class="card-body">
+
+                <div class="d-flex align-items-center title-content mr-sm-5 mb-sm-0" style="gap: 10px; margin-bottom: 30px;">
+                            <x-lucide-trending-up style="width: 22px; height: 22px; color: #ff8c00;" />
+                            <h4 class="">{{ translate('Invoice Report') }}</h4>
+                        </div>
                 <div class="trans-history">
-                    <!-- Transaction History Item -->
                     <div class="align-items-center border-bottom d-flex justify-content-between mb-2 order-couter-item">
                         <div class="d-flex align-items-center">
                             <div class="img mr-3">
@@ -449,8 +344,6 @@
                             </h5>
                         </div>
                     </div>
-                    <!-- End Transaction History Item -->
-                    <!-- Transaction History Item -->
                     <div class="align-items-center border-bottom d-flex justify-content-between mb-2 order-couter-item">
                         <div class="d-flex align-items-center">
                             <div class="img mr-3">
@@ -466,8 +359,7 @@
                             </h5>
                         </div>
                     </div>
-                    <!-- End Transaction History Item -->
-                    <!-- Transaction History Item -->
+                    
                     <div class="align-items-center border-bottom d-flex justify-content-between mb-2 order-couter-item">
                         <div class="d-flex align-items-center">
                             <div class="img mr-3">
@@ -483,8 +375,7 @@
                             </h5>
                         </div>
                     </div>
-                    <!-- End Transaction History Item -->
-                    <!-- Transaction History Item -->
+                    
                     <div class="align-items-center border-bottom d-flex justify-content-between mb-2 order-couter-item">
                         <div class="d-flex align-items-center">
                             <div class="img mr-3">
@@ -500,8 +391,7 @@
                             </h5>
                         </div>
                     </div>
-                    <!-- End Transaction History Item -->
-                    <!-- Transaction History Item -->
+                    
                     <div class="align-items-center border-bottom d-flex justify-content-between mb-2 order-couter-item">
                         <div class="d-flex align-items-center">
                             <div class="img mr-3">
@@ -517,8 +407,7 @@
                             </h5>
                         </div>
                     </div>
-                    <!-- End Transaction History Item -->
-                    <!-- Transaction History Item -->
+                    
                     <div class="align-items-center border-bottom d-flex justify-content-between mb-2 order-couter-item">
                         <div class="d-flex align-items-center">
                             <div class="img mr-3">
@@ -534,22 +423,129 @@
                             </h5>
                         </div>
                     </div>
-                    <!-- End Transaction History Item -->
                 </div>
-                <!-- End Transaction History -->
             </div>
         </div>
-        <!-- End Card -->
+    </div> -->
+
+    <div class="col-xl-5 col-lg-5 grid-item mb-3">
+        <div class="card" style="border-radius: 12px !important; overflow: hidden !important;">
+            <div class="card-body">
+
+                {{-- Title --}}
+                <div class="d-flex align-items-center mr-sm-5 mb-sm-0" style="gap: 10px; margin-bottom: 36px !important;">
+                    <x-lucide-trending-up style="width: 22px; height: 22px; color: #ff8c00;" />
+                    <h4 class="mb-0">{{ translate('Invoice Report') }}</h4>
+                </div>
+
+                {{-- Doughnut Chart --}}
+                <div class="d-flex justify-content-center align-items-center" style="position: relative; ">
+                    <div id="orderStatusChart"></div>
+                    <!-- <div style="position: absolute; text-align: center; pointer-events: none;">
+                        <p class="mb-0" style="font-size: 12px; color: #888;">{{ translate('Total Sales') }}</p>
+                        <h5 class="mb-0" style="font-size: 15px; font-weight: 600;">{!! currencyExchange($total_sales) !!}</h5>
+                    </div> -->
+                </div>
+
+                {{-- Status Table --}}
+                <table class="w-100" style="border-collapse: collapse; background: transparent;">
+                    <tbody>
+                        <tr>
+
+                            <td class="py-1 px-2">
+                                <span class="d-flex align-items-center justify-content-between w-100">
+                                    
+                                    <span class="d-flex align-items-center" style="gap: 6px;">
+                                        <span style="width: 10px; height: 10px; border-radius: 50%; background: #f6c23e; display:inline-block;"></span>
+                                        {{ translate('Pending') }}:
+                                    </span>
+
+                                    <strong class="ml-2">
+                                        {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.pending')) }}
+                                    </strong>
+                                    
+                                </span>
+                            </td>
+                            <td class="py-1 px-2">
+                                <span class="d-flex align-items-center justify-content-between w-100">
+
+                                    <span class="d-flex align-items-center" style="gap: 6px;">
+                                        <span style="width: 10px; height: 10px; border-radius: 50%; background: #36b9cc; display:inline-block;"></span>
+                                        {{ translate('Approved') }}:
+                                    </span>
+
+                                    <strong class="ml-2">
+                                        {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.processing')) }}
+                                    </strong>
+
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-1 px-2">
+
+                                <span class="d-flex align-items-center justify-content-between w-100">
+
+                                    <span class="d-flex align-items-center" style="gap: 6px;">
+                                        <span style="width: 10px; height: 10px; border-radius: 50%; background: #ff8c00; display:inline-block;"></span>
+                                        {{ translate('Ready to Ship') }}:
+                                    </span>
+
+                                    <strong class="ml-2">{{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.ready_to_ship')) }}</strong>
+
+                                </span>
+                            </td>
+                            <td class="py-1 px-2">
+                                <span class="d-flex align-items-center justify-content-between w-100">
+
+                                    <span class="d-flex align-items-center" style="gap: 6px;">
+                                        <span style="width: 10px; height: 10px; border-radius: 50%; background: #4e73df; display:inline-block;"></span>
+                                        {{ translate('Shipped') }}:
+                                    </span>
+                                    <strong>{{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.shipped')) }}</strong>
+                                </span>
+                                
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-1 px-2">
+                                <span class="d-flex align-items-center justify-content-between w-100">
+                                    <span class="d-flex align-items-center" style="gap: 6px;">
+                                        <span style="width: 10px; height: 10px; border-radius: 50%; background: #1cc88a; display:inline-block;"></span>
+                                        {{ translate('Delivered') }}:
+                                    </span>
+                                    <strong>{{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.delivered')) }}</strong>
+                                </span>
+                            </td>
+                            <td class="py-1 px-2">
+                                <span class="d-flex align-items-center justify-content-between w-100">
+                                    <span class="d-flex align-items-center" style="gap: 6px;">
+                                        <span style="width: 10px; height: 10px; border-radius: 50%; background: #e74a3b; display:inline-block;"></span>
+                                        {{ translate('Cancelled') }}:
+                                    </span>
+                                    <strong>{{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.cancelled')) }}</strong>
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
     </div>
+
+
     <!--End order counter-->
     <!--Recent Orders-->
-    <div class="col-xl-8 col-lg-7 col-12 mb-20">
+    <!-- <div class="col-xl-8 col-lg-7 col-12 mb-20"> -->
+    <div class="col-xl-8 col-12 mb-3">
         <!-- Card -->
-        <div class="card">
+        <div class="card" style="border-radius: 12px !important; overflow: hidden !important;">
             <div class="card-body pb-0">
                 <div class="d-flex justify-content-between">
-                    <div class="title-content">
-                        <h4 class="mb-2">{{ translate('Recent Orders') }}</h4>
+                    <div class="d-flex align-items-center mr-sm-5 mb-sm-0" style="gap: 10px;">
+                        <x-lucide-trending-up style="width: 22px; height: 22px; color: #ff8c00;" />
+                        <h4 class="mb-0">{{ translate('Recent Orders') }}</h4>
                     </div>
                 </div>
             </div>
@@ -558,10 +554,12 @@
                     <thead>
                         <tr>
                             <th>{{ translate('Order ID') }}</th>
-                            <th>{{ translate('Date') }}</th>
+                            <th class="pl-5">{{ translate('Date') }}</th>
                             <th>{{ translate('Customer') }}</th>
-                            <th>{{ translate('Total Amount') }}</th>
-                            <th>{{ translate('Action') }}</th>
+                            <th class="text-center">{{ translate('Total Amount') }}</th>
+                            <th class="text-center">{{ translate('Delivery Status') }}</th>
+                            <!-- <th class="text-center">{{ translate('Payment Status') }}</th> -->
+                            <th class="text-center">{{ translate('Action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -578,12 +576,51 @@
                                             <a
                                                 href="{{ route('plugin.tlcommercecore.customers.details', ['id' => $order->customer_id]) }}">{{ $order->customer_info->name }}</a>
                                         @else
-                                            <a href="#">{{ $order->guest_customer->name }}<span
-                                                    class="badge badge-info ml-1">Guest</span></a>
+                                            <a href="#">{{ $order->guest_customer->name }}
+                                                <span class="badge" style="background-color: #ff8c00; color: #fff;">
+                                                    {{ translate('Guest') }}
+                                                </span>
+                                                <!-- <span class="badge badge-info ml-1">Guest</span></a> -->
                                         @endif
                                     </td>
-                                    <td>{!! currencyExchange($order->total_payable_amount) !!}</td>
-                                    <td>
+                                    <td class="text-center">{!! currencyExchange($order->total_payable_amount) !!}</td>
+                                    <td class="text-center">
+                                        @switch($order->delivery_status)
+                                            @case(config('tlecommercecore.order_delivery_status.pending'))
+                                                <span class="badge badge-secondary">{{ translate('Pending') }}</span>
+                                                @break
+                                            @case(config('tlecommercecore.order_delivery_status.processing'))
+                                                <span class="badge badge-warning">{{ translate('Processing') }}</span>
+                                                @break
+                                            @case(config('tlecommercecore.order_delivery_status.ready_to_ship'))
+                                                <span class="badge badge-info">{{ translate('Ready to Ship') }}</span>
+                                                @break
+                                            @case(config('tlecommercecore.order_delivery_status.shipped'))
+                                                <span class="badge badge-primary">{{ translate('Shipped') }}</span>
+                                                @break
+                                            @case(config('tlecommercecore.order_delivery_status.delivered'))
+                                                <span class="badge badge-success">{{ translate('Delivered') }}</span>
+                                                @break
+                                            @case(config('tlecommercecore.order_delivery_status.cancelled'))
+                                                <span class="badge badge-danger">{{ translate('Cancelled') }}</span>
+                                                @break
+                                            @default
+                                                <span class="badge badge-secondary">{{ translate('Unknown') }}</span>
+                                        @endswitch
+                                    </td>
+                                    <!-- <td class="text-center">
+                                        @switch($order->payment_status)
+                                            @case(config('tlecommercecore.order_payment_status.unpaid'))
+                                                <span class="badge badge-danger">{{ translate('Unpaid') }}</span>
+                                                @break
+                                            @case(config('tlecommercecore.order_payment_status.paid'))
+                                                <span class="badge badge-success">{{ translate('Paid') }}</span>
+                                                @break
+                                            @default
+                                                <span class="badge badge-secondary">{{ translate('Unknown') }}</span>
+                                        @endswitch
+                                    </td> -->
+                                    <td class="text-center">
                                         <a href="{{ route('plugin.tlcommercecore.orders.details', ['id' => $order->id]) }}"
                                             class="details-btn">
                                             Details
@@ -606,14 +643,20 @@
     </div>
     <!--End recents orders-->
     <!--Top customers-->
-    <div class="col-xl-4 col-lg-6 mb-20">
-        <div class="card mb-30">
+    <div class="col-xl-4 col-lg-6 mb-20" style="padding-right: 0px !important; margin-right: 0px !important; ">
+        <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
             <div class="card-body">
-                <div class="d-flex align-items-start align-items-sm-end justify-content-between mb-3">
-                    <div class="">
+                <div class="d-flex justify-content-between mb-3">
+                    <div class="d-flex align-items-center mr-sm-5 mb-sm-0" style="gap: 10px;">
+                        <x-lucide-trending-up style="width: 22px; height: 22px; color: #ff8c00;" />
                         <h4 class="mb-1">{{ translate('Top Customers') }}</h4>
                     </div>
                 </div>
+                <!-- <div class="d-flex align-items-start align-items-sm-end justify-content-between mb-3">
+                    <div class="">
+                        <h4 class="mb-1">{{ translate('Top Customers') }}</h4>
+                    </div>
+                </div> -->
                 <div class="product-list">
                     @if ($top_customers->count() > 0)
                         @foreach ($top_customers as $customer)
@@ -653,10 +696,16 @@
     <!--Top Products-->
     <div class="col-xl-4 col-lg-6">
         <!-- Card -->
-        <div class="card mb-30">
+        <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
             <div class="card-body">
-                <div class="d-flex align-items-start align-items-sm-end justify-content-between mb-3">
+                <!-- <div class="d-flex align-items-start align-items-sm-end justify-content-between mb-3">
                     <div class="">
+                        <h4 class="mb-1">{{ translate('Top Products') }}</h4>
+                    </div>
+                </div> -->
+                <div class="d-flex justify-content-between mb-3">
+                    <div class="d-flex align-items-center mr-sm-5 mb-sm-0" style="gap: 10px;">
+                        <x-lucide-trending-up style="width: 22px; height: 22px; color: #ff8c00;" />
                         <h4 class="mb-1">{{ translate('Top Products') }}</h4>
                     </div>
                 </div>
@@ -699,7 +748,7 @@
     </div>
     <!--End Top Products-->
     <!--Top Categories-->
-    <div class="col-xl-4 col-lg-6">
+    <!-- <div class="col-xl-4 col-lg-6">
         <div class="card mb-30">
             <div class="card-body">
                 <div class="d-flex align-items-start align-items-sm-end justify-content-between mb-3">
@@ -716,8 +765,6 @@
                                          <img src="{{ str_replace('/public', '',  asset(getFilePath($category['icon'], true)) )
                                         }}"
                                             alt="{{ $category['name'] }}">
-                                        <!-- <img src="{{ asset(getFilePath($category['icon'], true)) }}"
-                                            alt="{{ $category['name'] }}"> -->
                                     </div>
                                     <div class="content">
                                         <p class="black mb-1">{{ $category['name'] }}</p>
@@ -735,11 +782,10 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     <!--End Top Categories-->
     <!--Top Brands-->
-    <div class="col-xl-4 col-lg-6">
-        <!-- Card -->
+    <!-- <div class="col-xl-4 col-lg-6">
         <div class="card mb-30">
             <div class="card-body">
                 <div class="d-flex align-items-start align-items-sm-end justify-content-between mb-3">
@@ -756,8 +802,6 @@
                                          <img src="{{ str_replace('/public', '', asset(getFilePath($brand['logo'])))
                                           }}"
                                             alt="{{ $brand['name'] }}" class="img-20">
-                                        <!-- <img src="{{ asset(getFilePath($brand['logo'])) }}"
-                                            alt="{{ $brand['name'] }}" class="img-20"> -->
                                     </div>
                                     <div class="content">
                                         <p class="black mb-1">{{ $brand['name'] }}</p>
@@ -775,118 +819,141 @@
                 </div>
             </div>
         </div>
-        <!-- End Card -->
-    </div>
+    </div> -->
     <!--End Top Brands-->
 </div>
 
 @push('script')
-    <script>
-        (function($) {
-            "use strict";
-            let chart_data_type = "monthly";
-            let categories = [];
-            //change chart data type
-            $(".chart-switcher").on('click', function(e) {
-                e.preventDefault();
-                $('.chart-switcher').removeClass('active');
-                $(this).addClass('active');
-                chart_data_type = $(this).data('type');
-                getChartData();
+<script>
+    (function($) {
+        "use strict";
+        let chart_data_type = "monthly";
+        let categories = [];
+
+        $(".chart-switcher").on('click', function(e) {
+            e.preventDefault();
+            $('.chart-switcher').removeClass('active');
+            $(this).addClass('active');
+            chart_data_type = $(this).data('type');
+            getChartData();
+        });
+
+        function getChartData() {
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                },
+                type: "POST",
+                data: { type: chart_data_type },
+                url: '{{ route("plugin.tlcommercecore.reports.sales.chart") }}',
+                success: function(data) {
+                    if (data.success) {
+                        categories = data.times;
+                        sales_chart.updateSeries([{ name: 'Sales', data: data.sales }]);
+                        sales_chart.updateOptions({ xaxis: { categories: data.times } });
+                    }
+                }
             });
+        }
 
-            //Get data from api
-            function getChartData() {
-                $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-                    },
-                    type: "POST",
-                    data: {
-                        type: chart_data_type
-                    },
-                    url: '{{  route("plugin.tlcommercecore.reports.sales.chart") }}',                                        success: function(data) {
-                        if (data.success) {
-                            categories = data.times;
-                            sales_chart.updateSeries([{
-                                name: 'Sales',
-                                data: data.sales
-                            }])
+        var sales_chart_options = {
+            series: [],
+            chart: {
+                height: 340,
+                type: 'line',
+                toolbar: { show: true },
+                zoom: { enabled: false }
+            },
+            dataLabels: { enabled: false },
+            stroke: { curve: 'smooth', width: 3, dashArray: 3 },
+            colors: ['#FFBA5A', '#8381FD'],
+            grid: { borderColor: '#f5f5f5' },
+            markers: {
+                size: 7,
+                colors: ["#ff5A1f"],
+                hover: { size: 8 }
+            },
+            xaxis: { categories: [] },
+            yaxis: {
+                tickAmount: 4,
+                labels: {
+                    formatter: function(val) { return val.toFixed(2); }
+                }
+            },
+            responsive: [{
+                breakpoint: 576,
+                options: {
+                    markers: { size: 5, colors: ["#ff5A1f"], hover: { size: 5 } }
+                }
+            }]
+        };
 
-                            sales_chart.updateOptions({
-                                xaxis: {
-                                    categories: data.times
+        var sales_chart = new ApexCharts(document.querySelector("#apex_sales_report_chart"), sales_chart_options);
+        sales_chart.render();
+
+        // Doughnut chart using ApexCharts
+        var donut_options = {
+            series: [
+                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.pending')) }},
+                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.processing')) }},
+                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.ready_to_ship')) }},
+                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.shipped')) }},
+                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.delivered')) }},
+                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.cancelled')) }}
+            ],
+            chart: {
+                type: 'donut',
+                height: 220,
+            },
+            labels: ['Pending', 'Approved', 'Ready to Ship', 'Shipped', 'Delivered', 'Cancelled'],
+            colors: ['#f6c23e', '#36b9cc', '#ff8c00', '#4e73df', '#1cc88a', '#e74a3b'],
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '65%',
+                        labels: {
+                            show: true,
+                            total: {
+                                show: true,
+                                label: '{{ translate("Total Sales") }}',
+                                formatter: function() {
+                                    return '{!! addslashes(currencyExchange($total_sales)) !!}';
                                 }
-                            })
-                        }
-                    }
-                });
-            }
-            
-            //chart options
-            var sales_chart_options = {
-                series: [],
-                chart: {
-                    height: 340,
-                    type: 'line',
-                    toolbar: {
-                        show: true,
-                    },
-                    zoom: {
-                        enabled: false
-                    }
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                stroke: {
-                    curve: 'smooth',
-                    width: 3,
-                    dashArray: 3
-                },
-                colors: ['#FFBA5A', '#8381FD'],
-                grid: {
-                    borderColor: '#f5f5f5',
-                },
-                markers: {
-                    size: 7,
-                    colors: ["#67CF94"],
-                    hover: {
-                        size: 8,
-                    }
-                },
-                xaxis: {
-                    categories: [],
-                },
-                yaxis: {
-                    tickAmount: 4,
-                    labels: {
-                        formatter: function(val, index) {
-                            return val.toFixed(2);
-                        }
-                    }
-                },
-                responsive: [{
-                    breakpoint: 576,
-                    options: {
-                        markers: {
-                            size: 5,
-                            colors: ["#67CF94"],
-                            hover: {
-                                size: 5,
                             }
-                        },
+                        }
                     }
-                }],
-            };
-            //Render chart
-            var sales_chart = new ApexCharts(document.querySelector(
-                "#apex_sales_report_chart"), sales_chart_options);
-            sales_chart.render();
+                }
+            },
+            legend: { show: false },
+            dataLabels: { enabled: false },
+        };
 
-            $(document).ready(function() {
-                getChartData();
-            });
-        })(jQuery);
-    </script>
+        var donut_chart = new ApexCharts(document.querySelector("#orderStatusChart"), donut_options);
+        donut_chart.render();
+
+        $(document).ready(function() {
+            getChartData();
+        });
+
+    })(jQuery);
+</script>
 @endpush
+
+
+<style>
+
+/* Change the background and text color of the active button */
+.list-button li.active.chart-switcher {
+    background-color: #ff5A1f !important;
+    color: #ffffff !important;
+    border-color: #ff5A1f !important; /* In case there is a border */
+}
+
+/* Optional: If you want a slight hover effect on the inactive buttons */
+.list-button li.chart-switcher:hover:not(.active) {
+    background-color: #ff5A1f !important;
+    color: #ffffff !important;
+    cursor: pointer;
+}
+
+</style>

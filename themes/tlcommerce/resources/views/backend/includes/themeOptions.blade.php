@@ -3,33 +3,35 @@
         auth()->user()->can('Manage Home Page Builder') ||
         auth()->user()->can('Manage Slider Settings') ||
         auth()->user()->can('Manage Widget'))
-    <li
-        class="{{ Request::routeIs(['theme.tlcommerce.home.page.sections.edit', 'theme.tlcommerce.home.page.sections.new', 'theme.tlcommerce.home.page.sections', 'theme.tlcommerce.sliders.edit', 'theme.tlcommerce.sliders.new', 'theme.tlcommerce.sliders', 'theme.tlcommerce.options']) ? 'active sub-menu-opened' : '' }}">
+    <!-- <li -->
+        <!-- class="{{ Request::routeIs(['theme.tlcommerce.home.page.sections.edit', 'theme.tlcommerce.home.page.sections.new', 'theme.tlcommerce.home.page.sections', 'theme.tlcommerce.sliders.edit', 'theme.tlcommerce.sliders.new', 'theme.tlcommerce.sliders', 'theme.tlcommerce.options']) ? 'active sub-menu-opened' : '' }}"> -->
+        <li style="padding-left: 0 !important;">
         <a href="#">
-            <i class="icofont-ui-theme"></i>
-            <span class="link-title">{{ translate('Theme Options') }}</span>
+            <!-- <i class="icofont-ui-theme"></i> -->
+            <x-lucide-badge-percent style="width: 20px; height: 20px; margin-left: 8px;" />
+            <span class="link-title ml-2">{{ translate('Theme Options') }}</span>
         </a>
         <ul class="nav sub-menu">
             @if (auth()->user()->can('Manage Theme General settings'))
                 <li class="{{ Request::routeIs(['theme.tlcommerce.options']) ? 'active ' : '' }}">
-                    <a href="{{ route('theme.tlcommerce.options') }}">{{ translate('General settings') }}</a>
+                    <a class="pl-2" href="{{ route('theme.tlcommerce.options') }}">{{ translate('General settings') }}</a>
                 </li>
             @endif
             @if (auth()->user()->can('Manage Home Page Builder'))
                 <li
                     class="{{ Request::routeIs(['theme.tlcommerce.home.page.sections.edit', 'theme.tlcommerce.home.page.sections']) ? 'active ' : '' }}">
-                    <a href="{{ route('theme.tlcommerce.home.page.sections') }}">{{ translate('Home Page Builder') }}</a>
+                    <a class="pl-2" href="{{ route('theme.tlcommerce.home.page.sections') }}">{{ translate('Home Page Builder') }}</a>
                 </li>
             @endif
             @if (auth()->user()->can('Manage Slider Settings'))
                 <li class="{{ Request::routeIs(['theme.tlcommerce.sliders']) ? 'active ' : '' }}">
-                    <a href="{{ route('theme.tlcommerce.sliders') }}">{{ translate('Slider Settings') }}</a>
+                    <a class="pl-2" href="{{ route('theme.tlcommerce.sliders') }}">{{ translate('Slider Settings') }}</a>
                 </li>
             @endif
             @if (auth()->user()->can('Manage Widget'))
                 <!--Widget Module-->
                 <li class="{{ Request::routeIs(['theme.tlcommerce.widgets']) ? 'active ' : '' }}">
-                    <a href="{{ route('theme.tlcommerce.widgets') }}">
+                    <a class="pl-2" href="{{ route('theme.tlcommerce.widgets') }}">
                         <span class="link-title">{{ translate('Widgets') }}</span>
                     </a>
                 </li>
@@ -39,7 +41,7 @@
             @if (auth()->user()->can('Manage Layout Settings'))
                  <!--Layout Module-->
                 <li class="{{ Request::routeIs(['theme.tlcommerce.layoutSettings']) ? 'active ' : '' }}">
-                    <a href="{{ route('theme.tlcommerce.layoutSettings') }}">
+                    <a class="pl-2" href="{{ route('theme.tlcommerce.layoutSettings') }}">
                         <span class="link-title">{{ translate('Layout Settings') }}</span>
                     </a>
                 </li>
@@ -49,3 +51,35 @@
     </li>
 @endif
 <!--End Theme Options Modules-->
+
+
+<style>
+
+.sidebar .nav li.active > a,
+.sidebar .nav li.active > a:hover,
+.sidebar .nav li.active > a:focus {
+    background-color: #ff5A1f !important;
+    color: #ffffff !important;
+    border-radius: 12px
+}
+
+.sidebar .nav li:not(.active) > a:hover {
+    color: #ff5A1f !important;
+}
+
+.sidebar .nav li:not(.active):hover > a {
+    color: #ff5A1f !important;
+}
+
+/* 2. Handle the SVG icon color for the parent during that same hover */
+.sidebar .nav li:not(.active):hover > a svg {
+    stroke: #ff5A1f !important;
+    color: #ff5A1f !important;
+}
+
+.sidebar .nav li.active > a svg {
+    stroke: #ffffff !important;
+    color: #ffffff !important;
+}
+
+</style>

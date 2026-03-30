@@ -17,42 +17,43 @@
     </div>
     <!--End search options-->
     <!-- Sidebar Header -->
-    <div class="sidebar-header d-none d-lg-block pt-0">
-        <!-- Sidebar Toggle Pin Button -->
+    <!-- <div class="sidebar-header d-none d-lg-block pt-0">
         <div class="sidebar-toogle-pin">
             <i class="icofont-tack-pin"></i>
         </div>
-        <!-- End Sidebar Toggle Pin Button -->
-    </div>
+    </div> -->
     <!-- End Sidebar Header -->
     <!-- Sidebar Body -->
     <div class="sidebar-body main-side-bar">
         <!-- Nav -->
         <ul class="nav" id="main-nav">
             @if (auth()->user()->can('Manage Dashboard'))
-                <li class="{{ Request::routeIs('admin.dashboard') ? 'active ' : '' }}">
-                    <a href="{{ route('admin.dashboard') }}">
-                        <i class="icofont-dashboard"></i>
-                        <span class="link-title">{{ translate('Dashboard') }}</span>
+                <li class="{{ Request::routeIs('admin.dashboard') ? 'active ' : '' }}" style="padding-left: 0 !important;">
+                    <a href="{{ route('admin.dashboard') }}" class="d-flex align-items-center">
+                        <x-lucide-house style="width: 20px; height: 20px; margin-left: 8px;" />
+                        <span class="link-title ml-2">{{ translate('Dashboard') }}</span>
                     </a>
                 </li>
             @endif
 
+             <!--Plugin nabvar options-->
+            @foreach (pluginsNavbar() as $item)
+                @includeIf($item)
+            @endforeach
+            <!--End Plugin nabvar options-->
+
             @if (auth()->user()->can('Manage Media'))
-                <!--Media Module-->
-                <li class="{{ Request::routeIs(['core.media.page']) ? 'active ' : '' }}">
-                    <a href="{{ route('core.media.page') }}">
-                        <i class="icofont-multimedia"></i>
-                        <span class="link-title">{{ translate('File Manager') }}</span>
-                        <!-- <span class="link-title">{{ translate('Media') }}</span> -->
+                <li class="{{ Request::routeIs(['core.media.page']) ? 'active ' : '' }}" style="padding-left: 0 !important;">
+                    <a href="{{ route('core.media.page') }}" class="d-flex align-items-center">
+                        <x-lucide-library style="width: 20px; height: 20px; margin-left: 8px;" />
+                        <span class="link-title ml-2">{{ translate('File Manager') }}</span>
                     </a>
 
                 </li>
-                <!--End Media module-->
             @endif
             <!-- Blog & Page-->
             <!--Blog Module-->
-            @canany(['Show Blog', 'Create Blog', 'Manage Category', 'Manage Tag', 'Manage Comment'])
+            <!-- @canany(['Show Blog', 'Create Blog', 'Manage Category', 'Manage Tag', 'Manage Comment'])
                 <li
                     class="{{ Request::routeIs(['core.blog.category', 'core.add.blog.category', 'core.edit.blog.category', 'core.blog', 'core.add.blog', 'core.edit.blog', 'core.tag', 'core.edit.tag', 'core.add.tag', 'core.blog.comment', 'core.blog.comment.edit', 'core.blog.comment.setting']) ? 'active sub-menu-opened' : '' }}">
                     <a href="#">
@@ -110,7 +111,7 @@
                         @endcan
                     </ul>
                 </li>
-            @endcanany
+            @endcanany -->
             <!--End Blog module-->
 
             <!--Page Module-->
@@ -138,14 +139,8 @@
             <!--End Blog module-->
             <!-- Blog & Page -->
 
-            <!--Plugin nabvar options-->
-            @foreach (pluginsNavbar() as $item)
-                @includeIf($item)
-            @endforeach
-            <!--End Plugin nabvar options-->
-
             <!--Appearances Modules-->
-            @if (auth()->user()->can('Manage Themes') || auth()->user()->can('Manage Menus'))
+            <!-- @if (auth()->user()->can('Manage Themes') || auth()->user()->can('Manage Menus'))
                 <li
                     class="{{ Request::routeIs(['core.themes.index', 'core.manage.menus']) ? 'active sub-menu-opened' : '' }}">
                     <a href="#">
@@ -153,11 +148,11 @@
                         <span class="link-title">{{ translate('Appearances') }}</span>
                     </a>
                     <ul class="nav sub-menu">
-                        <!-- @if (auth()->user()->can('Manage Themes'))
+                        @if (auth()->user()->can('Manage Themes'))
                             <li class="{{ Request::routeIs(['core.themes.index']) ? 'active ' : '' }}">
                                 <a href="{{ route('core.themes.index') }}">{{ translate('Themes') }}</a>
                             </li>
-                        @endif -->
+                        @endif 
                         @if (auth()->user()->can('Manage Menus'))
                             <li class="{{ Request::routeIs(['core.manage.menus']) ? 'active ' : '' }}">
                                 <a href="{{ route('core.manage.menus') }}">{{ translate('Menus') }}</a>
@@ -165,23 +160,21 @@
                         @endif
                     </ul>
                 </li>
-            @endif
+            @endif -->
             <!--End Appearances Modules-->
 
             <!--Theme otions-->
             @includeIf(getActiveThemeOptions())
             <!--End Theme options-->
 
-            @if (!isTenant() && auth()->user()->can('Manage Plugins'))
-                <!--Plugins Module-->
+            <!-- @if (!isTenant() && auth()->user()->can('Manage Plugins'))
                 <li class="{{ Request::routeIs(['core.plugins.index', 'core.plugins.create']) ? 'active' : '' }}">
                     <a href="{{ route('core.plugins.index') }}">
                         <i class="icofont-addons"></i>
                         <span class="link-title">{{ translate('Plugins') }}</span>
                     </a>
                 </li>
-                <!--End Plugins module-->
-            @endif
+            @endif -->
 
             @if (auth()->user()->can('Manage General Settings') ||
                     auth()->user()->can('Manage Email Settings') ||
@@ -190,48 +183,50 @@
                     auth()->user()->can('Manage Media Settings') ||
                     auth()->user()->can('Manage Seo Settings'))
                 <!--Settings Modules-->
-                <li
-                    class="{{ Request::routeIs(['core.seo.settings', 'core.email.smtp.configuration', 'core.language.frontend.translations', 'core.image.settings', 'core.email.templates', 'core.language.edit', 'core.language.key.values', 'core.languages', 'core.language.new', 'core.image.settings', 'core.social.media.login.settings', 'core.general.settings']) ? 'active sub-menu-opened' : '' }}">
+                <!-- <li -->
+                    <!-- class="{{ Request::routeIs(['core.seo.settings', 'core.email.smtp.configuration', 'core.language.frontend.translations', 'core.image.settings', 'core.email.templates', 'core.language.edit', 'core.language.key.values', 'core.languages', 'core.language.new', 'core.image.settings', 'core.social.media.login.settings', 'core.general.settings']) ? 'active sub-menu-opened' : '' }}"> -->
+                    <li style="padding-left: 0 !important;">
                     <a href="#">
-                        <i class="icofont-settings-alt"></i>
-                        <span class="link-title">{{ translate('Settings') }}</span>
+                        <!-- <i class="icofont-settings-alt"></i> -->
+                        <x-lucide-settings style="width: 20px; height: 20px; margin-left: 8px;" />
+                        <span class="link-title ml-2">{{ translate('Settings') }}</span>
                     </a>
                     <ul class="nav sub-menu">
                         @if (auth()->user()->can('Manage General Settings'))
                             <li class="{{ Request::routeIs(['core.general.settings']) ? 'active ' : '' }}">
-                                <a href="{{ route('core.general.settings') }}">{{ translate('General settings') }}</a>
+                                <a class="pl-2" href="{{ route('core.general.settings') }}">{{ translate('General settings') }}</a>
                             </li>
                         @endif
 
                         @if (auth()->user()->can('Manage Email Settings'))
                             <li class="{{ Request::routeIs(['core.email.smtp.configuration']) ? 'active ' : '' }}">
-                                <a
+                                <a class="pl-2"
                                     href="{{ route('core.email.smtp.configuration') }}">{{ translate('Email settings') }}</a>
                             </li>
                         @endif
 
                         @if (auth()->user()->can('Manage Email Templates'))
                             <li class="{{ Request::routeIs(['core.email.templates']) ? 'active ' : '' }}">
-                                <a href="{{ route('core.email.templates') }}">{{ translate('Email Templates') }}</a>
+                                <a class="pl-2" href="{{ route('core.email.templates') }}">{{ translate('Email Templates') }}</a>
                             </li>
                         @endif
 
                         @if (auth()->user()->can('Manage Language'))
                             <li
                                 class="{{ Request::routeIs(['core.language.edit', 'core.language.key.values', 'core.languages', 'core.language.new']) ? 'active ' : '' }}">
-                                <a href="{{ route('core.languages') }}">{{ translate('Languages') }}</a>
+                                <a class="pl-2" href="{{ route('core.languages') }}">{{ translate('Languages') }}</a>
                             </li>
                         @endif
 
                         @if (auth()->user()->can('Manage Media Settings'))
                             <li class="{{ Request::routeIs(['core.image.settings']) ? 'active ' : '' }}">
-                                <a href="{{ route('core.image.settings') }}">{{ translate('Media settings') }}</a>
+                                <a class="pl-2" href="{{ route('core.image.settings') }}">{{ translate('Media settings') }}</a>
                             </li>
                         @endif
 
                         @if (auth()->user()->can('Manage Seo Settings'))
                             <li class="{{ Request::routeIs(['core.seo.settings']) ? 'active ' : '' }}">
-                                <a href="{{ route('core.seo.settings') }}">{{ translate('SEO settings') }}</a>
+                                <a class="pl-2" href="{{ route('core.seo.settings') }}">{{ translate('SEO settings') }}</a>
                             </li>
                         @endif
                     </ul>
@@ -241,28 +236,31 @@
 
             <!--Users Module-->
             @if (auth()->user()->can('Show User') || auth()->user()->can('Show Role') || auth()->user()->can('Show Permission'))
-                <li
-                    class="{{ Request::routeIs(['core.roles', 'core.permissions', 'core.users', 'core.add.user', 'core.edit.user']) ? 'active sub-menu-opened' : '' }}">
+                <!-- <li -->
+                    <!-- class="{{ Request::routeIs(['core.roles', 'core.permissions', 'core.users', 'core.add.user', 'core.edit.user']) ? 'active sub-menu-opened' : '' }}"> -->
+                    <li style="padding-left: 0 !important;">
                     <a href="#">
-                        <i class="icofont-users-social"></i>
-                        <span class="link-title">{{ translate('Users') }}</span>
+                        <!-- <i class="icofont-users-social"></i> -->
+                        <x-lucide-user style="width: 20px; height: 20px; margin-left: 8px;" />
+                        <span class="link-title ml-2">{{ translate('Users') }}</span>
                     </a>
                     <ul class="nav sub-menu">
                         @if (auth()->user()->can('Show User'))
                             <li
                                 class="{{ Request::routeIs(['core.users', 'core.add.user', 'core.edit.user']) ? 'active ' : '' }}">
-                                <a href="{{ route('core.users') }}">{{ translate('Users') }}</a>
+                                <a class="pl-2" href="{{ route('core.users') }}">{{ translate('Users') }}</a>
                             </li>
                         @endif
 
                         @if (auth()->user()->can('Show Role'))
-                            <li class="{{ Request::routeIs(['core.roles']) ? 'active ' : '' }}"><a
+                            <li class="{{ Request::routeIs(['core.roles']) ? 'active ' : '' }}">
+                                <a class="pl-2"
                                     href="{{ route('core.roles') }}">{{ translate('Roles') }}</a></li>
                         @endif
 
                         @if (auth()->user()->can('Show Permission'))
                             <li class="{{ Request::routeIs(['core.permissions']) ? 'active ' : '' }}">
-                                <a href="{{ route('core.permissions') }}">{{ translate('Permissions') }}</a>
+                                <a class="pl-2" href="{{ route('core.permissions') }}">{{ translate('Permissions') }}</a>
                             </li>
                         @endif
                     </ul>
@@ -272,15 +270,17 @@
 
             <!--Activity Logs Module-->
             @if (auth()->user()->can('Manage Login activity'))
-                <li
-                    class="{{ Request::routeIs(['core.activity.logs', 'core.get.login.activity']) ? 'active sub-menu-opened' : '' }}">
+                <!-- <li -->
+                    <!-- class="{{ Request::routeIs(['core.activity.logs', 'core.get.login.activity']) ? 'active sub-menu-opened' : '' }}"> -->
+                    <li style="padding-left: 0 !important;">
                     <a href="#">
-                        <i class="icofont-ui-password"></i>
-                        <span class="link-title">{{ translate('Activity Logs') }}</span>
+                        <!-- <i class="icofont-ui-password"></i> -->
+                        <x-lucide-clipboard-clock style="width: 20px; height: 20px; margin-left: 8px;" />
+                        <span class="link-title ml-2">{{ translate('Activity Logs') }}</span>
                     </a>
                     <ul class="nav sub-menu">
                         <li class="{{ Request::routeIs(['core.get.login.activity']) ? 'active ' : '' }}">
-                            <a href="{{ route('core.get.login.activity') }}">{{ translate('Login activity') }}</a>
+                            <a class="pl-2" href="{{ route('core.get.login.activity') }}">{{ translate('Login activity') }}</a>
                         </li>
                     </ul>
                 </li>
@@ -337,3 +337,21 @@
     </div>
     <!--End sidebar search result-->
 </nav>
+
+
+<style>
+
+.sidebar .nav li.active > a,
+.sidebar .nav li.active > a:hover,
+.sidebar .nav li.active > a:focus {
+    background-color: #ff5A1f !important;
+    color: #ffffff !important;
+    border-radius: 12px
+}
+
+.sidebar .nav li.active > a svg {
+    stroke: #ffffff !important;
+    color: #ffffff !important;
+}
+
+</style>

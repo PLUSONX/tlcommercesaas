@@ -100,13 +100,16 @@ class PayzahController extends Controller
     $orderId = session('order_id');
     $payableAmount = session('payable_amount');
     $paymentType = session('payment_type');
-    $customerId = session('customer') ?? session('guest_customer');
+    // $customerId = session('customer') ?? session('guest_customer');
+    $customerId = session('customer');           // real customer → tl_com_customers
+    $guestCustomerId = session('guest_customer'); // guest → tl_com_guest_customers
     
     Log::info('Payzah payment initialization', [
         'order_id' => $orderId,
         'amount' => $payableAmount,
         'payment_method_id' => $this->payment_method_id,
         'customer_id' => $customerId,
+        'guest_customer_id' => $guestCustomerId,
     ]);
 
     // Validate we have required data
@@ -146,14 +149,24 @@ class PayzahController extends Controller
 
         // Store Payzah payment details in database
         $this->storePaymentTransaction([
-            'order_id' => $orderId,
-            'track_id' => $trackId,
-            'payment_id' => $payzahResponse['data']['PaymentID'],
-            'amount' => $payableAmount,
+            'order_id'    => $orderId,
+            'track_id'    => $trackId,
+            'payment_id'  => $payzahResponse['data']['PaymentID'],
+            'amount'      => $payableAmount,
             'payment_url' => $payzahResponse['data']['direct_url'],
-            'customer_id' => auth()->check() ? auth()->id() : null, // Add this
-            'guest_customer' => null, // Or pass guest ID if you have it
+            'customer_id'    => $customerId ?? null,
+            'guest_customer' => $guestCustomerId ?? null,
         ]);
+
+        // $this->storePaymentTransaction([
+        //     'order_id' => $orderId,
+        //     'track_id' => $trackId,
+        //     'payment_id' => $payzahResponse['data']['PaymentID'],
+        //     'amount' => $payableAmount,
+        //     'payment_url' => $payzahResponse['data']['direct_url'],
+        //     'customer_id' => auth()->check() ? auth()->id() : null, // Add this
+        //     'guest_customer' => null, // Or pass guest ID if you have it
+        // ]);
 
         // $this->storePaymentTransaction([
         //     'order_id' => $orderId,

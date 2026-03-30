@@ -18,6 +18,8 @@ class DeviceTokenController extends Controller
     {
         try {
 
+        
+
             $validated = $request->validated();
 
             // Handle old token if provided (deactivate or remove)

@@ -1909,9 +1909,11 @@ class OrderRepository
             //Update order table status
             $total_order_products = OrderHasProducts::where('order_id', $request['order_id'])->count();
             $order->delivery_status = $request['delivery_status'];
-            if ($total_order_products == $request['product']) {
-                $order->payment_status = $request['payment_status'];
-            }
+            $order->payment_status = $request['payment_status'];
+
+            // if ($total_order_products == $request['product']) {
+            //     $order->payment_status = $request['payment_status'];
+            // }
             $order->save();
 
             //Send notification to seller

@@ -1,110 +1,83 @@
-<header class="header white-bg fixed-top d-flex align-items-center flex-wrap">
+<header class="header white-bg fixed-top d-flex align-items-center">
     @include('core::base.layouts.headerLogo')
     
-    <div class="main-header w-100">
+    <div class="w-100">
         <div class="container-fluid">
-            <div class="row justify-content-end align-items-center">
-                
+            <div class="row align-items-center justify-content-between">
+
+                <div class="col-auto" style="margin-left: 60px;">
+                    @auth
+                        <div class="user-info d-none d-sm-block"> 
+                            <h4 class="user-name mb-0" style="font-size: 18px; font-weight: 600;">{{ auth()->user()->name }}</h4>
+
+                            <a href="/" target="_blank" class="d-flex align-items-center mt-1 text-decoration-none" style="gap: 5px; color: #6c757d; font-size: 14px;">
+                                <span>{{ 'Visit store' }}</span>
+                                
+                                <x-lucide-arrow-up-right style="width: 14px; height: 14px; color: #ff8c00;" />
+                                <!-- <i class="icofont-external-link" style="font-size: 14px; color: #ff8c00;"></i> -->
+                            </a>
+                        </div>
+                    @endauth
+                </div>
+
                 <div class="col-auto">
-                    <div class="main-header-right d-flex justify-content-end">
+                    <div class="d-flex align-items-center">
                         <ul class="nav align-items-center">
-                            <li class="d-none d-lg-flex">
-                                <div class="main-header-date-time text-right" id="dateTime">
-                                    <h3 class="time mb-0"><span id="hours">21</span><span>:</span><span id="min">06</span></h3>
-                                    <span class="date"><span id="date">Tue, 12 October 2019</span></span>
-                                </div>
-                            </li>
-
+                            
+    
                             <li class="ml-3">
                                 <div class="main-header-notification">
-                                    <a href="/" target="_blank" class="header-icon"><img src="{{ asset('backend/assets/img/svg/globe-icon.svg') }}" class="svg"></a>
-                                </div>
-                            </li>
-
-                            <li class="ml-3">
-                                <!-- Main Header Language -->
-                                <div class="main-header-notification">
-                                    <a href="#" class="header-icon notification-icon" data-toggle="dropdown"
-                                        title="Language Options">
-                                        @if (isset($active_lang->code))
-                                            <!-- <img src="{{ asset('backend/assets/img/flags/') . '/' . $active_lang->code . '.png' }}" -->
-                                            <img src="{{ asset('flags/') . '/' . $active_lang->code . '.png' }}"
-                                                class="w-20" alt="{{ $active_lang->code }}">
-                                        @endif
-                                    </a>
-                                    <div id="lang-change" class="dropdown-menu style--three">
-                                        @foreach ($active_langs as $lang)
-                                            <a href="#" class="dropdown-item" data-lan="{{ $lang->code }}">
-                                                <!-- <img src="{{ asset('backend/assets/img/flags/') . '/' . $lang->code . '.png' }}" -->
-                                                <img src="{{ asset('flags/') . '/' . $lang->code . '.png' }}"
-                                                    class="mr-2 w-20" alt="{{ $lang->code }}">
-                                                {{ $lang->native_name }}
-                                            </a>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                <!-- End Main Header Language -->
-                            </li>
-                            <li>
-                                <!-- Main Header Notification -->
-                                <div class="main-header-notification">
-                                    <a href="#" class="header-icon notification-icon" data-toggle="dropdown"
-                                        title="Notification">
-                                        <span class="count notification-counter"
-                                            data-bg-img="{{ asset('backend/assets/img/count-bg.png') }}">0</span>
-                                        <img src="{{ asset('backend/assets/img/svg/notification-icon.svg') }}"
-                                            alt="bell" class="svg">
+                                 
+                                    <a href="#" class="header-icon notification-icon" data-toggle="dropdown" title="Notification">
+                                        <!-- <span class="count notification-counter" data-bg-img="{{ asset('backend/assets/img/count-bg.png') }}">0</span> -->
+                                        <span class="count notification-counter" style=" color: white; background: #ff8c00;" >0</span>
+                                        
+                                        <x-lucide-bell style="width: 22px; height: 22px; color: #ff8c00;" />
                                     </a>
                                     <div class="dropdown-menu style--two dropdown-menu-right py-0">
-                                        <div
-                                            class="dropdown-header bg-primary-light d-flex align-items-center justify-content-between">
+                                        <div class="dropdown-header bg-primary-light d-flex align-items-center justify-content-between">
                                             <h4 class="py-2 font-weight-normal">{{ translate('Notifications') }}</h4>
-                                            <a href="#"
-                                                class="text-mute mark-as-all-read d-none">{{ translate('Clear all') }}</a>
+                                            <a href="#" class="text-mute mark-as-all-read d-none">{{ translate('Clear all') }}</a>
                                         </div>
-                                        <div class="dropdown-body notification-list-items">
-                                        </div>
+                                        <div class="dropdown-body notification-list-items"></div>
                                     </div>
                                 </div>
-                                <!-- End Main Header Notification -->
                             </li>
 
-                            </ul>
-                    </div>
-                </div>
-
-                <div class="col-auto">
-                    <div class="main-header-left h-100 d-flex align-items-center justify-content-end">
-                        @auth
-                            <div class="main-header-user dropdown">
-                                <a href="javascript:void(0);" class="user-profile d-flex align-items-center" data-toggle="dropdown" style="text-decoration: none; color: inherit;">
-                                    <div class="user-info mr-3 text-right d-none d-sm-block"> 
-                                        <h4 class="user-name mb-0" style="font-size: 14px;">{{ auth()->user()->name }}</h4>
-                                        <p class="user-email mb-0" style="font-size: 11px;">{{ auth()->user()->email }}</p>
+                            <li class="ml-3">
+                                @auth
+                                    <div class="main-header-user dropdown">
+                                        <a href="javascript:void(0);" class="user-profile d-flex align-items-center" data-toggle="dropdown">
+                                            <!-- <div class="user-avatar">
+                                                <img src="{{ auth()->user()->image ? str_replace('/public', '', asset(getFilePath(auth()->user()->image))) : asset('backend/assets/img/avatar/avatar-user.png') }}"
+                                                     class="rounded-circle" 
+                                                     style="width: 50px; height: 50px; object-fit: cover; border: 1px solid #ff8c00;">
+                                            </div> -->
+                                            <div class="user-avatar">
+                                                <img src="{{ auth()->user()->image ? str_replace('/public', '', asset(getFilePath(auth()->user()->image))) : asset('backend/assets/img/avatar/avatar-user.png') }}"
+                                                    class="rounded-circle" 
+                                                    style="width: 50px; height: 50px; min-width: 50px; object-fit: cover; border: 1px solid #ff8c00; flex-shrink: 0;">
+                                            </div>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <a class="dropdown-item" href="{{ route('core.profile') }}"><i class="fa fa-user mr-2"></i> {{ translate('My Profile') }}</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="{{ route('core.logout') }}"><i class="fa fa-sign-out mr-2"></i> {{ translate('Log Out') }}</a>
+                                        </div>
                                     </div>
-                                    <div class="user-avatar">
-                                        <img src="{{ auth()->user()->image ? str_replace('/public', '', asset(getFilePath(auth()->user()->image))) : asset('backend/assets/img/avatar/avatar-user.png') }}"
-                                             class="rounded-circle" 
-                                             style="width: 40px; height: 40px; object-fit: cover; border: 1px solid #ddd;">
-                                    </div>
-                                </a>
+                                @endauth
+                            </li>
 
-                                <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="{{ route('core.profile') }}"><i class="fa fa-user mr-2"></i> {{ translate('My Profile') }}</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{{ route('core.logout') }}"><i class="fa fa-sign-out mr-2"></i> {{ translate('Log Out') }}</a>
+                            <!-- <li class="ml-3 d-lg-none">
+                                <div class="header-toogle-menu">
+                                    <img src="{{ asset('backend/assets/img/menu.png') }}" alt="menu" style="width: 25px;">
                                 </div>
-                            </div>
-                        @endauth
+                            </li> -->
 
-                        <div class="main-header-menu d-block d-lg-none ml-3">
-                            <div class="header-toogle-menu">
-                                <img src="{{ asset('backend/assets/img/menu.png') }}" alt="">
-                            </div>
-                        </div>
+                        </ul>
                     </div>
                 </div>
-                
+
             </div>
         </div>
     </div>

@@ -1,5 +1,5 @@
 <!--Wallet Module-->
-@if (auth()->user()->can('Manage Offline Payment Methods') || auth()->user()->can('Manage Wallet Transactions'))
+<!-- @if (auth()->user()->can('Manage Offline Payment Methods') || auth()->user()->can('Manage Wallet Transactions'))
     <li
         class="{{ Request::routeIs(['plugin.wallet.recharge.offline.payment.methods', 'plugin.wallet.configuration', 'plugin.wallet.transaction.list']) ? 'active sub-menu-opened' : '' }}">
         <a href="#">
@@ -22,5 +22,5 @@
             </ul>
         @endcanany
     </li>
-@endif
+@endif -->
 <!--End Wallet Module-->
