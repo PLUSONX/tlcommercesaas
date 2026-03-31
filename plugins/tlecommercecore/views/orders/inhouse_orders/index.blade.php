@@ -248,7 +248,7 @@
                                 @foreach ($orders as $key => $order)
                                     <tr>
                                         <td>
-                                            <div class="d-flex align-items-center mb-3">
+                                            <div class="d-flex align-items-center ">
                                                 <label class="position-relative mr-2">
                                                     <input type="checkbox" name="items[]" class="item-id"
                                                         value="{{ $order->id }}">
