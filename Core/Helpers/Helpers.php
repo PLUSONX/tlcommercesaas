@@ -342,12 +342,22 @@ if (!function_exists('saveFileInStorage')) {
             $uploaded_file->title = $original_file_name_without_extension;
             $uploaded_file->caption = $original_file_name_without_extension;
             $uploaded_file->size = $file_file_size;
-            $uploaded_file->path = $file_full_path;
+
+            if ($disk == 'public' && !isTenant()) {
+                $db_save_path = 'storage/' . $file_full_path;
+            } else {
+                $db_save_path = $file_full_path;
+            }
+
+            // $uploaded_file->path = $file_full_path;
+            $uploaded_file->path = $db_save_path;
             $uploaded_file->disk = $disk;
             $uploaded_file->folder_name = $destination_path;
 
             \Log::info('=== media path ===', [
-                'destination_path: ' => $destination_path
+                'destination_path: ' => $destination_path,
+                'file_full_path: ' => $file_full_path,
+                'db_save_path: ' => $db_save_path
             ]);
 
             $uploaded_file->file_type = $file_extension;
