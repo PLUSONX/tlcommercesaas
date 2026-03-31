@@ -264,7 +264,8 @@ if (!function_exists('saveFileInStorage')) {
             // 'request_id' => $request->input('id')
         ]);
         try {
-            $upload_path = "storage";
+            // $upload_path = "storage";
+            $upload_path = "";
             $tenant_id = isTenant();
             if ($tenant_id) {
                 $upload_path = 'tenant/tenant' . $tenant_id;
