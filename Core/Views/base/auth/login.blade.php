@@ -50,7 +50,8 @@ $isCentralDomain = in_array($host, $centralDomains);
                     <div class="logo">
                         <a href="/" class="default-logo">
                             @if (!empty($desktop_logo))
-                            <img src="{{ $desktop_logo }}" alt="Plate Pilots Saas">
+                            <!-- <img src="{{ $desktop_logo }}" alt="Plate Pilots Saas"> -->
+                            <img src="{{ str_replace('/public', '', $desktop_logo) }}" alt="Plate Pilots Saas">
                             @else
                             <h3>{{ $system_name }}</h3>
                             @endif
