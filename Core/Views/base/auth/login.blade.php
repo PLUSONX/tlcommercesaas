@@ -45,7 +45,7 @@ $isCentralDomain = in_array($host, $centralDomains);
 <div class="container-fluid login-page-layout position-relative">
     <div class="align-items-center h-100 justify-content-center row py-5">
         <div class="col-xl-3 col-lg-4  col-12 mx-auto">
-            <div class="card bg-white p-3 py-4">
+            <div class="card bg-white p-3 py-4" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="auth-card-header text-center pt-3">
                     <div class="logo">
                         <a href="/" class="default-logo">
@@ -89,7 +89,7 @@ $isCentralDomain = in_array($host, $centralDomains);
 
 
                         <div class="d-flex align-items-center">
-                            <button type="submit" class="btn btn-block">{{ translate('Log In') }}</button>
+                            <button type="submit" class="btn btn-block btn-orange">{{ translate('Log In') }}</button>
                         </div>
                     </form>
                 </div>
@@ -112,3 +112,38 @@ $isCentralDomain = in_array($host, $centralDomains);
         }
     });
 </script>
+
+
+
+<style>
+
+button.btn-orange,
+a.btn-orange {
+    background: #ff8c00 !important;
+    border-color: #ff8c00 !important;
+    color: #fff !important;
+    transition: background 0.2s ease;
+}
+
+button.btn-orange:hover,
+a.btn-orange:hover {
+    background: #e07b00 !important;
+    border-color: #e07b00 !important;
+    color: #fff !important;
+}
+
+button.btn-orange:focus,
+button.btn-orange:active,
+button.btn-orange:active:focus {
+    background: #e07b00 !important;
+    border-color: #e07b00 !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.text_color:hover {
+    color: #ff8c00 !important;
+    text-decoration: underline; /* Optional: adds a line on hover for better UX */
+}
+
+</style>
