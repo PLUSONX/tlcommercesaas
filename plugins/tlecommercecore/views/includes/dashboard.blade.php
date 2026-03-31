@@ -429,7 +429,7 @@
         </div>
     </div> -->
 
-    <div class="col-xl-5 col-lg-5 grid-item mb-3">
+    <div class="col-xl-5 col-lg-5 grid-item mb-3" style=" margin-left: 0px !important; ">
         <div class="card" style="border-radius: 12px !important; overflow: hidden !important;">
             <div class="card-body">
 

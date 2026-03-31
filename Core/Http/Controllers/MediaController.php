@@ -92,12 +92,15 @@ class MediaController extends Controller
      */
     public function uploadMediaFile(Request $request)
     {
-        // \Log::info('=== uploadMediaFile CALLED ===');
+        \Log::info('=== uploadMediaFile CALLED ===');
 
-        // \Log::info('=== uploadMediaFile CALLED ===', [
-        //     'request: ' => json_encode($request),
-        //     'file: ' => json_encode($request->file('file')),
-        // ]);
+        \Log::info('All Inputs:', $request->all());
+        \Log::info('All Files:', $request->allFiles());
+
+        \Log::info('=== uploadMediaFile CALLED ===', [
+            'request: ' => json_encode($request),
+            'file: ' => json_encode($request->file('file')),
+        ]);
         try {
 
             // 1. Get the file(s) from the request
@@ -111,13 +114,27 @@ class MediaController extends Controller
             $file_id = null;
 
             foreach ($files as $file) {
-                // 3. Verify the file is valid and actually exists
-                if ($file && $file->isValid()) {
+                // 2. Critical Check: Ensure it's an instance of UploadedFile and is valid
+                if ($file instanceof \Illuminate\Http\UploadedFile && $file->isValid()) {
+                    
+                    // Log details to verify (optional)
+                    \Log::info('Processing file: ' . $file->getClientOriginalName());
+
+                    // 3. Save the file
                     $file_id = saveFileInStorage($file, true);
                 } else {
-                    \Log::warning('Invalid file upload attempt detected.');
+                    \Log::warning('A file in the array was invalid or not an UploadedFile instance.');
                 }
             }
+
+            // foreach ($files as $file) {
+            //     // 3. Verify the file is valid and actually exists
+            //     if ($file && $file->isValid()) {
+            //         $file_id = saveFileInStorage($file, true);
+            //     } else {
+            //         \Log::warning('Invalid file upload attempt detected.');
+            //     }
+            // }
 
             // foreach ($request->file('file') as $file) {
             //     $file_id = saveFileInStorage($file, true);

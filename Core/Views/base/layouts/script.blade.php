@@ -330,13 +330,14 @@
             url: '{{ route('core.upload.media.file') }}',
             parallelUploads: 9,
             uploadMultiple: true,
+            paramName: "file",
             maxFilesize: 256,
             timeout: 3600000,
             accept: function(file, done) {
 
                 // console.log("-----Accepted Files region------");
 
-                // console.log("file:", file);
+                console.log("file:", file);
                 if (total_files <= 9) {
                     let media_type_error_message = accept_media_types.map(type => type.split('/')[1]);
                     media_type_error_message = media_type_error_message.join(', ').replace(/,/g, ', ');

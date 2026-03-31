@@ -249,20 +249,20 @@ if (!function_exists('saveFileInStorage')) {
      */
     function saveFileInStorage($file, $cropping = false, $static_path = null)
     {
-        // \Log::info('=== saveFileInStorage CALLED ===');
+        \Log::info('=== saveFileInStorage CALLED ===');
 
-        //   \Log::info('--- INSIDE saveFileInStorage ---', [
-        //         'is_object' => is_object($file),
-        //         'class'     => get_class($file),
-        //         'temp_path' => $file->getPathname(),
-        //         'exists'    => file_exists($file->getPathname()) ? 'YES' : 'NO',
-        //         'error_code'=> $file->getError() // 0 is success
-        //     ]);
+          \Log::info('--- INSIDE saveFileInStorage ---', [
+                'is_object' => is_object($file),
+                'class'     => get_class($file),
+                'temp_path' => $file->getPathname(),
+                'exists'    => file_exists($file->getPathname()) ? 'YES' : 'NO',
+                'error_code'=> $file->getError() // 0 is success
+            ]);
 
-        // \Log::info('=== saveFileInStorage CALLED ===', [
-        //     'file: ' => json_encode($file)
-        //     // 'request_id' => $request->input('id')
-        // ]);
+        \Log::info('=== saveFileInStorage CALLED ===', [
+            'file: ' => json_encode($file)
+            // 'request_id' => $request->input('id')
+        ]);
         try {
             $upload_path = "storage";
             $tenant_id = isTenant();
@@ -294,15 +294,32 @@ if (!function_exists('saveFileInStorage')) {
 
             if ($disk == 'amazons3') {
                 $file_full_path = Storage::disk('s3')->put($destination_path, $file);
-            } else {
-                if (!File::exists('public/' . $destination_path)) {
-                    File::makeDirectory('public/' . $destination_path, 0777, true);
+            } 
+            else {
+                // FIX: Use the Storage facade to check/make directories 
+                // This ensures it respects the 'public' disk root automatically
+                if (!Storage::disk($disk)->exists($destination_path)) {
+                    Storage::disk($disk)->makeDirectory($destination_path);
                 }
+
+                // store() returns the path relative to the disk root
                 $file_full_path = $file->store($destination_path, $disk);
-                if (File::exists('public/' . $file_full_path)) {
-                    chmod('public/' . $file_full_path, 0777);
+
+                // FIX: Set permissions using Storage if needed, or check the full path
+                $absolutePath = storage_path('app/public/' . $file_full_path);
+                if (file_exists($absolutePath)) {
+                    chmod($absolutePath, 0775); // 0775 is safer than 0777 in production
                 }
             }
+            // else {
+            //     if (!File::exists('public/' . $destination_path)) {
+            //         File::makeDirectory('public/' . $destination_path, 0777, true);
+            //     }
+            //     $file_full_path = $file->store($destination_path, $disk);
+            //     if (File::exists('public/' . $file_full_path)) {
+            //         chmod('public/' . $file_full_path, 0777);
+            //     }
+            // }
 
             $file_type = '';
 
@@ -327,6 +344,11 @@ if (!function_exists('saveFileInStorage')) {
             $uploaded_file->path = $file_full_path;
             $uploaded_file->disk = $disk;
             $uploaded_file->folder_name = $destination_path;
+
+            \Log::info('=== media path ===', [
+                'destination_path: ' => $destination_path
+            ]);
+
             $uploaded_file->file_type = $file_extension;
             $uploaded_file->uploaded_by = Auth::user() != null ? Auth::user()->name : null;
             $uploaded_file->user_id = Auth::user() != null ? Auth::user()->id : null;
@@ -339,6 +361,14 @@ if (!function_exists('saveFileInStorage')) {
                 $uploaded_file->variant = json_encode($resizes_formats);
                 $uploaded_file->update();
             }
+
+            \Log::info('FILE STORAGE DEBUG:', [
+                'disk' => $disk,
+                'destination_path_variable' => $destination_path,
+                'returned_from_store_method' => $file_full_path,
+                'full_url' => Storage::disk($disk)->url($file_full_path),
+                'actual_physical_path' => ($disk == 'public') ? storage_path('app/public/' . $file_full_path) : 'N/A'
+            ]);
 
             return $uploaded_file->id;
         } catch (\Exception $e) {
