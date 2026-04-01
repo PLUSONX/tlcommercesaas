@@ -27,7 +27,7 @@ $isCentralDomain = in_array($host, $centralDomains);
     }
 
     .login-page-layout {
-        padding-right: 80px !important;
+        padding-right: 5% !important;
     }
 
     .card {
@@ -138,7 +138,8 @@ $isCentralDomain = in_array($host, $centralDomains);
             <div class="card bg-white p-3 py-4" style="border-radius: 12px !important; overflow: hidden !important;"> -->
 <div class="container-fluid login-page-layout position-relative">
     <div class="align-items-center h-100 justify-content-end row py-5">
-        <div class="col-xl-3 col-lg-5 col-12">
+        <!-- <div class="col-xl-3 col-lg-5 col-12"> -->
+        <div class="col-auto">
             <div class="card bg-white p-3 py-4" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="text-center pt-3">
                     <div class="mt-3">
