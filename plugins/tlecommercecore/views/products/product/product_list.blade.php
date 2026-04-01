@@ -134,7 +134,7 @@
 
                             <div class="col-md-3 mb-3 d-flex align-items-end" style="gap: 5px">
                                 @if(request()->has('search_key') || request()->has('payment_status'))
-                                    <a class="btn long btn-danger w-100" style="background: white !important; color: black !important; border: 1px solid black" href="{{ route('plugin.tlcommercecore.product.list') }}">{{ translate('Clear') }}</a>
+                                    <a class="btn long btn-danger w-100" style="background: white !important; color: black !important; border: 1px solid black; border-radius: 6px !important;" href="{{ route('plugin.tlcommercecore.product.list') }}">{{ translate('Clear') }}</a>
                                 @endif
                                 <button type="submit" class="btn long w-100 btn-orange" style="margin-top: 2px;">
                                     {{ translate('Filter') }}
@@ -752,6 +752,8 @@
         color: #fff !important;
         transition: background 0.2s ease;
         border-radius: 6px !important;
+        box-shadow: none !important;
+
     }
 
     button.btn-orange:hover,
@@ -759,6 +761,8 @@
         background: #ff7545 !important;
         border-color: #e07b00 !important;
         color: #fff !important;
+        box-shadow: none !important;
+
     }
 
     button.btn-orange:focus,
@@ -827,17 +831,21 @@
     .switch.primary .control:after {
         background-color: #ffffff !important;
         border: 1px solid #e0e0e0;
+        box-shadow: none !important;
+
     }
 
     /* 3. If your template uses a shadow on the circle when active */
     .switch.primary input:checked ~ .control:after {
         border-color: #ff8c00 !important; 
+        box-shadow: none !important;
+
     }
 
     /* 4. The "Glow" effect for the track */
-    .switch.glow.primary input:checked ~ .control {
+    /* .switch.glow.primary input:checked ~ .control {
         box-shadow: 0 0 10px rgba(255, 140, 0, 0.4) !important;
-    }
+    } */
 
         /* 1. Change the Active Page background and border */
      .pagination .page-item.active .page-link {
@@ -859,9 +867,19 @@
         border-color: #dee2e6; /* Standard light border */
     }
 
-    /* 4. Optional: Style the Focus state (when clicked) to remove the blue shadow */
-    .pagination .page-item .page-link:focus {
-        box-shadow: 0 0 0 0.2rem rgba(255, 90, 31, 0.25);
+    select.theme-input-style {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px bottom 10px; /* adjust 12px to move arrow left/right */
+        padding-right: 2rem;
     }
+
+    /* 4. Optional: Style the Focus state (when clicked) to remove the blue shadow */
+    /* .pagination .page-item .page-link:focus {
+        box-shadow: 0 0 0 0.2rem rgba(255, 90, 31, 0.25);
+    } */
 
 </style>

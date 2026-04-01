@@ -49,11 +49,11 @@
                                     </div>
                                 </th> -->
                                 <th class="text-center">{{ translate('Name') }}</th>
-                                <th>{{ translate('Parent') }}</th>
+                                <!-- <th>{{ translate('Parent') }}</th> -->
                                 <th>{{ translate('Icon') }}</th>
                                 <th>{{ translate('Featured') }} </th>
                                 <th>{{ translate('Status') }}</th>
-                                <th>{{ translate('Actions') }}</th>
+                                <th class="text-center">{{ translate('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -77,11 +77,11 @@
                                         </div>
                                     </td> -->
                                     <td class="text-center">{{ $category->translation('name', getLocale()) }}</td>
-                                    <td>
+                                    <!-- <td>
                                         @if ($category->parentCategory != null)
                                             {{ $category->parentCategory->translation('name', getLocale()) }}
                                         @endif
-                                    </td>
+                                    </td> -->
                                     <td>
                                         <img
                                             src="{{ asset(preg_replace('#^/public#', '', getFilePath($category->icon))) }}"

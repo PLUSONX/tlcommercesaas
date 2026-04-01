@@ -1,9 +1,9 @@
 <template>
   <Dashboard>
     <div class="purchase_history" :class="{
-    'force-mobile-layout': forcedMobile,
-    'mobile-content-wrapper': forcedMobile
-  }">
+      'force-mobile-layout': forcedMobile,
+      'mobile-content-wrapper': forcedMobile
+    }">
       <page-header class="py-3" whiteBg :items="bItems" />
       <template v-if="!loading">
         <div v-if="tableData.length > 0">
@@ -12,21 +12,13 @@
               <div class="col-12 d-flex flex-wrap">
                 <div class="dataTables_filter mr-20 mt-3">
                   <label class="">{{ $t("Per Page") }}</label>
-                  <select
-                    class="theme-input-style"
-                    v-model="perPage"
-                    v-on:change="
-                      () => {
-                        currentPage = 1;
-                        getCustomerOrders();
-                      }
-                    "
-                  >
-                    <option
-                      v-for="(option, index) in pageOptions"
-                      :key="index"
-                      :value="option.key"
-                    >
+                  <select class="theme-input-style" v-model="perPage" v-on:change="
+                    () => {
+                      currentPage = 1;
+                      getCustomerOrders();
+                    }
+                  ">
+                    <option v-for="(option, index) in pageOptions" :key="index" :value="option.key">
                       {{ option.label }}
                     </option>
                   </select>
@@ -37,10 +29,7 @@
           <div class="row">
             <div class="col-12">
               <div class="table-responsive">
-                <CTable
-                  class="style1 mb-0"
-                  :class="tableData.length == 1 ? 't-mh-160' : ''"
-                >
+                <CTable class="style1 mb-0" :class="tableData.length == 1 ? 't-mh-160' : ''">
                   <CTableHead>
                     <CTableRow>
                       <CTableHeaderCell>{{ $t("ID") }}</CTableHeaderCell>
@@ -57,35 +46,30 @@
                   <CTableBody>
                     <CTableRow v-for="tdata in tableData" :key="tdata.id">
                       <CTableDataCell>
-                        <router-link
-                          :to="`/dashboard/order-details/${tdata.id}`"
-                        >
+                        <router-link :to="`/dashboard/order-details/${tdata.id}`">
                           {{ tdata.order_code }}
                         </router-link>
                       </CTableDataCell>
                       <CTableDataCell>{{ tdata.order_date }}</CTableDataCell>
                       <CTableDataCell>
-                        <the-currency
-                          :amount="tdata.total_payable_amount"
-                        ></the-currency>
+                        <the-currency :amount="tdata.total_payable_amount"></the-currency>
                       </CTableDataCell>
                       <CTableDataCell>{{
                         tdata.total_products
                       }}</CTableDataCell>
                       <CTableDataCell>
                         <CDropdown>
-                          <CDropdownToggle
-                            ><span class="material-icons">
+                          <CDropdownToggle><span class="material-icons">
                               more_vert
-                            </span></CDropdownToggle
-                          >
+                            </span></CDropdownToggle>
                           <CDropdownMenu>
-                            <CDropdownItem>
-                              <router-link
-                                :to="`/dashboard/order-details/${tdata.id}`"
-                                >{{ $t("Details") }}</router-link
-                              >
+                            <CDropdownItem @click="$router.push(`/dashboard/order-details/${tdata.id}`)">
+                              {{ $t("Details") }}
                             </CDropdownItem>
+                            <!-- <CDropdownItem>
+                              <router-link :to="`/dashboard/order-details/${tdata.id}`">{{ $t("Details")
+                                }}</router-link>
+                            </CDropdownItem> -->
                           </CDropdownMenu>
                         </CDropdown>
                       </CTableDataCell>
@@ -99,22 +83,14 @@
           <div class="row align-items-center mt-30" v-if="tableData.length > 0">
             <div class="col-md-6">
               <!-- Showing Per Page -->
-              <showing-per-page
-                class="text-center text-md-start"
-                :total-items="totalRows"
-                :current-page="currentPage"
-              />
+              <showing-per-page class="text-center text-md-start" :total-items="totalRows"
+                :current-page="currentPage" />
               <!-- Showing Per Page -->
             </div>
             <div class="col-md-6 d-flex justify-content-end">
               <!-- Pagination -->
-              <pagination
-                :options="paginationOptions"
-                v-model="currentPage"
-                :records="totalRows"
-                :per-page="perPage"
-                @paginate="getCustomerOrders"
-              />
+              <pagination :options="paginationOptions" v-model="currentPage" :records="totalRows" :per-page="perPage"
+                @paginate="getCustomerOrders" />
               <!-- End Pagination -->
             </div>
           </div>
@@ -225,18 +201,18 @@ export default {
   },
   computed: {
     ...mapState({
-    customerToken: (state) => state.customerToken,
-  }),
+      customerToken: (state) => state.customerToken,
+    }),
 
-  ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
 
-  forcedMobile() {
-    // identical intent to MainLayout.vue
-    if (this.isSplitScreen) {
-      return true;
-    }
-    return this.isMobile;
-  },
+    forcedMobile() {
+      // identical intent to MainLayout.vue
+      if (this.isSplitScreen) {
+        return true;
+      }
+      return this.isMobile;
+    },
   },
   // computed: mapState({
   //   customerToken: (state) => state.customerToken,
@@ -267,6 +243,7 @@ export default {
         .then((response) => {
           if (response.data.success) {
             this.tableData = response.data.data;
+            console.log("Purchase History Data: ", this.tableData);
             this.totalRows = response.data.meta.total;
             this.success = true;
             this.loading = false;
