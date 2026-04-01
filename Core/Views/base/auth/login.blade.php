@@ -140,21 +140,12 @@ $isCentralDomain = in_array($host, $centralDomains);
     <div class="align-items-center h-100 justify-content-end row py-5">
         <div class="col-xl-3 col-lg-5 col-12">
             <div class="card bg-white p-3 py-4" style="border-radius: 12px !important; overflow: hidden !important;">
-                <div class="auth-card-header text-center pt-3">
-                    <!-- <div class="logo mt-3"> -->
-                        <!-- <a href="/" class="default-logo"> -->
+                <div class="text-center pt-3">
                     <div class="mt-3">
-                        <a href="/" class="">
-                            <!-- @if (!empty($desktop_logo)) -->
-                            <!-- <img src="{{ $desktop_logo }}" alt="Plate Pilots Saas"> -->
-                            <!-- <img src="{{ str_replace('/public', '', $desktop_logo) }}" alt="Plate Pilots Saas"> -->
-                            <!-- @else -->
-                            <!-- <h3>Welcome to {{ $system_name }}</h3> -->
+                        
                              <h3>
                                 Welcome to <span style="color: #FF5A1F;">Platepilot</span>
                             </h3>
-                            <!-- @endif -->
-                        </a>
                     </div>
                     <!-- <h4 class="mt-3">{{ translate('Welcome Back') }}</h4> -->
                     <h5 class="mt-3">{{ translate('Just drop in your login info to kick off your adventure!') }}</h5>
