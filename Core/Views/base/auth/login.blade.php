@@ -141,8 +141,10 @@ $isCentralDomain = in_array($host, $centralDomains);
         <div class="col-xl-3 col-lg-5 col-12">
             <div class="card bg-white p-3 py-4" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="auth-card-header text-center pt-3">
-                    <div class="logo mt-3">
-                        <a href="/" class="default-logo">
+                    <!-- <div class="logo mt-3"> -->
+                        <!-- <a href="/" class="default-logo"> -->
+                    <div class="mt-3">
+                        <a href="/" class="">
                             <!-- @if (!empty($desktop_logo)) -->
                             <!-- <img src="{{ $desktop_logo }}" alt="Plate Pilots Saas"> -->
                             <!-- <img src="{{ str_replace('/public', '', $desktop_logo) }}" alt="Plate Pilots Saas"> -->
