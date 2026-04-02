@@ -69,7 +69,7 @@
 
                             <div class="col-md-4 mb-3 d-flex align-items-end" style="gap: 5px">
 
-                                <a class="btn btn-danger long w-100" style="background: white !important; color: black !important; border: 1px solid black; border-radius: 6px !important;"
+                                <a class="btn btn-danger long w-100" style="background: white !important; color: black !important; border: 1px solid black; border-radius: 6px !important; box-shadow: none !important;"
                                     href="{{ route('plugin.tlcommercecore.customers.list') }}">{{ translate('Clear') }}</a>
                                 <button type="submit" class="btn long w-100 btn-orange">{{ translate('Filter') }}</button>
 

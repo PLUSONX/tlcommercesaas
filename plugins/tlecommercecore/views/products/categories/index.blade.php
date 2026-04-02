@@ -291,6 +291,7 @@
         color: #fff !important;
         transition: background 0.2s ease;
         border-radius: 6px !important;
+         box-shadow: none !important;
     }
 
     button.btn-orange:hover,
@@ -298,6 +299,7 @@
         background: #ff7545 !important;
         border-color: #e07b00 !important;
         color: #fff !important;
+         box-shadow: none !important;
     }
 
     button.btn-orange:focus,
@@ -359,6 +361,7 @@
     .switch.primary input:checked ~ .control {
         background-color: #ff5A1f !important;
         border-color: #ff8c00 !important;
+         box-shadow: none !important;
     }
 
     /* 2. The sliding circle (the knob) */
@@ -366,6 +369,7 @@
     .switch.primary .control:after {
         background-color: #ffffff !important;
         border: 1px solid #e0e0e0;
+         box-shadow: none !important;
     }
 
     /* 3. If your template uses a shadow on the circle when active */
@@ -374,9 +378,10 @@
     }
 
     /* 4. The "Glow" effect for the track */
-    .switch.glow.primary input:checked ~ .control {
+    /* .switch.glow.primary input:checked ~ .control {
         box-shadow: 0 0 10px rgba(255, 140, 0, 0.4) !important;
-    }
+
+    } */
 
 
     /* 1. Change the Active Page background and border */

@@ -3,7 +3,7 @@
     {{ translate('Product Reviews') }}
 @endsection
 @section('custom_css')
-    <link href="{{ asset('/public/backend/assets/css/ratings.css') }}" rel="stylesheet" />
+    <link href="{{ asset('backend/assets/css/ratings.css') }}" rel="stylesheet" />
 @endsection
 @section('main_content')
     <div class="row">
@@ -74,9 +74,9 @@
                                     placeholder="Enter order code, product name , customer name">
                             </div>
 
-                            <div class="col-md-4 mb-3 d-flex align-items-end" style="gap: 5px">
+                            <div class="col-md-4 mb-3 d-flex align-items-end" style="gap: 5px;">
 
-                                <a class="btn long btn-danger w-100" style="background: white !important; color: black !important; border: 1px solid black; border-radius: 6px !important;"
+                                <a class="btn long btn-danger w-100" style="background: white !important; color: black !important; border: 1px solid black; border-radius: 6px !important; box-shadow: none !important;"
                                     href="{{ route('plugin.tlcommercecore.product.reviews.list') }}">{{ translate('Clear Filter') }}</a>
 
                                 <button type="submit" class="btn long w-100 btn-orange">{{ translate('Filter') }}</button>

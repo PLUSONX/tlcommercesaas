@@ -108,8 +108,17 @@
             padding: 13px 0px;
         }
 
-        .apexcharts-toolbar {
+        /* .apexcharts-toolbar {
             top: -30px !important;
+        } */
+
+        .apexcharts-toolbar {
+            display: none !important;
+        }
+
+        .list-inline, .list-button {
+            margin-right: 0px !important;
+            padding-right: 0px !important;
         }
 
         .img-20 {
@@ -235,13 +244,13 @@
     </div> -->
     <!--End total Sales-->
 
-    <div class="row w-100 mx-0 px-0 mt-20 align-items-start mb-3" style="padding-right: 0.5rem !important; padding-left: 0.5rem !important;">
+    <div class="row w-100 mx-0 px-0 mt-20 align-items-start mb-2" style="padding-right: 0.5rem !important; padding-left: 0.5rem !important;">
         <div class="col px-1 mb-2">
             <div class="card bg-white text-black" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
                 <div class="">
                     <div class="p-3 text-left">
                         <div class="d-flex align-items-center mb-4" style="gap: 10px;">
-                            <x-lucide-users style="width: 22px; height: 22px; color: #ff8c00;" />
+                            <x-lucide-users style="width: 22px; height: 22px; color: #ff5A1f;" />
                             <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Customers') }}</h4>
                         </div>
                         <h2 class="mb-0">{{ $total_customers }}</h2>
@@ -255,7 +264,7 @@
                 <div class="">
                         <div class="p-3 text-left">
                             <div class="d-flex align-items-center mb-4" style="gap: 10px;">
-                                <x-lucide-shopping-cart style="width: 22px; height: 22px; color: #ff8c00;" />
+                                <x-lucide-shopping-cart style="width: 22px; height: 22px; color: #ff5A1f;" />
                                 <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Orders') }}</h4>
                             </div>
                             <h2 class="mb-0">{{ $order_repository->statusWiseOrderCounter() }}</h2>
@@ -269,7 +278,7 @@
                 <div class="">
                     <div class="p-3 text-left">
                             <div class="d-flex align-items-center mb-4" style="gap: 10px;">
-                                <x-lucide-shopping-basket style="width: 22px; height: 22px; color: #ff8c00;" />
+                                <x-lucide-shopping-basket style="width: 22px; height: 22px; color: #ff5A1f;" />
                                 <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Products') }}</h4>
                             </div>
                             <h2 class="mb-0">{{ $total_products }}</h2>
@@ -283,7 +292,7 @@
                 <div class="">
                     <div class="p-3 text-left">
                             <div class="d-flex align-items-center mb-4" style="gap: 10px;">
-                                <x-lucide-circle-dollar-sign style="width: 22px; height: 22px; color: #ff8c00;" />
+                                <x-lucide-circle-dollar-sign style="width: 22px; height: 22px; color: #ff5A1f;" />
                                 <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Total Sales') }}</h4>
                             </div>
                             <h2 class="mb-0">{{ currencyExchange($total_sales) }}</h2>
@@ -303,7 +312,7 @@
                         class="d-flex justify-content-start justify-content-sm-between align-items-start align-items-sm-center flex-column flex-sm-row mb-sm-n3 media-body">
                         <!-- <div class="title-content mb-4 mr-sm-5 mb-sm-0"> -->
                         <div class="d-flex align-items-center title-content mb-4 mr-sm-5 mb-sm-0" style="gap: 10px;">
-                            <x-lucide-circle-dollar-sign style="width: 22px; height: 22px; color: #ff8c00;" />
+                            <x-lucide-circle-dollar-sign style="width: 22px; height: 22px; color: #ff5A1f;" />
                             <h4 class="">{{ translate('Sales Report') }}</h4>
                         </div>
                         <!-- List Button -->
@@ -435,7 +444,7 @@
 
                 {{-- Title --}}
                 <div class="d-flex align-items-center mr-sm-5 mb-sm-0" style="gap: 10px; margin-bottom: 36px !important;">
-                    <x-lucide-trending-up style="width: 22px; height: 22px; color: #ff8c00;" />
+                    <x-lucide-trending-up style="width: 22px; height: 22px; color: #ff5A1f;" />
                     <h4 class="mb-0">{{ translate('Invoice Report') }}</h4>
                 </div>
 
@@ -545,7 +554,7 @@
             <div class="card-body pb-0">
                 <div class="d-flex justify-content-between">
                     <div class="d-flex align-items-center mr-sm-5 mb-sm-0" style="gap: 10px;">
-                        <x-lucide-trending-up style="width: 22px; height: 22px; color: #ff8c00;" />
+                        <x-lucide-trending-up style="width: 22px; height: 22px; color: #ff5A1f;" />
                         <h4 class="mb-0">{{ translate('Recent Orders') }}</h4>
                     </div>
                 </div>
@@ -578,7 +587,7 @@
                                                 href="{{ route('plugin.tlcommercecore.customers.details', ['id' => $order->customer_id]) }}">{{ $order->customer_info->name }}</a>
                                         @else
                                             <a href="#">{{ $order->guest_customer->name }}
-                                                <span class="badge" style="background-color: #ff8c00; color: #fff;">
+                                                <span class="badge" style="background-color: #ff5A1f; color: #fff;">
                                                     {{ translate('Guest') }}
                                                 </span>
                                                 <!-- <span class="badge badge-info ml-1">Guest</span></a> -->
@@ -646,11 +655,11 @@
     <!--Top customers-->
     <!-- <div class="col-xl-3 col-lg-6 " style="padding-right: 0px !important; margin-right: 0px !important; "> -->
     <div class="col-xl-3 col-lg-6">
-        <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
+        <div class="card mb-20" style="border-radius: 12px !important; overflow: hidden !important;">
             <div class="card-body">
                 <div class="d-flex justify-content-between mb-3">
                     <div class="d-flex align-items-center mr-sm-5 mb-sm-0" style="gap: 10px;">
-                        <x-lucide-trending-up style="width: 22px; height: 22px; color: #ff8c00;" />
+                        <x-lucide-trending-up style="width: 22px; height: 22px; color: #ff5A1f;" />
                         <h4 class="mb-1">{{ translate('Top Customers') }}</h4>
                     </div>
                 </div>
@@ -707,7 +716,7 @@
                 </div> -->
                 <div class="d-flex justify-content-between mb-3">
                     <div class="d-flex align-items-center mr-sm-5 mb-sm-0" style="gap: 10px;">
-                        <x-lucide-trending-up style="width: 22px; height: 22px; color: #ff8c00;" />
+                        <x-lucide-trending-up style="width: 22px; height: 22px; color: #ff5A1f;" />
                         <h4 class="mb-1">{{ translate('Top Products') }}</h4>
                     </div>
                 </div>
