@@ -271,14 +271,14 @@ a.btn-orange:hover {
 button.btn-orange:focus,
 button.btn-orange:active,
 button.btn-orange:active:focus {
-    background: #e07b00 !important;
+    background: #ff5A1f !important;
     border-color: #e07b00 !important;
     box-shadow: none !important;
     outline: none !important;
 }
 
 .text_color:hover {
-    color: #ff8c00 !important;
+    color: #fff !important;
     text-decoration: underline; /* Optional: adds a line on hover for better UX */
 }
 
