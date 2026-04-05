@@ -31,7 +31,7 @@ $isCentralDomain = in_array($host, $centralDomains);
     }
 
     .card {
-        width: 500px !important; /* Forces the width to exactly 400px */
+        width: 450px !important; /* Forces the width to exactly 400px */
         height: 500px !important;
         flex: none !important;    /* Prevents Flexbox from shrinking/growing it */
     }

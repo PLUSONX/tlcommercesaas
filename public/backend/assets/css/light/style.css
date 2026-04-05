@@ -68,6 +68,21 @@
 /* ************************
    01.1: Reset
    ********************* */
+
+@font-face {
+    font-family: 'Stack Sans Headline';
+    src: url('../../../../fonts/StackSansHeadline-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Stack Sans Headline';
+    src: url('../../../../fonts/StackSansHeadline-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
 *,
 *::before,
 *::after {
@@ -1084,9 +1099,13 @@ table.style--three tr td,
 }
 
 /* Font Family */
-body,
+/* body,
 .pt_sans {
     font-family: "PT Sans", "Arial", "Roboto", sans-serif;
+} */
+body,
+.pt_sans {
+    font-family: "Stack Sans Headline", "Arial", "Roboto", sans-serif;
 }
 
 ol li:not(:last-child) {

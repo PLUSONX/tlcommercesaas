@@ -1,54 +1,50 @@
  <div class="card">
      <div class="card-body">
-         <div class="form-row mb-20">
+         <div class="form-row mb-30">
              <div class="col-sm-6">
-                 <label class="font-14 bold black">{{ translate('New Order Email Notification') }}
-                 </label>
-             </div>
-             <div class="col-sm-6">
-                 <label class="switch glow primary medium">
+                <label class="switch glow primary medium">
                      <input type="checkbox" name="admin_new_order_email_notification" @checked(getEcommerceSetting('admin_new_order_email_notification') == config('settings.general_status.active'))>
                      <span class="control"></span>
                  </label>
-             </div>
-         </div>
-         <div class="form-row mb-20">
-             <div class="col-sm-6">
-                 <label class="font-14 bold black">{{ translate('Order Refund Email Notification') }}
+                 <label class="font-14 black">{{ translate('New Order Email Notification') }}
                  </label>
              </div>
+                 
+         </div>
+         <div class="form-row mb-30">
              <div class="col-sm-6">
-                 <label class="switch glow primary medium">
+                <label class="switch glow primary medium">
                      <input type="checkbox" name="admin_order_refund_email_notification" @checked(getEcommerceSetting('admin_order_refund_email_notification') == config('settings.general_status.active'))>
                      <span class="control"></span>
                  </label>
-             </div>
-         </div>
-         <div class="form-row mb-20">
-             <div class="col-sm-6">
-                 <label class="font-14 bold black">{{ translate('Order Cancel Email Notification') }}
+                 <label class="font-14 black">{{ translate('Order Refund Email Notification') }}
                  </label>
              </div>
+                 
+         </div>
+         <div class="form-row mb-30">
              <div class="col-sm-6">
-                 <label class="switch glow primary medium">
+                <label class="switch glow primary medium">
                      <input type="checkbox" name="admin_order_cancel_email_notification" @checked(getEcommerceSetting('admin_order_cancel_email_notification') == config('settings.general_status.active'))>
                      <span class="control"></span>
                  </label>
-             </div>
-         </div>
-         <div class="form-row mb-20">
-             <div class="col-sm-6">
-                 <label class="font-14 bold black">{{ translate('Product Review Email Notification') }}
+                 <label class="font-14 black">{{ translate('Order Cancel Email Notification') }}
                  </label>
              </div>
+                 
+         </div>
+         <div class="form-row mb-30">
              <div class="col-sm-6">
-                 <label class="switch glow primary medium">
+                <label class="switch glow primary medium">
                      <input type="checkbox" name="admin_product_review_email_notification" @checked(getEcommerceSetting('admin_product_review_email_notification') == config('settings.general_status.active'))>
                      <span class="control"></span>
                  </label>
+                 <label class="font-14 black">{{ translate('Product Review Email Notification') }}
+                 </label>
              </div>
+                 
          </div>
-         @if (isActivePluging('wallet'))
+         <!-- @if (isActivePluging('wallet'))
              <div class="form-row mb-20">
                  <div class="col-sm-6">
                      <label class="font-14 bold black">{{ translate('Wallet Recharge Email Notification') }}
@@ -74,6 +70,6 @@
                      </p>
                  </div>
              </div>
-         @endif
+         @endif -->
      </div>
  </div>

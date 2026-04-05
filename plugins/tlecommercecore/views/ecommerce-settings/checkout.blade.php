@@ -1,105 +1,102 @@
  <div class="card">
      <div class="card-body">
-         <div class="form-row mb-20">
-             <div class="col-sm-6">
-                 <label class="font-14 bold black">{{ translate('Enable billing address') }}
-                 </label>
-             </div>
+         <div class="form-row mb-30">
              <div class="col-sm-6">
                  <label class="switch glow primary medium">
                      <input type="checkbox" name="enable_billing_address" @checked(getEcommerceSetting('enable_billing_address') == config('settings.general_status.active'))>
                      <span class="control"></span>
                  </label>
-             </div>
-         </div>
-         <div class="form-row mb-20">
-             <div class="col-sm-6">
-                 <label
-                     class="font-14 bold black ">{{ translate('Use the shipping address as the billing address by default') }}
+                 <label class="font-14 black">{{ translate('Billing Address') }}
                  </label>
              </div>
-             <div class="cl-sm-1">
-                 <label class="switch glow primary medium">
+                 
+         </div>
+         <div class="form-row mb-30">
+             <div class="col-sm-6">
+                <label class="switch glow primary medium">
                      <input type="checkbox" name="use_shipping_address_as_billing_address" @checked(getEcommerceSetting('use_shipping_address_as_billing_address') == config('settings.general_status.active'))>
                      <span class="control"></span>
                  </label>
-             </div>
-         </div>
-         <div class="form-row mb-20">
-             <div class="col-sm-6">
-                 <label class="font-14 bold black ">{{ translate('Enable guest checkout') }}
+
+                 <label
+                     class="font-14 black ">{{ translate('Use shipping address by default') }}
                  </label>
              </div>
+                 
+         </div>
+         <div class="form-row mb-30">
              <div class="col-sm-6">
-                 <label class="switch glow primary medium">
+                <label class="switch glow primary medium">
                      <input type="checkbox" name="enable_guest_checkout" @checked(getEcommerceSetting('enable_guest_checkout') == config('settings.general_status.active'))>
                      <span class="control"></span>
                  </label>
+                 <label class="font-14 black ">{{ translate('Guest Checkout') }}
+                 </label>
              </div>
+                 
          </div>
 
 
-         <div class="form-row mb-20">
+         <div class="form-row mb-30">
              <div class="col-sm-6">
-                 <label class="font-14 bold black ">{{ translate('Send invoice to customer email') }}
-                 </label>
-             </div>
-             <div class="col-sm-1">
-                 <label class="switch glow primary medium">
+                <label class="switch glow primary medium">
                      <input type="checkbox" name="send_invoice_to_customer_mail" @checked(getEcommerceSetting('send_invoice_to_customer_mail') == config('settings.general_status.active'))>
                      <span class="control"></span>
                  </label>
+
+                 <label class="font-14 black">{{ translate('Send invoice to customer email') }}
+                 </label>
              </div>
-             <div class="col-sm-5">
-                 <p class="mt-0 font-13">
-                     {{ translate('Enable sending invoice to customer you need to complete email configuration and Cron Job setup') }}
-                     <br>
+                 
+             <div class="col-md-12">
+                 <p class="mt-1 font-13">
+                     {{ translate('You need to complete email configuration and Cron Job setup') }}
+                     <!-- <br> -->
                      <a href="{{ route('core.email.smtp.configuration') }}"
                          class="btn-link">{{ translate('Configure Email') }}
                      </a>
                  </p>
              </div>
          </div>
-         <div class="form-row mb-20 {{ isActivePluging('coupon') ? '' : 'area-disabled mb-0' }}">
+         <!-- <div class="form-row mb-20 {{ isActivePluging('coupon') ? '' : 'area-disabled mb-0' }}"> -->
+         <div class="form-row mb-30">
              <div class="col-sm-6">
-                 <label class="font-14 bold black ">{{ translate('Enable coupon in checkout') }}
-                 </label>
-             </div>
-             <div class="col-sm-1">
-                 <label class="switch glow primary medium">
+                <label class="switch glow primary medium">
                      <input type="checkbox" name="enable_coupon_in_checkout" class="enable-coupon-in-checkout"
                          @checked(getEcommerceSetting('enable_coupon_in_checkout') == config('settings.general_status.active'))>
                      <span class="control"></span>
                  </label>
+                 <label class="font-14 black">{{ translate('Coupon in Checkout') }}
+                 </label>
              </div>
-             @if (isActivePluging('coupon'))
-                 <div class="col-sm-5">
+                 
+             <!-- @if (isActivePluging('coupon')) -->
+                 <div class="col-md-12">
                      <p class="mt-0 font-13">{{ translate('You can manage your coupons from ') }}
                          <a href="{{ route('plugin.tlcommercecore.marketing.coupon.list') }}" class="btn-link">
                              Coupons Module
                          </a>
                      </p>
                  </div>
-             @endif
+             <!-- @endif -->
 
          </div>
-         @if (isActivePluging('coupon'))
+         <!-- @if (isActivePluging('coupon')) -->
              <div
-                 class="form-row mb-20 multiple-coupon-checkout {{ getEcommerceSetting('enable_coupon_in_checkout') == config('settings.general_status.active') ? '' : 'd-none' }}">
+                 class="form-row mb-30 multiple-coupon-checkout">
                  <div class="col-sm-6">
-                     <label class="font-14 bold black ">{{ translate('Enable multiple coupon in single order') }}
-                     </label>
-                 </div>
-                 <div class="col-sm-6">
-                     <label class="switch glow primary medium">
-                         <input type="checkbox" name="enable_multiple_coupon_in_checkout" @checked(getEcommerceSetting('enable_multiple_coupon_in_checkout') == config('settings.general_status.active'))>
+                    <label class="switch glow primary medium">
+                         <!-- <input type="checkbox" name="enable_multiple_coupon_in_checkout" @checked(getEcommerceSetting('enable_multiple_coupon_in_checkout') == config('settings.general_status.active'))> -->
+                         <input type="checkbox" name="enable_multiple_coupon_in_checkout">
                          <span class="control"></span>
+                     </label>
+                     <label class="font-14 black ">{{ translate('Multiple Coupon in single order') }}
                      </label>
                  </div>
              </div>
-         @endif
+         <!-- @endif -->
          <!--Wallet-->
-         @if (isActivePluging('wallet'))
+         <!-- @if (isActivePluging('wallet'))
              <div class="form-row mb-20">
                  <div class="col-sm-6">
                      <label class="font-14 bold black ">{{ translate('Enable wallet in checkout') }}
@@ -112,24 +109,23 @@
                      </label>
                  </div>
              </div>
-         @endif
+         @endif -->
          <!--End wallet-->
          <!--Order note-->
-         <div class="form-row mb-20">
+         <div class="form-row mb-30">
              <div class="col-sm-6">
-                 <label class="font-14 bold black ">{{ translate('Enable order note') }}
-                 </label>
-             </div>
-             <div class="col-sm-6">
-                 <label class="switch glow primary medium">
+                <label class="switch glow primary medium">
                      <input type="checkbox" name="enable_order_note_in_checkout" @checked(getEcommerceSetting('enable_order_note_in_checkout') == config('settings.general_status.active'))>
                      <span class="control"></span>
                  </label>
+                 <label class="font-14 black ">{{ translate('Order Note') }}
+                 </label>
              </div>
+                 
          </div>
          <!--End order note-->
          <!--Documents-->
-         <div class="form-row mb-20">
+         <!-- <div class="form-row mb-20">
              <div class="col-sm-6">
                  <label class="font-14 bold black ">{{ translate('Enable document in checkout') }}
                  </label>
@@ -140,33 +136,33 @@
                      <span class="control"></span>
                  </label>
              </div>
-         </div>
+         </div> -->
          <!--End Documents-->
          <!--Carriers-->
-         <div class="form-row mb-20 {{ isActivePluging('carrier') ? '' : 'area-disabled mb-0' }}">
+         <!-- <div class="form-row mb-20 {{ isActivePluging('carrier') ? '' : 'area-disabled mb-0' }}"> -->
+         <div class="form-row mb-30 ">
              <div class="col-sm-6">
-                 <label class="font-14 bold black ">{{ translate('Enable carrier in checkout') }}
-                 </label>
-             </div>
-             <div class="col-sm-1">
-                 <label class="switch glow primary medium">
+                <label class="switch glow primary medium">
                      <input type="checkbox" name="enable_carrier_in_checkout" @checked(getEcommerceSetting('enable_carrier_in_checkout') == config('settings.general_status.active'))>
                      <span class="control"></span>
                  </label>
+                 <label class="font-14 black ">{{ translate('Carrier in Checkout') }}
+                 </label>
              </div>
-             @if (isActivePluging('carrier'))
-                 <div class="col-sm-5">
+                 
+             <!-- @if (isActivePluging('carrier')) -->
+                 <div class="col-md-12">
                      <p class="mt-0 font-13">{{ translate('Manage your') }}
                          <a href="{{ route('plugin.carrier.list') }}" class="btn-link">3rd Party
                              Carriers
                          </a>
                      </p>
                  </div>
-             @endif
+             <!-- @endif -->
          </div>
          <!--End carriers-->
          <!--Pickup points-->
-         <div class="form-row mb-20 {{ isActivePluging('pickuppoint') ? '' : 'area-disabled mb-0' }}">
+         <!-- <div class="form-row mb-20 {{ isActivePluging('pickuppoint') ? '' : 'area-disabled mb-0' }}">
              <div class="col-sm-6">
                  <label class="font-14 bold black ">{{ translate('Enable pickup point in checkout') }}
                  </label>
@@ -198,31 +194,33 @@
                      </p>
                  </div>
              </div>
-         @endif
+         @endif -->
          <!--End Pickup points-->
          <!--Min order amount-->
-         <div class="form-row mb-20">
+         <div class="form-row mb-30">
              <div class="col-sm-6">
-                 <label class="font-14 bold black ">{{ translate('Enable minimum order amount') }}
-                 </label>
-             </div>
-             <div class="col-sm-6">
-                 <label class="switch glow primary medium">
+                <label class="switch glow primary medium">
                      <input type="checkbox" name="enable_minumun_order_amount" class="enable-minumun-order-amount"
                          @checked(getEcommerceSetting('enable_minumun_order_amount') == config('settings.general_status.active'))>
                      <span class="control"></span>
                  </label>
+                 <label class="font-14 black">{{ translate('Minimum Order Amount') }}
+                 </label>
              </div>
+                 
          </div>
          <div
-             class="form-row mb-20 minimum-order-amount {{ getEcommerceSetting('enable_minumun_order_amount') == config('settings.general_status.active') ? '' : 'd-none' }}">
+             class="form-row mb-30 minimum-order-amount {{ getEcommerceSetting('enable_minumun_order_amount') == config('settings.general_status.active') ? '' : 'd-none' }}">
              <label class="font-14 bold black col-sm-6">{{ translate('Minimum order amount') }}
              </label>
-             <input type="number" name="min_order_amount" value="{{ getEcommerceSetting('min_order_amount') }}"
-                 class="theme-input-style col-sm-6" placeholder="0.00">
+             <div class="col-md-12">
+
+                 <input type="number" name="min_order_amount" value="{{ getEcommerceSetting('min_order_amount') }}"
+                     class="theme-input-style col-sm-6" placeholder="0.00">
+             </div>
          </div>
          <!--End mi order amount-->
-         <h4 class="mb-3">Checkout Form</h4>
+         <!-- <h4 class="mb-3">Checkout Form</h4>
          <div class="form-row mb-20">
              <div class="col-sm-4">
                  <label class="font-14 bold black ">
@@ -331,33 +329,31 @@
                  </label>
                  <label class="font-14 bold black">Required/ Optional</label>
              </div>
-         </div>
+         </div> -->
 
-         <div class="form-row mb-20">
+         <div class="form-row mb-30">
              <div class="col-sm-6">
-                 <label class="font-14 bold black ">{{ translate('Enable personal information in guest checkout') }}
-                 </label>
-             </div>
-             <div class="col-sm-6">
-                 <label class="switch glow primary medium">
+                <label class="switch glow primary medium">
                      <input type="checkbox" name="enable_personal_info_guest_checkout" @checked(getEcommerceSetting('enable_personal_info_guest_checkout') == config('settings.general_status.active'))>
                      <span class="control"></span>
                  </label>
-             </div>
-         </div>
-         <div class="form-row mb-20">
-             <div class="col-sm-6">
-                 <label class="font-14 bold black ">{{ translate('Enable create account in guest checkout') }}
+                 <label class="font-14 black ml-2">{{ translate('Personal Information In Guest Checkout') }}
                  </label>
              </div>
-             <div class="col-sm-5">
-                 <label class="switch glow primary medium">
+                 
+         </div>
+         <!-- <div class="form-row mb-30">
+             <div class="col-sm-6">
+                <label class="switch glow primary medium">
                      <input type="checkbox" name="create_account_in_guest_checkout" @checked(getEcommerceSetting('create_account_in_guest_checkout') == config('settings.general_status.active'))>
                      <span class="control"></span>
                  </label>
+                 <label class="font-14 black ">{{ translate('Create Account In Guest Checkout') }}
+                 </label>
              </div>
-         </div>
-         <div class="form-row mb-20">
+                 
+         </div> -->
+         <!-- <div class="form-row mb-20">
              <div class="col-sm-6">
                  <label class="font-14 bold black ">
                      {{ translate('Hide Country, State and city dropdown in checkout') }}
@@ -377,6 +373,66 @@
                      </a>
                  </p>
              </div>
-         </div>
+         </div> -->
      </div>
  </div>
+
+
+
+<style>
+
+    .col-sm-6 {
+        display: flex;
+        align-items: center; /* Vertically centers the toggle with the text */
+        gap: 10px;           /* Adds space between the toggle and the label */
+    }
+
+    /* Ensure the label doesn't have a default bottom margin pushing it up */
+    .col-sm-6 label {
+        margin-bottom: 0 !important;
+    }
+
+    .theme-input-style {
+        padding-left: 10px !important; 
+        padding-right: 10px !important; 
+        width: 100%;
+        background: white;
+        border: 1px solid black;
+    }
+
+    .theme-input-style:focus, 
+    .theme-input-style:active,
+    .theme-input-style:hover {
+        background-color: white !important;
+        /* background-: white !important; Extra insurance */
+        outline: none;                /* Optional: removes default browser glow */
+        border: 1px solid black !important; /* Keeps your border consistent */
+    }
+
+    .btn-link {
+        color: #ff5A1f !important;
+    }
+
+      .switch.medium input:checked ~ .control {
+        background-color: #ff5A1f !important;
+        border-color: #ff8c00 !important;
+    }
+
+    /* 2. The sliding circle (the knob) */
+    /* We usually keep this white or a very light grey for contrast */
+    .switch.medium .control:after {
+        background-color: #ffffff !important;
+        border: 1px solid #e0e0e0;
+        box-shadow: none !important;
+
+    }
+
+    /* 3. If your template uses a shadow on the circle when active */
+    .switch.medium input:checked ~ .control:after {
+        border-color: #ff8c00 !important; 
+        box-shadow: none !important;
+
+    }
+
+
+</style>

@@ -2,27 +2,390 @@
 @section('title')
     {{ translate('New Coupon') }}
 @endsection
-@section('custom_css')
+<!-- @section('custom_css') -->
     <!--Select2-->
-    <link rel="stylesheet" href="{{ asset('backend/assets/plugins/select2/select2.min.css') }}">
+    <!-- <link rel="stylesheet" href="{{ asset('backend/assets/plugins/select2/select2.min.css') }}"> -->
     <!--End select2-->
-    <style>
+    <!-- <style>
         .select2-container {
             width: 100% !important;
         }
-    </style>
-@endsection
+    </style> -->
+<!-- @endsection -->
 @section('main_content')
-    <div class="theme-option-container">
+    <!-- <div class="theme-option-container"> -->
         <form method="POST" action="{{ route('plugin.tlcommercecore.marketing.coupon.store.new') }}">
             @csrf
-            <div class="theme-option-sticky d-flex align-items-center justify-content-between bg-white border-bottom2 p-3">
+            <!-- <div class="theme-option-sticky d-flex align-items-center justify-content-between bg-white border-bottom2 p-3">
                 <div class="theme-option-logo d-none d-sm-block">
                     <h4>{{ translate('Coupon') }}</h4>
                 </div>
-            </div>
-            <div class="theme-option-tab-wrap">
-                <div class="nav flex-column border-right2 py-3" aria-orientation="vertical">
+            </div> -->
+            <!-- <div class="theme-option-tab-wrap"> -->
+
+            <div class="row g-3 align-items-start">
+
+                <div class="col-3">
+
+                    <div class="card" style="border-radius: 12px !important; overflow: hidden !important;">
+
+                        <div class="theme-option-tab-wrap">
+
+                            <div class="nav flex-column py-3" aria-orientation="vertical">
+                                <a class="nav-link active" data-toggle="pill" href="#coupon_general">
+                                    <!-- <i class="icofont-ui-home"    title="{{ translate('General') }}"> </i> -->
+                                        <x-lucide-settings-2 class="input-icon" />
+                                     <span class="menu-settings-title ml-2">{{ translate('General') }}</span>
+                                </a>
+                                <a class="nav-link" data-toggle="pill" href="#coupon_usage_restriction">
+                                    <!-- <i class="icofont-ban" title="{{ translate('Usage Restriction') }}"></i> -->
+                                        <x-lucide-shield class="input-icon" />
+                                    <span class="menu-settings-title ml-2">{{ translate('Usage Restriction') }}</span></a>
+                                <a class="nav-link" data-toggle="pill" href="#coupon_usage_limits">
+                                    <!-- <i class="icofont-expand-alt" title="{{ translate('Usage Limits') }}"></i> -->
+                                        <x-lucide-timer class="input-icon" />
+                                    <span class="menu-settings-title ml-2">{{ translate('Usage Limits') }}</span></a>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="col-9 p-2">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 style="font-size: 30px;">{{ translate('Coupon') }}</h4>
+                    </div>
+
+                    <div class="card" style="border-radius: 12px !important; overflow: hidden !important;">
+
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="coupon_general">
+                                <div class="card">
+                                    <div class="card-body col-lg-9">
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Coupon Code') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <input type="text" name="coupon_code" value="{{ old('coupon_code') }}"
+                                                    class="theme-input-style category_name" value="{{ old('coupon_code') }}"
+                                                    placeholder="{{ translate('Type here') }}">
+                                                @if ($errors->has('coupon_code'))
+                                                    <div class="invalid-input">{{ $errors->first('coupon_code') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Description') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <textarea class="theme-input-style" name="description" placeholder="{{ translate('Description') }}">{{ old('description') }}</textarea>
+                                                @if ($errors->has('description'))
+                                                    <div class="invalid-input">{{ $errors->first('description') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Discount Amount Type') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <select class="theme-input-style" name="discount_amount_type"
+                                                    value="{{ old('discount_amount_type') }}">
+                                                    <option value="{{ config('tlecommercecore.amount_type.flat') }}">
+                                                        {{ translate('Flat') }}</option>
+                                                    <option value="{{ config('tlecommercecore.amount_type.percent') }}">
+                                                        {{ translate('Percentage') }}</option>
+                                                </select>
+                                                @if ($errors->has('discount_amount_type'))
+                                                    <div class="invalid-input">{{ $errors->first('discount_amount_type') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Discount Amount') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <input placeholder="0.00" name="discount_amount"
+                                                    value="{{ old('discount_amount') }}" type="text"
+                                                    class="theme-input-style" />
+                                                @if ($errors->has('discount_amount'))
+                                                    <div class="invalid-input">{{ $errors->first('discount_amount') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Allow Free Shipping') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <div class="align-items-center d-flex gap-20 wraper">
+                                                    <label class="switch glow primary medium">
+                                                        <input type="checkbox" name="allow_free_shipping">
+                                                        <span class="control"></span>
+
+                                                    </label>
+                                                    <div>
+                                                        Check this box if the coupon allows free shipping. A free shipping rate
+                                                        needs to be created in your shipping zone to allow free shipping.
+                                                    </div>
+                                                </div>
+
+                                                @if ($errors->has('allow_free_shipping'))
+                                                    <div class="invalid-input">{{ $errors->first('allow_free_shipping') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Coupon Expiry Date') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <input type="date" name="coupon_expire_date"
+                                                    value="{{ old('coupon_expire_date') }}" class="theme-input-style" />
+                                                @if ($errors->has('coupon_expire_date'))
+                                                    <div class="invalid-input">{{ $errors->first('coupon_expire_date') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="coupon_usage_restriction">
+                                <div class="card">
+                                    <div class="card-body col-lg-9">
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Minimum Spend') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <input placeholder="{{ translate('No Minimum') }}" name="minimum_spend"
+                                                    value="{{ old('minimum_spend') }}" type="text" class="theme-input-style" />
+                                                @if ($errors->has('minimum_spend'))
+                                                    <div class="invalid-input">{{ $errors->first('minimum_spend') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Maximum Spend') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <input placeholder="{{ translate('No Maximum') }}" name="maximum_spend"
+                                                    value="{{ old('maximum_spend') }}" type="text"
+                                                    class="theme-input-style" />
+                                                @if ($errors->has('maximum_spend'))
+                                                    <div class="invalid-input">{{ $errors->first('maximum_spend') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Individual Use Only') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <label class="switch glow primary medium">
+                                                    <input type="checkbox" name="individual_use">
+                                                    <span class="control"></span>
+                                                </label>
+                                                @if ($errors->has('individual_use'))
+                                                    <div class="invalid-input">{{ $errors->first('individual_use') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Exclude Sales Items') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <label class="switch glow primary medium">
+                                                    <input type="checkbox" name="exclude_sale_items">
+                                                    <span class="control"></span>
+                                                </label>
+                                                @if ($errors->has('exclude_sale_items'))
+                                                    <div class="invalid-input">{{ $errors->first('exclude_sale_items') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Select Products') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <select class="product-select w-100" name="products[]" multiple>
+                                                    @foreach ($products as $product)
+                                                        <option data-image="{{ asset(getFilePath($product->thumbnail_image)) }}"
+                                                            value="{{ $product->id }}">
+                                                            {{ $product->translation('name', getLocale()) }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @if ($errors->has('products'))
+                                                    <div class="invalid-input">{{ $errors->first('products') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Exclude product') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <select class="product-select w-100" name="exclude_products[]" multiple>
+                                                    @foreach ($products as $product)
+                                                        <option data-image="{{ asset(getFilePath($product->thumbnail_image)) }}"
+                                                            value="{{ $product->id }}">
+                                                            {{ $product->translation('name', getLocale()) }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @if ($errors->has('exclude_products'))
+                                                    <div class="invalid-input">{{ $errors->first('exclude_products') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Brands') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <select class="brand-select w-100" name="brands[]" multiple>
+                                                    @foreach ($brands as $brand)
+                                                        <option value="{{ $brand->id }}">
+                                                            {{ $brand->translation('name', getLocale()) }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @if ($errors->has('brands'))
+                                                    <div class="invalid-input">{{ $errors->first('brands') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Exclude Brands') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <select class="brand-select w-100" name="exclude_brands[]" multiple>
+                                                    @foreach ($brands as $brand)
+                                                        <option value="{{ $brand->id }}">
+                                                            {{ $brand->translation('name', getLocale()) }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @if ($errors->has('exclude_brands'))
+                                                    <div class="invalid-input">{{ $errors->first('exclude_brands') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Categories') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <select class="category-select w-100" name="categories[]" multiple>
+                                                    @foreach ($categories as $category)
+                                                        <option value="{{ $category->id }}">
+                                                            {{ $category->translation('name', getLocale()) }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @if ($errors->has('categories'))
+                                                    <div class="invalid-input">{{ $errors->first('categories') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Exclude Categories') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <select class="category-select w-100" name="exclude_categories[]" multiple>
+                                                    @foreach ($categories as $category)
+                                                        <option value="{{ $category->id }}">
+                                                            {{ $category->translation('name', getLocale()) }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @if ($errors->has('exclude_categories'))
+                                                    <div class="invalid-input">{{ $errors->first('exclude_categories') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Allowed Email') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <input placeholder="{{ translate('Allowed Email') }}"
+                                                    value="{{ old('alowed_email') }}" name="alowed_email" type="email"
+                                                    class="theme-input-style" />
+                                                @if ($errors->has('alowed_email'))
+                                                    <div class="invalid-input">{{ $errors->first('alowed_email') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="coupon_usage_limits">
+                                <div class="card">
+                                    <div class="card-body col-lg-9">
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Usage limit per coupon') }}
+                                                </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <input placeholder="{{ translate('Unlimited Usage') }}" type="text"
+                                                    name="use_limit_per_coupon" class="theme-input-style" />
+                                                @if ($errors->has('use_limit_per_coupon'))
+                                                    <div class="invalid-input">{{ $errors->first('use_limit_per_coupon') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="form-row mb-20">
+                                            <div class="col-sm-4">
+                                                <label class="font-14 bold black">{{ translate('Usage limit per user') }} </label>
+                                            </div>
+                                            <div class="col-sm-8">
+                                                <input placeholder="{{ translate('Unlimited Usage') }}" name="use_limit_per_user"
+                                                    type="text" class="theme-input-style" />
+                                                @if ($errors->has('use_limit_per_user'))
+                                                    <div class="invalid-input">{{ $errors->first('use_limit_per_user') }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="theme-option-sticky d-flex justify-content-end bg-white border-top2 p-3">
+                        <div class="theme-option-action_bar">
+                            <button type="submit" class="btn long btn-orange">
+                                {{ translate('Save') }}
+                            </button>
+                        </div>
+                    </div>
+
+                    </div>
+
+
+
+                </div>
+
+                <!-- <div class="nav flex-column border-right2 py-3" aria-orientation="vertical">
                     <a class="nav-link active" data-toggle="pill" href="#coupon_general"><i class="icofont-ui-home"
                             title="{{ translate('General') }}"></i> <span>{{ translate('General') }}</span></a>
                     <a class="nav-link" data-toggle="pill" href="#coupon_usage_restriction"><i class="icofont-ban"
@@ -31,330 +394,18 @@
                     <a class="nav-link" data-toggle="pill" href="#coupon_usage_limits"><i class="icofont-expand-alt"
                             title="{{ translate('Usage Limits') }}"></i>
                         <span>{{ translate('Usage Limits') }}</span></a>
-                </div>
-                <div class="tab-content">
-                    <div class="tab-pane fade show active" id="coupon_general">
-                        <div class="card">
-                            <div class="card-body col-lg-9">
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Coupon Code') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <input type="text" name="coupon_code" value="{{ old('coupon_code') }}"
-                                            class="theme-input-style category_name" value="{{ old('coupon_code') }}"
-                                            placeholder="{{ translate('Type here') }}">
-                                        @if ($errors->has('coupon_code'))
-                                            <div class="invalid-input">{{ $errors->first('coupon_code') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Description') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <textarea class="theme-input-style" name="description" placeholder="{{ translate('Description') }}">{{ old('description') }}</textarea>
-                                        @if ($errors->has('description'))
-                                            <div class="invalid-input">{{ $errors->first('description') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Discount Amount Type') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <select class="theme-input-style" name="discount_amount_type"
-                                            value="{{ old('discount_amount_type') }}">
-                                            <option value="{{ config('tlecommercecore.amount_type.flat') }}">
-                                                {{ translate('Flat') }}</option>
-                                            <option value="{{ config('tlecommercecore.amount_type.percent') }}">
-                                                {{ translate('Percentage') }}</option>
-                                        </select>
-                                        @if ($errors->has('discount_amount_type'))
-                                            <div class="invalid-input">{{ $errors->first('discount_amount_type') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Discount Amount') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <input placeholder="0.00" name="discount_amount"
-                                            value="{{ old('discount_amount') }}" type="text"
-                                            class="theme-input-style" />
-                                        @if ($errors->has('discount_amount'))
-                                            <div class="invalid-input">{{ $errors->first('discount_amount') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Allow Free Shipping') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <div class="align-items-center d-flex gap-20 wraper">
-                                            <label class="switch glow primary medium">
-                                                <input type="checkbox" name="allow_free_shipping">
-                                                <span class="control"></span>
-
-                                            </label>
-                                            <div>
-                                                Check this box if the coupon allows free shipping. A free shipping rate
-                                                needs to be created in your shipping zone to allow free shipping.
-                                            </div>
-                                        </div>
-
-                                        @if ($errors->has('allow_free_shipping'))
-                                            <div class="invalid-input">{{ $errors->first('allow_free_shipping') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Coupon Expiry Date') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <input type="date" name="coupon_expire_date"
-                                            value="{{ old('coupon_expire_date') }}" class="theme-input-style" />
-                                        @if ($errors->has('coupon_expire_date'))
-                                            <div class="invalid-input">{{ $errors->first('coupon_expire_date') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="coupon_usage_restriction">
-                        <div class="card">
-                            <div class="card-body col-lg-9">
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Minimum Spend') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <input placeholder="{{ translate('No Minimum') }}" name="minimum_spend"
-                                            value="{{ old('minimum_spend') }}" type="text" class="theme-input-style" />
-                                        @if ($errors->has('minimum_spend'))
-                                            <div class="invalid-input">{{ $errors->first('minimum_spend') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Maximum Spend') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <input placeholder="{{ translate('No Maximum') }}" name="maximum_spend"
-                                            value="{{ old('maximum_spend') }}" type="text"
-                                            class="theme-input-style" />
-                                        @if ($errors->has('maximum_spend'))
-                                            <div class="invalid-input">{{ $errors->first('maximum_spend') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Individual Use Only') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <label class="switch glow primary medium">
-                                            <input type="checkbox" name="individual_use">
-                                            <span class="control"></span>
-                                        </label>
-                                        @if ($errors->has('individual_use'))
-                                            <div class="invalid-input">{{ $errors->first('individual_use') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Exclude Sales Items') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <label class="switch glow primary medium">
-                                            <input type="checkbox" name="exclude_sale_items">
-                                            <span class="control"></span>
-                                        </label>
-                                        @if ($errors->has('exclude_sale_items'))
-                                            <div class="invalid-input">{{ $errors->first('exclude_sale_items') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Select Products') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <select class="product-select w-100" name="products[]" multiple>
-                                            @foreach ($products as $product)
-                                                <option data-image="{{ asset(getFilePath($product->thumbnail_image)) }}"
-                                                    value="{{ $product->id }}">
-                                                    {{ $product->translation('name', getLocale()) }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @if ($errors->has('products'))
-                                            <div class="invalid-input">{{ $errors->first('products') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Exclude product') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <select class="product-select w-100" name="exclude_products[]" multiple>
-                                            @foreach ($products as $product)
-                                                <option data-image="{{ asset(getFilePath($product->thumbnail_image)) }}"
-                                                    value="{{ $product->id }}">
-                                                    {{ $product->translation('name', getLocale()) }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @if ($errors->has('exclude_products'))
-                                            <div class="invalid-input">{{ $errors->first('exclude_products') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Brands') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <select class="brand-select w-100" name="brands[]" multiple>
-                                            @foreach ($brands as $brand)
-                                                <option value="{{ $brand->id }}">
-                                                    {{ $brand->translation('name', getLocale()) }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @if ($errors->has('brands'))
-                                            <div class="invalid-input">{{ $errors->first('brands') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Exclude Brands') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <select class="brand-select w-100" name="exclude_brands[]" multiple>
-                                            @foreach ($brands as $brand)
-                                                <option value="{{ $brand->id }}">
-                                                    {{ $brand->translation('name', getLocale()) }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @if ($errors->has('exclude_brands'))
-                                            <div class="invalid-input">{{ $errors->first('exclude_brands') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Categories') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <select class="category-select w-100" name="categories[]" multiple>
-                                            @foreach ($categories as $category)
-                                                <option value="{{ $category->id }}">
-                                                    {{ $category->translation('name', getLocale()) }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @if ($errors->has('categories'))
-                                            <div class="invalid-input">{{ $errors->first('categories') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Exclude Categories') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <select class="category-select w-100" name="exclude_categories[]" multiple>
-                                            @foreach ($categories as $category)
-                                                <option value="{{ $category->id }}">
-                                                    {{ $category->translation('name', getLocale()) }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @if ($errors->has('exclude_categories'))
-                                            <div class="invalid-input">{{ $errors->first('exclude_categories') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Allowed Email') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <input placeholder="{{ translate('Allowed Email') }}"
-                                            value="{{ old('alowed_email') }}" name="alowed_email" type="email"
-                                            class="theme-input-style" />
-                                        @if ($errors->has('alowed_email'))
-                                            <div class="invalid-input">{{ $errors->first('alowed_email') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="coupon_usage_limits">
-                        <div class="card">
-                            <div class="card-body col-lg-9">
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Usage limit per coupon') }}
-                                        </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <input placeholder="{{ translate('Unlimited Usage') }}" type="text"
-                                            name="use_limit_per_coupon" class="theme-input-style" />
-                                        @if ($errors->has('use_limit_per_coupon'))
-                                            <div class="invalid-input">{{ $errors->first('use_limit_per_coupon') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="form-row mb-20">
-                                    <div class="col-sm-4">
-                                        <label class="font-14 bold black">{{ translate('Usage limit per user') }} </label>
-                                    </div>
-                                    <div class="col-sm-8">
-                                        <input placeholder="{{ translate('Unlimited Usage') }}" name="use_limit_per_user"
-                                            type="text" class="theme-input-style" />
-                                        @if ($errors->has('use_limit_per_user'))
-                                            <div class="invalid-input">{{ $errors->first('use_limit_per_user') }}</div>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                </div> -->
+                
             </div>
 
-            <div class="theme-option-sticky d-flex justify-content-end bg-white border-top2 p-3">
-                <div class="theme-option-action_bar">
-                    <button type="submit" class="btn long">
-                        {{ translate('Save') }}
-                    </button>
-                </div>
-            </div>
+            
         </form>
-    </div>
+    <!-- </div> -->
 @endsection
 @section('custom_scripts')
     <!--Select2-->
-    <script src="{{ asset('backend/assets/plugins/select2/select2.min.js') }}"></script>
-    <script>
+    <!-- <script src="{{ asset('backend/assets/plugins/select2/select2.min.js') }}"></script> -->
+    <!-- <script>
         (function($) {
             "use strict";
             $(document).ready(function() {
@@ -375,5 +426,161 @@
                 });
             });
         })(jQuery);
-    </script>
+    </script> -->
 @endsection
+
+
+ <style>
+
+        button.btn-orange,
+    a.btn-orange {
+        background: #ff5A1f !important;
+        border-color: #e64a10 !important;
+        color: #fff !important;
+        transition: background 0.2s ease;
+        box-shadow: none !important;
+        border-radius: 6px !important;
+    }
+
+    button.btn-orange:hover,
+    a.btn-orange:hover {
+        background: #ff7545 !important;
+        border-color: #e07b00 !important;
+        color: #fff !important;
+        box-shadow: none !important;
+
+    }
+
+    button.btn-orange:focus,
+    button.btn-orange:active,
+    button.btn-orange:active:focus {
+        background: #ff5A1f !important;
+        border-color: #e07b00 !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+        /* Target the nav-link only when it has the .active class */
+    .nav-link.active {
+        background-color: #ff5a1f !important;
+        color: #ffffff !important;
+        border-radius: 12px; /* Optional: adds a slight curve to the background */
+        width: 75%;
+        margin-left: 10px;
+    }
+
+    /* Optional: Ensure the text stays white if there is a hover state */
+    .nav-link.active:hover {
+        color: #ffffff;
+        opacity: 0.9;
+    }
+
+    .nav-link:hover {
+        color: #ff5a1f !important;
+        opacity: 0.9;
+    }
+
+    .nav-link.active i {
+        color: #ffffff !important;
+    }
+
+    /* 2. Target the icon when hovering over a non-active link */
+    .nav-link:hover i {
+        color: #ff5a1f !important; 
+        transition: color 0.3s ease;
+    }
+
+    /* 3. Ensure general icon alignment */
+    .nav-link i {
+        color: #666; /* Default grey color for inactive icons */
+        vertical-align: middle;
+        margin-right: 8px; /* Space between icon and text */
+    }
+
+    .menu-settings-title {
+
+            color: #4A5565 !important;
+
+        }
+
+        .nav-link.active .menu-settings-title {
+            color: #ffffff !important;
+        }
+
+        /* Optional: If you want the text to turn orange on hover for inactive tabs */
+        .nav-link:hover .menu-settings-title {
+            color: #ff5a1f !important;
+        }
+
+        .input-icon {
+        width: 18px;
+        height: 18px;
+        stroke: #000000;      /* Use stroke for Lucide SVG icons */
+        fill: none;           /* Ensure it's not filled in */
+        pointer-events: none;
+        z-index: 2;
+        transition: stroke 0.3s ease; /* Smooth color swap */
+    }
+
+    /* 1. Only hover-orange if NOT active */
+    .nav-link:not(.active):hover .menu-settings-title {
+        color: #ff5a1f !important;
+    }
+
+    .nav-link:not(.active):hover .input-icon {
+        stroke: #ff5a1f !important;
+    }
+
+    /* 2. Lock the white color when the link IS active (even on hover) */
+    .nav-link.active:hover .menu-settings-title {
+        color: #ffffff !important;
+        opacity: 1; /* Prevents the fade effect if you don't want it */
+    }
+
+    .nav-link.active:hover .input-icon {
+        stroke: #ffffff !important;
+        opacity: 1;
+    }
+
+    .nav-link.active .input-icon {
+        stroke: #ffffff !important;
+        opacity: 1;
+    }
+
+    /* 3. Keep the background orange when active-hovered */
+    .nav-link.active:hover {
+        background-color: #ff5a1f !important;
+    }
+
+    @media (max-width: 900px) {
+        /* Reset padding and margin for all links to prevent horizontal overflow */
+        .nav-link {
+            margin-left: 10px !important; /* Give them some touch space */
+            margin: 5px 0; /* Vertical spacing between links */
+            width: 100%;   /* Default to full width on mobile */
+        }
+
+        .nav-link.active {
+            background-color: #ff5a1f !important;
+            color: #ffffff !important;
+            border-radius: 12px;
+            width: 95%;      /* Nearly full width but with a little breathing room */
+            margin-left: auto;
+            margin-right: auto; /* Center the active tab */
+            display: block;     /* Ensure width applies correctly */
+        }
+
+        /* Ensure text visibility on mobile hover */
+        .nav-link.active:hover {
+            color: #ffffff !important;
+        }
+
+        .theme-option-tab-wrap {
+            padding-right: 0px;
+            margin-right: 0px;
+
+        }
+
+        
+    }
+</style> 

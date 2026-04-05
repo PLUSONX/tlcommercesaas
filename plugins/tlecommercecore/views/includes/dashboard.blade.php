@@ -293,7 +293,7 @@
                     <div class="p-3 text-left">
                             <div class="d-flex align-items-center mb-4" style="gap: 10px;">
                                 <x-lucide-circle-dollar-sign style="width: 22px; height: 22px; color: #ff5A1f;" />
-                                <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Total Sales') }}</h4>
+                                <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Sales') }}</h4>
                             </div>
                             <h2 class="mb-0">{{ currencyExchange($total_sales) }}</h2>
                         </div>
@@ -876,7 +876,7 @@
                 zoom: { enabled: false }
             },
             dataLabels: { enabled: false },
-            stroke: { curve: 'smooth', width: 3, dashArray: 3 },
+            stroke: { curve: 'smooth', width: 3, dashArray: 0 },
             colors: ['#FFBA5A', '#8381FD'],
             grid: { borderColor: '#f5f5f5' },
             markers: {
