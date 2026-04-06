@@ -13,7 +13,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <h4 class="" style="font-size: 30px;">{{ translate('Custom Notifications') }}</h4>
                             <div class="d-flex flex-wrap">
-                                <a href="{{ route('plugin.flashdeal.add.new') }}"
+                                <a href="{{ route('plugin.tlcommercecore.marketing.custom.notification.create.new') }}"
                                     class="btn long btn-orange">{{ translate('Compose') }}</a>
                             </div>
                     </div>

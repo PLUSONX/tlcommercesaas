@@ -66,12 +66,12 @@
                         <div class="tab-content">
                             <div class="tab-pane fade show active" id="coupon_general">
                                 <div class="card">
-                                    <div class="card-body col-lg-9">
+                                    <div class="card-body col-lg-12">
                                         <div class="form-row mb-20">
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Coupon Code') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <input type="text" name="coupon_code" value="{{ old('coupon_code') }}"
                                                     class="theme-input-style category_name" value="{{ old('coupon_code') }}"
                                                     placeholder="{{ translate('Type here') }}">
@@ -84,7 +84,7 @@
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Description') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <textarea class="theme-input-style" name="description" placeholder="{{ translate('Description') }}">{{ old('description') }}</textarea>
                                                 @if ($errors->has('description'))
                                                     <div class="invalid-input">{{ $errors->first('description') }}</div>
@@ -95,7 +95,7 @@
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Discount Amount Type') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <select class="theme-input-style" name="discount_amount_type"
                                                     value="{{ old('discount_amount_type') }}">
                                                     <option value="{{ config('tlecommercecore.amount_type.flat') }}">
@@ -112,7 +112,7 @@
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Discount Amount') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <input placeholder="0.00" name="discount_amount"
                                                     value="{{ old('discount_amount') }}" type="text"
                                                     class="theme-input-style" />
@@ -125,7 +125,7 @@
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Allow Free Shipping') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <div class="align-items-center d-flex gap-20 wraper">
                                                     <label class="switch glow primary medium">
                                                         <input type="checkbox" name="allow_free_shipping">
@@ -147,7 +147,7 @@
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Coupon Expiry Date') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <input type="date" name="coupon_expire_date"
                                                     value="{{ old('coupon_expire_date') }}" class="theme-input-style" />
                                                 @if ($errors->has('coupon_expire_date'))
@@ -160,12 +160,12 @@
                             </div>
                             <div class="tab-pane fade" id="coupon_usage_restriction">
                                 <div class="card">
-                                    <div class="card-body col-lg-9">
+                                    <div class="card-body col-lg-12">
                                         <div class="form-row mb-20">
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Minimum Spend') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <input placeholder="{{ translate('No Minimum') }}" name="minimum_spend"
                                                     value="{{ old('minimum_spend') }}" type="text" class="theme-input-style" />
                                                 @if ($errors->has('minimum_spend'))
@@ -177,7 +177,7 @@
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Maximum Spend') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <input placeholder="{{ translate('No Maximum') }}" name="maximum_spend"
                                                     value="{{ old('maximum_spend') }}" type="text"
                                                     class="theme-input-style" />
@@ -190,7 +190,7 @@
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Individual Use Only') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <label class="switch glow primary medium">
                                                     <input type="checkbox" name="individual_use">
                                                     <span class="control"></span>
@@ -204,7 +204,7 @@
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Exclude Sales Items') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <label class="switch glow primary medium">
                                                     <input type="checkbox" name="exclude_sale_items">
                                                     <span class="control"></span>
@@ -219,7 +219,7 @@
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Select Products') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <select class="product-select w-100" name="products[]" multiple>
                                                     @foreach ($products as $product)
                                                         <option data-image="{{ asset(getFilePath($product->thumbnail_image)) }}"
@@ -237,7 +237,7 @@
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Exclude product') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <select class="product-select w-100" name="exclude_products[]" multiple>
                                                     @foreach ($products as $product)
                                                         <option data-image="{{ asset(getFilePath($product->thumbnail_image)) }}"
@@ -256,7 +256,7 @@
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Brands') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <select class="brand-select w-100" name="brands[]" multiple>
                                                     @foreach ($brands as $brand)
                                                         <option value="{{ $brand->id }}">
@@ -273,7 +273,7 @@
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Exclude Brands') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <select class="brand-select w-100" name="exclude_brands[]" multiple>
                                                     @foreach ($brands as $brand)
                                                         <option value="{{ $brand->id }}">
@@ -291,7 +291,7 @@
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Categories') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <select class="category-select w-100" name="categories[]" multiple>
                                                     @foreach ($categories as $category)
                                                         <option value="{{ $category->id }}">
@@ -308,7 +308,7 @@
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Exclude Categories') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <select class="category-select w-100" name="exclude_categories[]" multiple>
                                                     @foreach ($categories as $category)
                                                         <option value="{{ $category->id }}">
@@ -326,7 +326,7 @@
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Allowed Email') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <input placeholder="{{ translate('Allowed Email') }}"
                                                     value="{{ old('alowed_email') }}" name="alowed_email" type="email"
                                                     class="theme-input-style" />
@@ -346,7 +346,7 @@
                                                 <label class="font-14 bold black">{{ translate('Usage limit per coupon') }}
                                                 </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <input placeholder="{{ translate('Unlimited Usage') }}" type="text"
                                                     name="use_limit_per_coupon" class="theme-input-style" />
                                                 @if ($errors->has('use_limit_per_coupon'))
@@ -358,7 +358,7 @@
                                             <div class="col-sm-4">
                                                 <label class="font-14 bold black">{{ translate('Usage limit per user') }} </label>
                                             </div>
-                                            <div class="col-sm-8">
+                                            <div class="col-md-12">
                                                 <input placeholder="{{ translate('Unlimited Usage') }}" name="use_limit_per_user"
                                                     type="text" class="theme-input-style" />
                                                 @if ($errors->has('use_limit_per_user'))
@@ -432,155 +432,170 @@
 
  <style>
 
-        button.btn-orange,
-    a.btn-orange {
-        background: #ff5A1f !important;
-        border-color: #e64a10 !important;
-        color: #fff !important;
-        transition: background 0.2s ease;
-        box-shadow: none !important;
-        border-radius: 6px !important;
-    }
+            button.btn-orange,
+        a.btn-orange {
+            background: #ff5A1f !important;
+            border-color: #e64a10 !important;
+            color: #fff !important;
+            transition: background 0.2s ease;
+            box-shadow: none !important;
+            border-radius: 6px !important;
+        }
 
-    button.btn-orange:hover,
-    a.btn-orange:hover {
-        background: #ff7545 !important;
-        border-color: #e07b00 !important;
-        color: #fff !important;
-        box-shadow: none !important;
-
-    }
-
-    button.btn-orange:focus,
-    button.btn-orange:active,
-    button.btn-orange:active:focus {
-        background: #ff5A1f !important;
-        border-color: #e07b00 !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }
-
-        /* Target the nav-link only when it has the .active class */
-    .nav-link.active {
-        background-color: #ff5a1f !important;
-        color: #ffffff !important;
-        border-radius: 12px; /* Optional: adds a slight curve to the background */
-        width: 75%;
-        margin-left: 10px;
-    }
-
-    /* Optional: Ensure the text stays white if there is a hover state */
-    .nav-link.active:hover {
-        color: #ffffff;
-        opacity: 0.9;
-    }
-
-    .nav-link:hover {
-        color: #ff5a1f !important;
-        opacity: 0.9;
-    }
-
-    .nav-link.active i {
-        color: #ffffff !important;
-    }
-
-    /* 2. Target the icon when hovering over a non-active link */
-    .nav-link:hover i {
-        color: #ff5a1f !important; 
-        transition: color 0.3s ease;
-    }
-
-    /* 3. Ensure general icon alignment */
-    .nav-link i {
-        color: #666; /* Default grey color for inactive icons */
-        vertical-align: middle;
-        margin-right: 8px; /* Space between icon and text */
-    }
-
-    .menu-settings-title {
-
-            color: #4A5565 !important;
+        button.btn-orange:hover,
+        a.btn-orange:hover {
+            background: #ff7545 !important;
+            border-color: #e07b00 !important;
+            color: #fff !important;
+            box-shadow: none !important;
 
         }
 
-        .nav-link.active .menu-settings-title {
-            color: #ffffff !important;
+        button.btn-orange:focus,
+        button.btn-orange:active,
+        button.btn-orange:active:focus {
+            background: #ff5A1f !important;
+            border-color: #e07b00 !important;
+            box-shadow: none !important;
+            outline: none !important;
         }
 
-        /* Optional: If you want the text to turn orange on hover for inactive tabs */
-        .nav-link:hover .menu-settings-title {
-            color: #ff5a1f !important;
-        }
-
-        .input-icon {
-        width: 18px;
-        height: 18px;
-        stroke: #000000;      /* Use stroke for Lucide SVG icons */
-        fill: none;           /* Ensure it's not filled in */
-        pointer-events: none;
-        z-index: 2;
-        transition: stroke 0.3s ease; /* Smooth color swap */
-    }
-
-    /* 1. Only hover-orange if NOT active */
-    .nav-link:not(.active):hover .menu-settings-title {
-        color: #ff5a1f !important;
-    }
-
-    .nav-link:not(.active):hover .input-icon {
-        stroke: #ff5a1f !important;
-    }
-
-    /* 2. Lock the white color when the link IS active (even on hover) */
-    .nav-link.active:hover .menu-settings-title {
-        color: #ffffff !important;
-        opacity: 1; /* Prevents the fade effect if you don't want it */
-    }
-
-    .nav-link.active:hover .input-icon {
-        stroke: #ffffff !important;
-        opacity: 1;
-    }
-
-    .nav-link.active .input-icon {
-        stroke: #ffffff !important;
-        opacity: 1;
-    }
-
-    /* 3. Keep the background orange when active-hovered */
-    .nav-link.active:hover {
-        background-color: #ff5a1f !important;
-    }
-
-    @media (max-width: 900px) {
-        /* Reset padding and margin for all links to prevent horizontal overflow */
-        .nav-link {
-            margin-left: 10px !important; /* Give them some touch space */
-            margin: 5px 0; /* Vertical spacing between links */
-            width: 100%;   /* Default to full width on mobile */
-        }
-
+            /* Target the nav-link only when it has the .active class */
         .nav-link.active {
             background-color: #ff5a1f !important;
             color: #ffffff !important;
-            border-radius: 12px;
-            width: 95%;      /* Nearly full width but with a little breathing room */
-            margin-left: auto;
-            margin-right: auto; /* Center the active tab */
-            display: block;     /* Ensure width applies correctly */
+            border-radius: 12px; /* Optional: adds a slight curve to the background */
+            width: 75%;
+            margin-left: 10px;
         }
 
-        /* Ensure text visibility on mobile hover */
+        /* Optional: Ensure the text stays white if there is a hover state */
         .nav-link.active:hover {
+            color: #ffffff;
+            opacity: 0.9;
+        }
+
+        .nav-link:hover {
+            color: #ff5a1f !important;
+            opacity: 0.9;
+        }
+
+        .nav-link.active i {
             color: #ffffff !important;
         }
 
-        .theme-option-tab-wrap {
-            padding-right: 0px;
-            margin-right: 0px;
-
+        /* 2. Target the icon when hovering over a non-active link */
+        .nav-link:hover i {
+            color: #ff5a1f !important; 
+            transition: color 0.3s ease;
         }
 
-        
+        /* 3. Ensure general icon alignment */
+        .nav-link i {
+            color: #666; /* Default grey color for inactive icons */
+            vertical-align: middle;
+            margin-right: 8px; /* Space between icon and text */
+        }
+
+        .menu-settings-title {
+
+                color: #4A5565 !important;
+
+            }
+
+            .nav-link.active .menu-settings-title {
+                color: #ffffff !important;
+            }
+
+            /* Optional: If you want the text to turn orange on hover for inactive tabs */
+            .nav-link:hover .menu-settings-title {
+                color: #ff5a1f !important;
+            }
+
+            .input-icon {
+            width: 18px;
+            height: 18px;
+            stroke: #000000;      /* Use stroke for Lucide SVG icons */
+            fill: none;           /* Ensure it's not filled in */
+            pointer-events: none;
+            z-index: 2;
+            transition: stroke 0.3s ease; /* Smooth color swap */
+        }
+
+        /* 1. Only hover-orange if NOT active */
+        .nav-link:not(.active):hover .menu-settings-title {
+            color: #ff5a1f !important;
+        }
+
+        .nav-link:not(.active):hover .input-icon {
+            stroke: #ff5a1f !important;
+        }
+
+        /* 2. Lock the white color when the link IS active (even on hover) */
+        .nav-link.active:hover .menu-settings-title {
+            color: #ffffff !important;
+            opacity: 1; /* Prevents the fade effect if you don't want it */
+        }
+
+        .nav-link.active:hover .input-icon {
+            stroke: #ffffff !important;
+            opacity: 1;
+        }
+
+        .nav-link.active .input-icon {
+            stroke: #ffffff !important;
+            opacity: 1;
+        }
+
+        /* 3. Keep the background orange when active-hovered */
+        .nav-link.active:hover {
+            background-color: #ff5a1f !important;
+        }
+
+        .theme-input-style {
+        width: 100%;
+        background-color: white !important;
+        border: 1px solid black !important;
     }
+
+    .theme-input-style:focus, 
+    .theme-input-style:active,
+    .theme-input-style:hover {
+        background-color: white !important;
+        background: white !important; /* Extra insurance */
+        outline: none;                /* Optional: removes default browser glow */
+        border: 1px solid black !important; /* Keeps your border consistent */
+    }
+
+        @media (max-width: 900px) {
+            /* Reset padding and margin for all links to prevent horizontal overflow */
+            .nav-link {
+                margin-left: 10px !important; /* Give them some touch space */
+                margin: 5px 0; /* Vertical spacing between links */
+                width: 100%;   /* Default to full width on mobile */
+            }
+
+            .nav-link.active {
+                background-color: #ff5a1f !important;
+                color: #ffffff !important;
+                border-radius: 12px;
+                width: 95%;      /* Nearly full width but with a little breathing room */
+                margin-left: auto;
+                margin-right: auto; /* Center the active tab */
+                display: block;     /* Ensure width applies correctly */
+            }
+
+            /* Ensure text visibility on mobile hover */
+            .nav-link.active:hover {
+                color: #ffffff !important;
+            }
+
+            .theme-option-tab-wrap {
+                padding-right: 0px;
+                margin-right: 0px;
+
+            }
+
+            
+        }
 </style> 

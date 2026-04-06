@@ -37,17 +37,29 @@
 @endsection
 @section('main_content')
     <div class="row">
-        <!-- Role List-->
-        <div class="col-md-5">
-            <div class="card mb-30">
+
+        <div class="col-12">
+            <div class="card bg-transparent mb-20">
+
                 <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="" style="font-size: 30px;">{{ translate('Roles') }}</h4>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- Role List-->
+        <div class="col-md-6">
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
+                <!-- <div class="card-body">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4 class="font-20">{{ translate('Roles') }}</h4>
                     </div>
-                </div>
-                <div class="table-responsive">
+                </div> -->
+                <div class="table-responsive" style="margin-top: 20px;">
                     <table class="hoverable text-nowrap border-top2 " id="role_table">
-                        <thead>
+                        <thead style="background: #F3F4F6;">
                             <tr>
                                 <th>#</th>
                                 <th>{{ translate('Name') }}</th>
@@ -104,19 +116,31 @@
         </div>
         <!-- Role List-->
 
+        <div class="col-12">
+            <div class="card bg-transparent mb-20">
+
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="" style="font-size: 30px;">{{ translate('Add Role') }}</h4>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
         @if (auth()->user()->can('Create Role') ||
                 auth()->user()->can('Edit Role'))
             <div class="col-md-7 mb-30">
                 @if (auth()->user()->can('Create Role'))
                     <!-- Add new role-->
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="post-head d-flex justify-content-between align-items-center mb-3">
-                                <div class="d-flex align-items-center">
+                    <div class="card" style="border-radius: 12px !important; overflow: hidden !important;">
+                        <div class="">
+                            <div class="post-head d-flex justify-content-end align-items-center mb-3 mt-3">
+                                <!-- <div class="d-flex align-items-center">
                                     <div class="content">
                                         <h4 class="mb-1">{{ translate('Add Role') }}</h4>
                                     </div>
-                                </div>
+                                </div> -->
                                 <div id="add_role_down_icon" class="icon" onclick="toggleRoleAddingForm()">
                                     <i class="icofont-simple-down"></i>
                                 </div>
@@ -128,12 +152,12 @@
                             <div id="add_role">
                                 <form action="{{ route('core.add.role') }}" method="POST">
                                     @csrf
-                                    <div class="form-row mb-20">
+                                    <div class="form-row mb-20 p-2">
                                         <div class="col-md-4">
                                             <label class="font-14 bold black">{{ translate('Name') }}</label>
                                         </div>
-                                        <div class="col-md-8">
-                                            <input type="text" name="role_name" class="theme-input-style"
+                                        <div class="col-md-12">
+                                            <input type="text" name="role_name" class="theme-input-style w-100"
                                                 value="{{ old('role_name') }}"
                                                 placeholder="{{ translate('Give role name') }}">
                                             @if ($errors->has('role_name'))
@@ -144,9 +168,9 @@
                                     <div class="form-row mb-20">
                                         <input type="hidden" name="permissions" id="permissions">
                                         <div class="col-sm-12 table-scroll">
-                                            <h4 class="mb-3">{{ translate('Permissions') }}</h5>
+                                            <h4 class="mb-3 p-2">{{ translate('Permissions') }}</h5>
                                                 <table class="table">
-                                                    <thead>
+                                                    <thead style="background: #F3F4F6;">
                                                         <tr>
                                                             <th scope="col">{{ translate('Module') }}</th>
                                                             <th scope="col">{{ translate('Feature') }}</th>
@@ -241,8 +265,8 @@
                                         </div>
                                     </div>
                                     <div class="form-row">
-                                        <div class="col-md-12 text-right">
-                                            <button type="submit" class="btn long">{{ translate('Submit') }}</button>
+                                        <div class="col-md-12 text-right p-4">
+                                            <button type="submit" class="btn long btn-orange">{{ translate('Submit') }}</button>
                                         </div>
                                     </div>
                                 </form>
@@ -253,10 +277,14 @@
                 @endif
 
                 @if (auth()->user()->can('Edit Role'))
+
+                 
+
                     <!-- Update new role-->
-                    <div class="card mt-4" id="update_role">
-                        <div class="card-body">
-                            <div class="post-head d-flex justify-content-between align-items-center mb-3">
+                    <div class="card mt-4" id="update_role" style="border-radius: 12px !important; overflow: hidden !important;">
+                        <!-- <div class="card-body"> -->
+                        <div class="">
+                            <div class="post-head d-flex justify-content-between align-items-center mb-3 p-2">
                                 <div class="d-flex align-items-center">
                                     <div class="content">
                                         <h4 class="mb-1">{{ translate('Update Role') }}</h4>
@@ -270,11 +298,11 @@
                             <div>
                                 <div>
                                     <input type="hidden" name="role_id" id="role_id">
-                                    <div class="form-row mb-20">
+                                    <div class="form-row mb-20 p-2">
                                         <div class="col-md-4">
                                             <label class="font-14 bold black">{{ translate('Name') }}</label>
                                         </div>
-                                        <div class="col-md-8">
+                                        <div class="col-md-12">
                                             <input type="text" name="role_name" id="role_name"
                                                 class="theme-input-style"
                                                 placeholder="{{ translate('Give role name') }}">
@@ -286,9 +314,9 @@
                                         <input type="hidden" name="permissions" id="edditable_permissions">
                                         <div class="col-sm-12 table-scroll">
                                             <div class="invalid-input" id="permissions_update_error"></div>
-                                            <h4 class="mb-3">{{ translate('Permissions') }}</h5>
+                                            <h4 class="mb-3 p-2">{{ translate('Permissions') }}</h5>
                                                 <table class="table">
-                                                    <thead>
+                                                    <thead style="background: #F3F4F6;">
                                                         <tr>
                                                             <th scope="col">{{ translate('Module') }}</th>
                                                             <th scope="col">{{ translate('Feature') }}</th>
@@ -384,8 +412,8 @@
                                     </div>
 
                                     <div class="form-row">
-                                        <div class="col-md-12 text-right">
-                                            <button type="submit" class="btn long"
+                                        <div class="col-md-12 text-right p-4">
+                                            <button type="submit" class="btn long btn-orange"
                                                 onclick="updateRole()">{{ translate('Update') }}</button>
                                         </div>
                                     </div>
@@ -701,3 +729,142 @@
         }
 </script>
 @endsection
+
+
+<style>
+
+    button.btn-orange,
+    a.btn-orange {
+        background: #ff5A1f !important;
+        border-color: #e64a10 !important;
+        color: #fff !important;
+        transition: background 0.2s ease;
+        border-radius: 6px !important;
+        box-shadow: none !important;
+
+    }
+
+    button.btn-orange:hover,
+    a.btn-orange:hover {
+        background: #ff7545 !important;
+        border-color: #e07b00 !important;
+        color: #fff !important;
+        box-shadow: none !important;
+
+    }
+
+    button.btn-orange:focus,
+    button.btn-orange:active,
+    button.btn-orange:active:focus {
+        background: #ff7545 !important;
+        border-color: #e07b00 !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+
+    /* 1. Hide the native browser checkbox */
+    .product-id, .select-all {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+
+    /* 2. Style the custom checkmark for both TH and TD */
+    .checkmark {
+        display: inline-block;
+        height: 18px;
+        width: 18px;
+        background-color: transparent;
+        border: 2px solid #ff8c00; /* Orange border */
+        border-radius: 3px;
+        position: relative;
+        cursor: pointer;
+    }
+
+    /* 3. Style when the checkbox is checked */
+    input:checked ~ .checkmark {
+        background-color: #ff5A1f; /* Fill with orange */
+    }
+
+    /* 4. The actual check symbol (the white "L" shape) */
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+        left: 4px;
+        top: 0px;
+        width: 7px;
+        height: 12px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    /* Show the check symbol when checked */
+    input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+   /* 1. The background of the switch track when ON */
+.switch.success input:checked ~ .control {
+    background-color: #ff5A1f !important;
+    border-color: #ff8c00 !important;
+}
+
+/* 2. The sliding circle (the knob) */
+.switch.success .control:after {
+    background-color: #ffffff !important;
+    border: 1px solid #e0e0e0;
+    box-shadow: none !important;
+}
+
+/* 3. The knob position/border when checked */
+.switch.success input:checked ~ .control:after {
+    border-color: #ff8c00 !important; 
+    box-shadow: none !important;
+}
+
+    /* 4. The "Glow" effect for the track */
+    /* .switch.glow.primary input:checked ~ .control {
+        box-shadow: 0 0 10px rgba(255, 140, 0, 0.4) !important;
+    } */
+
+        /* 1. Change the Active Page background and border */
+     .pagination .page-item.active .page-link {
+        background-color: #ff5A1f !important;
+        border-color: #ff5A1f !important;
+        color: #ffffff !important; /* Ensure text is white on orange */
+    }
+
+    /* 2. Change the Hover state for non-active links */
+    .pagination .page-item .page-link:hover {
+        background-color: #ff7545 !important; /* The lighter orange we picked earlier */
+        border-color: #ff7545 !important;
+        color: #ffffff !important;
+    }
+
+    /* 3. Change the default text color for non-active links */
+   .pagination .page-item .page-link {
+        color: #ff5A1f; /* Orange text on white background */
+        border-color: #dee2e6; /* Standard light border */
+    }
+
+    select.theme-input-style {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px bottom 10px; /* adjust 12px to move arrow left/right */
+        padding-right: 2rem;
+    }
+
+    /* 4. Optional: Style the Focus state (when clicked) to remove the blue shadow */
+    /* .pagination .page-item .page-link:focus {
+        box-shadow: 0 0 0 0.2rem rgba(255, 90, 31, 0.25);
+    } */
+
+</style>

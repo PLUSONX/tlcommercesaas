@@ -13,8 +13,19 @@
 
 @section('main_content')
     <div class="row">
+         <div class="col-12">
+            <div class="card bg-transparent mb-20">
+
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="" style="font-size: 30px;">{{ translate('Store Layout') }}</h4>
+                    </div>
+                </div>
+
+            </div>
+        </div>
         <div class="col-12">
-            <div class="card mb-30">
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-body">
                     <div class="card-header">
                         <h4>{{ translate('Choose Your Store Layout') }}</h4>
@@ -86,7 +97,7 @@
 
                         <div class="mt-4">
                             <div class="col-12 text-right">
-                                <button type="submit" class="btn long courier-update-btn">{{ translate('Save Changes') }}</button>
+                                <button type="submit" class="btn long courier-update-btn btn-orange">{{ translate('Save Changes') }}</button>
                             </div>
                             <!-- <button type="submit" class="btn btn-primary">
                                 {{ translate('Save Layout') }}
@@ -101,7 +112,7 @@
 
     <div class="row" id="split-screen-edit-form" style="display: none;">
         <div class="col-12">
-            <div class="card mb-30">
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-body">
                     <div class="card-header d-flex justify-content-between">
                         <h4>{{ translate('Edit Split Screen') }}</h4>
@@ -121,7 +132,7 @@
                                         {{ translate('Content Position') }}
                                     </label>
                                 </div>
-                                <div class="col-sm-8">
+                                <div class="col-md-12">
                                     <select
                                         class="form-control"
                                         name="content_position"
@@ -141,7 +152,7 @@
                                         {{ translate('Feature Type') }}
                                     </label>
                                 </div>
-                                <div class="col-sm-8">
+                                <div class="col-md-12">
                                     <select
                                         class="form-control"
                                         name="feature_type"
@@ -156,11 +167,11 @@
 
 
                             <div class="form-row mb-20">
-                                <div class="col-sm-4">
+                                <div class="col-md-12">
                                     <label class="font-14 bold black mb-0">{{ translate('Feature Image') }} </label>
                                     <p>960×1080</p>
                                 </div>
-                                <div class="col-sm-8">
+                                <div class="col-md-12">
                                     @include('core::base.includes.media.media_input', [
                                         'input' => 'feature_image',
                                         'data' => old('feature_image'),
@@ -173,7 +184,7 @@
                         
                             <div class="form-row">
                                 <div class="col-12 text-right">
-                                    <button type="submit" class="btn long">{{ translate('Save') }}</button>
+                                    <button type="submit" class="btn long btn-orange">{{ translate('Save') }}</button>
                                 </div>
                             </div>
                         </form>
@@ -304,13 +315,13 @@
 }
 
 .layout-option:hover .layout-card {
-    border-color: #007bff;
+    border-color: #ff5A1f;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .layout-option.active .layout-card,
 .layout-option input:checked + .layout-card {
-    border-color: #007bff;
+    border-color: #ff5A1f;
     background: #f8f9ff;
 }
 
@@ -328,7 +339,7 @@
 
 
 .preview-box {
-    background: #007bff;
+    background: #ff5A1f;
     border-radius: 3px;
     opacity: 0.7;
 }
@@ -384,7 +395,7 @@
 
 .btn-dots:hover {
     background: #fff;
-    color: #007bff;
+    color: #ff5A1f;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
@@ -400,4 +411,92 @@
     font-size: 13px;
     padding: 8px 15px;
 }
+
+
+    button.btn-orange,
+    a.btn-orange {
+        background: #ff5A1f !important;
+        border-color: #e64a10 !important;
+        color: #fff !important;
+        transition: background 0.2s ease;
+        border-radius: 6px !important;
+        box-shadow: none !important;
+
+    }
+
+    button.btn-orange:hover,
+    a.btn-orange:hover {
+        background: #ff7545 !important;
+        border-color: #e07b00 !important;
+        color: #fff !important;
+        box-shadow: none !important;
+
+    }
+
+    button.btn-orange:focus,
+    button.btn-orange:active,
+    button.btn-orange:active:focus {
+        background: #ff7545 !important;
+        border-color: #e07b00 !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    /* 1. The background of the switch track when ON */
+    .switch.medium input:checked ~ .control {
+        background-color: #ff5A1f !important;
+        border-color: #ff8c00 !important;
+    }
+
+    /* 2. The sliding circle (the knob) */
+    /* We usually keep this white or a very light grey for contrast */
+    .switch.medium .control:after {
+        background-color: #ffffff !important;
+        border: 1px solid #e0e0e0;
+        box-shadow: none !important;
+
+    }
+
+    /* 3. If your template uses a shadow on the circle when active */
+    .switch.medium input:checked ~ .control:after {
+        border-color: #ff8c00 !important; 
+        box-shadow: none !important;
+
+    }
+
+        /* 1. Change the Active Page background and border */
+     .pagination .page-item.active .page-link {
+        background-color: #ff5A1f !important;
+        border-color: #ff5A1f !important;
+        color: #ffffff !important; /* Ensure text is white on orange */
+    }
+
+    /* 2. Change the Hover state for non-active links */
+    .pagination .page-item .page-link:hover {
+        background-color: #ff7545 !important; /* The lighter orange we picked earlier */
+        border-color: #ff7545 !important;
+        color: #ffffff !important;
+    }
+
+    /* 3. Change the default text color for non-active links */
+   .pagination .page-item .page-link {
+        color: #ff5A1f; /* Orange text on white background */
+        border-color: #dee2e6; /* Standard light border */
+    }
+
+    select.theme-input-style {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px bottom 10px; /* adjust 12px to move arrow left/right */
+        padding-right: 2rem;
+    }
+
+    /* 4. Optional: Style the Focus state (when clicked) to remove the blue shadow */
+    /* .pagination .page-item .page-link:focus {
+        box-shadow: 0 0 0 0.2rem rgba(255, 90, 31, 0.25);
+    } */
+
 </style>

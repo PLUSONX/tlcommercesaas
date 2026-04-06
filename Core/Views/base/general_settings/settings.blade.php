@@ -27,9 +27,33 @@
 @section('main_content')
     <!-- General settings form -->
     <div class="row">
+
+        <!-- <div class="col-md-8 offset-2">
+            <div class="card bg-transparent mb-20">
+
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="" style="font-size: 30px;">{{ translate('General Settings') }}</h4>
+                          
+                    </div>
+                </div>
+
+            </div>
+        </div> -->
+
+        <div class="col-12 col-md-8 offset-md-2">
+            <div class="card bg-transparent mb-20">
+                <div class="card-body">
+                    <div class="d-flex justify-content-start justify-content-md-between align-items-center">
+                        <h4 class="text-start" style="font-size: 30px;">{{ translate('General Settings') }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="col-md-7 mb-30 mx-auto">
-            <div class="card">
-                <div class="card-header bg-white border-bottom2 pb-0">
+            <div class="card mb-2" style="border-radius: 12px !important; overflow: hidden !important;">
+                <!-- <div class="card-header bg-white border-bottom2 pb-0">
                     <div class="post-head d-flex justify-content-between align-items-center mb-3">
                         <div class="d-flex align-items-center">
                             <div class="content">
@@ -37,7 +61,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div class="card-body">
                     <div>
                         <form action="{{ route('core.store.general.settings') }}" method="POST"
@@ -47,7 +71,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black text-capitalize">{{ translate('Site Title') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <input type="text" name="system_name" class="theme-input-style"
                                         value="{{ isset($data['system_name']) ? $data['system_name'] : '' }}"
                                         placeholder="{{ translate('Site Title') }}">
@@ -60,7 +84,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black">{{ translate('Site Motto') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <input type="text" name="site_moto" class="theme-input-style"
                                         value="{{ isset($data['site_moto']) ? $data['site_moto'] : '' }}"
                                         placeholder="{{ translate('Site Moto') }}">
@@ -74,7 +98,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black">{{ translate('Logo') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <input type="hidden" name="white_background_logo" id="white_background_logo_id"
                                         value="{{ isset($data['white_background_logo_id']) ? $data['white_background_logo_id'] : '' }}">
                                     <div class="image-box">
@@ -122,7 +146,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black">{{ translate('Logo (Mobile)') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <input type="hidden" name="white_mobile_background_logo"
                                         id="white_mobile_background_logo_id"
                                         value="{{ isset($data['white_mobile_background_logo_id']) ? $data['white_mobile_background_logo_id'] : '' }}">
@@ -170,7 +194,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black">{{ translate('Dark Logo') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <input type="hidden" name="black_background_logo" id="black_background_logo_id"
                                         value="{{ isset($data['black_background_logo_id']) ? $data['black_background_logo_id'] : '' }}">
                                     <div class="image-box">
@@ -216,7 +240,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black">{{ translate('Dark Logo (Mobile)') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <input type="hidden" name="black_mobile_background_logo"
                                         id="black_mobile_background_logo_id"
                                         value="{{ isset($data['black_mobile_background_logo_id']) ? $data['black_mobile_background_logo_id'] : '' }}">
@@ -266,7 +290,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black">{{ translate('Sticky Logo') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <input type="hidden" name="sticky_background_logo" id="sticky_background_logo_id"
                                         value="{{ isset($data['sticky_background_logo_id']) ? $data['sticky_background_logo_id'] : '' }}">
                                     <div class="image-box">
@@ -312,7 +336,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black">{{ translate('Sticky Logo (Mobile)') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <input type="hidden" name="sticky_mobile_background_logo"
                                         id="sticky_mobile_background_logo_id"
                                         value="{{ isset($data['sticky_mobile_background_logo_id']) ? $data['sticky_mobile_background_logo_id'] : '' }}">
@@ -362,7 +386,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black">{{ translate('Dark Sticky Logo') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <input type="hidden" name="sticky_black_background_logo"
                                         id="sticky_black_background_logo_id"
                                         value="{{ isset($data['sticky_black_background_logo_id']) ? $data['sticky_black_background_logo_id'] : '' }}">
@@ -412,7 +436,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black">{{ translate('Dark Sticky Logo (Mobile)') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <input type="hidden" name="sticky_black_mobile_background_logo"
                                         id="sticky_black_mobile_background_logo_id"
                                         value="{{ isset($data['sticky_black_mobile_background_logo_id']) ? $data['sticky_black_mobile_background_logo_id'] : '' }}">
@@ -464,7 +488,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black">{{ translate('Admin Logo') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <input type="hidden" name="admin_logo" id="admin_logo_id"
                                         value="{{ isset($data['admin_logo_id']) ? $data['admin_logo_id'] : '' }}">
                                     <div class="image-box">
@@ -508,7 +532,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black">{{ translate('Admin Logo (Mobile)') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <input type="hidden" name="admin_mobile_logo" id="admin_mobile_logo_id"
                                         value="{{ isset($data['admin_mobile_logo_id']) ? $data['admin_mobile_logo_id'] : '' }}">
                                     <div class="image-box">
@@ -554,7 +578,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black">{{ translate('Admin Dark Logo') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <input type="hidden" name="admin_dark_logo" id="admin_dark_logo_id"
                                         value="{{ isset($data['admin_dark_logo_id']) ? $data['admin_dark_logo_id'] : '' }}">
                                     <div class="image-box">
@@ -599,7 +623,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black">{{ translate('Admin Dark Logo (Mobile)') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <input type="hidden" name="admin_dark_mobile_logo" id="admin_dark_mobile_logo_id"
                                         value="{{ isset($data['admin_dark_mobile_logo_id']) ? $data['admin_dark_mobile_logo_id'] : '' }}">
                                     <div class="image-box">
@@ -642,10 +666,10 @@
                             </div>
 
                             <div class="form-row mb-20">
-                                <div class="col-md-4">
+                                <div class="col-md-12">
                                     <label class="font-14 bold black">{{ translate('Login Page Background Image') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <input type="hidden" name="login_bg_image" id="login_bg_image_id"
                                         value="{{ isset($data['login_bg_image_id']) ? $data['login_bg_image_id'] : '' }}">
                                     <div class="image-box">
@@ -692,7 +716,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black">{{ translate('Favicon') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <input type="hidden" name="favicon" id="favicon_id"
                                         value="{{ isset($data['favicon_id']) ? $data['favicon_id'] : '' }}">
                                     <div class="image-box">
@@ -736,7 +760,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black">{{ translate('Default Language') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <select class="default-language form-control" name="default_language"
                                         id="default_language" placeholder="{{ translate('Select default language') }}">
                                         @foreach ($active_langs as $lang)
@@ -757,7 +781,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black">{{ translate('Select Default Timezone') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <select class="default-timezone form-control" name="default_timezone"
                                         id="default_timezone" placeholder="{{ translate('Select Default Timezone') }}">
                                         @foreach ($tzlist as $tz)
@@ -777,7 +801,7 @@
                                 <div class="col-md-4">
                                     <label class="font-14 bold black">{{ translate('Copyright Text') }}</label>
                                 </div>
-                                <div class="col-md-8">
+                                <div class="col-md-12">
                                     <div class="editor-wrap">
                                         <textarea name="copyright_text" id="copyright_text">{{ isset($data['copyright_text']) ? $data['copyright_text'] : '' }}</textarea>
                                     </div>
@@ -789,7 +813,7 @@
 
                             <div class="form-row">
                                 <div class="col-md-12 text-right">
-                                    <button type="submit" class="btn long">{{ translate('Submit') }}</button>
+                                    <button type="submit" class="btn long btn-orange">{{ translate('Submit') }}</button>
                                 </div>
                             </div>
                         </form>
@@ -861,3 +885,109 @@
     })(jQuery);
 </script>
 @endsection
+
+
+<style>
+
+    button.btn-orange,
+    a.btn-orange {
+        background: #ff5A1f !important;
+        border-color: #e64a10 !important;
+        color: #fff !important;
+        transition: background 0.2s ease;
+        border-radius: 8px !important;
+        box-shadow: none !important;
+
+    }
+
+    button.btn-orange:hover,
+    a.btn-orange:hover {
+        background: #ff7545 !important;
+        border-color: #e07b00 !important;
+        color: #fff !important;
+        box-shadow: none !important;
+
+    }
+
+    button.btn-orange:focus,
+    button.btn-orange:active,
+    button.btn-orange:active:focus {
+        background: #ff7545 !important;
+        border-color: #e07b00 !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    /* 1. The background of the switch track when ON */
+    .switch.medium input:checked ~ .control {
+        background-color: #ff5A1f !important;
+        border-color: #ff8c00 !important;
+    }
+
+    /* 2. The sliding circle (the knob) */
+    /* We usually keep this white or a very light grey for contrast */
+    .switch.medium .control:after {
+        background-color: #ffffff !important;
+        border: 1px solid #e0e0e0;
+        box-shadow: none !important;
+
+    }
+
+    /* 3. If your template uses a shadow on the circle when active */
+    .switch.medium input:checked ~ .control:after {
+        border-color: #ff8c00 !important; 
+        box-shadow: none !important;
+
+    }
+
+        /* 1. Change the Active Page background and border */
+     .pagination .page-item.active .page-link {
+        background-color: #ff5A1f !important;
+        border-color: #ff5A1f !important;
+        color: #ffffff !important; /* Ensure text is white on orange */
+    }
+
+    /* 2. Change the Hover state for non-active links */
+    .pagination .page-item .page-link:hover {
+        background-color: #ff7545 !important; /* The lighter orange we picked earlier */
+        border-color: #ff7545 !important;
+        color: #ffffff !important;
+    }
+
+    /* 3. Change the default text color for non-active links */
+   .pagination .page-item .page-link {
+        color: #ff5A1f; /* Orange text on white background */
+        border-color: #dee2e6; /* Standard light border */
+    }
+
+    select.theme-input-style {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px bottom 10px; /* adjust 12px to move arrow left/right */
+        padding-right: 2rem;
+    }
+
+    .theme-input-style {
+        width: 100%;
+        background-color: white !important;
+        border: 1px solid black !important;
+    }
+
+    .theme-input-style:focus, 
+    .theme-input-style:active,
+    .theme-input-style:hover {
+        background-color: white !important;
+        background: white !important; /* Extra insurance */
+        outline: none;                /* Optional: removes default browser glow */
+        border: 1px solid black !important; /* Keeps your border consistent */
+    }
+
+      .btn-link {
+        color: #ff5A1f !important;
+    }
+
+
+</style>

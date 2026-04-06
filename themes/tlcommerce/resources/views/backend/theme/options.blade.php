@@ -25,7 +25,7 @@
     <!--End editor-->
     <style>
         .active {
-            color: #6045e2 !important;
+            color: #ff5A1f !important;
         }
 
         .iconpicker-container .fade.in {
@@ -186,69 +186,98 @@
         .theme-option-container {
             overflow-x: auto;
         }
+
+        
+
+          
+
     </style>
 @endsection
 
 @section('main_content')
     <!-- Main Content -->
-    <div class="theme-option-container">
+    <!-- <div class="theme-option-container"> -->
         <form action="{{ route('theme.tlcommerce.save.option.form') }}" method="post" enctype="multipart/form-data"
             id="themeOptionForm">
             @csrf
             <input type="hidden" id="formType" name="submitType" value="">
-            <div class="theme-option-sticky d-flex align-items-center justify-content-between bg-white border-bottom2 p-3">
-                <div class="theme-option-logo d-none d-sm-block">
-                    <h3>{{ translate('Theme Options') }}</h3>
-                </div>
-                <div class="theme-option-action_bar">
-                    <input type="submit" class="btn btn-primary sm tn btn-primary sm button-save-theme-options"
-                        name="save_changes" value="{{ translate('Save Changes') }}">
-                    <input type="submit" class="btn btn-info sm" name="reset_section"
-                        value="{{ translate('Reset Section') }}">
-                    <input type="submit" class="btn btn-info sm" name="reset_all" value="{{ translate('Reset All') }}">
-                </div>
-            </div>
 
-            <div class="theme-option-tab-wrap">
-                <div class="nav flex-column py-3 px-2 theme-option-sidebar" aria-orientation="vertical">
-                    @includeIf('theme/tlcommerce::backend.theme.option_sidebar')
-                </div>
+                <div class="row g-3 align-items-start">
 
-                <div class="form border-left2">
-                    <div id="loader" class="d-none">
-                        <img src="{{ asset('loader.svg') }}" alt="" width="80px" height="auto">
-                        <!-- <img src="{{ asset('/public/loader.svg') }}" alt="" width="80px" height="auto"> -->
-                    </div>
-                    <div class="card">
-                        <div class="card-body" id="option-form">
+                   
+
+                    <div class="col-auto col-md-3">
+
+                        <div class="card" style="border-radius: 12px !important; overflow: hidden !important;">
+                            <div class="theme-option-tab-wrap">
+                                <div class="nav flex-column py-3 px-2 theme-option-sidebar" aria-orientation="vertical">
+                                    @includeIf('theme/tlcommerce::backend.theme.option_sidebar')
+                                </div>
+                            </div>
                         </div>
+
+                    </div>
+
+                    <div class="col-9 p-2">
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+
+                            <h4 style="font-size: 30px;">{{ translate('Themes Options') }}</h4>
+
+                             <!-- <div class="theme-option-action_bar">
+                                <input type="submit" class="btn btn-primary sm tn btn-primary sm button-save-theme-options"
+                                    name="save_changes" value="{{ translate('Save Changes') }}">
+                                <input type="submit" class="btn btn-info sm" name="reset_section"
+                                    value="{{ translate('Reset Section') }}">
+                                <input type="submit" class="btn btn-info sm" name="reset_all" value="{{ translate('Reset All') }}">
+                            </div> -->
+
+                        </div>
+
+                        <div class="card" style="border-radius: 12px !important; overflow: hidden !important;">
+
+                            <div class="form border-left2">
+                                <div id="loader" class="d-none">
+                                    <img src="{{ asset('loader.svg') }}" alt="" width="80px" height="auto">
+                                    <!-- <img src="{{ asset('/public/loader.svg') }}" alt="" width="80px" height="auto"> -->
+                                </div>
+                                <div class="card">
+                                    <div class="card-body" id="option-form">
+                                    </div>
+                                </div>
+                            </div>
+
+                             <div class="theme-option-sticky d-flex justify-content-end bg-white border-top2 p-3">
+                                <div class="theme-option-action_bar">
+                                    <input type="submit" class="btn long btn-orange"
+                                    style="box-shadow: none !important; background-color: #ff5A1f !important; color: #fff !important; border-radius: 8px !important;"
+                                        name="save_changes" value="{{ translate('Save Changes') }}">
+                                    <input style="box-shadow: none !important; background-color: white !important; color: black !important; border: 1px solid black; border-radius: 8px !important;"
+                                    type="submit" class="btn btn-info sm" name="reset_section"
+                                        value="{{ translate('Reset Section') }}">
+                                    <input style="box-shadow: none !important; background-color: white !important; color: black !important; border: 1px solid black; border-radius: 8px !important;"
+                                    type="submit" class="btn btn-info sm" name="reset_all" value="{{ translate('Reset All') }}">
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-            </div>
+           
 
-            <div class="theme-option-sticky d-flex justify-content-end bg-white border-top2 p-3">
-                <div class="theme-option-action_bar">
-                    <input type="submit" class="btn btn-primary sm tn btn-primary sm button-save-theme-options"
-                        name="save_changes" value="{{ translate('Save Changes') }}">
-                    <input type="submit" class="btn btn-info sm" name="reset_section"
-                        value="{{ translate('Reset Section') }}">
-                    <input type="submit" class="btn btn-info sm" name="reset_all" value="{{ translate('Reset All') }}">
-                </div>
-            </div>
         </form>
-    </div>
     @include('core::base.media.partial.media_modal')
     {{-- Reset Section And Reset All Confirmation Model --}}
     <div id="reset-confirmation" class="reset-confirmation modal fade show" aria-modal="true">
-        <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-dialog modal-sm modal-dialog-centered" style="border-radius: 12px !important; overflow: hidden !important;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title h6">{{ translate('Reset Confirmation') }}</h4>
                 </div>
                 <div class="modal-body text-center">
                     <p class="mt-1">{{ translate('Are you sure to want to reset') }}?</p>
-                    <button class="btn long mt-2 btn-danger" data-dismiss="modal">{{ translate('Cancel') }}</button>
-                    <button class="btn long mt-2 confirm-btn"></button>
+                    <button style="box-shadow: none !important; background-color: white !important; color: black !important; border: 1px solid black; border-radius: 8px !important;" class="btn long mt-2 btn-danger" data-dismiss="modal">{{ translate('Cancel') }}</button>
+                    <button style="box-shadow: none !important; background-color: #ff5A1f !important; color: #fff !important; border-radius: 8px !important;" class="btn long mt-2 confirm-btn"></button>
                 </div>
             </div>
         </div>
@@ -1102,3 +1131,160 @@
         }
     </script>
 @endsection
+
+<style>
+
+  button.btn-orange,
+        a.btn-orange {
+            background: #ff5A1f !important;
+            border-color: #e64a10 !important;
+            color: #fff !important;
+            transition: background 0.2s ease;
+            box-shadow: none !important;
+            border-radius: 6px !important;
+        }
+
+        button.btn-orange:hover,
+        a.btn-orange:hover {
+            background: #ff7545 !important;
+            border-color: #e07b00 !important;
+            color: #fff !important;
+            box-shadow: none !important;
+
+        }
+
+        button.btn-orange:focus,
+        button.btn-orange:active,
+        button.btn-orange:active:focus {
+            background: #ff5A1f !important;
+            border-color: #e07b00 !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+            /* Target the nav-link only when it has the .active class */
+        .nav-link.active {
+            background-color: #ff5a1f !important;
+            color: #ffffff !important;
+            border-radius: 12px; /* Optional: adds a slight curve to the background */
+            width: 75%;
+            margin-left: 10px;
+        }
+
+        /* Optional: Ensure the text stays white if there is a hover state */
+        .nav-link.active:hover {
+            color: #ffffff;
+            opacity: 0.9;
+        }
+
+        .nav-link:hover {
+            color: #ff5a1f !important;
+            opacity: 0.9;
+        }
+
+        .nav-link.active i {
+            color: #ffffff !important;
+        }
+
+        /* 2. Target the icon when hovering over a non-active link */
+        .nav-link:hover i {
+            color: #ff5a1f !important; 
+            transition: color 0.3s ease;
+        }
+
+        /* 3. Ensure general icon alignment */
+        .nav-link i {
+            color: #666; /* Default grey color for inactive icons */
+            vertical-align: middle;
+            margin-right: 8px; /* Space between icon and text */
+        }
+
+        .menu-settings-title {
+
+                color: #4A5565 !important;
+
+            }
+
+            .nav-link.active .menu-settings-title {
+                color: #ffffff !important;
+            }
+
+            /* Optional: If you want the text to turn orange on hover for inactive tabs */
+            .nav-link:hover .menu-settings-title {
+                color: #ff5a1f !important;
+            }
+
+            .input-icon {
+            width: 18px;
+            height: 18px;
+            stroke: #000000;      /* Use stroke for Lucide SVG icons */
+            fill: none;           /* Ensure it's not filled in */
+            pointer-events: none;
+            z-index: 2;
+            transition: stroke 0.3s ease; /* Smooth color swap */
+        }
+
+        /* 1. Only hover-orange if NOT active */
+        .nav-link:not(.active):hover .menu-settings-title {
+            color: #ff5a1f !important;
+        }
+
+        .nav-link:not(.active):hover .input-icon {
+            stroke: #ff5a1f !important;
+        }
+
+        /* 2. Lock the white color when the link IS active (even on hover) */
+        .nav-link.active:hover .menu-settings-title {
+            color: #ffffff !important;
+            opacity: 1; /* Prevents the fade effect if you don't want it */
+        }
+
+        .nav-link.active:hover .input-icon {
+            stroke: #ffffff !important;
+            opacity: 1;
+        }
+
+        .nav-link.active .input-icon {
+            stroke: #ffffff !important;
+            opacity: 1;
+        }
+
+        /* 3. Keep the background orange when active-hovered */
+        .nav-link.active:hover {
+            background-color: #ff5a1f !important;
+        }
+
+        .theme-input-style {
+        width: 100%;
+        background-color: white !important;
+        border: 1px solid black !important;
+    }
+
+    .theme-input-style:focus, 
+    .theme-input-style:active,
+    .theme-input-style:hover {
+        background-color: white !important;
+        background: white !important; /* Extra insurance */
+        outline: none;                /* Optional: removes default browser glow */
+        border: 1px solid black !important; /* Keeps your border consistent */
+    }
+
+       
+    .sidebar-col {
+        width: 25%;
+        min-width: 180px;
+        transition: width 0.25s ease;
+    }
+
+    /* Mobile: shrink sidebar to icon rail width */
+    @media (max-width: 900px) {
+        .sidebar-col {
+            width: 58px !important;
+            min-width: 58px !important;
+            padding-left: 4px !important;
+            padding-right: 4px !important;
+        }
+    }
+
+
+</style>

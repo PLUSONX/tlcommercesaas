@@ -197,7 +197,7 @@
 
     <!--Shipping label modal-->
         <div id="order-shipping-label-modal" class="modal fade" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-dialog modal-md modal-dialog-centered" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title h6 bold">{{ translate('Export Transaction History') }}</h4>
@@ -226,8 +226,10 @@
 
                             <div class="form-row mt-30">
                                 <div class="col-12 d-flex justify-content-end gap-10">
-                                    <button type="button" class="btn long btn-danger" data-dismiss="modal">{{ translate('Cancel') }}</button>
-                                    <button type="submit" class="btn long btn-success">{{ translate('Download Excel') }}</button>
+                                    <button type="button" class="btn long btn-danger"
+                                     style="background: white !important; color: black !important; border: 1px solid black; border-radius: 6px !important; box-shadow: none !important;"
+                                     data-dismiss="modal">{{ translate('Cancel') }}</button>
+                                    <button type="submit" class="btn long btn-orange">{{ translate('Download Excel') }}</button>
                                 </div>
                             </div>
                         </form>

@@ -24,14 +24,29 @@
 @endsection
 @section('main_content')
     <div class="row">
-        <!-- Email Template List-->
+
         <div class="col-12">
             @foreach ($admin_email_templates as $key => $templates)
                 @php
                     $template_name = implode(' ', explode('_', $key));
                 @endphp
-                <div class="card mb-30">
-                    <div class="card-header bg-white border-bottom2 pb-0">
+            <div class="card bg-transparent mb-20">
+
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="" style="font-size: 30px;">{{ $template_name }}</h4>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Email Template List-->
+        <div class="col-12">
+            
+                <!-- <div class="card mb-30"> -->
+                <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
+                    <!-- <div class="card-header bg-white border-bottom2 pb-0">
                         <div class="post-head d-flex justify-content-between align-items-center mb-3">
                             <div class="d-flex align-items-center">
                                 <div class="content">
@@ -39,11 +54,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="card-body p-0">
                         <div class="table-scroll">
                             <table class="text-nowrap dh-table">
-                                <thead>
+                                <thead style="background: #F3F4F6;">
                                     <tr>
                                         <th>{{ translate('No.') }}</th>
                                         <th>{{ translate('Template') }}</th>
