@@ -217,6 +217,7 @@
 
     @media (max-width: 900px) {
 
+        
         .col-md-3 {
             max-width: 80px;
             flex: 0 0 80px;
