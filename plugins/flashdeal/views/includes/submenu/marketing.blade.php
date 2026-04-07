@@ -4,7 +4,7 @@
 @if ($isactivateFlashdeal)
     @if (auth()->user()->can('Manage Flash Deals'))
         <li class="{{ Request::routeIs(['plugin.flashdeal.list']) ? 'active ' : '' }}">
-            <a href="{{ route('plugin.flashdeal.list') }}">{{ translate('Flash Deals') }}</a>
+            <a class="pl-2" href="{{ route('plugin.flashdeal.list') }}">{{ translate('Flash Deals') }}</a>
         </li>
     @endif
 @endif

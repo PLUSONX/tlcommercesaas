@@ -66,19 +66,34 @@
     </style>
 @endsection
 @section('main_content')
-    <div class="align-items-center border-bottom2 d-flex flex-wrap gap-10 justify-content-between mb-4 pb-3">
+    <!-- <div class="align-items-center border-bottom2 d-flex flex-wrap gap-10 justify-content-between mb-4 pb-3">
         <h4><i class="icofont-plugin"></i> {{ translate('Product Information') }}</h4>
+    </div> -->
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="card bg-transparent mb-20">
+
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="" style="font-size: 30px;">{{ translate('Product Information') }}</h4>
+                </div>
+            </div>
+
+        </div>
     </div>
+</div>
     <form method="POST" class="row" enctype="multipart/form-data" id="product-form"
         action="{{ route('plugin.tlcommercecore.product.update') }}">
         @csrf
         <!--Left side-->
         <div class="col-lg-8">
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <p class="alert alert-info">You are editing <strong>"{{ getLanguageNameByCode($lang) }}"</strong> version
                 </p>
-            </div>
-            <ul class="nav nav-tabs nav-fill border-light border-0">
+            </div> -->
+            <!-- <ul class="nav nav-tabs nav-fill border-light border-0">
                 @foreach ($languages as $key => $language)
                     <li class="nav-item">
                         <a class="nav-link @if ($language->code == $lang) active border-0 @else bg-light @endif py-3"
@@ -88,16 +103,16 @@
                         </a>
                     </li>
                 @endforeach
-            </ul>
+            </ul> -->
             <!--Product information-->
-            <div class="card mb-30">
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-body">
                     <div class="form-row mb-20">
                         <div class="col-sm-3">
                             <label class="font-14 bold black">{{ translate('Name') }}<span class="text-danger">*</span>
                             </label>
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-md-12">
                             <input type="text" name="name"
                                 class="theme-input-style @if (request()->has('lang') && request()->get('lang') == getdefaultlang()) product_name @endif"
                                 placeholder="{{ translate('Product Name') }}"
@@ -117,12 +132,13 @@
                         <div class="col-sm-3">
                             <label class="font-14 bold black">{{ translate('Permalink') }} </label>
                         </div>
-                        <div class="col-sm-9">
-                            <a href="{{ url('/products') }}/{{ $product_details->permalink }}"
+                        <div class="col-md-12">
+                            <a href="{{ url('/products') }}/{{ $product_details->permalink }}" style="color: #ff5A1f;"
                                 target="_blank">{{ url('') }}/products/
-                                <span id="permalink">{{ $product_details->permalink }}
+                                <span id="permalink" >{{ $product_details->permalink }}
                                 </span>
-                                <span class="btn custom-btn ml-1 permalink-edit-btn">
+                                <span style="background-color: #ff5A1f; border-radius: 8px; box-shadow: none !important;"
+                                    class="btn custom-btn ml-1 permalink-edit-btn">
                                     {{ translate('Edit') }}
                                 </span>
                             </a>
@@ -132,10 +148,10 @@
                             <div class="permalink-editor d-none">
                                 <input type="text" class="theme-input-style" id="permalink-updated-input"
                                     placeholder="{{ translate('Type here') }}">
-                                <button type="button" class="btn long mt-2 btn-danger permalink-cancel-btn"
+                                <button type="button" class="btn long btn-white mt-2 btn-danger permalink-cancel-btn"
                                     data-dismiss="modal">{{ translate('Cancel') }}</button>
                                 <button type="button"
-                                    class="btn long mt-2 permalink-save-btn">{{ translate('Save') }}</button>
+                                    class="btn long btn-orange mt-2 permalink-save-btn">{{ translate('Save') }}</button>
                             </div>
                         </div>
                     </div>
@@ -144,7 +160,7 @@
                         <div class="col-sm-3">
                             <label class="font-14 bold black ">{{ translate('Categories') }} </label>
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-md-12">
                             <select class="product-category-select form-control" name="categories[]" multiple>
                                 @foreach ($product_details->product_cats as $category)
                                     <option value="{{ $category->id }}" selected>
@@ -161,7 +177,7 @@
                         <div class="col-sm-3">
                             <label class="font-14 bold black ">{{ translate('Brand') }} </label>
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-md-12">
                             <select class="product-brand-select form-control" name="brand">
                                 @if ($product_details->brand_info != null)
                                     <option value="{{ $product_details->brand_info->id }}" selected>
@@ -178,7 +194,7 @@
                         <div class="col-sm-3">
                             <label class="font-14 bold black ">{{ translate('Unit') }} </label>
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-md-12">
                             <select class="product-unit-select form-control" name="unit">
                                 @foreach ($units as $unit)
                                     <option value="{{ $unit->id }}" @if ($product_details->unit != null && $product_details->unit == $unit->id) selected @endif>
@@ -195,7 +211,7 @@
                         <div class="col-sm-3">
                             <label class="font-14 bold black ">{{ translate('Condition') }} </label>
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-md-12">
                             <select class="product-condition-select form-control" name="condition">
                                 @foreach ($conditions as $condition)
                                     <option value="{{ $condition->id }}"
@@ -213,7 +229,7 @@
                         <div class="col-sm-3">
                             <label class="font-14 bold black ">{{ translate('Tags') }} </label>
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-md-12">
                             <select class="product-tags-select form-control" name="tags[]" multiple>
                                 @foreach ($product_details->tagItems as $tag)
                                     <option value="{{ $tag->id }}" selected>{{ $tag->name }}</option>
@@ -228,7 +244,7 @@
             </div>
             <!--End product information-->
             <!--Product Type-->
-            <div class="card mb-30 @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif">
+            <div class="card mb-30 @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Product Type') }}</h4>
@@ -263,7 +279,7 @@
             <!--End Product Type-->
             <!--Product Variation-->
             <div
-                class="card mb-30 product-variation {{ $product_details->has_variant == config('tlecommercecore.product_variant.variable') ? '' : 'd-none' }} @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif">
+                class="card mb-30 product-variation {{ $product_details->has_variant == config('tlecommercecore.product_variant.variable') ? '' : 'd-none' }} @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Product Variation') }}</h4>
@@ -369,7 +385,7 @@
             </div>
             <!--End Product Variation-->
             <!--Product Price and stock-->
-            <div class="card mb-30 @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif">
+            <div class="card mb-30 @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Product Price And Stock') }}</h4>
@@ -518,7 +534,7 @@
             </div>
             <!--End Product Price and stock-->
             <!--Product Discount-->
-            <div class="card mb-30 @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif">
+            <div class="card mb-30 @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Product Discount') }}</h4>
@@ -527,17 +543,17 @@
                 <div class="card-body">
                     @if (getEcommerceSetting('enable_product_discount') == config('settings.general_status.active'))
                         <div class="form-row">
-                            <div class="col-sm-3">
+                            <div class="col-md-12">
                                 <label class="font-14 bold black ">{{ translate('Discount') }} </label>
                             </div>
-                            <div class="col-sm-5 mb-30">
+                            <div class="col-md-6 mb-30">
                                 <input type="text" name="discount_amount" class="theme-input-style"
                                     placeholder="0.00" value="{{ $product_details->discount_amount }}">
                                 @if ($errors->has('discount_amount'))
                                     <div class="invalid-input">{{ $errors->first('discount_amount') }}</div>
                                 @endif
                             </div>
-                            <div class="col-sm-4">
+                            <div class="col-md-6">
                                 <select class="theme-input-style select2" name="discount_amount_type">
                                     <option value="{{ config('tlecommercecore.amount_type.flat') }}"
                                         @if ($product_details->discount_type == config('tlecommercecore.amount_type.flat')) selected @endif> {{ translate('Flat') }}
@@ -565,7 +581,7 @@
             <!--End Product Discount-->
             <!--Color Variation Images-->
             <div
-                class="card mb-30 product-color-images {{ count($product_details->color_choices) > 0 ? '' : 'd-none' }}  @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif">
+                class="card mb-30 product-color-images {{ count($product_details->color_choices) > 0 ? '' : 'd-none' }}  @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Color Variation Images') }}</h4>
@@ -586,7 +602,7 @@
                                     <div class="col-sm-3">
                                         <label class="font-14 bold black">{{ $color_name }} </label>
                                     </div>
-                                    <div class="col-sm-9">
+                                    <div class="col-md-12">
                                         @include('core::base.includes.media.media_input_multi_select', [
                                             'input' => 'color_' . $color->color_id . '_image',
                                             'data' => implode(',', $color_images),
@@ -609,7 +625,7 @@
             </div>
             <!--End Color Variation Images-->
             <!--product images-->
-            <div class="card mb-30 @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif">
+            <div class="card mb-30 @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Product Images') }}</h4>
@@ -621,7 +637,7 @@
                             <label class="font-14 bold black mb-0">{{ translate('Thumbnail Image') }} </label>
                             <p>385x380</p>
                         </div>
-                        <div class="col-sm-">
+                        <div class="col-md-12">
                             @include('core::base.includes.media.media_input', [
                                 'input' => 'thumbnail_image',
                                 'data' => $product_details->thumbnail_image,
@@ -637,7 +653,7 @@
                             <label class="font-14 bold black mb-0">{{ translate('Gallery Images') }} </label>
                             <p>624x624</p>
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-md-12">
                             @php
                                 $gallary_images = \Plugin\TlcommerceCore\Models\ProductGalleryImages::where('product_id', $product_details->id)
                                     ->pluck('image_id')
@@ -659,7 +675,7 @@
             </div>
             <!--End product Images-->
             <!--Product Description-->
-            <div class="card mb-30">
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Product Description') }}</h4>
@@ -670,7 +686,7 @@
                         <div class="col-sm-3">
                             <label class="font-14 bold black ">{{ translate('Summary') }} </label>
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-md-12">
                             <div class="editor-wrap">
                                 <textarea id="short_description" name="summary">{{ $product_details->translation('summary', $lang) }}</textarea>
                             </div>
@@ -680,7 +696,7 @@
                         <div class="col-sm-3">
                             <label class="font-14 bold black ">{{ translate('Description') }} </label>
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-md-12">
                             <div class="editor-wrap">
                                 <textarea id="description" name="description">{{ $product_details->translation('description', $lang) }}</textarea>
                             </div>
@@ -691,7 +707,7 @@
             <!--End Product Description-->
 
             <!--Product pdf specification-->
-            <div class="card mb-30 @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif">
+            <div class="card mb-30 @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('PDF Specification') }}</h4>
@@ -702,7 +718,7 @@
                         <div class="col-sm-3">
                             <label class="font-14 bold black ">{{ translate('PDF Specification') }} </label>
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-md-12">
                             @include('core::base.includes.media.media_input', [
                                 'input' => 'pdf_specification',
                                 'data' => $product_details->pdf_specifications,
@@ -716,7 +732,7 @@
             </div>
             <!--End product pdf specification-->
             <!--Product Video-->
-            <div class="card mb-30 @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif">
+            <div class="card mb-30 @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Product Video') }}</h4>
@@ -727,7 +743,7 @@
                         <div class="col-sm-3">
                             <label class="font-14 bold black ">{{ translate('Youtube Link') }} </label>
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-md-12">
                             <input type="text" name="video" class="theme-input-style"
                                 placeholder="{{ translate('Type here') }}" value="{{ $product_details->video_link }}">
                             @if ($errors->has('video'))
@@ -739,7 +755,7 @@
             </div>
             <!--End product Video-->
             <!--Product Seo information-->
-            <div class="card mb-30 @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif">
+            <div class="card mb-30 @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Seo Meta Tags') }}</h4>
@@ -750,7 +766,7 @@
                         <div class="col-sm-3">
                             <label class="font-14 bold black ">{{ translate('Meta Title') }} </label>
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-md-12">
                             <input type="text" name="meta_title" class="theme-input-style"
                                 placeholder="{{ translate('Type here') }}"
                                 value="{{ $product_details->product_seo != null ? $product_details->product_seo->meta_title : '' }}">
@@ -763,7 +779,7 @@
                         <div class="col-sm-3">
                             <label class="font-14 bold black ">{{ translate('Meta Description') }} </label>
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-md-12">
                             <textarea class="theme-input-style" name="meta_description">{{ $product_details->product_seo != null ? $product_details->product_seo->meta_description : '' }}</textarea>
                             @if ($errors->has('meta_description'))
                                 <div class="invalid-input">{{ $errors->first('meta_description') }}</div>
@@ -774,7 +790,7 @@
                         <div class="col-sm-3">
                             <label class="font-14 bold black ">{{ translate('Meta Image') }} </label>
                         </div>
-                        <div class="col-sm-">
+                        <div class="col-md-12">
                             @include('core::base.includes.media.media_input', [
                                 'input' => 'meta_image',
                                 'data' =>
@@ -795,7 +811,7 @@
         <!--Right side-->
         <div class="col-lg-4 @if (!empty($lang) && $lang != getdefaultlang()) area-disabled @endif">
             <!--Shipping Configuration-->
-            <div class="card mb-30">
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Shipping Configuration') }}</h4>
@@ -884,7 +900,7 @@
             <!--Shipping Information-->
             @if (getEcommerceSetting('shipping_option') == null ||
                     getEcommerceSetting('shipping_option') == config('tlecommercecore.shipping_cost_options.profile_wise_rate'))
-                <div class="card mb-30">
+                <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                     <div class="card-header bg-white border-bottom2 py-3">
                         <div class="d-sm-flex justify-content-between align-items-center">
                             <h4>{{ translate('Shipping Information') }}</h4>
@@ -895,7 +911,7 @@
                         <div class="shipping-info">
                             <div class="form-row mb-20">
                                 <label class="font-14 bold black  col-3">{{ translate('Weight') }} </label>
-                                <div class="input-group addon col-9">
+                                <div class="input-group addon col-12">
                                     <input type="text" name="weight"
                                         value="{{ $product_details->shipping_info != null ? $product_details->shipping_info->weight : 0 }}"
                                         class="form-control style--two">
@@ -909,7 +925,7 @@
                             </div>
                             <div class="form-row mb-20">
                                 <label class="font-14 bold black  col-3">{{ translate('Height') }} </label>
-                                <div class="input-group addon col-9">
+                                <div class="input-group addon col-12">
                                     <input type="text" name="height"
                                         value="{{ $product_details->shipping_info != null ? $product_details->shipping_info->height : 0 }}"
                                         class="form-control style--two">
@@ -923,7 +939,7 @@
                             </div>
                             <div class="form-row mb-20">
                                 <label class="font-14 bold black  col-3">{{ translate('Length') }} </label>
-                                <div class="input-group addon col-9">
+                                <div class="input-group addon col-12">
                                     <input type="text" name="length"
                                         value="{{ $product_details->shipping_info != null ? $product_details->shipping_info->length : 0 }}"
                                         class="form-control style--two">
@@ -937,7 +953,7 @@
                             </div>
                             <div class="form-row mb-20">
                                 <label class="font-14 bold black  col-3">{{ translate('Width') }} </label>
-                                <div class="input-group addon col-9">
+                                <div class="input-group addon col-12">
                                     <input type="text" name="width"
                                         value="{{ $product_details->shipping_info != null ? $product_details->shipping_info->width : 0 }}"
                                         class="form-control style--two">
@@ -955,7 +971,7 @@
             @endif
             <!--End Shipping Information-->
             <!--Vat & Tax-->
-            <div class="card mb-30">
+            <!-- <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Tax Configuration') }}</h4>
@@ -1013,10 +1029,10 @@
                         </p>
                     @endif
                 </div>
-            </div>
+            </div> -->
             <!--End Vat & Tax-->
             <!--Featured-->
-            <div class="card mb-30">
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Featured') }}</h4>
@@ -1024,23 +1040,27 @@
                 </div>
                 <div class="card-body">
                     <div class="form-row mb-20">
-                        <div class="col-sm-6">
-                            <label class="font-14 bold black ">{{ translate('Status') }} </label>
+                        <div class="col-md-12">
+
+                             <div class="row p-2" style="gap: 5px;">
+
+                                <label class="switch glow primary medium">
+                                    <input type="checkbox" name="is_featured"
+                                        @if ($product_details->is_featured == config('settings.general_status.active')) checked @endif>
+                                    <span class="control"></span>
+                                </label>
+
+                                 <label class="font-14 bold black ">{{ translate('Status') }} </label>
+                             </div>
                         </div>
-                        <div class="col-sm-6">
-                            <label class="switch glow primary medium">
-                                <input type="checkbox" name="is_featured"
-                                    @if ($product_details->is_featured == config('settings.general_status.active')) checked @endif>
-                                <span class="control"></span>
-                            </label>
-                        </div>
+                            
                     </div>
                 </div>
             </div>
             <!--End Featured-->
             <!--Refundable-->
             @if (isActivePluging('refund'))
-                <div class="card mb-30">
+                <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                     <div class="card-header bg-white border-bottom2 py-3">
                         <div class="d-sm-flex justify-content-between align-items-center">
                             <h4>{{ translate('Refundable') }}</h4>
@@ -1048,23 +1068,27 @@
                     </div>
                     <div class="card-body">
                         <div class="form-row mb-20">
-                            <div class="col-sm-6">
-                                <label class="font-14 bold black ">{{ translate('Status') }} </label>
+                            <div class="col-md-12">
+                                <div class="row p-2" style="gap: 5px;">
+
+                                    <label class="switch glow primary medium">
+                                        <input type="checkbox" name="is_refundable"
+                                            @if ($product_details->is_refundable == config('settings.general_status.active')) checked @endif>
+                                        <span class="control"></span>
+                                    </label>
+
+                                    <label class="font-14 bold black ">{{ translate('Status') }} </label>
+                                </div>
+
                             </div>
-                            <div class="col-sm-6">
-                                <label class="switch glow primary medium">
-                                    <input type="checkbox" name="is_refundable"
-                                        @if ($product_details->is_refundable == config('settings.general_status.active')) checked @endif>
-                                    <span class="control"></span>
-                                </label>
-                            </div>
+                                
                         </div>
                     </div>
                 </div>
             @endif
             <!--End Refundable-->
             <!--Authentic-->
-            <div class="card mb-30">
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Authentic') }}</h4>
@@ -1072,22 +1096,26 @@
                 </div>
                 <div class="card-body">
                     <div class="form-row mb-20">
-                        <div class="col-sm-6">
-                            <label class="font-14 bold black ">{{ translate('Status') }} </label>
+                        <div class="col-md-12">
+
+                             <div class="row p-2" style="gap: 5px;">
+
+                                <label class="switch glow primary medium">
+                                    <input type="checkbox" name="is_authenthic"
+                                        @if ($product_details->is_authentic == config('settings.general_status.active')) checked @endif>
+                                    <span class="control"></span>
+                                </label>
+
+                                <label class="font-14 bold black ">{{ translate('Status') }} </label>
+                             </div>
                         </div>
-                        <div class="col-sm-6">
-                            <label class="switch glow primary medium">
-                                <input type="checkbox" name="is_authenthic"
-                                    @if ($product_details->is_authentic == config('settings.general_status.active')) checked @endif>
-                                <span class="control"></span>
-                            </label>
-                        </div>
+                           
                     </div>
                 </div>
             </div>
             <!--End Authentic-->
             <!--Cash on delivery-->
-            <div class="card mb-30">
+            <!-- <div class="card mb-30">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Cash On Delivery') }}</h4>
@@ -1197,10 +1225,10 @@
                         </p>
                     @endif
                 </div>
-            </div>
+            </div> -->
             <!--End Cashon delivery-->
             <!--Warranty-->
-            <div class="card mb-30">
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Warranty') }}</h4>
@@ -1208,30 +1236,36 @@
                 </div>
                 <div class="card-body">
                     <div class="form-row mb-20">
-                        <div class="col-sm-6">
-                            <label class="font-14 bold black ">{{ translate('Status') }} </label>
+                        <div class="col-md-12">
+                            <div class="row p-2" style="gap: 5px;">
+
+                                <label class="switch glow primary medium">
+                                    <input type="checkbox" name="has_warranty" class="has-warranty"
+                                        onchange="warrantyConfig()" @if ($product_details->has_warranty == config('settings.general_status.active')) checked @endif>
+                                    <span class="control"></span>
+                                </label>
+                                
+                                <label class="font-14 bold black ">{{ translate('Status') }} </label>
+                             </div>
                         </div>
-                        <div class="col-sm-6">
-                            <label class="switch glow primary medium">
-                                <input type="checkbox" name="has_warranty" class="has-warranty"
-                                    onchange="warrantyConfig()" @if ($product_details->has_warranty == config('settings.general_status.active')) checked @endif>
-                                <span class="control"></span>
-                            </label>
-                        </div>
+                            
                     </div>
                     <div
                         class="warranty-config {{ $product_details->has_warranty == config('settings.general_status.active') ? '' : 'd-none' }}">
                         <div class="form-row mb-20">
-                            <div class="col-sm-6">
-                                <label class="font-14 bold black ">{{ translate('Replacement Warranty') }} </label>
+                            <div class="col-md-12">
+                                <div class="row p-2" style="gap: 5px;">
+
+                                    <label class="switch glow primary medium">
+                                        <input type="checkbox" class="replacement-warranty" name="replacement_warranty"
+                                            @if ($product_details->has_replacement_warranty == config('settings.general_status.active')) checked @endif>
+                                        <span class="control"></span>
+                                    </label>
+                                
+                                    <label class="font-14 bold black ">{{ translate('Replacement Warranty') }} </label>
+                                </div>
                             </div>
-                            <div class="col-sm-6">
-                                <label class="switch glow primary medium">
-                                    <input type="checkbox" class="replacement-warranty" name="replacement_warranty"
-                                        @if ($product_details->has_replacement_warranty == config('settings.general_status.active')) checked @endif>
-                                    <span class="control"></span>
-                                </label>
-                            </div>
+                                
                         </div>
                         <div class="form-row mb-20">
                             <label class="font-14 bold black  col-12">{{ translate('Warranty Days') }} </label>
@@ -1251,7 +1285,7 @@
             </div>
             <!--End Warranty-->
             <!--Low stock quantity-->
-            <div class="card mb-30">
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Low stock quantity') }}</h4>
@@ -1260,7 +1294,7 @@
                 <div class="card-body">
                     <div class="form-row mb-20">
                         <label class="font-14 bold black  col-3">{{ translate('Quantity') }} </label>
-                        <input type="text" class="theme-input-style col-9" name="qty_alert"
+                        <input type="text" class="theme-input-style col-12" name="qty_alert"
                             value="{{ $product_details->low_stock_quantity_alert }}" placeholder="0">
                         @if ($errors->has('qty_alert'))
                             <div class="invalid-input">{{ $errors->first('qty_alert') }}</div>
@@ -1270,7 +1304,7 @@
             </div>
             <!--End Low stock quantity-->
             <!--Purchase quantity-->
-            <div class="card mb-30">
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Purchase Quantity') }}</h4>
@@ -1279,7 +1313,7 @@
                 <div class="card-body">
                     <div class="form-row mb-20">
                         <label class="font-14 bold black  col-sm-4">{{ translate('Minimum Quantity') }} </label>
-                        <input type="text" class="theme-input-style col-sm-8" name="min_purchase_qty"
+                        <input type="text" class="theme-input-style col-sm-12" name="min_purchase_qty"
                             value="{{ $product_details->min_item_on_purchase }}" placeholder="0">
                         @if ($errors->has('min_purchase_qty'))
                             <div class="invalid-input">{{ $errors->first('min_purchase_qty') }}</div>
@@ -1287,7 +1321,7 @@
                     </div>
                     <div class="form-row mb-20">
                         <label class="font-14 bold black  col-sm-4">{{ translate('Miximum Quantity') }} </label>
-                        <input type="text" class="theme-input-style col-sm-8"
+                        <input type="text" class="theme-input-style col-sm-12"
                             value="{{ $product_details->max_item_on_purchase }}" name="max_purchase_qry"
                             placeholder="0">
 
@@ -1299,7 +1333,7 @@
             </div>
             <!--End Purchase quantity-->
             <!--Attatchment-->
-            <div class="card mb-30">
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Attatchment on Purchase') }}</h4>
@@ -1308,16 +1342,19 @@
                 <div class="card-body">
                     @if (getEcommerceSetting('enable_document_in_checkout') == config('settings.general_status.active'))
                         <div class="form-row mb-20">
-                            <div class="col-sm-6">
-                                <label class="font-14 bold black ">{{ translate('Status') }} </label>
+                            <div class="col-md-12">
+                                <div class="row p-2" style="gap: 5px;">
+
+                                    <label class="switch glow primary medium">
+                                        <input type="checkbox" name="is_active_attatchment" class="attatchment-required"
+                                            onchange="attatchmentConfig()" @if ($product_details->is_active_attatchment == config('settings.general_status.active')) checked @endif>
+                                        <span class="control"></span>
+                                    </label>
+                                
+                                    <label class="font-14 bold black ">{{ translate('Status') }} </label>
+                                </div>
                             </div>
-                            <div class="col-sm-6">
-                                <label class="switch glow primary medium">
-                                    <input type="checkbox" name="is_active_attatchment" class="attatchment-required"
-                                        onchange="attatchmentConfig()" @if ($product_details->is_active_attatchment == config('settings.general_status.active')) checked @endif>
-                                    <span class="control"></span>
-                                </label>
-                            </div>
+                                
                         </div>
                         <div
                             class="attatchment-config  {{ $product_details->is_active_attatchment == config('settings.general_status.active') ? '' : 'd-none' }} ">
@@ -1365,11 +1402,11 @@
                 </button>
             @endif
             <button type="submit" name="status" value="{{ config('settings.general_status.in_active') }}"
-                class="btn btn-dark btn-outline-info" tabindex="4">
+                class="btn long btn-white" tabindex="4">
                 {{ translate('Update & Draft') }}
             </button>
             <button type="submit" name="status" value="{{ config('settings.general_status.active') }}"
-                class="btn btn-outline-primary" tabindex="4">
+                class="btn long btn-orange" tabindex="4">
                 {{ translate('Update & Publish') }}
             </button>
         </div>
@@ -1796,3 +1833,218 @@
         }
     </script>
 @endsection
+
+
+<style>
+
+    button.btn-orange,
+    a.btn-orange {
+        background: #ff5A1f !important;
+        border-color: #e64a10 !important;
+        color: #fff !important;
+        transition: background 0.2s ease;
+        border-radius: 6px !important;
+        box-shadow: none !important;
+
+    }
+
+    button.btn-orange:hover,
+    a.btn-orange:hover {
+        background: #ff7545 !important;
+        border-color: #e07b00 !important;
+        color: #fff !important;
+        box-shadow: none !important;
+
+    }
+
+    button.btn-orange:focus,
+    button.btn-orange:active,
+    button.btn-orange:active:focus {
+        background: #ff7545 !important;
+        border-color: #e07b00 !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+     /* Base State */
+    button.btn-white,
+    a.btn-white {
+        background: #fff !important;
+        color: #000 !important;
+        border: 1px solid #000 !important;
+        border-radius: 6px !important;
+        /* padding: 10px 20px; Added for standard button sizing */
+        display: inline-block;
+        text-decoration: none;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+        /* Transition everything for a smooth feel */
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    
+        height: 40px !important;
+    }
+
+    /* Proper Hover Effect */
+    button.btn-white:hover,
+    a.btn-white:hover {
+        background: #000 !important; /* Inverts the look */
+        color: #fff !important;      /* Makes text white on black */
+        border-color: #000 !important;
+        transform: translateY(-2px); /* Subtle lift effect */
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+    }
+
+    /* Active / Click Effect */
+    button.btn-white:active,
+    a.btn-white:active {
+        transform: translateY(0);    /* Pushes button back down when clicked */
+        box-shadow: none !important;
+        background: #222 !important; /* Slightly lighter than black for feedback */
+    }
+
+    /* Focus State for Accessibility */
+    button.btn-white:focus,
+    a.btn-white:focus {
+        outline: 2px solid #ff7545 !important; /* High contrast ring */
+        outline-offset: 2px;
+    }
+
+
+
+    /* 1. Hide the native browser checkbox */
+    .product-id, .select-all {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+
+    /* 2. Style the custom checkmark for both TH and TD */
+    .checkmark {
+        display: inline-block;
+        height: 18px;
+        width: 18px;
+        background-color: transparent;
+        border: 2px solid #ff8c00; /* Orange border */
+        border-radius: 3px;
+        position: relative;
+        cursor: pointer;
+    }
+
+    /* 3. Style when the checkbox is checked */
+    input:checked ~ .checkmark {
+        background-color: #ff5A1f; /* Fill with orange */
+    }
+
+    /* 4. The actual check symbol (the white "L" shape) */
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+        left: 4px;
+        top: 0px;
+        width: 7px;
+        height: 12px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    /* Show the check symbol when checked */
+    input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+    /* 1. The background of the switch track when ON */
+    .switch.primary input:checked ~ .control {
+        background-color: #ff5A1f !important;
+        border-color: #ff8c00 !important;
+    }
+
+    /* 2. The sliding circle (the knob) */
+    /* We usually keep this white or a very light grey for contrast */
+    .switch.primary .control:after {
+        background-color: #ffffff !important;
+        border: 1px solid #e0e0e0;
+        box-shadow: none !important;
+
+    }
+
+    /* 3. If your template uses a shadow on the circle when active */
+    .switch.primary input:checked ~ .control:after {
+        border-color: #ff8c00 !important; 
+        box-shadow: none !important;
+
+    }
+
+    /* 4. The "Glow" effect for the track */
+    /* .switch.glow.primary input:checked ~ .control {
+        box-shadow: 0 0 10px rgba(255, 140, 0, 0.4) !important;
+    } */
+
+        /* 1. Change the Active Page background and border */
+     .pagination .page-item.active .page-link {
+        background-color: #ff5A1f !important;
+        border-color: #ff5A1f !important;
+        color: #ffffff !important; /* Ensure text is white on orange */
+    }
+
+    /* 2. Change the Hover state for non-active links */
+    .pagination .page-item .page-link:hover {
+        background-color: #ff7545 !important; /* The lighter orange we picked earlier */
+        border-color: #ff7545 !important;
+        color: #ffffff !important;
+    }
+
+    /* 3. Change the default text color for non-active links */
+   .pagination .page-item .page-link {
+        color: #ff5A1f; /* Orange text on white background */
+        border-color: #dee2e6; /* Standard light border */
+    }
+
+    select.theme-input-style {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px bottom 10px; /* adjust 12px to move arrow left/right */
+        padding-right: 2rem;
+    }
+
+    .btn-link {
+        color: #ff5A1f !important;
+    }
+
+    /* 1. The outer circle in its DEFAULT (unselected) state */
+    .custom-radio label::before {
+        border: 2px solid #ff5a1f !important;
+        background-color: transparent;
+    }
+
+    /* 2. The outer circle when SELECTED (keeps the color) */
+    .custom-radio input[type="radio"]:checked + label::before {
+        border-color: #ff5a1f !important;
+    }
+
+    /* 3. The inner dot when SELECTED */
+    .custom-radio input[type="radio"]:checked + label::after {
+        background-color: #ff5a1f !important;
+    }
+
+ .theme-input-style {
+        width: 100%;
+        background-color: white !important;
+        border: 1px solid black !important;
+    }
+
+    .theme-input-style:focus, 
+    .theme-input-style:active,
+    .theme-input-style:hover {
+        background-color: white !important;
+        outline: none;                /* Optional: removes default browser glow */
+        border: 1px solid black !important; /* Keeps your border consistent */
+    }
+
+</style>

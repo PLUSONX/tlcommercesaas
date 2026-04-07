@@ -5,7 +5,7 @@
     <span class="black">{{ translate('General') }}</span>
 </a>
 
-<div id="collapseGeneral" class="pl-2 collapse">
+<div id="collapseGeneral" class="collapse">
     <ul class="mb-0" style="list-style: none">
         <li class="py-1">
             <a class="black theme_option_link" id="back_to_top" href="#" data-menu="general_menu">
@@ -217,55 +217,55 @@
 
     @media (max-width: 900px) {
 
-    .col-md-3 {
-        max-width: 80px;
-        flex: 0 0 80px;
-        overflow: visible !important; /* allow submenu to escape the column */
-    }
+        .col-md-3 {
+            max-width: 80px;
+            flex: 0 0 80px;
+            overflow: visible !important; /* allow submenu to escape the column */
+        }
 
-    /* Position context must be on the parent-menu anchor, NOT the sidebar or column */
-    .theme_option_sidebar .parent-menu {
-        position: relative;
-    }
+        /* Position context must be on the parent-menu anchor, NOT the sidebar or column */
+        .theme_option_sidebar .parent-menu {
+            position: relative;
+        }
 
-    /* Remove position:relative from sidebar so it doesn't trap the absolute child */
-    .theme_option_sidebar {
-        position: static;
-    }
+        /* Remove position:relative from sidebar so it doesn't trap the absolute child */
+        .theme_option_sidebar {
+            position: static;
+        }
 
-    .theme_option_sidebar .collapse {
-        position: absolute;
-        left: 0;           /* aligns to the left edge of the parent-menu anchor */
-        top: 100%;         /* drops directly below the icon */
-        width: 200px;
-        background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-        padding: 10px;
-        z-index: 9999;
-    }
+        .theme_option_sidebar .collapse {
+            position: absolute;
+            left: 0;           /* aligns to the left edge of the parent-menu anchor */
+            top: 100%;         /* drops directly below the icon */
+            width: 200px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            padding: 10px;
+            z-index: 9999;
+        }
 
-    /* Reset UL spacing */
-    .theme_option_sidebar .collapse ul {
-        padding-left: 0;
-        margin: 0;
-    }
+        /* Reset UL spacing */
+        .theme_option_sidebar .collapse ul {
+            padding-left: 0;
+            margin: 0;
+        }
 
-    /* Restore text inside submenu */
-    .theme_option_sidebar .collapse span {
-        display: inline !important;
-    }
+        /* Restore text inside submenu */
+        .theme_option_sidebar .collapse span {
+            display: inline !important;
+        }
 
-    /* Proper link layout inside submenu */
-    .theme_option_sidebar .collapse a {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        padding: 8px 10px;
-        white-space: nowrap;
-    }
+        /* Proper link layout inside submenu */
+        .theme_option_sidebar .collapse a {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 8px 10px;
+            white-space: nowrap;
+        }
 
-}
+    }
 </style>
 
 

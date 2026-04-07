@@ -39,27 +39,29 @@
     <div class="row">
         <div class="col-12">
             <!-- Invoice Header -->
-            <div
-                class="invoice-details-header bg-white d-flex align-items-sm-center flex-column flex-sm-row mb-30 justify-content-sm-between">
+            <div 
+                class="invoice-details-header bg-transparent d-flex align-items-sm-center flex-column flex-sm-row mb-30 justify-content-sm-between">
                 <div class="d-flex align-items-center">
-                    <h2 class="regular mr-3 font-30">{{ translate('Order') }}</h2>
-                    <h4 class="c4">{{ $order_details->order_code }}</h4>
+                    <!-- <h2 class="regular mr-3 font-30">{{ translate('Order') }}</h2> -->
+                    <h4 class="mr-3" style="font-size: 30px;">{{ translate('Order') }}</h4>
+                    <h4 class="c4 mt-2">{{ $order_details->order_code }}</h4>
                 </div>
 
                 <div class="d-flex flex-wrap gap-10 invoice-header-right justify-content-around mt-3 mt-sm-0">
                     <div class="shipping-lebel-btn">
-                        <button class="btn btn-success long rounded" data-toggle="modal"
+                        <button 
+                            class="btn btn-white long rounded" data-toggle="modal"
                             data-target="#order-shipping-label-modal">{{ translate('Print Shipping Label') }}</button>
                     </div>
                     <div class="invoice-btn">
                         <button data-toggle="modal" data-target="#order-invoice-print-modal"
-                            class="btn btn-info long rounded">{{ translate('Print Invoice') }}</button>
+                            class="btn btn-orange long rounded">{{ translate('Print Invoice') }}</button>
                     </div>
                 </div>
             </div>
             <!-- End Invoice Header -->
             <!-- Order details -->
-            <div class="bg-white invoice-pd mb-30">
+            <div class="bg-white invoice-pd mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="row">
                     @php
                         $canCancelOrAccept = $order_details->adminCancelOrAcceptOrder();
@@ -72,17 +74,17 @@
                                 <form method="POST" action="{{ route('plugin.tlcommercecore.orders.accept') }}">
                                     @csrf
                                     <input type="hidden" name="order_id" value="{{ $order_details->id }}">
-                                    <button class="btn long rounded btn-success">{{ translate('Accept Order') }}
+                                    <button class="btn long rounded btn-orange">{{ translate('Accept Order') }}
                                     </button>
                                 </form>
-                                <button class="btn long rounded btn-danger" data-toggle="modal"
+                                <button class="btn long rounded btn-white" data-toggle="modal"
                                     data-target="#order-cancel-modal" title="Cancel Order">
                                     {{ translate('Cancel Order') }}
                                 </button>
                             </div>
                         @endif
                         <div class="right-side">
-                            <button class="btn long rounded btn-info status-update-modal-open-button"
+                            <button class="btn long rounded btn-orange status-update-modal-open-button"
                                 data-order="{{ $order_details->id }}">{{ translate('Update Order status') }}
                             </button>
                         </div>
@@ -249,7 +251,7 @@
                                     <ul class="status-list">
                                         <li>
                                             {{ $order_details->guest_customer->name }}
-                                            <span class="badge badge-info ml-10">Guest</span>
+                                            <span class="badge ml-10" style="background-color: #ff5A1f; color: #fff;">Guest</span>
                                         </li>
                                         <li>
                                             <span class="key">{{ translate('Email') }}</span>
@@ -271,7 +273,7 @@
         <div class="col-12 col-lg-8">
             <!-- Product list -->
             @foreach ($order_details->products as $key => $product)
-                <div class="card mb-30">
+                <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                     <div class="bg-white border-bottom2 card-header d-flex justify-content-between flex-wrap">
                         <div class="package-title">
                             <h4>{{ translate('Package') }}-{{ $key + 1 }}</h4>
@@ -407,7 +409,7 @@
                                                                                 class="link-btn">{{ $seller_info->name }}</a>
                                                                         </p>
                                                                     @else
-                                                                        <p class="black font-13 mb-0 mt-1 text-primary">
+                                                                        <p class="black font-13 mb-0 mt-1 text-primary" style="color: #ff5A1f !important">
                                                                             {{ translate('Inhouse Product') }}</p>
                                                                     @endif
                                                                 @endif
@@ -442,7 +444,7 @@
                             <!--Cancel item-->
                             @if ($product->delivery_status == config('tlecommercecore.order_delivery_status.pending'))
                                 <div class="col-12 d-flex justify-content-end mt-10">
-                                    <a href="#" class="btn long rounded btn-danger cancel-item"
+                                    <a href="#" class="btn long rounded btn-white cancel-item"
                                         data-item="{{ $product->id }}">Cancel Item</a>
                                 </div>
                             @endif
@@ -454,7 +456,7 @@
             <!-- End product list -->
             <!--Order Note-->
             @if ($order_details->note != null)
-                <div class="card mb-30">
+                <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                     <div class="card-header bg-white border-bottom2">
                         <div class="d-sm-flex justify-content-between align-items-center">
                             <h4>{{ translate('Order Note') }}</h4>
@@ -470,7 +472,7 @@
         <!--End packages-->
         <!--Order Summary-->
         <div class="col-12 col-lg-4">
-            <div class="card mb-30">
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4>{{ translate('Order Summary') }}</h4>
@@ -536,7 +538,7 @@
     <!--Update  status modal-->
     <div id="order-status--update-modal" class="order-status--update-modal modal fade show" aria-modal="true"
         role="dialog">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-lg modal-dialog-centered" style="border-radius: 12px !important; overflow: hidden !important;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title h6 bold">{{ translate('Update Order Status') }}</h4>
@@ -697,7 +699,7 @@
                         <!--End comment-->
                         <div class="form-row">
                             <div class="col-12 text-right">
-                                <button class="btn long update-order-status rounded">{{ translate('Update') }}</button>
+                                <button class="btn long btn-orange update-order-status rounded">{{ translate('Update') }}</button>
                             </div>
                         </div>
                     </form>
@@ -803,7 +805,7 @@
     <!--Shipping label modal-->
     <div id="order-shipping-label-modal" class="order-shipping-label-modal modal fade show" aria-modal="true"
         role="dialog">
-        <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-dialog modal-md modal-dialog-centered" style="border-radius: 12px !important; overflow: hidden !important;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title h6 bold">{{ translate('Shipping Label') }}</h4>
@@ -903,12 +905,21 @@
                         <!--End product checkbox-->
                         <div class="form-row">
                             <div class="col-12 d-flex justify-content-between">
+                                <button type="submit" name="action" value="preview" class="btn long btn-white rounded">
+                                    {{ translate('Preview') }}
+                                </button>
+                                
+                                <button type="submit" name="action" value="download" class="btn long btn-orange rounded">
+                                    {{ translate('Download') }}
+                                </button>
+                            </div>
+                            <!-- <div class="col-12 d-flex justify-content-between">
                                 <input type="submit" name="action" value="preview"
                                     class="btn long btn-info rounded"></input>
                                 <input type="submit" name="action" value="download"
                                     class="btn long btn-success rounded"></input>
 
-                            </div>
+                            </div> -->
                         </div>
                     </form>
                 </div>
@@ -1018,12 +1029,21 @@
                         <!--End product checkbox-->
                         <div class="form-row">
                             <div class="col-12 d-flex justify-content-between">
+                                <button type="submit" name="action" value="preview" class="btn long btn-white rounded">
+                                    {{ translate('Preview') }}
+                                </button>
+                                
+                                <button type="submit" name="action" value="download" class="btn long btn-orange rounded">
+                                    {{ translate('Download') }}
+                                </button>
+                            </div>
+                            <!-- <div class="col-12 d-flex justify-content-between">
                                 <input type="submit" name="action" value="preview"
                                     class="btn long btn-info rounded"></input>
                                 <input type="submit" name="action" value="download"
                                     class="btn long btn-success rounded"></input>
 
-                            </div>
+                            </div> -->
                         </div>
                     </form>
                 </div>
@@ -1247,3 +1267,188 @@
         })(jQuery);
     </script>
 @endsection
+
+
+<style>
+
+    button.btn-orange,
+    a.btn-orange {
+        background: #ff5A1f !important;
+        border-color: #e64a10 !important;
+        color: #fff !important;
+        transition: background 0.2s ease;
+        border-radius: 6px !important;
+        box-shadow: none !important;
+
+    }
+
+    button.btn-orange:hover,
+    a.btn-orange:hover {
+        background: #ff7545 !important;
+        border-color: #e07b00 !important;
+        color: #fff !important;
+        box-shadow: none !important;
+
+    }
+
+    button.btn-orange:focus,
+    button.btn-orange:active,
+    button.btn-orange:active:focus {
+        background: #ff7545 !important;
+        border-color: #e07b00 !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    /* Base State */
+button.btn-white,
+a.btn-white {
+    background: #fff !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+    border-radius: 6px !important;
+    /* padding: 10px 20px; Added for standard button sizing */
+    display: inline-block;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+    /* Transition everything for a smooth feel */
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+   
+    height: 40px !important;
+}
+
+/* Proper Hover Effect */
+button.btn-white:hover,
+a.btn-white:hover {
+    background: #000 !important; /* Inverts the look */
+    color: #fff !important;      /* Makes text white on black */
+    border-color: #000 !important;
+    transform: translateY(-2px); /* Subtle lift effect */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+}
+
+/* Active / Click Effect */
+button.btn-white:active,
+a.btn-white:active {
+    transform: translateY(0);    /* Pushes button back down when clicked */
+    box-shadow: none !important;
+    background: #222 !important; /* Slightly lighter than black for feedback */
+}
+
+/* Focus State for Accessibility */
+button.btn-white:focus,
+a.btn-white:focus {
+    outline: 2px solid #ff7545 !important; /* High contrast ring */
+    outline-offset: 2px;
+}
+
+
+    /* 1. Hide the native browser checkbox */
+    .product-id, .select-all {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+
+    /* 2. Style the custom checkmark for both TH and TD */
+    .checkmark {
+        display: inline-block;
+        height: 18px;
+        width: 18px;
+        background-color: transparent;
+        border: 2px solid #ff8c00; /* Orange border */
+        border-radius: 3px;
+        position: relative;
+        cursor: pointer;
+    }
+
+    /* 3. Style when the checkbox is checked */
+    input:checked ~ .checkmark {
+        background-color: #ff5A1f; /* Fill with orange */
+    }
+
+    /* 4. The actual check symbol (the white "L" shape) */
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+        left: 4px;
+        top: 0px;
+        width: 7px;
+        height: 12px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    /* Show the check symbol when checked */
+    input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+    /* 1. The background of the switch track when ON */
+    .switch.primary input:checked ~ .control {
+        background-color: #ff5A1f !important;
+        border-color: #ff8c00 !important;
+    }
+
+    /* 2. The sliding circle (the knob) */
+    /* We usually keep this white or a very light grey for contrast */
+    .switch.primary .control:after {
+        background-color: #ffffff !important;
+        border: 1px solid #e0e0e0;
+        box-shadow: none !important;
+
+    }
+
+    /* 3. If your template uses a shadow on the circle when active */
+    .switch.primary input:checked ~ .control:after {
+        border-color: #ff8c00 !important; 
+        box-shadow: none !important;
+
+    }
+
+    /* 4. The "Glow" effect for the track */
+    /* .switch.glow.primary input:checked ~ .control {
+        box-shadow: 0 0 10px rgba(255, 140, 0, 0.4) !important;
+    } */
+
+        /* 1. Change the Active Page background and border */
+     .pagination .page-item.active .page-link {
+        background-color: #ff5A1f !important;
+        border-color: #ff5A1f !important;
+        color: #ffffff !important; /* Ensure text is white on orange */
+    }
+
+    /* 2. Change the Hover state for non-active links */
+    .pagination .page-item .page-link:hover {
+        background-color: #ff7545 !important; /* The lighter orange we picked earlier */
+        border-color: #ff7545 !important;
+        color: #ffffff !important;
+    }
+
+    /* 3. Change the default text color for non-active links */
+   .pagination .page-item .page-link {
+        color: #ff5A1f; /* Orange text on white background */
+        border-color: #dee2e6; /* Standard light border */
+    }
+
+    select.theme-input-style {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px bottom 10px; /* adjust 12px to move arrow left/right */
+        padding-right: 2rem;
+    }
+
+    /* 4. Optional: Style the Focus state (when clicked) to remove the blue shadow */
+    /* .pagination .page-item .page-link:focus {
+        box-shadow: 0 0 0 0.2rem rgba(255, 90, 31, 0.25);
+    } */
+
+</style>

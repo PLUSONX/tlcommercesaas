@@ -1,5 +1,5 @@
 <!--Seller Module-->
-@canany([
+<!-- @canany([
     'Manage Sellers',
     'Manage Payouts',
     'Manage Payouts Requests',
@@ -43,5 +43,5 @@
             @endcan
         </ul>
     </li>
-@endcanany
+@endcanany -->
 <!--End Seller Module-->

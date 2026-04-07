@@ -1163,7 +1163,7 @@
         <div
             class="bottom-button d-flex align-items-center justify-content-sm-end gap-10 flex-wrap justify-content-center">
             <button type="submit" name="status" value="{{ config('settings.general_status.in_active') }}"
-                class="btn btn-dark btn-outline-info" tabindex="4">
+                class="btn long btn-white" tabindex="4">
                 {{ translate('Save & Draft') }}
             </button>
             <button type="submit" name="status" value="{{ config('settings.general_status.active') }}"
@@ -1610,6 +1610,51 @@
     }
 
 
+      /* Base State */
+    button.btn-white,
+    a.btn-white {
+        background: #fff !important;
+        color: #000 !important;
+        border: 1px solid #000 !important;
+        border-radius: 6px !important;
+        /* padding: 10px 20px; Added for standard button sizing */
+        display: inline-block;
+        text-decoration: none;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+        /* Transition everything for a smooth feel */
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    
+        height: 40px !important;
+    }
+
+    /* Proper Hover Effect */
+    button.btn-white:hover,
+    a.btn-white:hover {
+        background: #000 !important; /* Inverts the look */
+        color: #fff !important;      /* Makes text white on black */
+        border-color: #000 !important;
+        transform: translateY(-2px); /* Subtle lift effect */
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+    }
+
+    /* Active / Click Effect */
+    button.btn-white:active,
+    a.btn-white:active {
+        transform: translateY(0);    /* Pushes button back down when clicked */
+        box-shadow: none !important;
+        background: #222 !important; /* Slightly lighter than black for feedback */
+    }
+
+    /* Focus State for Accessibility */
+    button.btn-white:focus,
+    a.btn-white:focus {
+        outline: 2px solid #ff7545 !important; /* High contrast ring */
+        outline-offset: 2px;
+    }
+
+
+
     /* 1. Hide the native browser checkbox */
     .product-id, .select-all {
         position: absolute;
@@ -1717,20 +1762,20 @@
     }
 
     /* 1. The outer circle in its DEFAULT (unselected) state */
-.custom-radio label::before {
-    border: 2px solid #ff5a1f !important;
-    background-color: transparent;
-}
+    .custom-radio label::before {
+        border: 2px solid #ff5a1f !important;
+        background-color: transparent;
+    }
 
-/* 2. The outer circle when SELECTED (keeps the color) */
-.custom-radio input[type="radio"]:checked + label::before {
-    border-color: #ff5a1f !important;
-}
+    /* 2. The outer circle when SELECTED (keeps the color) */
+    .custom-radio input[type="radio"]:checked + label::before {
+        border-color: #ff5a1f !important;
+    }
 
-/* 3. The inner dot when SELECTED */
-.custom-radio input[type="radio"]:checked + label::after {
-    background-color: #ff5a1f !important;
-}
+    /* 3. The inner dot when SELECTED */
+    .custom-radio input[type="radio"]:checked + label::after {
+        background-color: #ff5a1f !important;
+    }
 
  .theme-input-style {
         width: 100%;

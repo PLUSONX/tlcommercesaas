@@ -17,11 +17,12 @@
     </div>
     <!--End search options-->
     <!-- Sidebar Header -->
-    <!-- <div class="sidebar-header d-none d-lg-block pt-0">
-        <div class="sidebar-toogle-pin">
-            <i class="icofont-tack-pin"></i>
+    <div class="sidebar-header d-none d-lg-block pt-0">
+        <div class="sidebar-toogle-pin" style="margin-left: 8px;">
+            <!-- <i class="icofont-tack-pin"></i> -->
+             <x-lucide-pin class="icofont-tack-pin link-title" style="width: 20px; height: 20px;" />
         </div>
-    </div> -->
+    </div>
     <!-- End Sidebar Header -->
     <!-- Sidebar Body -->
     <div class="sidebar-body main-side-bar">
@@ -43,7 +44,7 @@
             <!--End Plugin nabvar options-->
 
             @if (auth()->user()->can('Manage Media'))
-                <li class="{{ Request::routeIs(['core.media.page']) ? 'active ' : '' }}" style="padding-left: 0 !important;">
+                <li class="users-menu {{ Request::routeIs(['core.media.page']) ? 'active ' : '' }}" style="padding-left: 0 !important;">
                     <a href="{{ route('core.media.page') }}" class="d-flex align-items-center">
                         <x-lucide-library style="width: 20px; height: 20px; margin-left: 8px;" />
                         <span class="link-title ml-2">{{ translate('File Manager') }}</span>
@@ -183,8 +184,8 @@
                     auth()->user()->can('Manage Media Settings') ||
                     auth()->user()->can('Manage Seo Settings'))
                 <!--Settings Modules-->
-                <!-- <li -->
-                    <!-- class="{{ Request::routeIs(['core.seo.settings', 'core.email.smtp.configuration', 'core.language.frontend.translations', 'core.image.settings', 'core.email.templates', 'core.language.edit', 'core.language.key.values', 'core.languages', 'core.language.new', 'core.image.settings', 'core.social.media.login.settings', 'core.general.settings']) ? 'active sub-menu-opened' : '' }}"> -->
+                <li style="padding-left: 0 !important;"
+                    class="{{ Request::routeIs(['core.seo.settings', 'core.email.smtp.configuration', 'core.language.frontend.translations', 'core.image.settings', 'core.email.templates', 'core.language.edit', 'core.language.key.values', 'core.languages', 'core.language.new', 'core.image.settings', 'core.social.media.login.settings', 'core.general.settings']) ? 'active sub-menu-opened' : '' }}">
                     <li style="padding-left: 0 !important;">
                     <a href="#">
                         <!-- <i class="icofont-settings-alt"></i> -->
@@ -236,9 +237,9 @@
 
             <!--Users Module-->
             @if (auth()->user()->can('Show User') || auth()->user()->can('Show Role') || auth()->user()->can('Show Permission'))
-                <!-- <li -->
-                    <!-- class="{{ Request::routeIs(['core.roles', 'core.permissions', 'core.users', 'core.add.user', 'core.edit.user']) ? 'active sub-menu-opened' : '' }}"> -->
-                    <li style="padding-left: 0 !important;">
+                <li style="padding-left: 0 !important;"
+                    class="users-menu {{ Request::routeIs(['core.roles', 'core.permissions', 'core.users', 'core.add.user', 'core.edit.user']) ? 'active sub-menu-opened' : '' }}">
+                    <!-- <li style="padding-left: 0 !important;"> -->
                     <a href="#">
                         <!-- <i class="icofont-users-social"></i> -->
                         <x-lucide-user style="width: 20px; height: 20px; margin-left: 8px;" />
@@ -270,9 +271,9 @@
 
             <!--Activity Logs Module-->
             @if (auth()->user()->can('Manage Login activity'))
-                <!-- <li -->
-                    <!-- class="{{ Request::routeIs(['core.activity.logs', 'core.get.login.activity']) ? 'active sub-menu-opened' : '' }}"> -->
-                    <li style="padding-left: 0 !important;">
+                <li style="padding-left: 0 !important;"
+                    class="users-menu {{ Request::routeIs(['core.activity.logs', 'core.get.login.activity']) ? 'active sub-menu-opened' : '' }}">
+                    <!-- <li style="padding-left: 0 !important;"> -->
                     <a href="#">
                         <!-- <i class="icofont-ui-password"></i> -->
                         <x-lucide-clipboard-clock style="width: 20px; height: 20px; margin-left: 8px;" />
@@ -341,17 +342,164 @@
 
 <style>
 
-.sidebar .nav li.active > a,
-.sidebar .nav li.active > a:hover,
-.sidebar .nav li.active > a:focus {
-    background-color: #ff5A1f !important;
-    color: #ffffff !important;
-    border-radius: 12px
-}
+    @media (max-width: 900px) {
+         .users-menu {
+            display: none !important;
+        }
+    }
 
-.sidebar .nav li.active > a svg {
-    stroke: #ffffff !important;
-    color: #ffffff !important;
-}
+    /* .sidebar .nav li.active > a,
+    .sidebar .nav li.active > a:hover,
+    .sidebar .nav li.active > a:focus {
+        background-color: #ff5A1f !important;
+        color: #ffffff !important;
+        border-radius: 12px
+    }
 
+    .sidebar .nav li.active > a svg {
+        stroke: #ffffff !important;
+        color: #ffffff !important;
+    }
+    */
+    
+    .icofont-tack-pin {
+        color: #000 !important;
+    }
+
+    .icofont-tack-pin:hover {
+        color: #ff5A1f !important;
+    }
+
+
+     /* ============================================
+       PARENT MENU ITEMS (with children)
+       ============================================ */
+
+    /* Parent WITH sub-menu: always transparent, no background in any state */
+    .sidebar .nav li:has(> .sub-menu) > a,
+    .sidebar .nav li:has(> .sub-menu) > a:hover,
+    .sidebar .nav li:has(> .sub-menu).active > a,
+    .sidebar .nav li:has(> .sub-menu).active > a:hover {
+        background-color: transparent !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    /* Parent WITH sub-menu hover: only font + icon turn orange */
+    .sidebar .nav li:has(> .sub-menu) > a:hover,
+    .sidebar .nav li:has(> .sub-menu).active > a:hover {
+        color: #ff5a1f !important;
+    }
+
+    /* Sync SVG icon color on hover */
+    .sidebar .nav li:has(> .sub-menu) > a:hover svg,
+    .sidebar .nav li:has(> .sub-menu).active > a:hover svg {
+        stroke: #ff5a1f !important;
+    }
+
+    /* ============================================
+       PARENT MENU ITEMS (without children / standalone)
+       ============================================ */
+
+    /* Standalone active parent: orange background */
+    .sidebar .nav > li.active:not(:has(> .sub-menu)) > a {
+        background-color: #ff5a1f !important;
+        color: #ffffff !important;
+        border-radius: 12px;
+    }
+
+    /* Standalone active parent icon: white */
+    .sidebar .nav > li.active:not(:has(> .sub-menu)) > a svg {
+        stroke: #ffffff !important;
+    }
+
+    /* Standalone parent hover: orange background */
+    .sidebar .nav > li:not(:has(> .sub-menu)) > a:hover {
+        background-color: #ff5a1f !important;
+        color: #ffffff !important;
+        border-radius: 12px;
+    }
+
+    /* Standalone parent hover icon: white */
+    .sidebar .nav > li:not(:has(> .sub-menu)) > a:hover svg {
+        stroke: #ffffff !important;
+    }
+
+    /* Parent WITH sub-menu that is currently OPEN: keep font orange */
+    .sidebar .nav li.sub-menu-opened:has(> .sub-menu) > a {
+        color: #ff5a1f !important;
+    }
+
+    .sidebar .nav li.sub-menu-opened:has(> .sub-menu) > a svg {
+        stroke: #ff5a1f !important;
+    }
+
+
+    /* ============================================
+       CHILD MENU ITEMS (depth 1)
+       ============================================ */
+
+    /* Active child: orange background */
+    .sidebar .nav .sub-menu > li.active > a {
+        background-color: #ff5a1f !important;
+        color: #ffffff !important;
+        border-radius: 12px;
+    }
+
+    /* Active child icon: white */
+    .sidebar .nav .sub-menu > li.active > a svg {
+        stroke: #ffffff !important;
+    }
+
+    /* Child hover: only font color, no background */
+    .sidebar .nav .sub-menu > li:not(:has(> .sub-menu)) > a:hover {
+        background-color: transparent !important;
+        color: #ff5a1f !important;
+        text-decoration: none;
+    }
+
+    /* Active child being hovered: keep orange background */
+    .sidebar .nav .sub-menu > li.active:not(:has(> .sub-menu)) > a:hover {
+        background-color: #ff5a1f !important;
+        color: #ffffff !important;
+    }
+
+    /* ============================================
+       LOCATIONS SUB-SUB-MENU (depth 2)
+       ============================================ */
+
+    /* Locations parent (has sub-menu): transparent always */
+    .sidebar .nav .sub-menu > li:has(> .sub-menu) > a,
+    .sidebar .nav .sub-menu > li:has(> .sub-menu) > a:hover,
+    .sidebar .nav .sub-menu > li:has(> .sub-menu).active > a,
+    .sidebar .nav .sub-menu > li:has(> .sub-menu).active > a:hover {
+        background-color: transparent !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    /* Locations parent hover: orange font only */
+    .sidebar .nav .sub-menu > li:has(> .sub-menu) > a:hover {
+        color: #ff5a1f !important;
+    }
+
+    /* Locations grandchild active: orange background */
+    .sidebar .nav .sub-menu .sub-menu > li.active > a {
+        background-color: #ff5a1f !important;
+        color: #ffffff !important;
+        border-radius: 12px;
+    }
+
+    /* Locations grandchild hover: orange font only */
+    .sidebar .nav .sub-menu .sub-menu > li:not(.active) > a:hover {
+        background-color: transparent !important;
+        color: #ff5a1f !important;
+        text-decoration: none;
+    }
+
+    /* Locations grandchild active hovered: keep orange */
+    .sidebar .nav .sub-menu .sub-menu > li.active > a:hover {
+        background-color: #ff5a1f !important;
+        color: #ffffff !important;
+    }
 </style>

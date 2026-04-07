@@ -632,7 +632,7 @@
                                     </td> -->
                                     <td class="text-center">
                                         <a href="{{ route('plugin.tlcommercecore.orders.details', ['id' => $order->id]) }}"
-                                            class="details-btn">
+                                            class="details-btn" style="color: #ff5A1f !important;">
                                             Details
                                             <i class="icofont-arrow-right"></i></a>
                                     </td>
