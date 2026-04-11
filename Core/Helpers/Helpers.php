@@ -2662,16 +2662,41 @@ if (!function_exists('changeEmailConfiguration')) {
      */
     function changeEmailConfiguration()
     {
-        if (!empty(getGeneralSetting('mail_host')) && !empty(getGeneralSetting('mail_port')) && !empty(getGeneralSetting('mail_user_name')) && !empty(getGeneralSetting('mail_password')) && !empty(getGeneralSetting('mail_encryption'))) {
-            config([
-                'mail.mailers.smtp.host' => getGeneralSetting('mail_host'),
-                'mail.mailers.smtp.port' => getGeneralSetting('mail_port'),
-                'mail.mailers.smtp.username' => getGeneralSetting('mail_user_name'),
-                'mail.mailers.smtp.password' => getGeneralSetting('mail_password'),
-                'mail.mailers.smtp.encryption' => getGeneralSetting('mail_encryption'),
-            ]);
-        }
+        // Fetch settings from your specific tenant tables
+        $mail_driver = getGeneralSetting('mail_driver') ?? env('MAIL_MAILER');
+        $host = getGeneralSetting('mail_host');
+        $port = getGeneralSetting('mail_port');
+        $username = getGeneralSetting('mail_user_name');
+        $password = getGeneralSetting('mail_password');
+        $encryption = getGeneralSetting('mail_encryption');
+
+        // Manually force these into the Laravel Config
+        config([
+            'mail.mailers.smtp.host' => $host,
+            'mail.mailers.smtp.port' => $port,
+            'mail.mailers.smtp.username' => $username,
+            'mail.mailers.smtp.password' => $password,
+            'mail.mailers.smtp.encryption' => $encryption,
+            'mail.from.address' => getGeneralSetting('mail_from'),
+            'mail.from.name' => getGeneralSetting('mail_from_name'),
+        ]);
+
+        // VERY IMPORTANT: Reset the mailer so it picks up the new config
+        app()->forgetInstance('mail.manager');
+        \Illuminate\Support\Facades\Facade::clearResolvedInstance('mailer');
     }
+    // function changeEmailConfiguration()
+    // {
+    //     if (!empty(getGeneralSetting('mail_host')) && !empty(getGeneralSetting('mail_port')) && !empty(getGeneralSetting('mail_user_name')) && !empty(getGeneralSetting('mail_password')) && !empty(getGeneralSetting('mail_encryption'))) {
+    //         config([
+    //             'mail.mailers.smtp.host' => getGeneralSetting('mail_host'),
+    //             'mail.mailers.smtp.port' => getGeneralSetting('mail_port'),
+    //             'mail.mailers.smtp.username' => getGeneralSetting('mail_user_name'),
+    //             'mail.mailers.smtp.password' => getGeneralSetting('mail_password'),
+    //             'mail.mailers.smtp.encryption' => getGeneralSetting('mail_encryption'),
+    //         ]);
+    //     }
+    // }
 }
 
 if (!function_exists('getTotalUsedSize')) {

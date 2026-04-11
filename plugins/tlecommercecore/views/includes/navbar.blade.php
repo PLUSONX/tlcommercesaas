@@ -298,6 +298,11 @@
                         href="{{ route('plugin.tlcommercecore.shipping.configuration') }}">{{ translate('Shipping & Delivery') }}</a>
                 </li>
             @endif
+            @if ($isactivateCarrier)
+                 @if (auth()->user()->can('Manage Carriers'))
+                     @includeIf('plugin/carrier::includes.submenu.shipping')
+                 @endif
+             @endif
             @if (auth()->user()->can('Manage Locations'))
                 <li class="{{ Request::routeIs([
                     'plugin.tlcommercecore.shipping.locations.cities.edit',

@@ -1123,6 +1123,9 @@ class OrderRepository
     public function customerCheckout($request)
     {
         try {
+
+            \Log::info('customer Checkout Respository Method!!!');
+
             $products = json_decode($request['products'], true);
             $total_payable_amount = self::totalOrderAmount($products) - self::calculateOrderDiscount($request);
             DB::beginTransaction();
@@ -1196,7 +1199,7 @@ class OrderRepository
     public function guestCheckout($request)
     {
         try {
-            // \Log::info('Guest Checkout Respository Method!!!');
+            \Log::info('Guest Checkout Respository Method!!!');
 
             DB::beginTransaction();
             $shipping_address = $request->has('shipping_address') ? json_decode($request['shipping_address'], true) : [];
@@ -1205,7 +1208,9 @@ class OrderRepository
             $customer_name = $request['name'] != null ? $request['name'] : ($shipping_address['name'] ?? 'Guest Customer');
             $customer_email = $request['email'] != null ? $request['email'] : ($shipping_address['email'] ?? 'guest@default.com');
 
-            if ($request->has('create_new_account') && getEcommerceSetting('enable_personal_info_guest_checkout') == 1) {
+            // if ($request->has('create_new_account') && getEcommerceSetting('enable_personal_info_guest_checkout') == 1) {
+
+                \Log::info('Respository Method: in create_new_account region!!!');
                 //Register customer
                 $customer = new Customers;
                 $customer->uid = date('hisymd');
@@ -1215,18 +1220,20 @@ class OrderRepository
                 $customer->status = config('settings.general_status.active');
                 $customer->save();
                 $customer_id = $customer->id;
-            } else {
-                //Create guest customer
 
-                // \Log::info('Respository Method: in guest customer region!!!');
+                DB::commit();
+            // } else {
+            //     //Create guest customer
 
-                $guest_customer = new GuestCustomers();
-                $guest_customer->name = !empty($customer_name) ? $customer_name : 'Guest Customer';
-                $guest_customer->email = !empty($customer_email) ? $customer_email : 'guest@default.com';
-                $guest_customer->order_id = NULl;
-                $guest_customer->save();
-                $guest_customer_id = $guest_customer->id;
-            }
+            //     \Log::info('Respository Method: in guest customer region!!!');
+
+            //     $guest_customer = new GuestCustomers();
+            //     $guest_customer->name = !empty($customer_name) ? $customer_name : 'Guest Customer';
+            //     $guest_customer->email = !empty($customer_email) ? $customer_email : 'guest@default.com';
+            //     $guest_customer->order_id = NULl;
+            //     $guest_customer->save();
+            //     $guest_customer_id = $guest_customer->id;
+            // }
             // \Log::info('Respository Method: out guest customer region!!!');
             $shipping_address_id = NULL;
             $billing_address_id = NULL;
@@ -1368,9 +1375,14 @@ class OrderRepository
 
             EcommerceNotification::sendNewOrderNotification($order);
 
+            // EcommerceNotification::sendOrderInvoiceNotification($order->id, $customer_id);
+
+            // EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $message, $btn_title, $mail_title);
+
+
             // \Log::info('Respository Method: after sending notification to admin!!!');
 
-            DB::commit();
+            // DB::commit();
             if ($request['payment_id'] == config('tlecommercecore.payment_methods.bank')) {
 
                 // \Log::info('Respository Method: before storing bank payment info!!!');
@@ -1677,9 +1689,9 @@ class OrderRepository
             if ($order != null) {
 
                 $query = OrderHasProducts::where('order_id', $order_id);
-                if ($seller_id != null) {
-                    $query = $query->where('seller_id', $seller_id);
-                }
+                // if ($seller_id != null) {
+                //     $query = $query->where('seller_id', $seller_id);
+                // }
 
                 $all_products = $query->select(['delivery_status', 'seller_id', 'order_id', 'id'])->get();
                 foreach ($all_products as $product) {
@@ -1688,29 +1700,44 @@ class OrderRepository
                         $product->save();
                         $this->insertOrderTrackingData($order_id, $product->id, 'Your order has been accepted');
                         //Filter seller ids
-                        if ($seller_id == null && $product->seller_id != null && auth()->user()->user_type == null && isActivePluging('multivendor')) {
-                            if (!in_array($product->seller_id, $notifiable_sellers)) {
-                                array_push($notifiable_sellers, $product->seller_id);
-                            }
-                        }
+                        // if ($seller_id == null && $product->seller_id != null && auth()->user()->user_type == null && isActivePluging('multivendor')) {
+                        //     if (!in_array($product->seller_id, $notifiable_sellers)) {
+                        //         array_push($notifiable_sellers, $product->seller_id);
+                        //     }
+                        // }
                     }
                 }
                 //Update order table
-                if ($order->products->count() == $all_products->count()) {
-                    $order->delivery_status = config('tlecommercecore.order_delivery_status.processing');
-                    $order->save();
-                }
+                $order->delivery_status = config('tlecommercecore.order_delivery_status.processing');
+                $order->save();
+                // if ($order->products->count() == $all_products->count()) {
+                //     $order->delivery_status = config('tlecommercecore.order_delivery_status.processing');
+                //     $order->save();
+                // }
                 //Send notification to customer
                 $message = "Your order has been accepted";
                 $btn_title = "Track Your Order";
                 $mail_title = "Order accepted";
-                EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $message, $btn_title, $mail_title);
-                //Send notification to seller
-                foreach ($notifiable_sellers as $seller_id) {
-                    $seller_message = "An order has been accepted. Order code " . $order->order_code;
-                    EcommerceNotification::sendOrderItemUpdateStatusNotificationToSeller($order->id, $seller_id, $seller_message);
-                }
+
+                // $order_details = orderDetails($order->id);
+
+                // Log::info("Order repository", ['customer_id' => $order_details->customer_id]);
+
                 DB::commit();
+
+                \Log::info('before sending email notification to customer!!!');
+                // EcommerceNotification::sendOrderStatusNotification($order->id, $order_details->customer_id, $message, $btn_title, $mail_title);
+                // EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $message, $btn_title, $mail_title);
+                EcommerceNotification::sendCustomerOrderConfirmationNotification($order->id, $order->customer_id, $message, $btn_title, $mail_title);
+                //Send notification to seller
+                // foreach ($notifiable_sellers as $seller_id) {
+                //     $seller_message = "An order has been accepted. Order code " . $order->order_code;
+                //     EcommerceNotification::sendOrderItemUpdateStatusNotificationToSeller($order->id, $seller_id, $seller_message);
+                // }
+
+                \Log::info('after sending email notification to customer!!!');
+
+                // DB::commit();
                 return true;
             }
             DB::rollBack();
@@ -1723,6 +1750,61 @@ class OrderRepository
             return false;
         }
     }
+    // public function acceptOrder($order_id, $seller_id = null)
+    // {
+    //     try {
+    //         DB::beginTransaction();
+    //         $notifiable_sellers = [];
+    //         $order = Orders::where('id', $order_id)->first();
+    //         if ($order != null) {
+
+    //             $query = OrderHasProducts::where('order_id', $order_id);
+    //             if ($seller_id != null) {
+    //                 $query = $query->where('seller_id', $seller_id);
+    //             }
+
+    //             $all_products = $query->select(['delivery_status', 'seller_id', 'order_id', 'id'])->get();
+    //             foreach ($all_products as $product) {
+    //                 if ($product->delivery_status != config('tlecommercecore.order_delivery_status.cancelled')) {
+    //                     $product->delivery_status = config('tlecommercecore.order_delivery_status.processing');
+    //                     $product->save();
+    //                     $this->insertOrderTrackingData($order_id, $product->id, 'Your order has been accepted');
+    //                     //Filter seller ids
+    //                     if ($seller_id == null && $product->seller_id != null && auth()->user()->user_type == null && isActivePluging('multivendor')) {
+    //                         if (!in_array($product->seller_id, $notifiable_sellers)) {
+    //                             array_push($notifiable_sellers, $product->seller_id);
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //             //Update order table
+    //             if ($order->products->count() == $all_products->count()) {
+    //                 $order->delivery_status = config('tlecommercecore.order_delivery_status.processing');
+    //                 $order->save();
+    //             }
+    //             //Send notification to customer
+    //             $message = "Your order has been accepted";
+    //             $btn_title = "Track Your Order";
+    //             $mail_title = "Order accepted";
+    //             EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $message, $btn_title, $mail_title);
+    //             //Send notification to seller
+    //             foreach ($notifiable_sellers as $seller_id) {
+    //                 $seller_message = "An order has been accepted. Order code " . $order->order_code;
+    //                 EcommerceNotification::sendOrderItemUpdateStatusNotificationToSeller($order->id, $seller_id, $seller_message);
+    //             }
+    //             DB::commit();
+    //             return true;
+    //         }
+    //         DB::rollBack();
+    //         return false;
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return false;
+    //     } catch (\Error $e) {
+    //         DB::rollBack();
+    //         return false;
+    //     }
+    // }
     /**
      * Will cancel order
      *
@@ -1876,11 +1958,11 @@ class OrderRepository
                     //Send notification to customer
                     EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $delivery_change_message, $btn_title, $mail_title);
                     //Filter seller id
-                    if ($order_product->seller_id != null && auth()->user()->user_type == null && isActivePluging('multivendor')) {
-                        if (!in_array($order_product->seller_id, $seller_ids)) {
-                            array_push($seller_ids, $order_product->seller_id);
-                        }
-                    }
+                    // if ($order_product->seller_id != null && auth()->user()->user_type == null && isActivePluging('multivendor')) {
+                    //     if (!in_array($order_product->seller_id, $seller_ids)) {
+                    //         array_push($seller_ids, $order_product->seller_id);
+                    //     }
+                    // }
                 }
                 //Update payment and delivery status and payment
                 if ($order_product->payment_status != $request['payment_status']) {
@@ -1917,10 +1999,10 @@ class OrderRepository
             $order->save();
 
             //Send notification to seller
-            foreach ($seller_ids as $seller_id) {
-                $seller_message = "Order status updated. Order code " . $order->order_code;
-                EcommerceNotification::sendOrderItemUpdateStatusNotificationToSeller($order->id, $seller_id, $seller_message);
-            }
+            // foreach ($seller_ids as $seller_id) {
+            //     $seller_message = "Order status updated. Order code " . $order->order_code;
+            //     EcommerceNotification::sendOrderItemUpdateStatusNotificationToSeller($order->id, $seller_id, $seller_message);
+            // }
             DB::commit();
             return true;
         } catch (\Exception $e) {

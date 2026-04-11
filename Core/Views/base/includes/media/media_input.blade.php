@@ -33,7 +33,7 @@
     </div>
     <div class="image-box-actions">
         <button type="button" class="btn-link" data-toggle="modal" data-target="#mediaUploadModal"
-            id="{{ $input }}_choose"
+            id="{{ $input }}_choose" style=" color: #ff5A1f !important;"
             onclick="setDataInsertableIds('#{{ $input }}_preview,#{{ $input }}_id,#{{ $input }}_remove', {{ $user_filter }})">
             {{ translate('Choose File') }}
         </button>
