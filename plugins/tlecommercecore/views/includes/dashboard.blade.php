@@ -586,7 +586,7 @@
                                             <a
                                                 href="{{ route('plugin.tlcommercecore.customers.details', ['id' => $order->customer_id]) }}">{{ $order->customer_info->name }}</a>
                                         @else
-                                            <a href="#">{{ $order->guest_customer->name }}
+                                            <a href="#">{{ $order->guest_customer?->name ?? "Guest" }}
                                                 <span class="badge" style="background-color: #ff5A1f; color: #fff;">
                                                     {{ translate('Guest') }}
                                                 </span>

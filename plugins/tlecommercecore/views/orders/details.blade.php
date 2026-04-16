@@ -271,7 +271,7 @@
                                         </li>
                                         <li>
                                             <span class="key">{{ translate('Email') }}</span>
-                                            <span class="black">{{ $order_details->guest_customer->email }}</span>
+                                            <span class="black">{{ $order_details->guest_customer?->email ?? 'Guest@gmail.com' }}</span>
                                         </li>
                                     </ul>
                                 @else
