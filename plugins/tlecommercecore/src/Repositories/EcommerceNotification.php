@@ -35,13 +35,25 @@ class EcommerceNotification
      * @param Int $order_id
      * @param Int $customer_id
      */
-   public static function sendOrderInvoiceNotification($order_id, $customer_id)
+   public static function sendOrderInvoiceNotification($order_id, $customer_id, $guest_customer_id)
 {
     try {
-        Log::info("Notification Invoice Process Started", ['order_id' => $order_id, 'customer_id' => $customer_id]);
+        Log::info("Notification Invoice Process Started", ['order_id' => $order_id, 'customer_id' => $customer_id, 'guest_customer_id' => $guest_customer_id]);
 
         $order = Orders::with('products.product_details')->find($order_id);
-        $notifiable_customer = Customers::find($customer_id) ?? GuestCustomers::where('order_id', $order_id)->first();
+        $notifiable_customer = null;
+
+        if ($order->customer_id != null) {
+            $notifiable_customer = Customers::find($order->customer_id);
+
+        } elseif ($order->guest_customer_id != null) {
+            $notifiable_customer = GuestCustomers::find($order->guest_customer_id);
+
+        } else {
+            Log::warning("Order has neither customer_id nor guest_customer_id", ['order_id' => $order_id]);
+            return false;
+        }
+        
 
         if (!$order || !$notifiable_customer) return;
 
@@ -126,31 +138,42 @@ class EcommerceNotification
      *
      * @param Int $order_id
      * @param Int $customer_id
+     * @param Int $guest_customer_id
      * @param String $message
      */
-    public static function sendOrderStatusNotification($order_id, $customer_id, $message, $btn_title, $mail_title)
+    public static function sendOrderStatusNotification($order_id, $customer_id, $guest_customer_id, $message, $btn_title, $mail_title)
     {
-    
-        Log::info("sendOrderStatusNotification Process Started", ['order_id' => $order_id, 'customer_id' => $customer_id]);
+        \Log::info('sendOrderStatusNotification method called!!!');
 
-        $link = '/dashboard/order-details/' . $order_id;
+    
+        Log::info("sendOrderStatusNotification Process Started", ['order_id' => $order_id, 'customer_id' => $customer_id, 'guest_customer_id' => $guest_customer_id]);
+
+        $link - '';
+        // $link = '/dashboard/order-details/' . $order_id;
         $data = [
             'message' => $message,
             'link' => $link
         ];
 
         // 1. Fetch Customer
-        $notifiable_customer = Customers::find($customer_id);
+        $notifiable_customer = null;
 
-        // 2. Database/In-app Notification
-        try {
+        if($customer_id > 0) {
+
+            $link = '/dashboard/order-details/' . $order_id;
+
+            $notifiable_customer = Customers::find($customer_id);
+
             $notifiable_customer->notify(new OrderStatusUpdateNotification($data));
             Log::info("In-app notification sent successfully", ['customer_id' => $customer_id]);
-        } catch (Exception $e) {
-            Log::error("Failed to send in-app notification", [
-                'error' => $e->getMessage(),
-                'order_id' => $order_id
-            ]);
+        }
+        else if($guest_customer_id > 0) {
+            $link = '/guest/order-details/' . $order_id;
+            $notifiable_customer = GuestCustomers::where('id', $guest_customer_id)->first();
+        }
+        else {
+            Log::warning("Order has neither customer_id nor guest_customer_id", ['order_id' => $order_id]);
+            return false;
         }
 
         // 3. Email Dispatch
@@ -159,8 +182,9 @@ class EcommerceNotification
                 'template_id' => 11,
                 'keywords' => getEmailTemplateVariables(11, true),
                 '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
+                '_site_link_'       => url('/'),
                 'subject' => $mail_title,
-                '_tracking_url_' => url('/') . '/dashboard/order-details/' . $order_id,
+                '_tracking_url_' => url('/') . $link,
                 '_customer_name_' => $notifiable_customer->name,
                 '_message_' => $message,
                 '_btn_title_' => $btn_title,
@@ -380,6 +404,7 @@ class EcommerceNotification
                 'template_id' => 13,
                 'keywords' => getEmailTemplateVariables(13, true),
                 '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
+                '_site_link_'       => url('/'),
                 'subject' => 'New Order Placed!',
                 '_order_code_' =>  $order->order_code,
                 '_tracking_url_' => url('/') . '/' . getAdminPrefix() . '/orders/order-details/' . $order->id,
@@ -410,16 +435,25 @@ class EcommerceNotification
         if (SettingsRepository::getEcommerceSetting('send_invoice_to_customer_mail') == config('settings.general_status.active')) {
     
             // Get the customer ID based on whether they are logged in or a guest
-            $customer_id = $order->customer_id; // Or however you retrieve it in this scope
             
-            if ($customer_id) {
-                \Log::info('Ecommernotification Method: before sending notification to customer!!!');
-                // Delegate to our new clean method for Template ID 6
-                self::sendOrderInvoiceNotification($order->id, $customer_id);
-
-                \Log::info('Ecommernotification Method: after sending notification to customer!!!');
-
+            if($order->customer_id != null) {
+                
+                self::sendOrderInvoiceNotification($order->id, $order->customer_id, 0);
             }
+
+            if($order->guest_customer_id != null) {
+
+                self::sendOrderInvoiceNotification($order->id, 0, $order->guest_customer_id);
+            }
+            
+            // if ($customer_id) {
+            //     \Log::info('Ecommernotification Method: before sending notification to customer!!!');
+            //     // Delegate to our new clean method for Template ID 6
+            //     self::sendOrderInvoiceNotification($order->id, $customer_id);
+
+            //     \Log::info('Ecommernotification Method: after sending notification to customer!!!');
+
+            // }
         }
         // if (SettingsRepository::getEcommerceSetting('send_invoice_to_customer_mail') == config('settings.general_status.active')) {
         //     $customer_email = $order->customer_info != null ? $order->customer_info?->email : $order->guest_customer?->email;
@@ -534,6 +568,7 @@ class EcommerceNotification
                 'template_id' => 14,
                 'keywords' => getEmailTemplateVariables(14, true),
                 '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
+                '_site_link_'       => url('/'),
                 'subject' => 'Order Cancelled!',
                 '_mail_title_' =>  "Order Cancelled",
                 '_btn_title_' =>  "View Order Details",
@@ -544,18 +579,18 @@ class EcommerceNotification
         }
 
         //send notification to seller
-        if (isActivePluging('multivendor')) {
-            $seller_link = '/seller/order-details/' . $order_id;
-            $seller_data = [
-                'message' => $message,
-                'link' => $seller_link
-            ];
-            $seller_ids = OrderHasProducts::where('order_id', $order_id)->distinct()->pluck('seller_id');
-            $notifiable_sellers = User::whereIn('id', $seller_ids)->where('user_type', config('tlecommercecore.user_type.seller'))->get();
-            if ($notifiable_sellers != null) {
-                Notification::send($notifiable_sellers, new CustomerOrderCancelNotification($seller_data));
-            }
-        }
+        // if (isActivePluging('multivendor')) {
+        //     $seller_link = '/seller/order-details/' . $order_id;
+        //     $seller_data = [
+        //         'message' => $message,
+        //         'link' => $seller_link
+        //     ];
+        //     $seller_ids = OrderHasProducts::where('order_id', $order_id)->distinct()->pluck('seller_id');
+        //     $notifiable_sellers = User::whereIn('id', $seller_ids)->where('user_type', config('tlecommercecore.user_type.seller'))->get();
+        //     if ($notifiable_sellers != null) {
+        //         Notification::send($notifiable_sellers, new CustomerOrderCancelNotification($seller_data));
+        //     }
+        // }
     }
 
 
@@ -566,78 +601,103 @@ class EcommerceNotification
      * @param Int $customer_id
      * @param String $message
      */
-    public static function sendCustomerOrderConfirmationNotification($order_id, $customer_id, $message, $btn_title, $mail_title)
+    public static function sendCustomerOrderConfirmationNotification($order_id, $customer_id, $guest_customer_id, $message, $btn_title, $mail_title)
     {
-        Log::info("Order Confirmation Notifcation Process Started", ['order_id' => $order_id, 'customer_id' => $customer_id]);
+        Log::info("Order Confirmation Notifcation Process Started", ['order_id' => $order_id, 'customer_id' => $customer_id, 'guest_customer_id' => $guest_customer_id]);
 
         $order = Orders::with('products.product_details')->find($order_id);
 
-        $link = '/dashboard/order-details/' . $order_id;
+        $link = '';
+        // $link = '/dashboard/order-details/' . $order_id;
         $data = [
             'message' => $message,
             'link' => $link
         ];
-        $notifiable_customer = Customers::where('id', $customer_id)->first();
+
+        $notifiable_customer = null;
+
+        if($customer_id > 0) {
+
+            $link = '/dashboard/order-details/' . $order_id;
+
+           $notifiable_customer = Customers::where('id', $customer_id)->first();
+        }
+        else if($guest_customer_id > 0) {
+
+            $link = '/guest/order-details/' . $order_id;
+
+           $notifiable_customer = GuestCustomers::where('id', $guest_customer_id)->first();
+        }
+        else {
+            Log::warning("Order has neither customer_id nor guest_customer_id", ['order_id' => $order_id]);
+            return false;
+        }
+        
         if ($notifiable_customer != null) {
-            $notifiable_customer->notify(new OrderStatusUpdateNotification($data));
+
+            if($customer_id > 0) {
+
+                $notifiable_customer->notify(new OrderStatusUpdateNotification($data));
+            }
 
             // Build the HTML Table (The "_table_" content)
-        $product_rows = '';
-        foreach ($order->products as $item) {
-            $price = number_format($item->unit_price, 2) . " KD";
+            $product_rows = '';
+            foreach ($order->products as $item) {
+                $price = number_format($item->unit_price, 2) . " KD";
 
-            $product_name = $item->product_details->name ?? 'Unknown Product';
+                $product_name = $item->product_details->name ?? 'Unknown Product';
 
-            Log::info("Price Data", ['price' => $price]);
+                Log::info("Price Data", ['price' => $price]);
 
-            $product_rows .= "
-                <tr>
-                    <td style='padding: 10px; border-bottom: 1px solid #ededed; text-align: left;'>{$product_name}</td>
-                    <td style='padding: 10px; border-bottom: 1px solid #ededed; text-align: center;'>{$item->quantity}</td>
-                    <td style='padding: 10px; border-bottom: 1px solid #ededed; text-align: right;'>{$price}</td>
-                </tr>";
-        }
-
-
-        $total_formatted = number_format($order->total_payable_amount, 2) . " KD";
-
-        Log::info("Total Price Data", ['total_formatted' => $total_formatted]);
-
-        $invoice_table_html = "
-            <table width='100%' border='0' cellpadding='0' cellspacing='0' style='border: 1px solid #ededed; margin-top: 10px;'>
-                <thead>
-                    <tr style='background-color: #f8f9fa;'>
-                        <th style='padding: 10px; border-bottom: 1px solid #ededed; text-align: left;'>Product</th>
-                        <th style='padding: 10px; border-bottom: 1px solid #ededed; text-align: center;'>Qty</th>
-                        <th style='padding: 10px; border-bottom: 1px solid #ededed; text-align: right;'>Price</th>
-                    </tr>
-                </thead>
-                <tbody>{$product_rows}</tbody>
-                <tfoot>
+                $product_rows .= "
                     <tr>
-                        <td colspan='2' style='padding: 10px; text-align: right; font-weight: bold;'>Total:</td>
-                        <td style='padding: 10px; text-align: right; font-weight: bold; color: #ef2543;'>{$total_formatted}</td>
-                    </tr>
-                </tfoot>
-            </table>";
+                        <td style='padding: 10px; border-bottom: 1px solid #ededed; text-align: left;'>{$product_name}</td>
+                        <td style='padding: 10px; border-bottom: 1px solid #ededed; text-align: center;'>{$item->quantity}</td>
+                        <td style='padding: 10px; border-bottom: 1px solid #ededed; text-align: right;'>{$price}</td>
+                    </tr>";
+            }
+
+
+            $total_formatted = number_format($order->total_payable_amount, 2) . " KD";
+
+            Log::info("Total Price Data", ['total_formatted' => $total_formatted]);
+
+            $invoice_table_html = "
+                <table width='100%' border='0' cellpadding='0' cellspacing='0' style='border: 1px solid #ededed; margin-top: 10px;'>
+                    <thead>
+                        <tr style='background-color: #f8f9fa;'>
+                            <th style='padding: 10px; border-bottom: 1px solid #ededed; text-align: left;'>Product</th>
+                            <th style='padding: 10px; border-bottom: 1px solid #ededed; text-align: center;'>Qty</th>
+                            <th style='padding: 10px; border-bottom: 1px solid #ededed; text-align: right;'>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>{$product_rows}</tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan='2' style='padding: 10px; text-align: right; font-weight: bold;'>Total:</td>
+                            <td style='padding: 10px; text-align: right; font-weight: bold; color: #ef2543;'>{$total_formatted}</td>
+                        </tr>
+                    </tfoot>
+                </table>";
 
 
 
-            //Send mail to customer
-            $mail_data = [
-                'template_id' => 10,
-                'keywords' => getEmailTemplateVariables(10, true),
-                '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
-                '_order_code_'      => $order->order_code,
-                'subject' => $mail_title,
-                '_order_details_' => $invoice_table_html,
-                '_tracking_url_' => url('/') . '/dashboard/order-details/' . $order_id,
-                '_customer_name_' => $notifiable_customer->name,
-                '_message_' => $message,
-                '_btn_title_' => $btn_title,
-                '_mail_title_' => $mail_title,
-            ];
-            SendTenantMailJob::dispatch($notifiable_customer->email, $mail_data, getTenantMailConfig());
+                //Send mail to customer
+                $mail_data = [
+                    'template_id' => 10,
+                    'keywords' => getEmailTemplateVariables(10, true),
+                    '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
+                    '_site_link_'       => url('/'),
+                    '_order_code_'      => $order->order_code,
+                    'subject' => $mail_title,
+                    '_order_details_' => $invoice_table_html,
+                    '_tracking_url_' => url('/') . $link,
+                    '_customer_name_' => $notifiable_customer->name,
+                    '_message_' => $message,
+                    '_btn_title_' => $btn_title,
+                    '_mail_title_' => $mail_title,
+                ];
+                SendTenantMailJob::dispatch($notifiable_customer->email, $mail_data, getTenantMailConfig());
         }
     }
 

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Core\Http\Controllers\SystemController;
 use Core\Http\Controllers\Api\TranslationController;
 use Core\Http\Controllers\Api\DeviceTokenController;
+use Plugin\Carrier\Http\Controllers\CarrierController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +22,9 @@ Route::group(['prefix' => 'v1'], function () {
     Route::get('/cache-reset', [SystemController::class, 'clearSystemCacheFromApi']);
 });
 
+Route::group(['prefix' => 'webhooks'], function () {
+    Route::post('/order-update', [CarrierController::class, 'updateShippingCourierOrders']);
+});
 
 Route::post('/device-tokens', [DeviceTokenController::class, 'store']);
 

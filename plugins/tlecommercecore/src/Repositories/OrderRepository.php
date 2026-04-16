@@ -1208,7 +1208,7 @@ class OrderRepository
             $customer_name = $request['name'] != null ? $request['name'] : ($shipping_address['name'] ?? 'Guest Customer');
             $customer_email = $request['email'] != null ? $request['email'] : ($shipping_address['email'] ?? 'guest@default.com');
 
-            // if ($request->has('create_new_account') && getEcommerceSetting('enable_personal_info_guest_checkout') == 1) {
+            if ($request->has('create_new_account') && getEcommerceSetting('enable_personal_info_guest_checkout') == 1) {
 
                 \Log::info('Respository Method: in create_new_account region!!!');
                 //Register customer
@@ -1221,19 +1221,21 @@ class OrderRepository
                 $customer->save();
                 $customer_id = $customer->id;
 
-                DB::commit();
-            // } else {
-            //     //Create guest customer
+                // DB::commit();
+            } else {
+                //Create guest customer
 
-            //     \Log::info('Respository Method: in guest customer region!!!');
+                \Log::info('Respository Method: in guest customer region!!!');
 
-            //     $guest_customer = new GuestCustomers();
-            //     $guest_customer->name = !empty($customer_name) ? $customer_name : 'Guest Customer';
-            //     $guest_customer->email = !empty($customer_email) ? $customer_email : 'guest@default.com';
-            //     $guest_customer->order_id = NULl;
-            //     $guest_customer->save();
-            //     $guest_customer_id = $guest_customer->id;
-            // }
+                $guest_customer = new GuestCustomers();
+                $guest_customer->name = !empty($customer_name) ? $customer_name : 'Guest Customer';
+                $guest_customer->email = !empty($customer_email) ? $customer_email : 'guest@default.com';
+                $guest_customer->order_id = NULl;
+                $guest_customer->save();
+                $guest_customer_id = $guest_customer->id;
+            }
+
+             DB::commit();
             // \Log::info('Respository Method: out guest customer region!!!');
             $shipping_address_id = NULL;
             $billing_address_id = NULL;
@@ -1326,6 +1328,7 @@ class OrderRepository
             $order = new Orders;
             $order->order_code = self::generateOrderCode();
             $order->customer_id = $customer_id;
+            $order->guest_customer_id = $guest_customer_id;
             $order->sub_total = self::calculateOrderSubTotal($products);
             $order->total_tax = self::calculateOrderTotalTax($products);
             $order->total_delivery_cost = self::calculateOrderTotalShippingCost($products);
@@ -1728,7 +1731,19 @@ class OrderRepository
                 \Log::info('before sending email notification to customer!!!');
                 // EcommerceNotification::sendOrderStatusNotification($order->id, $order_details->customer_id, $message, $btn_title, $mail_title);
                 // EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $message, $btn_title, $mail_title);
-                EcommerceNotification::sendCustomerOrderConfirmationNotification($order->id, $order->customer_id, $message, $btn_title, $mail_title);
+
+                if ($order->customer_id != null) {
+            
+                    EcommerceNotification::sendCustomerOrderConfirmationNotification($order->id, $order->customer_id, 0, $message, $btn_title, $mail_title);
+
+                } elseif ($order->guest_customer_id != null) {
+
+                    EcommerceNotification::sendCustomerOrderConfirmationNotification($order->id, 0, $order->guest_customer_id, $message, $btn_title, $mail_title);
+
+                } else {
+                    Log::warning("Order has neither customer_id nor guest_customer_id", ['order_id' => $order_id]);
+                    return false;
+                }
                 //Send notification to seller
                 // foreach ($notifiable_sellers as $seller_id) {
                 //     $seller_message = "An order has been accepted. Order code " . $order->order_code;
@@ -1854,14 +1869,28 @@ class OrderRepository
                     $message = 'Your order has been cancelled. Order code ' . $order->order_code;
                     $btn_title = "Track Your Order";
                     $mail_title = "Order cancelled!";
-                    EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $message, $btn_title, $mail_title);
+
+                    if ($order->customer_id != null) {
+            
+                        EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, 0, $message, $btn_title, $mail_title);
+
+                    } elseif ($order->guest_customer_id != null) {
+
+                       EcommerceNotification::sendOrderStatusNotification($order->id, 0, $order->guest_customer_id, $message, $btn_title, $mail_title);
+
+                    } else {
+                        Log::warning("Order has neither customer_id nor guest_customer_id", ['order_id' => $order_id]);
+                        return false;
+                    }
+
+                    // EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $message, $btn_title, $mail_title);
                 }
 
                 //Send notification to seller
-                foreach ($notifiable_sellers as $seller_id) {
-                    $seller_message = "An order has been cancelled. Order code " . $order->order_code;
-                    EcommerceNotification::sendOrderItemUpdateStatusNotificationToSeller($order->id, $seller_id, $seller_message);
-                }
+                // foreach ($notifiable_sellers as $seller_id) {
+                //     $seller_message = "An order has been cancelled. Order code " . $order->order_code;
+                //     EcommerceNotification::sendOrderItemUpdateStatusNotificationToSeller($order->id, $seller_id, $seller_message);
+                // }
 
                 DB::commit();
                 return true;
@@ -1887,8 +1916,24 @@ class OrderRepository
     {
         try {
 
+            \Log::info('updateOrderStatus method called!!!');
+
+
             DB::beginTransaction();
+            $customer_id = 0;
+            $guest_customer_id = 0;
             $order = Orders::where('id', $request['order_id'])->first();
+
+            if($order->customer_id != null) {
+                $customer_id = $order->customer_id;
+            }
+            else if($order->guest_customer_id != null) {
+                $guest_customer_id = $order->guest_customer_id;
+            }
+            else {
+                Log::warning("Order has neither customer_id nor guest_customer_id", ['order_id' => $order_id]);
+                return false;
+            }
             $seller_ids = [];
             foreach ($request['product'] as $product) {
                 $order_product = OrderHasProducts::where('id', $product)->where('order_id', $request['order_id'])->first();
@@ -1900,7 +1945,22 @@ class OrderRepository
                     //Send notification
                     $btn_title = "Track Your Order";
                     $mail_title = "Payment received";
-                    EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $payment_change_message, $btn_title, $mail_title);
+
+                    if($customer_id > 0) {
+
+                        EcommerceNotification::sendOrderStatusNotification($order->id, $customer_id, 0, $payment_change_message, $btn_title, $mail_title);
+                    }
+
+                    if($guest_customer_id > 0) {
+
+                        \Log::info('before sending email notification to guest!!!');
+
+                        EcommerceNotification::sendOrderStatusNotification($order->id, 0, $guest_customer_id, $payment_change_message, $btn_title, $mail_title);
+
+                        \Log::info('after sending email notification to guest!!!');
+
+                    }
+
                 }
                 //Store delivery tracking message
                 $delivery_change_message = null;
@@ -1918,6 +1978,7 @@ class OrderRepository
                             $mail_title = "Order accepted";
                         } else if ($request['delivery_status'] == config('tlecommercecore.order_delivery_status.ready_to_ship')) {
                             $delivery_change_message = 'Your package has been packed and is being handed over to our logistics partner';
+                            \Log::info('inside else if!!!');
                             $mail_title = "Package is ready to ship";
                         } else if ($request['delivery_status'] == config('tlecommercecore.order_delivery_status.shipped')) {
 
@@ -1956,7 +2017,32 @@ class OrderRepository
                 if ($delivery_change_message != null) {
                     $this->insertOrderTrackingData($request['order_id'], $product, $delivery_change_message);
                     //Send notification to customer
-                    EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $delivery_change_message, $btn_title, $mail_title);
+                    if($customer_id > 0) {
+
+                        EcommerceNotification::sendOrderStatusNotification($order->id, $customer_id, 0, $delivery_change_message, $btn_title, $mail_title);
+                    }
+
+                    if($guest_customer_id > 0) {
+                        \Log::info('before sending email notification to guest!!!');
+                        
+                        try {
+                            EcommerceNotification::sendOrderStatusNotification(
+                                $order->id, 
+                                0, 
+                                $guest_customer_id, 
+                                $delivery_change_message, 
+                                $btn_title, 
+                                $mail_title
+                            );
+                        } catch (\Exception $e) {
+                            // Log the error so you can debug it later without showing it to the user
+                            \Log::error('Notification failed: ' . $e->getMessage());
+
+                        }
+                        \Log::info('after sending email notification to guest!!!');
+
+                    }
+                    // EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $delivery_change_message, $btn_title, $mail_title);
                     //Filter seller id
                     // if ($order_product->seller_id != null && auth()->user()->user_type == null && isActivePluging('multivendor')) {
                     //     if (!in_array($order_product->seller_id, $seller_ids)) {
@@ -2149,7 +2235,19 @@ class OrderRepository
                 $message = "Your order status updated";
                 $btn_title = "Track Your Order";
                 $mail_title = "Payment received";
-                EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $message, $btn_title, $mail_title);
+                if ($order->customer_id != null) {
+            
+                    EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, 0, $$message, $btn_title, $mail_title);
+
+                } elseif ($order->guest_customer_id != null) {
+
+                    EcommerceNotification::sendOrderStatusNotification($order->id, 0, $order->guest_customer_id, $$message, $btn_title, $mail_title);
+
+                } else {
+                    Log::warning("Order has neither customer_id nor guest_customer_id", ['order_id' => $order_id]);
+                    return false;
+                }
+                // EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $message, $btn_title, $mail_title);
                 DB::commit();
                 return true;
             }
@@ -2227,7 +2325,19 @@ class OrderRepository
                 $message = "Your order payment status updated";
                 $btn_title = "Track Your Order";
                 $mail_title = "Payment Status Updated";
-                EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $$message, $btn_title, $mail_title);
+                if ($order->customer_id != null) {
+            
+                    EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, 0, $$message, $btn_title, $mail_title);
+
+                } elseif ($order->guest_customer_id != null) {
+
+                    EcommerceNotification::sendOrderStatusNotification($order->id, 0, $order->guest_customer_id, $$message, $btn_title, $mail_title);
+
+                } else {
+                    Log::warning("Order has neither customer_id nor guest_customer_id", ['order_id' => $order_id]);
+                    return false;
+                }
+                // EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $$message, $btn_title, $mail_title);
                 DB::commit();
                 return true;
             }

@@ -79,9 +79,11 @@
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-right">
                                                         <a href="#" data-courier="{{ $courier['id'] }}"
-                                                            class="edit-courier">{{ translate('Edit') }}</a>
+                                                            class="btn-link edit-courier">{{ translate('Edit') }}</a>
                                                         <a href="#" data-courier="{{ $courier['id'] }}"
-                                                            class="delete-courier">{{ translate('Delete') }}</a>
+                                                            class="btn-link properties-courier">{{ translate('Properties') }}</a>
+                                                        <a href="#" data-courier="{{ $courier['id'] }}"
+                                                            class="btn-link delete-courier">{{ translate('Delete') }}</a>
                                                     </div>
                                                 </div>
                                             </td>
@@ -148,7 +150,7 @@
     <!--End New Courier Modal-->
     <!--Edit Courier Modal-->
     <div id="edit-courier-modal" class="edit-courier-modal modal fade show" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-dialog modal-md modal-dialog-centered" style="border-radius: 12px !important; overflow: hidden !important;">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title h6 bold">{{ translate('Shipping Courier Information') }}</h4>
@@ -163,6 +165,26 @@
         </div>
     </div>
     <!--End Edit Courier Modal-->
+
+    <!--Courier Properties Modal-->
+    <div id="courier-properties-modal" class="courier-properties-modal modal fade show" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-md modal-dialog-centered" style="border-radius: 12px !important; overflow: hidden !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title h6 bold">{{ translate('Shipping Courier Properties') }}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body courier-properties-data">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Courier Properties Modal-->
+
+
 
     <!--Delete Courier Modal-->
     <div id="delete-courier-modal" class="delete-courier-modal modal fade show" aria-modal="true" role="dialog">
@@ -239,7 +261,7 @@
 
             });
             /**
-             * Edit curier
+             * Edit courier
              * 
              **/
             $('.edit-courier').on('click', function(e) {
@@ -258,6 +280,30 @@
                     success: function(data) {
                         $('.edit-courier-data').html(data)
                         $('#edit-courier-modal').modal('show')
+                    }
+                });
+            });
+
+            /**
+             * Courier Properties
+             * 
+             **/
+            $('.properties-courier').on('click', function(e) {
+                e.preventDefault();
+                let id = $(this).data('courier');
+                let data = {
+                    id: id,
+                }
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                    },
+                    type: "POST",
+                    data: data,
+                    url: '{{ route('plugin.carrier.shipping.courier.properties') }}',
+                    success: function(data) {
+                        $('.courier-properties-data').html(data)
+                        $('#courier-properties-modal').modal('show')
                     }
                 });
             });
@@ -368,6 +414,10 @@
         background-repeat: no-repeat;
         background-position: right 12px bottom 10px; /* adjust 12px to move arrow left/right */
         padding-right: 2rem;
+    }
+
+    .btn-link:hover {
+        color: #ff5A1f !important;
     }
 
     /* 4. Optional: Style the Focus state (when clicked) to remove the blue shadow */

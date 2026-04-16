@@ -1,28 +1,31 @@
-<form id="edit-courier-form">
+<form id="courier-properties-form">
+
+    <input type="hidden" name="shipping_courier_id" id="shipping_courier_id"  value="{{ $courier_properties['shipping_courier_id'] ?? 0 }}">
+
     <div class="form-row mb-20">
-        <label class="font-14 bold black">{{ translate('Name') }} </label>
-        <input type="hidden" name="id" value="{{ $courier_info['id'] }}">
-        <input type="text" name="name" placeholder="{{ translate('Type Name') }}" value="{{ $courier_info['name'] }}"
-            class="theme-input-style">
+        <label class="font-14 bold black">{{ translate('Api Key') }} </label>
+        <input type="text" name="api_key" placeholder="{{ translate('Paste Api Key here') }}"
+            value="{{ $courier_properties['api_key'] ?? '' }}" class="theme-input-style">
 
     </div>
+
     <div class="form-row mb-20">
-        <label class="font-14 bold black">{{ translate('Tracking url') }} </label>
-        <input type="text" name="tracking_url" placeholder="{{ translate('Type url') }}"
-            value="{{ $courier_info['tracking_url'] }}" class="theme-input-style">
+        <label class="font-14 bold black">{{ translate('Api Secret') }} </label>
+        <input type="text" name="api_secret" placeholder="{{ translate('Paste Api Secret here') }}"
+            value="{{ $courier_properties['api_secret'] ?? '' }}" class="theme-input-style">
 
     </div>
+
     <div class="form-row mb-20">
-        <label class="font-14 bold black col-12">{{ translate('Logo') }} </label>
-        @include('core::base.includes.media.media_input', [
-            'input' => 'edit_logo',
-            'data' => $courier_info['logo'],
-        ])
+        <label class="font-14 bold black">{{ translate('Branch Id') }} </label>
+        <input type="text" name="branch_id" placeholder="{{ translate('Paste Branch Id here') }}"
+            value="{{ $courier_properties['branch_id'] ?? '' }}" class="theme-input-style">
 
     </div>
+    
     <div class="form-row">
         <div class="col-12 text-right">
-            <button type="submit" class="btn long btn-orange courier-update-btn">{{ translate('Save Changes') }}</button>
+            <button type="submit" class="btn long btn-orange properties-courier-btn">{{ translate('Save Changes') }}</button>
         </div>
     </div>
 </form>
@@ -31,7 +34,7 @@
      * Update courier information
      * 
      **/
-    $('.courier-update-btn').on('click', function(e) {
+    $('.properties-courier-btn').on('click', function(e) {
         e.preventDefault();
         $(document).find(".invalid-input").remove();
         $.ajax({
@@ -39,8 +42,8 @@
                 'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
             },
             type: "POST",
-            data: $('#edit-courier-form').serialize(),
-            url: '{{ route('plugin.carrier.shipping.courier.update') }}',
+            data: $('#courier-properties-form').serialize(),
+            url: '{{ route('plugin.carrier.shipping.courier.submit.properties') }}',
             success: function(response) {
                 location.reload();
             },
@@ -53,6 +56,7 @@
         });
     });
 </script>
+
 
 <style>
 

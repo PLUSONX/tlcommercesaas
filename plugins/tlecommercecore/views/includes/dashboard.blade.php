@@ -9,7 +9,7 @@
     $total_sales = \Plugin\TlcommerceCore\Models\Orders::sum('total_payable_amount');
     
     $recent_orders = \Plugin\TlcommerceCore\Models\Orders::with(['customer_info', 'guest_customer'])
-        ->select('order_code', 'id', 'created_at', 'total_payable_amount', 'customer_id', 'delivery_status', 'payment_status')
+        ->select('order_code', 'id', 'created_at', 'total_payable_amount', 'customer_id', 'guest_customer_id', 'delivery_status', 'payment_status')
         ->orderBy('id', 'DESC')
         ->take(5)
         ->get();

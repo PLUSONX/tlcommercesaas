@@ -154,6 +154,19 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
         Route::post('mark-as-read-single-notification', [NotificationController::class, 'markAsRead']);
         Route::get('mark-as-read-all-notification', [NotificationController::class, 'markAsReadAllNotification']);
     });
+
+        /**
+     * Guest routes
+     * 
+     * /api/v1/ecommerce-core/guest
+     */
+    // Route::group(['prefix' => 'guest'], function () {
+
+    // Route::post('order/details', [OrderController::class, 'guestOrderDetails']);
+
+    // });
+
+
     /**
      * Customer checkout
      * 

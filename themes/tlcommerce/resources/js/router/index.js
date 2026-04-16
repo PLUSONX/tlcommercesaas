@@ -160,6 +160,11 @@ const router = createRouter({
       beforeEnter: customerguard
     },
     {
+      path: "/guest/order-details/:id",
+      name: "Guest Order Details",
+      component: () => import(/* webpackChunkName: "GuestOrderDetails" */ '../views/guest/order-details/index.vue'),
+    },
+    {
       path: "/dashboard/address",
       name: "CustomerAddress",
       component: () => import(/* webpackChunkName: "CustomerAddress" */ '../views/dashboard/address/index.vue'),

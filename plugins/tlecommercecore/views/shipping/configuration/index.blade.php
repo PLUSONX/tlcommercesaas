@@ -6,8 +6,8 @@
     {{ translate('Shipping & Delivery') }}
 @endsection
 @section('custom_css')
-    <link rel="stylesheet" href="{{ asset('/public/backend/assets/plugins/data-table/css/jquery.dataTables.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('/public/backend/assets/plugins/select2/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/assets/plugins/data-table/css/jquery.dataTables.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/assets/plugins/select2/select2.min.css') }}">
     <style>
         .select2-container {
             width: 100% !important;
@@ -697,11 +697,11 @@
     <!--End Edit Shipping Zone Modal-->
 @endsection
 @section('custom_scripts')
-    <script src="{{ asset('/public/backend/assets/plugins/data-table/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('/public/backend/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('/public/backend/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}">
+    <script src="{{ asset('backend/assets/plugins/data-table/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}">
     </script>
-    <script src="{{ asset('/public/backend/assets/plugins/select2/select2.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/plugins/select2/select2.min.js') }}"></script>
     <script>
         (function($) {
             "use strict";

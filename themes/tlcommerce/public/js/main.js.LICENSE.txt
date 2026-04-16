@@ -221,6 +221,8 @@
 
 /*! ../views/deals/index.vue */
 
+/*! ../views/guest/order-details/index.vue */
+
 /*! ../views/index.vue */
 
 /*! ../views/location/index.vue */
@@ -508,6 +510,8 @@
 /*! import() | DealPage */
 
 /*! import() | ErrorPage */
+
+/*! import() | GuestOrderDetails */
 
 /*! import() | Home */
 

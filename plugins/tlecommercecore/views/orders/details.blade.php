@@ -65,6 +65,12 @@
                 <div class="row">
                     @php
                         $canCancelOrAccept = $order_details->adminCancelOrAcceptOrder();
+
+                        $isReadyToShip = $order_details->delivery_status_label();
+
+                        $shippingCourierOrder = $order_details->getShippingCourierOrder($order_details->id);
+
+
                     @endphp
                     <!--Action area-->
                     <div
@@ -84,6 +90,16 @@
                             </div>
                         @endif
                         <div class="right-side">
+                            @if ($isReadyToShip == 'Ready to ship' && $shippingCourierOrder == null)
+                                <button class="btn long rounded btn-white shipping-modal-open-button"
+                                    data-order="{{ $order_details->id }}">{{ translate('Ship Order') }}
+                                </button>
+                            @endif
+                            @if ($shippingCourierOrder != null)
+                            <button class="btn long rounded btn-white track-order-button"
+                                    data-order="{{ $order_details->id }}">{{ translate('Track Order') }}
+                                </button>
+                            @endif
                             <button class="btn long rounded btn-orange status-update-modal-open-button"
                                 data-order="{{ $order_details->id }}">{{ translate('Update Order status') }}
                             </button>
@@ -533,6 +549,85 @@
         </div>
         <!--End order Summary-->
 
+    </div>
+
+    <!--Order Ship modal-->
+    <div id="order-shipping-modal" class="order-shipping-modal modal fade show" aria-modal="true"
+        role="dialog">
+        <div class="modal-dialog modal-md modal-dialog-centered" style="border-radius: 12px !important; overflow: hidden !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title h6 bold">{{ translate('Ship Order') }}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body pt-0">
+
+                    <form id="order-shipping-form">
+
+                        <div class="form-row mt-10">
+
+                            <input type="hidden" name="order_id" value="{{ $order_details->id }}">
+
+                            <label class="font-14 bold black">{{ translate('Select Available Couriers') }}<span
+                                        class="text text-danger">*</span></label>
+
+                            <select class="theme-input-style" name="available_couriers" id="available_couriers">
+
+                            </select>
+
+                        </div>
+
+                        <div class="form-row mt-20">
+                            <div class="col-12 text-right">
+                                <button class="btn long btn-orange submit-courier-request rounded">{{ translate('Submit Request') }}</button>
+                            </div>
+                        </div>
+                
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Track Order modal-->
+    <div id="track-order-modal" class="track-order-modal modal fade show" aria-modal="true"
+        role="dialog">
+        <div class="modal-dialog modal-md modal-dialog-centered" style="border-radius: 12px !important; overflow: hidden !important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title h6 bold">{{ translate('Track Order') }}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body pt-0">
+
+                    <form id="tracking-form">
+
+                        <div class="form-row mt-10">
+
+                            <div id="order-status-display" class="w-100">
+                            </div>
+                            <!-- <input type="hidden" name="order_id" value="{{ $order_details->id }}">
+
+                            <label class="font-14 bold black">{{ translate('Select Available Couriers') }}<span
+                                        class="text text-danger">*</span></label>
+
+                            <select class="theme-input-style" name="available_couriers" id="available_couriers">
+
+                            </select> -->
+
+                        </div>
+
+                
+                    </form>
+
+                </div>
+            </div>
+        </div>
     </div>
 
     <!--Update  status modal-->
@@ -1110,6 +1205,103 @@
 
             });
             /**
+             * Open shipping modal
+             **/
+            $('.shipping-modal-open-button').on('click', function(e) {
+                e.preventDefault();
+                // $(".payment-status-error").html('');
+                // $(".delivery-status-error").html('');
+                // $(".item-id").prop("checked", false);
+                // $(".select-all").prop("checked", false);
+                $.ajax({
+                    url: '{{ route("plugin.active.carrier.list") }}',
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.couriers) {
+                            console.log("couriers: ", response.couriers);
+                            
+                            // 2. Prepare the initial placeholder
+                            let options = '<option value="">Select a Courier</option>';
+
+                            // 3. Loop through the array to build the list
+                            response.couriers.forEach(function(courier) {
+                                options += `<option value="${courier.id}">${courier.name}</option>`;
+                            });
+
+                            // 4. Update the specific select tag by its ID
+                            $('#available_couriers').html(options);
+
+                        } else {
+                            // shippingForm.html('<p class="text-danger">No active carriers found</p>');
+                        }
+                    },
+                    error: function() {
+                        // courierSelect.html('<option value="">Error loading carriers</option>');
+                        toastr.error('Failed to fetch shipping carriers.'); // If you use Toastr
+                    }
+                });
+
+                $("#order-shipping-modal").modal('show');
+
+            });
+
+            /**
+             * Open shipping modal
+             **/
+            $('.track-order-button').on('click', function(e) {
+                e.preventDefault();
+                let orderId = $(this).data('order');
+                let displayContainer = $('#order-status-display');
+                $.ajax({
+                    url: '{{ route("plugin.carrier.order.updates") }}',
+                    type: 'GET',
+                    data: { 
+                        order_id: orderId 
+                    },
+                    success: function(response) {
+                        if (response.order_details) {
+                            // console.log("order_details: ", response.order_details);
+                            
+                            let details = response.order_details;
+
+                            // Format the status for better readability (e.g., picked_up -> Picked Up)
+                            let statusLabel = details.status.replace(/_/g, ' ').toUpperCase();
+
+                            let html = `
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span class="bold">${'{{ translate("Current Status") }}'}:</span>
+                                        <span class="badge p-2" style="background: #ff5A1f; color: #fff !important;">${statusLabel}</span>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <span class="bold d-block">${'{{ translate("Driver Information") }}'}:</span>
+                                        <p class="mb-0 text-muted">
+                                            ${details.driver_name ? details.driver_name : '{{ translate("Not assigned yet") }}'}<br>
+                                            ${details.driver_phone ? details.driver_phone : ''}
+                                        </p>
+                                    </div>
+                                    <div class="list-group-item small text-muted">
+                                        Carrier ID: #${details.shipping_courier_id}
+                                    </div>
+                                </div>
+                            `;
+                            
+                            displayContainer.html(html);
+
+                        } else {
+                            displayContainer.html('<div class="alert alert-warning">No tracking updates available for this order.</div>');
+                        }
+                    },
+                    error: function() {
+                        displayContainer.html('<div class="alert alert-danger">Error fetching data.</div>');
+                        toastr.error('Failed to fetch shipping courier tracking details.');
+                    }
+                });
+
+                $("#track-order-modal").modal('show');
+
+            });
+            /**
              *
              * Select all products
              **/
@@ -1264,6 +1456,54 @@
                 }
 
             });
+
+            /**
+             * Will Submit Courier Request
+             *
+             **/
+            $('.submit-courier-request').on('click', function(e) {
+                // 1. Prevent the page from refreshing
+                e.preventDefault();
+
+                // 2. Reference the form and the button (for UI feedback)
+                let form = $('#order-shipping-form');
+                let submitBtn = $(this);
+                
+                // 3. Gather form data (includes order_id and available_couriers)
+                let formData = form.serialize();
+
+                // 4. Visual feedback: Disable button to prevent double-clicks
+                submitBtn.prop('disabled', true).text('Submitting...');
+
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('plugin.carrier.shipping.submit.courier.request') }}",
+                    data: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                    },
+                    success: function(response) {
+                        // Handle success (e.g., show a toastr notification or close modal)
+                        if (response.success) {
+
+                            toastr.success('{{ translate('Courier Request has been successfully placed!') }}');
+                                $("#order-shipping-modal").modal('hide');
+                        } else {
+                            toastr.error(response.message || 'Something went wrong');
+                        }
+                    },
+                    error: function(xhr) {
+                        // Handle validation errors or server crashes
+                        console.error(xhr.responseText);
+                        toastr.error('Failed to submit request. Please try again.');
+                    },
+                    complete: function() {
+                        // Re-enable button
+                        submitBtn.prop('disabled', false).text('Submit Request');
+                    }
+                });
+            });
+
         })(jQuery);
     </script>
 @endsection

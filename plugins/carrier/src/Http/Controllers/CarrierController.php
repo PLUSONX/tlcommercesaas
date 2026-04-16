@@ -2,6 +2,7 @@
 
 namespace Plugin\Carrier\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Plugin\Carrier\Http\Requests\CarrierRequest;
@@ -121,4 +122,113 @@ class CarrierController extends Controller
             toastNotification('error',translate('Action failed'), 'Failed');
         }
     }
+
+    /**
+     * Wii return courier properties form
+     * 
+     * @param \Illuminate\Http\Request $request
+     * @return mixed
+     */
+    public function courierProperties(Request $request)
+    {
+        Log::info("courierProperties method called!");
+
+        return view('plugin/carrier::pages.properties_courier')->with(
+            [
+                'courier_properties' => $this->carrier_repository->courierProperties($request['id']),
+            ]
+        );
+
+    }
+
+     /**
+     * Will update courier information
+     * 
+     * @param CarrierRequest $request
+     * @return void
+     */
+    public function submitCourierProperties(Request $request)
+    {
+        Log::info("submitCourierProperties method called!");
+        Log::info("Courier 1 Properties data:", ['request' => $request->all()]);
+        $res = $this->carrier_repository->submitCourierProperties($request);
+        if ($res == true) {
+            toastNotification('success', translate('Courier properties updated successfully'), 'Success');
+        } else {
+            toastNotification('error',translate('Action failed'), 'Failed');
+        }
+    }
+
+    /**
+     * Will return carrier list
+     * 
+     * @return collections
+     */
+    public function getActiveCarriers()
+    {
+        return [
+            'couriers' => $this->carrier_repository->couriers(1),
+        ];
+    }
+
+    /**
+     * Will submit courier request
+     * 
+     * @param Request $request
+     * @return void
+     */
+    public function submitCourierRequest(Request $request)
+    {
+        Log::info("submitCourierRequest method called!");
+        Log::info("Courier request data:", ['request' => $request->all()]);
+        $res = $this->carrier_repository->submitCourierRequest($request);
+        if ($res) {
+            return response()->json(
+                [
+                    'success' => true,
+                ]
+            );
+        } else {
+            return response()->json(
+                [
+                    'success' => false,
+                ]
+            );
+        }
+    }
+
+    /**
+     * Will update courier Orders
+     * 
+     * @param Request $request
+     * @return void
+     */
+    public function updateShippingCourierOrders(Request $request)
+    {
+        Log::info("updateShippingCourierOrders method called!", ['payload' => $request->all()]);
+
+        $res = $this->carrier_repository->updateShippingCourierOrders($request);
+
+        if ($res) {
+            return response()->json(['success' => true], 200);
+        }
+
+        return response()->json(['success' => false], 500);
+    }
+
+    /**
+     * Will return courier order updates
+     * 
+     * @return collections
+     */
+    public function getCarriersOrderUpdates(Request $request)
+    {
+        Log::info("getCarriersOrderUpdates method called!", ['request' => $request->all()]);
+
+        return [
+            'order_details' => $this->carrier_repository->getCarriersOrderUpdates($request->order_id),
+        ];
+    }
+
+    
 }

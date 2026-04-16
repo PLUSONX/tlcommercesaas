@@ -13,6 +13,8 @@
         "brian2694/laravel-toastr": "^5.57",
         "chencha/share": "^6.1",
         "doctrine/dbal": "^3.4",
+        "geocoder-php/google-maps-provider": "^4.8",
+        "geocoder-php/nominatim-provider": "^5.8",
         "google/auth": "^1.50",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^2.7",
@@ -27,6 +29,7 @@
         "milon/barcode": "^9.0",
         "niklasravnsborg/laravel-pdf": "^4.1",
         "paypal/paypal-checkout-sdk": "^1.0",
+        "php-http/guzzle7-adapter": "^1.1",
         "php-open-source-saver/jwt-auth": "^2.0",
         "pion/laravel-chunk-upload": "^1.5",
         "simplesoftwareio/simple-qrcode": "^4.2",
@@ -40,6 +43,7 @@
         "symfony/mailgun-mailer": "^6.1",
         "themelooks/securelooks": "^3.0",
         "unicodeveloper/laravel-paystack": "^1.1",
+        "willdurand/geocoder": "^5.0",
         "yajra/laravel-datatables-oracle": "^10.1"
     },
     "require-dev": {
@@ -99,7 +103,10 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true

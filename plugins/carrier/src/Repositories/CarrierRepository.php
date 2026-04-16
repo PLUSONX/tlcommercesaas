@@ -2,11 +2,29 @@
 
 namespace Plugin\Carrier\Repositories;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Plugin\Carrier\Models\ShippingCarrier;
+use Plugin\TlcommerceCore\Models\ShippingCourier;
+use Plugin\TlcommerceCore\Models\ShippingCourierProperties;
+use Plugin\TlcommerceCore\Models\ShippingCourierOrders;
+use Plugin\TlcommerceCore\Models\Orders;
+use Plugin\TlcommerceCore\Models\CustomerAddress;
+use Plugin\Carrier\Services\ArmadaService;
+use Illuminate\Http\Request;
+use Core\Models\User;
+use Illuminate\Support\Facades\Notification;
+use Plugin\TlcommerceCore\Notifications\CourierOrderUpdateNotification;
+
 
 class CarrierRepository
 {
+    protected $armadaService;
+
+    public function __construct(ArmadaService $armadaService)
+    {
+        $this->armadaService = $armadaService;
+    }
     /**
      * Will store new courier service
      *
@@ -139,4 +157,265 @@ class CarrierRepository
             return false;
         }
     }
+
+
+    /**
+     * Will return courier properties
+     *
+     * @param Int $id
+     * @return collection
+     */
+    public function courierProperties($id)
+    {
+        Log::info("courierProperties method called:", ['id' => $id]);
+
+        $courier = ShippingCourier::where('id', $id)->with('properties')->first();
+
+        if (!$courier || !$courier->properties) {
+            Log::warning("Courier or properties not found for ID: " . $id);
+            return [
+                'shipping_courier_id' => $id
+            ];
+            // return null; 
+        }
+
+        $properties = $courier->properties;
+
+        return [
+            'shipping_courier_id' => $id,
+            'api_key' => $properties->api_key,
+            'api_secret' => $properties->api_secret,
+            'branch_id' => $properties->branch_id,
+        ];
+    }
+
+     /**
+     * Will save courier properties
+     *
+     * @param Object $request
+     * @return bool
+     */
+    public function submitCourierProperties(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            Log::info("submitCourierProperties method called!");
+        
+            Log::info("Courier Properties data:", ['request' => $request->all()]);
+
+            ShippingCourierProperties::updateOrCreate(
+                ['shipping_courier_id' => $request->shipping_courier_id], // The search criteria
+                [
+                    'api_key'    => $request->api_key,
+                    'api_secret' => $request->api_secret, // This will be auto-encrypted by your Model mutator
+                    'branch_id'  => $request->branch_id,
+                ]
+            );
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("properties submission failure: " . $e->getMessage());
+            return false;
+        }
+    }
+
+
+    /**
+     * Will save courier properties
+     *
+     * @param Object $request
+     * @return bool
+     */
+    public function submitCourierRequest($request)
+    {
+        try {
+            // DB::beginTransaction();
+
+            Log::info("submitCourierRequest 2 method called!");
+        
+            Log::info("Courier Properties data:", ['request' => $request->all()]);
+
+            $order_id = $request->order_id;
+            $shipping_courier_id = $request->available_couriers;
+
+            $courier = ShippingCourier::where('id', $shipping_courier_id)->with('properties')->first();
+
+            Log::info("Courier data:", ['courier' => json_encode($courier)]);
+
+            if (!$courier || !$courier->properties) {
+                Log::warning("Courier or properties not found for ID: " . $shipping_courier_id);
+                return [
+                    'shipping_courier_id' => $shipping_courier_id
+                ];
+            }
+
+            $order = Orders::where('id', $order_id)->first();
+
+            if (!$order) {
+                Log::warning("Order not found for ID: " . $order_id);
+                return [
+                    'order_id' => $order_id
+                ];
+            }
+
+            Log::info("order data:", ['order' => json_encode($order)]);
+
+            $address = null;
+
+            if($order->customer_id != null) {
+
+                $address = CustomerAddress::with(['country', 'state', 'city'])
+                ->where('customer_id', $order->customer_id)
+                ->first();
+            }
+            else if($order->guest_customer_id != null) {
+
+                $address = CustomerAddress::with(['country', 'state', 'city'])
+                ->where('guest_customer', $order->guest_customer_id)
+                ->first();
+
+                Log::info("address data with relations:", ['address' => $address ? $address->toArray() : 'null']);
+            }
+            else {
+                Log::warning("Order has neither customer_id nor guest_customer_id", ['order_id' => $order_id]);
+                return false;
+            }
+
+            $armadaResponse = $this->armadaService->createDelivery($courier, $order, $address);
+           
+            if ($armadaResponse['success']) {
+                $data = $armadaResponse['data'];
+
+                try {
+
+                     ShippingCourierOrders::create([
+                        'order_id'             => $order->id,
+                        'shipping_courier_id'  => $courier->id,
+                        'code'                 => $data['code'],
+                        'status'               => $data['status'],
+                        'amount'               => $data['amount'],
+                        'delivery_fee'         => $data['delivery_fee'],
+                        'currency'             => $data['currency'],
+                        'driver_name'          => $data['driver']['name'] ?? null,
+                        'driver_phone'         => $data['driver']['phone'] ?? null,
+                        'driver_latitude'      => $data['driver']['latitude'] ?? null,
+                        'driver_longitude'     => $data['driver']['longitude'] ?? null,
+                        'estimated_distance'   => $data['logistics']['estimated_distance'] ?? null,
+                        'estimated_duration'   => $data['logistics']['estimated_duration'] ?? null,
+                        'tracking_url'         => $data['logistics']['tracking_url'] ?? null,
+                        'pickup_qr_url'        => $data['logistics']['pickup_qr_url'] ?? null,
+                    ]);
+
+                    return true;
+
+                }
+                catch (\Exception $e) {
+                    Log::error("ShippingCourierOrder Submit failure: " . $e->getMessage());
+                    return false;
+                }
+
+            }
+            else {
+                Log::warning("Courier Error", ['error' => $armadaResponse['message']]);
+                return false;
+            }
+            // DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            // DB::rollBack();
+            Log::error("Courier Requst failure: " . $e->getMessage());
+            return false;
+        }
+    }
+
+     /**
+     * Will save courier properties
+     *
+     * @param Object $request
+     * @return bool
+     */
+    public function updateShippingCourierOrders($request) {
+        try {
+            $payload = $request->all();
+
+            ShippingCourierOrders::where('code', $payload['code'])->update([
+                'status'             => $payload['status'],
+                'amount'             => $payload['amount'],
+                'delivery_fee'       => $payload['delivery_fee'],
+                'estimated_distance' => $payload['logistics']['estimated_distance'] ?? null,
+                'estimated_duration' => $payload['logistics']['estimated_duration'] ?? null,
+                'tracking_url'       => $payload['logistics']['tracking_url'] ?? null,
+                'pickup_qr_url'      => $payload['logistics']['pickup_qr_url'] ?? null,
+            ]);
+
+            $shippingCourierOrder =  ShippingCourierOrders::where('code', $payload['code'])->first();
+
+            if (!$shippingCourierOrder) {
+                Log::error("Courier Order Update: No record found for code " . $payload['code']);
+                return false;
+            }
+
+            $order = Orders::where('id', $shippingCourierOrder->order_id)->first();
+
+            if (!$order) {
+                Log::error("Courier Order Update: No order found for id " . $shippingCourierOrder->order_id);
+                return false;
+            }
+
+            //Send notification to admin
+            $link = '/orders/order-details/' . $shippingCourierOrder->order_id;
+            $message =  "Update received from courier, Order code " . $order->order_code;
+            $data = [
+                'message' => $message,
+                'link' => $link
+            ];
+
+            $admins = User::where('user_type', config('tlecommercecore.user_type.admin'))->where('status', config('settings.general_status.active'))->get();
+
+            if ($admins != null) {
+                
+                $notification = new CourierOrderUpdateNotification($data);
+
+                Notification::send($admins, $notification);
+
+            }
+
+            return true;
+        }
+        catch (\Exception $e) {
+            Log::error("Courier Order Update failure: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Will return courier properties
+     *
+     * @param Int $id
+     * @return collection
+     */
+    public function getCarriersOrderUpdates($id)
+    {
+        Log::info("getCarriersOrderUpdates method called:", ['Order_id' => $id]);
+
+        $shippingCourierOrder =  ShippingCourierOrders::where('order_id', $id)->first();
+
+        if (!$shippingCourierOrder) {
+            Log::warning("Courier order updates not found for Order ID: " . $id);
+            // return [
+            //     'shipping_courier_id' => $id
+            // ];
+            return null; 
+        }
+
+        return [
+            'shipping_courier_id' => $shippingCourierOrder->id,
+            'status' => $shippingCourierOrder->status,
+            'driver_name' => $shippingCourierOrder->driver_name,
+            'driver_phone' => $shippingCourierOrder->driver_phone,
+        ];
+    }
 }
+

@@ -2,6 +2,7 @@
 
 namespace Plugin\TlcommerceCore\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -878,6 +879,26 @@ class OrderController extends Controller
             return new SingleOrderCollection($this->order_repository->OrderDetailsByOrderId($request->order_code));
         }
     }
+     /**
+     * Will return guest order details
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function guestOrderDetails(Request $request)
+    {   
+        try {
+
+            Log::info("Order controller, guestOrderDetails method called!!!");
+            
+            Log::info("guestOrderDetails data", ['order_id' => $request['order_id'], 'order_code' => $request->order_code ]);
+
+            return new SingleOrderCollection($this->order_repository->OrderDetailsByOrderId($request->order_code));
+        }
+        catch(\Exception $e) {
+            \Log::error("guestOrderDetails failure: " . $e->getMessage());
+        }
+    }
     /**
      * Will store customer return product details
      *
@@ -928,7 +949,25 @@ class OrderController extends Controller
      */
     public function guestCustomerOrderDetails(Request $request)
     {
-        return new SingleOrderCollection($this->order_repository->OrderDetailsByOrderId($request['order_code']));
+        try {
+
+            Log::info("Order controller, guestOrderDetails method called!!!");
+            
+            Log::info("guestOrderDetails data", ['order_id' => $request['order_id'], 'order_code' => $request->order_code ]);
+
+            if($request['order_id'] != null) {
+
+                return new SingleOrderCollection($this->order_repository->OrderDetailsByOrderId($request['order_id']));
+
+            } else {
+
+                return new SingleOrderCollection($this->order_repository->OrderDetailsByOrderId($request['order_code']));
+            }
+
+        }
+        catch(\Exception $e) {
+            \Log::error("guestOrderDetails failure: " . $e->getMessage());
+        }
     }
     /**
      * Will store a product review

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Plugin\TlcommerceCore\Models\PaymentMethods;
 use Plugin\TlcommerceCore\Models\CustomerAddress;
 use Plugin\TlcommerceCore\Models\OrderHasProducts;
+use Plugin\TlcommerceCore\Models\ShippingCourierOrders;
 use Plugin\TlcommerceCore\Repositories\SettingsRepository;
 
 class Orders extends Model
@@ -30,8 +31,13 @@ class Orders extends Model
 
     public function guest_customer()
     {
-        return $this->belongsTo(GuestCustomers::class, 'id', 'order_id');
+        return $this->belongsTo(GuestCustomers::class, 'guest_customer_id', 'id');
     }
+
+    // public function guest_customer()
+    // {
+    //     return $this->belongsTo(GuestCustomers::class, 'id', 'order_id');
+    // }
 
     public function billing_details()
     {
@@ -74,6 +80,11 @@ class Orders extends Model
         } else {
             return 'cancelled';
         }
+    }
+
+    public function getShippingCourierOrder($order_id)
+    {
+        return ShippingCourierOrders::where('order_id', $order_id)->first();
     }
 
     public function adminCancelOrAcceptOrder()
