@@ -266,7 +266,7 @@
                                 @if ($order_details->guest_customer != null)
                                     <ul class="status-list">
                                         <li>
-                                            {{ $order_details->guest_customer->name }}
+                                            {{ $order_details->guest_customer?->name ?? 'Guest' }}
                                             <span class="badge ml-10" style="background-color: #ff5A1f; color: #fff;">Guest</span>
                                         </li>
                                         <li>
