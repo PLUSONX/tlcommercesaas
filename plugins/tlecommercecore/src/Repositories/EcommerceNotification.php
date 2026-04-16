@@ -144,67 +144,151 @@ class EcommerceNotification
     public static function sendOrderStatusNotification($order_id, $customer_id, $guest_customer_id, $message, $btn_title, $mail_title)
     {
         \Log::info('sendOrderStatusNotification method called!!!');
-
-    
-        Log::info("sendOrderStatusNotification Process Started", ['order_id' => $order_id, 'customer_id' => $customer_id, 'guest_customer_id' => $guest_customer_id]);
-
-        $link - '';
-        // $link = '/dashboard/order-details/' . $order_id;
-        $data = [
-            'message' => $message,
-            'link' => $link
-        ];
-
-        // 1. Fetch Customer
+        
+        $link = ''; // fixed typo: was $link - ''
         $notifiable_customer = null;
+        $data = []; // initialize before try block
 
-        if($customer_id > 0) {
+        try {
+            Log::info("sendOrderStatusNotification Process Started", [
+                'order_id' => $order_id,
+                'customer_id' => $customer_id,
+                'guest_customer_id' => $guest_customer_id
+            ]);
 
-            $link = '/dashboard/order-details/' . $order_id;
+            if ($customer_id > 0) {
+                $link = '/dashboard/order-details/' . $order_id;
+                $notifiable_customer = Customers::find($customer_id);
 
-            $notifiable_customer = Customers::find($customer_id);
+                $data = [
+                    'message' => $message,
+                    'link' => $link
+                ];
 
-            $notifiable_customer->notify(new OrderStatusUpdateNotification($data));
-            Log::info("In-app notification sent successfully", ['customer_id' => $customer_id]);
-        }
-        else if($guest_customer_id > 0) {
-            $link = '/guest/order-details/' . $order_id;
-            $notifiable_customer = GuestCustomers::where('id', $guest_customer_id)->first();
-        }
-        else {
-            Log::warning("Order has neither customer_id nor guest_customer_id", ['order_id' => $order_id]);
-            return false;
+                $notifiable_customer->notify(new OrderStatusUpdateNotification($data));
+                Log::info("In-app notification sent successfully", ['customer_id' => $customer_id]);
+
+            } else if ($guest_customer_id > 0) {
+                $link = '/guest/order-details/' . $order_id;
+                $notifiable_customer = GuestCustomers::where('id', $guest_customer_id)->first();
+
+            } else {
+                Log::warning("Order has neither customer_id nor guest_customer_id", ['order_id' => $order_id]);
+                return false;
+            }
+
+        } catch (\Exception $e) {
+            \Log::error("orderStatus Notification failure: " . $e->getMessage());
+            return false; // stop execution if first block fails
         }
 
         // 3. Email Dispatch
         try {
+            if ($notifiable_customer == null) {
+                Log::warning("No notifiable customer found, skipping email.");
+                return false;
+            }
+
             $mail_data = [
-                'template_id' => 11,
-                'keywords' => getEmailTemplateVariables(11, true),
+                'template_id'       => 11,
+                'keywords'          => getEmailTemplateVariables(11, true),
                 '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
                 '_site_link_'       => url('/'),
-                'subject' => $mail_title,
-                '_tracking_url_' => url('/') . $link,
-                '_customer_name_' => $notifiable_customer->name,
-                '_message_' => $message,
-                '_btn_title_' => $btn_title,
-                '_mail_title_' => $mail_title,
+                'subject'           => $mail_title,
+                '_tracking_url_'    => url('/') . $link,
+                '_customer_name_'   => $notifiable_customer->name,
+                '_message_'         => $message,
+                '_btn_title_'       => $btn_title,
+                '_mail_title_'      => $mail_title,
             ];
 
             SendTenantMailJob::dispatch($notifiable_customer->email, $mail_data, getTenantMailConfig());
-            
             Log::info("Email job dispatched successfully", ['email' => $notifiable_customer->email]);
 
         } catch (Exception $e) {
             Log::error("Failed to dispatch email job", [
                 'error' => $e->getMessage(),
-                'email' => $notifiable_customer->email
+                'email' => $notifiable_customer->email ?? 'unknown'
             ]);
         }
+    }
+    // public static function sendOrderStatusNotification($order_id, $customer_id, $guest_customer_id, $message, $btn_title, $mail_title)
+    // {
+    //     \Log::info('sendOrderStatusNotification method called!!!');
+    //     $link - '';
+    //     $notifiable_customer = null;
+    //     try {
+
+    //         Log::info("sendOrderStatusNotification Process Started", ['order_id' => $order_id, 'customer_id' => $customer_id, 'guest_customer_id' => $guest_customer_id]);
+
+    //         // $link - '';
+    //         // $link = '/dashboard/order-details/' . $order_id;
+    //         // $data = [
+    //         //     'message' => $message,
+    //         //     'link' => $link
+    //         // ];
+
+    //         // 1. Fetch Customer
+    //         // $notifiable_customer = null;
+
+    //         if($customer_id > 0) {
+
+    //             $link = '/dashboard/order-details/' . $order_id;
+
+    //             $notifiable_customer = Customers::find($customer_id);
+
+    //             $notifiable_customer->notify(new OrderStatusUpdateNotification($data));
+    //             Log::info("In-app notification sent successfully", ['customer_id' => $customer_id]);
+    //         }
+    //         else if($guest_customer_id > 0) {
+    //             $link = '/guest/order-details/' . $order_id;
+    //             $notifiable_customer = GuestCustomers::where('id', $guest_customer_id)->first();
+    //         }
+    //         else {
+    //             Log::warning("Order has neither customer_id nor guest_customer_id", ['order_id' => $order_id]);
+    //             return false;
+    //         }
+
+    //     }
+    //     catch (\Exception $e) {
+    //         \Log::error("orderStatus Notification failure: " . $e->getMessage());
+    //     }
+
+    //     $data = [
+    //             'message' => $message,
+    //             'link' => $link
+    //     ];
+        
+
+    //     // 3. Email Dispatch
+    //     try {
+    //         $mail_data = [
+    //             'template_id' => 11,
+    //             'keywords' => getEmailTemplateVariables(11, true),
+    //             '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
+    //             '_site_link_'       => url('/'),
+    //             'subject' => $mail_title,
+    //             '_tracking_url_' => url('/') . $link ?? '',
+    //             '_customer_name_' => $notifiable_customer->name,
+    //             '_message_' => $message,
+    //             '_btn_title_' => $btn_title,
+    //             '_mail_title_' => $mail_title,
+    //         ];
+
+    //         SendTenantMailJob::dispatch($notifiable_customer->email, $mail_data, getTenantMailConfig());
+            
+    //         Log::info("Email job dispatched successfully", ['email' => $notifiable_customer->email]);
+
+    //     } catch (Exception $e) {
+    //         Log::error("Failed to dispatch email job", [
+    //             'error' => $e->getMessage(),
+    //             'email' => $notifiable_customer->email
+    //         ]);
+    //     }
 
         
     
-    }
+    // }
     // public static function sendOrderStatusNotification($order_id, $customer_id, $message, $btn_title, $mail_title)
     // {
 
