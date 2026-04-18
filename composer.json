@@ -27,6 +27,7 @@
         "maatwebsite/excel": "3.1.48",
         "mallardduck/blade-lucide-icons": "^1.26",
         "milon/barcode": "^9.0",
+        "myfatoorah/laravel-package": "^2.2",
         "niklasravnsborg/laravel-pdf": "^4.1",
         "paypal/paypal-checkout-sdk": "^1.0",
         "php-http/guzzle7-adapter": "^1.1",

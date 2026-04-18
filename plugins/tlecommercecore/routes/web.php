@@ -33,6 +33,7 @@ use Plugin\TlcommerceCore\Http\Controllers\ProductCollectionController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\SSLCommerzController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\MercadoPagoController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\PayzahController;
+use Plugin\TlcommerceCore\Http\Controllers\Payment\MyFatoorahController;
 
 /**
  * Payzah payment
@@ -51,6 +52,15 @@ Route::prefix('payment')->group(function () {
 Route::get('/payzah/test', [PayzahController::class, 'test'])->name('payzah.test');
 
 
+/**
+ * Myfatoorah payment
+ */
+Route::get('/myfatoorah/pay', [MyFatoorahController::class, 'pay'])->name('myfatoorah.pay');
+Route::prefix('payment')->group(function () {
+    
+    Route::post('/myfatoorah/callback', [MyFatoorahController::class, 'callback'])
+        ->name('myfatoorah.callback');
+});
 
 Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function () {
 

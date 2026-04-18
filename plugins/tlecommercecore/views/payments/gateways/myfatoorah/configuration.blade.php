@@ -1,10 +1,10 @@
 @php
     $currencies = getAllCurrencies();
-    $selecected_currency = \Plugin\TlcommerceCore\Repositories\PaymentMethodRepository::configKeyValue(
+    $selected_currency = \Plugin\TlcommerceCore\Repositories\PaymentMethodRepository::configKeyValue(
         $method->id,
-        'payzah_currency',
+        'myfatoorah_currency',
     );
-    $default_currency = $selecected_currency == null ? getDefaultCurrency() : $selecected_currency;
+    $default_currency = $selected_currency == null ? getDefaultCurrency() : $selected_currency;
 @endphp
 <div class="p-3 payment-method-item-body">
     <div class="configuration">
@@ -14,10 +14,10 @@
                 <label class="black bold mb-2">{{ translate('Logo') }}</label>
                 <div class="input-option">
                     @include('core::base.includes.media.media_input', [
-                        'input' => 'payzah_logo',
+                        'input' => 'myfatoorah_logo',
                         'data' => \Plugin\TlcommerceCore\Repositories\PaymentMethodRepository::configKeyValue(
                             $method->id,
-                            'payzah_logo'),
+                            'myfatoorah_logo'),
                     ])
                 </div>
             </div>
@@ -28,7 +28,7 @@
                         class="mt-2 btn-link">({{ translate('Please setup exchange rate for the selected currency') }})</a>
                 </div>
                 <div class="input-option">
-                    <select name="paystack_currency" class="theme-input-style selectCurrency">
+                    <select name="myfatoorah_currency" class="theme-input-style selectCurrency">
                         @foreach ($currencies as $currency)
                             <option value="{{ $currency->code }}" class="text-uppercase"
                                 {{ $currency->code == $default_currency ? 'selected' : '' }}>
@@ -40,11 +40,11 @@
             </div>
 
             <div class="form-group mb-20">
-                <label class="black bold mb-2">{{ translate('Payzah Secret Key') }}</label>
+                <label class="black bold mb-2">{{ translate('Myfatoorah Secret Key') }}</label>
                 <div class="input-option">
-                    <input type="text" class="theme-input-style" name="payzah_secret_key"
-                        placeholder="Enter Payzah Secret Key"
-                        value="{{ \Plugin\TlcommerceCore\Repositories\PaymentMethodRepository::configKeyValue($method->id, 'payzah_secret_key') }}"
+                    <input type="text" class="theme-input-style" name="myfatoorah_secret_key"
+                        placeholder="Enter Myfatoorah Secret Key"
+                        value="{{ \Plugin\TlcommerceCore\Repositories\PaymentMethodRepository::configKeyValue($method->id, 'myfatoorah_secret_key') }}"
                         required />
                 </div>
             </div>
@@ -52,7 +52,7 @@
             <div class="form-group mb-20">
                 <label class="black bold mb-2">{{ translate('Instruction') }}</label>
                 <div class="input-option">
-                    <textarea name="payzah_instruction" id="instruction" class="theme-input-style">{{ \Plugin\TlcommerceCore\Repositories\PaymentMethodRepository::configKeyValue($method->id, 'payzah_instruction') }}</textarea>
+                    <textarea name="myfatoorah_instruction" id="instruction" class="theme-input-style">{{ \Plugin\TlcommerceCore\Repositories\PaymentMethodRepository::configKeyValue($method->id, 'myfatoorah_instruction') }}</textarea>
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-end">
@@ -62,21 +62,21 @@
         </form>
     </div>
     <div class="instruction">
-        <a href="https://payzah.com/" target="_blank" class="btn-link">Payzah</a>
+        <a href="https://myfatoorah.com/" target="_blank" class="btn-link">Myfatoorah</a>
         <p>
-            Customer can buy product and pay directly using Payzah
+            Customer can buy product and pay directly using Myfatoorah
         </p>
         <p class="semi-bold">
-            Configuration instruction for Payzah
+            Configuration instruction for Myfatoorah
         </p>
-        <p>To use Payzah, you need to:</p>
+        <p>To use Myfatoorah, you need to:</p>
         <ol>
             <li style="list-style-type: decimal">
-                Register with Payzah
+                Register with Myfatoorah
             </li>
             <li style="list-style-type: decimal">
                 <p>
-                    After registration at Payzah, you will have the Secret Key
+                    After registration at Myfatoorah, you will have the Secret Key
                 </p>
             </li>
             <li style="list-style-type: decimal">
