@@ -341,10 +341,10 @@ class CarrierRepository
             $payload = $request->all();
 
             // Handle Armada's test payload specifically
-            if (isset($payload['code']) && $payload['code'] === 'TEST123') {
-                Log::info("Armada Test Webhook (TEST123) acknowledged successfully.");
-                return true; 
-            }
+        // if (isset($payload['code']) && $payload['code'] === 'TEST123') {
+        //     Log::info("Armada Test Webhook (TEST123) acknowledged successfully.");
+        //     return true; 
+        // }
 
             ShippingCourierOrders::where('code', $payload['code'])->update([
                 'status'             => $payload['status'],
