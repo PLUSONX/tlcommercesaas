@@ -340,6 +340,10 @@ class CarrierRepository
         try {
             $payload = $request->all();
 
+            Log::info("updateShippingCourierOrders method called:", [
+                    'payload' => $payload
+                ]);
+
             // Handle Armada's test payload specifically
         // if (isset($payload['code']) && $payload['code'] === 'TEST123') {
         //     Log::info("Armada Test Webhook (TEST123) acknowledged successfully.");
