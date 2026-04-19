@@ -344,6 +344,7 @@ class MyFatoorahController extends Controller {
             'amount'            => $payableAmount,
             'customer_id'       => $customerId,
             'guest_customer_id' => $guestCustomerId,
+            'callback' => route('myfatoorah.callback')
         ]);
 
         if (!$orderId || !$payableAmount) {
