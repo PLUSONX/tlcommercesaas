@@ -13,9 +13,10 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         '/user/app/ssl-commerce*',
-        '/user/app/powertranzpay-payment-finalize',
-        '/admin/powertranzpay-payment-finalize',
-        '/webhook/paddle',
-        'payment/payzah/*'
+        // '/user/app/powertranzpay-payment-finalize',
+        // '/admin/powertranzpay-payment-finalize',
+        // '/webhook/paddle',
+        'payment/payzah/*',
+        'payment/myfatoorah/*',
     ];
 }

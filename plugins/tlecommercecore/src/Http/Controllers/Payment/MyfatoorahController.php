@@ -374,6 +374,10 @@ class MyFatoorahController extends Controller {
 
             $callbackURL = route('myfatoorah.callback');
 
+            Log::info('callback check', [
+                'callback' => route('myfatoorah.callback')
+            ]);
+
             $curlData = [
                 'CustomerName'       => $customerName,
                 'InvoiceValue'       => $payableAmount,

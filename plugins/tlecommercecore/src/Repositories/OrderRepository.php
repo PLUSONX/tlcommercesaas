@@ -1386,12 +1386,12 @@ class OrderRepository
             // \Log::info('Respository Method: after sending notification to admin!!!');
 
             // DB::commit();
-            if ($request['payment_id'] == config('tlecommercecore.payment_methods.bank')) {
+            // if ($request['payment_id'] == config('tlecommercecore.payment_methods.bank')) {
 
                 // \Log::info('Respository Method: before storing bank payment info!!!');
 
-                $this->storeBankPaymentInfo($request, $order->id);
-            }
+                // $this->storeBankPaymentInfo($request, $order->id);
+            // }
             return $redirect_url;
         } catch (\Exception $e) {
             Log::error('PickupPoint Error (Exception): ' . $e->getMessage(), [
