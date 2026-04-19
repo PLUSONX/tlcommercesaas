@@ -100,7 +100,8 @@ class MyFatoorahController extends Controller {
             'settings' => json_encode($settings),
         ]);
 
-        $apiKey = $settings['myfatoorah_secret_key'] ?? null;
+        // $apiKey = $settings['myfatoorah_secret_key'] ?? null;
+        $apiKey = trim($settings['myfatoorah_secret_key'] ?? null);
         $isTest = $settings['myfatoorah_is_test'] ?? true;
         $vcCode = $settings['myfatoorah_vc_code'] ?? 'KWT';
 
@@ -125,7 +126,7 @@ class MyFatoorahController extends Controller {
 
         $this->mfConfig = [
             'apiKey'    => $apiKey,
-            'isTest'    => false,
+            'isTest'    => true,
             'vcCode'    => $vcCode,
             'loggerObj' => $logFile,
         ];
