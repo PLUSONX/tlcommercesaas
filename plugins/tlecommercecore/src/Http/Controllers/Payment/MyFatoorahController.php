@@ -220,6 +220,8 @@ class MyFatoorahController extends Controller {
      */
     public function callback(Request $request)
     {
+        Log::info('CALLBACK HIT - VERY FIRST LINE');
+
         Log::info('MyFatoorah callback received', [
             'request_data' => request()->all(),
         ]);
