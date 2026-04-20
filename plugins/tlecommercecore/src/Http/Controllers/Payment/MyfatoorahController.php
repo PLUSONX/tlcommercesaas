@@ -344,7 +344,7 @@ class MyFatoorahController extends Controller {
             'amount'            => $payableAmount,
             'customer_id'       => $customerId,
             'guest_customer_id' => $guestCustomerId,
-            'callback' => route('myfatoorah.callback')
+            'callback' => url('/') . '/' . 'payment/myfatoorah/callback'
         ]);
 
         if (!$orderId || !$payableAmount) {
@@ -373,11 +373,8 @@ class MyFatoorahController extends Controller {
                 $customerMobile = '00000000';
             }
 
-            $callbackURL = route('myfatoorah.callback');
-
-            Log::info('callback check', [
-                'callback' => route('myfatoorah.callback')
-            ]);
+            // $callbackURL = route('myfatoorah.callback');
+            $callbackURL = url('/') . '/' . 'payment/myfatoorah/callback';
 
             $curlData = [
                 'CustomerName'       => $customerName,
