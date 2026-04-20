@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Plugin\TlcommerceCore\Models\PaymentTransaction;
 use Illuminate\Support\Facades\Http;
 use Plugin\TlcommerceCore\Models\Orders;
+use Plugin\TlcommerceCore\Models\OrderHasProducts;
 
 class PayzahController extends Controller
 {
@@ -568,7 +569,12 @@ private function updateOrderTransaction($orderId)
             'payment_status' => 1, // mark as failed or whatever your logic requires
         ]);
 
-    \Log::info('Order updated successfully', [
+    OrderHasProducts::where('order_id', $orderId)
+        ->update([
+            'payment_status' => 1, // mark as failed or whatever your logic requires
+        ]);
+
+    \Log::info('Order Payment Status updated successfully', [
         'order_id' => $orderId,
     ]);
 }

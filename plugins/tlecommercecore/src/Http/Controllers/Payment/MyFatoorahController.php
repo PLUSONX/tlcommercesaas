@@ -11,6 +11,7 @@ use Plugin\TlcommerceCore\Models\PaymentTransaction;
 use Plugin\TlcommerceCore\Models\PaymentMethods;
 use Illuminate\Support\Facades\Http;
 use Plugin\TlcommerceCore\Models\Orders;
+use Plugin\TlcommerceCore\Models\OrderHasProducts;
 use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -485,7 +486,12 @@ private function updateOrderTransaction($orderId)
             'payment_status' => 1, // mark as failed or whatever your logic requires
         ]);
 
-    \Log::info('Order updated successfully', [
+    OrderHasProducts::where('order_id', $orderId)
+        ->update([
+            'payment_status' => 1, // mark as failed or whatever your logic requires
+        ]);
+
+    \Log::info('Order payment status updated successfully', [
         'order_id' => $orderId,
     ]);
 }
