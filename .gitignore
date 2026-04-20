@@ -16,6 +16,7 @@ pnpm-debug.log
 
 /storage/*.key
 /storage/logs
+storage/tenant*/logs/*.log
 /storage/framework
 /public/storage
 /storage/app/firebase-auth.json
