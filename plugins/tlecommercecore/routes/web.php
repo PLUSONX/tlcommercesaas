@@ -56,7 +56,7 @@ Route::get('/payzah/test', [PayzahController::class, 'test'])->name('payzah.test
  * Myfatoorah payment
  */
 Route::get('/myfatoorah/pay', [MyFatoorahController::class, 'pay'])->name('myfatoorah.pay');
-Route::get('/payment/myfatoorah/callback', [MyFatoorahController::class, 'callback']);
+Route::get('/myfatoorah/callback', [MyFatoorahController::class, 'callback']);
 // Route::prefix('payment')->group(function () {
     
 //     Route::post('/myfatoorah/callback', [MyFatoorahController::class, 'callback'])
