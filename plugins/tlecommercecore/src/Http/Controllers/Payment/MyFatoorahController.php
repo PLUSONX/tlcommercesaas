@@ -21,6 +21,8 @@ use MyFatoorah\Library\API\Payment\MyFatoorahPayment;
 use MyFatoorah\Library\API\Payment\MyFatoorahPaymentEmbedded;
 use MyFatoorah\Library\API\Payment\MyFatoorahPaymentStatus;
 use MyFatoorah\Library\MyFatoorah;
+use Plugin\TlcommerceCore\Http\Controllers\Payment\PaymentController;
+
 
 class MyFatoorahController extends Controller {
 
@@ -127,7 +129,7 @@ class MyFatoorahController extends Controller {
         $this->mfConfig = [
             'apiKey'    => $apiKey,
             'isTest'    => true,
-            'vcCode'    => $vcCode,
+            'vcCode'    => 'KWT',
             'loggerObj' => $logFile,
         ];
     }
@@ -216,13 +218,16 @@ class MyFatoorahController extends Controller {
      * 
      * @return JsonResponse
      */
-    public function callback()
+    public function callback(Request $request)
     {
         Log::info('MyFatoorah callback received', [
             'request_data' => request()->all(),
         ]);
 
         try {
+
+            $this->setCredentials();
+            
             $paymentId = request('paymentId');
 
             if (!$paymentId) {

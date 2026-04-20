@@ -58,9 +58,10 @@ Route::get('/payzah/test', [PayzahController::class, 'test'])->name('payzah.test
 Route::get('/myfatoorah/pay', [MyFatoorahController::class, 'pay'])->name('myfatoorah.pay');
 Route::prefix('payment')->group(function () {
     
-    Route::get('/myfatoorah/callback', [MyFatoorahController::class, 'callback'])
+    Route::post('/myfatoorah/callback', [MyFatoorahController::class, 'callback'])
         ->name('myfatoorah.callback');
 });
+
 
 Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function () {
 

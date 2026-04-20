@@ -45,3 +45,6 @@
 18.04.2026 04:29:29 - Order #43 ----- Send Payment - Request: {"CustomerName":"test","InvoiceValue":1,"DisplayCurrencyIso":"KWD","CustomerEmail":"test@gmail.com","CallBackUrl":"http:\/\/raneem.localhost:8000\/payment\/myfatoorah\/callback","ErrorUrl":"http:\/\/raneem.localhost:8000\/payment\/myfatoorah\/callback","MobileCountryCode":"+965","CustomerMobile":"00000000","Language":"en","CustomerReference":43,"SourceInfo":"Laravel 9.52.21 - MyFatoorah Package 2.2.6","NotificationOption":"Lnk"}
 18.04.2026 04:29:29 - Order #43 ----- Send Payment - Response: {"IsSuccess":false,"Message":"The token is not valid or expired!"}
 18.04.2026 04:29:29 - Order #43 ----- Send Payment - Error: The token is not valid or expired!
+20.04.2026 05:18:03 - Order # ----- Get Payment Status - Request: {"Key":"38","KeyType":"PaymentId"}
+20.04.2026 05:18:04 - Order # ----- Get Payment Status - Response: {"IsSuccess":false,"Message":"No data match the provided values","ValidationErrors":null,"Data":null}
+20.04.2026 05:18:04 - Order # ----- Get Payment Status - Error: No data match the provided values
