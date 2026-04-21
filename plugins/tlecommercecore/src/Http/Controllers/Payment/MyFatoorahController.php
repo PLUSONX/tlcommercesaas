@@ -129,7 +129,7 @@ class MyFatoorahController extends Controller {
 
         $this->mfConfig = [
             'apiKey'    => $apiKey,
-            'isTest'    => true,
+            'isTest'    => false,
             'vcCode'    => 'KWT',
             'loggerObj' => $logFile,
         ];
