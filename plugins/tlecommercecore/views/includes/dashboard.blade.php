@@ -1,8 +1,10 @@
 @php
     $order_repository = new Plugin\TlcommerceCore\Repositories\OrderRepository();
+
     $total_customers = \Plugin\TlcommerceCore\Models\Customers::select('id')
         ->get()
         ->count();
+    
     $total_products = \Plugin\TlcommerceCore\Models\Product::select('id')
         ->get()
         ->count();
@@ -13,10 +15,6 @@
         ->orderBy('id', 'DESC')
         ->take(5)
         ->get();
-
-    Illuminate\Support\Facades\Log::info('Orders data', [
-        'recent_orders' => $recent_orders->toArray()
-    ]);
     
     $top_customers = \Plugin\TlcommerceCore\Models\Customers::withCount('orders')
         ->orderBy('orders_count', 'DESC')
@@ -169,8 +167,17 @@
 @endpush
  <div class="row">
 
-    <div class="d-sm-flex justify-content-between align-items-center ml-3">
-        <h4 class="font-20">{{ translate('Dashboard') }}</h4>
+    <div class="dashboard-header d-sm-flex justify-content-between align-items-center ml-3 mr-3 w-100">
+        <h4 class="font-20 mb-0">{{ translate('Dashboard') }}</h4>
+
+        <div class="filter">
+            <select name="filter" class="theme-input-style selectFilter">
+                <option value="daily">Today</option>
+                <option value="weekly">This week</option>
+                <option value="monthly">This month</option>
+                <option value="all-time" selected>All Time</option>
+            </select>
+        </div>
     </div>
       <!--<div class="col-xl-3 col-sm-6">
             <div class="card mb-30 bg-primary text-white glassmorphic-card">
@@ -253,7 +260,9 @@
                             <x-lucide-users style="width: 22px; height: 22px; color: #ff5A1f;" />
                             <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Customers') }}</h4>
                         </div>
-                        <h2 class="mb-0">{{ $total_customers }}</h2>
+                        <!-- <h2 class="mb-0">{{ $total_customers }}</h2> -->
+                         <h2 class="mb-0 total-customers-count">{{ $total_customers }}</h2>
+
                     </div>
                 </div>
             </div>
@@ -267,7 +276,8 @@
                                 <x-lucide-shopping-cart style="width: 22px; height: 22px; color: #ff5A1f;" />
                                 <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Orders') }}</h4>
                             </div>
-                            <h2 class="mb-0">{{ $order_repository->statusWiseOrderCounter() }}</h2>
+                            <!-- <h2 class="mb-0">{{ $order_repository->statusWiseOrderCounter() }}</h2> -->
+                            <h2 class="mb-0 total-orders-count">{{ $order_repository->statusWiseOrderCounter() }}</h2>
                         </div>
                 </div>
             </div>
@@ -281,7 +291,8 @@
                                 <x-lucide-shopping-basket style="width: 22px; height: 22px; color: #ff5A1f;" />
                                 <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Products') }}</h4>
                             </div>
-                            <h2 class="mb-0">{{ $total_products }}</h2>
+                            <!-- <h2 class="mb-0">{{ $total_products }}</h2> -->
+                            <h2 class="mb-0 total-products-count">{{ $total_products }}</h2>
                         </div>
                 </div>
             </div>
@@ -295,7 +306,8 @@
                                 <x-lucide-circle-dollar-sign style="width: 22px; height: 22px; color: #ff5A1f;" />
                                 <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Sales') }}</h4>
                             </div>
-                            <h2 class="mb-0">{{ currencyExchange($total_sales) }}</h2>
+                            <!-- <h2 class="mb-0">{{ currencyExchange($total_sales) }}</h2> -->
+                            <h2 class="mb-0 total-sales-count">{{ currencyExchange($total_sales) }}</h2>
                         </div>
                 </div>
             </div>
@@ -841,6 +853,58 @@
         let chart_data_type = "monthly";
         let categories = [];
 
+        $('.selectFilter').on('change', function () {
+            const filter = $(this).val();
+
+            $.ajax({
+                url: '{{ route("dashboard.filter") }}',
+                data: { filter: filter },
+                success: function(data) {
+                    console.log("customers: ", data.total_customers);
+                    console.log(typeof data.total_customers); 
+                    $('.total-customers-count').text(data.total_customers);
+                    $('.total-products-count').text(data.total_products ?? 0);
+                    $('.total-sales-count').text(data.total_sales ?? 0);
+                    $('.total-orders-count').text(data.total_orders ?? 0);
+                },
+                error: function(err) {
+                    console.error('Filter error:', err);
+                }
+            });
+        });
+        
+        // function dateFormatted() {
+        //     let today = new Date();
+
+        //     let year = today.getFullYear();
+        //     let month = String(today.getMonth() + 1).padStart(2, '0');
+        //     let day = String(today.getDate()).padStart(2, '0');
+
+        //     let todayFormatted = `${year}-${month}-${day}`;
+
+        //     return todayFormatted;
+
+        // }
+
+        // function loadDailyData() {
+        //     console.log("Daily selected");
+        //     let today = dateFormatted();
+
+        //     console.log(today);
+        // }
+
+        //  function loadWeeklyData() {
+        //     console.log("Weekly selected");
+        // }
+
+        // function loadMonthlyData() {
+        //     console.log("Monthly selected");
+        // }
+
+        // function loadAllTimeData() {
+        //     console.log("All Time selected");
+        // }
+
         $(".chart-switcher").on('click', function(e) {
             e.preventDefault();
             $('.chart-switcher').removeClass('active');
@@ -967,4 +1031,81 @@
     cursor: pointer;
 }
 
+
+.filter {
+    position: relative;
+    display: inline-block;
+    min-width: 180px;
+}
+
+.selectFilter {
+    width: 100%;
+    height: 48px;
+    line-height: 48px;
+    padding: 0 40px 0 15px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    background: #fff;
+    border: 1px solid #dcdcdc;
+    border-radius: 10px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.selectFilter option {
+    padding: 10px;
+    line-height: normal;
+}
+
+/* Hover */
+.selectFilter:hover {
+    border-color: #ff5A1f;
+}
+
+/* Focus */
+.selectFilter:focus {
+    outline: none;
+    border-color: #ff5A1f;
+    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+}
+
+/* Custom arrow */
+.filter::after {
+    content: "▼";
+    font-size: 11px;
+    color: #666;
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+@media (max-width: 576px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 12px;
+    }
+
+    .dashboard-header h4 {
+        text-align: center;
+        white-space: normal; 
+        margin-bottom: 20px !important;
+    }
+
+    .filter {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .selectFilter {
+        width: 100%;
+    }
+}
 </style>

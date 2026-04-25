@@ -53,10 +53,10 @@ class PayzahController extends Controller
             $this->payzah_secret_key = $settings['payzah_secret_key'] ?? null;
             $this->currency = $settings['payzah_currency'] ?? 'KWD';
 
-            Log::info('payment settings', [
-                'settings' => json_encode($settings),
-                'payzah_secret_key' => $this->payzah_secret_key
-            ]);
+            // Log::info('payment settings', [
+            //     'settings' => json_encode($settings),
+            //     'payzah_secret_key' => $this->payzah_secret_key
+            // ]);
 
 
             if (!$this->payzah_secret_key) {

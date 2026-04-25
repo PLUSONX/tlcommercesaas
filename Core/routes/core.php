@@ -151,6 +151,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/activate-license', [DashboardController::class, 'licenseActive'])
         ->name('admin.license.active')->middleware(['can:Manage Dashboard']);
 
+    Route::get('/dashboard/filter', [DashboardController::class, 'filter'])->name('dashboard.filter');
+
      /**
          * Manage Store
          */
