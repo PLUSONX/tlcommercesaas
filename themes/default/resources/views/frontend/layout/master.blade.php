@@ -37,7 +37,6 @@
         ->where('provider', 'facebook_pixel')
         ->first();
 
-    dd($facebook_integration);
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -67,7 +66,7 @@
                 fbq('init', '{{ $fbPixelId }}');
                 console.log('[FB Pixel] fbq init called');
 
-                
+
 
                 // fbq('track', 'PageView');
                 // window.fbq = fbq;
