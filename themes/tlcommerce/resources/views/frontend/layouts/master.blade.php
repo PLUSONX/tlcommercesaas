@@ -61,6 +61,8 @@
 
     @if($fbPixelId)
         <script>
+            console.log('[FB Pixel] Script starting, Pixel ID: {{ $fbPixelId }}');
+
             !function(f,b,e,v,n,t,s)
             {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
             n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -69,7 +71,14 @@
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
+
+            console.log('[FB Pixel] fbq function defined:', typeof fbq);
+
             fbq('init', '{{ $fbPixelId }}');
+
+            console.log('[FB Pixel] fbq init called');
+
+            console.log('[FB Pixel] window.fbq:', typeof window.fbq);
             // fbq('track', 'PageView');
             // window.fbq = fbq;
         </script>
