@@ -31,18 +31,18 @@
             : 'ff7171';
     $currentRoute = Route::currentRouteName();
 
-    $facebook_integration = null;
+    <!-- $facebook_integration = null;
     
     $facebook_integration = DB::table('tl_com_social_media_integrations')
         ->where('provider', 'facebook_pixel')
-        ->first();
+        ->first(); -->
 
 @endphp
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    @if($facebook_integration && $facebook_integration->is_active)
+    <!-- @if($facebook_integration && $facebook_integration->is_active)
         @php 
             $fbSettings = json_decode($facebook_integration->settings, true);
             $fbPixelId = $fbSettings['pixel_id'] ?? null;
@@ -72,7 +72,7 @@
                     src="https://www.facebook.com/tr?id={{ $fbPixelId }}&ev=PageView&noscript=1"/>
             </noscript>
         @endif
-    @endif
+    @endif -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
