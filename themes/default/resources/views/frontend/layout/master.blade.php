@@ -66,6 +66,8 @@
                 fbq('init', '{{ $fbPixelId }}');
                 console.log('[FB Pixel] fbq init called');
 
+                fbq('track', 'PageView');  // 👈 THIS was commented out — this is what was missing
+                console.log('[FB Pixel] PageView tracked');
 
 
                 // fbq('track', 'PageView');
