@@ -31,12 +31,48 @@
             : 'ff7171';
     $currentRoute = Route::currentRouteName();
 
+    $facebook_integration = null;
+    
+    $facebook_integration = DB::table('tl_com_social_media_integrations')
+        ->where('provider', 'facebook_pixel')
+        ->first();
 
 @endphp
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+    @if($facebook_integration && $facebook_integration->is_active)
+        @php 
+            $fbSettings = json_decode($facebook_integration->settings, true);
+            $fbPixelId = $fbSettings['pixel_id'] ?? null;
+
+        @endphp
+
+        @if($fbPixelId)
+            <script>
+
+                !function(f,b,e,v,n,t,s)
+                {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                n.queue=[];t=b.createElement(e);t.async=!0;
+                t.src=v;s=b.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t,s)}(window, document,'script',
+                'https://connect.facebook.net/en_US/fbevents.js');
+
+
+                fbq('init', '{{ $fbPixelId }}');
+
+                // fbq('track', 'PageView');
+                // window.fbq = fbq;
+            </script>
+            <noscript>
+                <img height="1" width="1" style="display:none"
+                    src="https://www.facebook.com/tr?id={{ $fbPixelId }}&ev=PageView&noscript=1"/>
+            </noscript>
+        @endif
+    @endif
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
