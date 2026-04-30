@@ -43,10 +43,13 @@ class SettingsController extends Controller
      */
     public function updateEcommerceSettings(Request $request)
     {
+        Log::info('updateEcommerceSettings method called!');
+
         $tenant = tenant(); 
         // Log::info('Tenant resolved', [
         //     'tenant' => $tenant ? $tenant->toArray() : null,
-        //     'tenant_slug' => $tenant->shop_slug
+        //     'tenant_slug' => $tenant->shop_slug,
+        //     'request' => $request->all()
         // ]);
 
         if (!$request->filled('shop_slug')) {

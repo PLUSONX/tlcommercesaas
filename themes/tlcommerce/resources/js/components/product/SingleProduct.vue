@@ -4,38 +4,16 @@
     <div class="position-relative overflow-hidden">
       <!-- Thumb -->
       <router-link :to="`/products/${item.slug}`" class="d-block">
-        <!-- <img
-          class="w-100"
-          src="/storage/all_files/2023/Mar/trending-offers-ear-phone-02_9_32.png"
-          :alt="item.name"
-        /> -->
-        <!-- <img
-            class="w-100"
-            :src="cleanImage(item.thumbnail_image)"
-            :alt="item.name"
-          /> -->
+
         <v-lazy-image class="w-100" :src="cleanImage(item.thumbnail_image)" :alt="item.name" />
-        <!-- <v-lazy-image
-          class="w-100"
-          :src="item.thumbnail_image"
-          :alt="item.name"
-        /> -->
+
       </router-link>
       <!-- End Thumb -->
 
       <!-- Action buttons -->
       <router-link :to="`/products/${item.slug}`"
         class="product-action-buttons position-absolute fixed-top w-100 h-100 d-flex align-items-center justify-content-center">
-        <!-- Add to Cart -->
-        <!-- <button
-          v-if="item.quantity > 0"
-          class="btn-circle bg-black"
-          v-bind:title="$t('Add To Cart')"
-          @click.prevent="handleCartButton"
-        >
-          <base-icon-svg name="cart" :height="17.5" :width="17.5" />
-        </button> -->
-        <!-- End Add to Cart -->
+
 
         <!-- Add to Wishlist -->
         <button class="btn-circle bg-black" v-bind:title="$t('Add To Wishlist')" @click.prevent="addToWishlist">
@@ -90,31 +68,7 @@
 
       </div>
 
-      <!-- <div class="button-group d-flex align-items-center justify-content-between">
-        
-
-        <button
-          type="button"
-          class="btn btn_fill btn-xs rounded"
-          :disabled="product.quantity < 1"
-          @click.prevent="placeOrder"
-        >
-          {{ $t("Place Order") }}
-        </button>
-
-        <button
-          type="button"
-          :disabled="product.quantity < 1"
-          class="btn btn_borderd btn-xs rounded"
-          @click.prevent="addToCart"
-        >
-          {{ $t("Add To Cart") }}
-        </button>
-      </div> -->
-
-
       <div class="button-group d-flex align-items-center justify-content-between">
-
 
         <button type="button" class="btn btn_fill btn-xs rounded" :disabled="product.quantity < 1"
           @click.prevent="placeOrder">
@@ -167,11 +121,7 @@
       <!-- Thumb -->
       <router-link :to="`/products/${item.slug}`" class="d-block pr-10">
         <v-lazy-image :src="cleanImage(item.thumbnail_image)" :alt="item.name" class="small-image" />
-        <!-- <v-lazy-image
-          :src="item.thumbnail_image"
-          :alt="item.name"
-          class="small-image"
-        /> -->
+
       </router-link>
       <!-- End Thumb -->
       <!-- Summary -->
@@ -202,11 +152,7 @@
     <div class="position-relative overflow-hidden d-flex">
       <!-- Thumb -->
       <v-lazy-image class="w-100" :src="cleanImage(item.thumbnail_image)" :alt="item.name" />
-      <!-- <v-lazy-image
-        :src="item.thumbnail_image"
-        :alt="item.name"
-        class="compare-product-image"
-      /> -->
+
       <!-- End Thumb -->
       <!-- Summary -->
       <div class="p-0 ml-10">
@@ -236,11 +182,7 @@
         <div class="product-img">
           <router-link :to="`/products/${item.slug}`">
             <v-lazy-image class="w-100" :src="cleanImage(item.thumbnail_image)" :alt="item.name" />
-            <!-- <img
-              :src="item.thumbnail_image"
-              :alt="item.name"
-              class="small-image"
-            /> -->
+
           </router-link>
         </div>
         <div>
@@ -348,11 +290,7 @@
       <!-- Thumb -->
       <router-link :to="`/products/${item.slug}`" class="d-block">
         <v-lazy-image class="w-100" :src="cleanImage(item.thumbnail_image)" :alt="item.name" />
-        <!-- <v-lazy-image
-          class="w-100"
-          :src="item.thumbnail_image"
-          :alt="item.name"
-        /> -->
+
       </router-link>
       <!-- End Thumb -->
 
@@ -922,19 +860,6 @@ export default {
     }
   }
 
-  /*
-  .product-summary {
-    padding: 20px;
-    padding-top: 24px;
-    min-height: 134px;
-
-    @media (max-width: 479px) {
-      padding: 14px;
-      padding-top: 18px;
-    }
-  }
-*/
-
   .product-summary {
     padding: 10px;
     // padding-top: 5px;
@@ -1060,18 +985,6 @@ export default {
   /* Vertical center */
 }
 
-// .btn-xs {
-//   margin-top: 10px;
-//   padding: 2px 8px !important;  /* Slightly larger vertical padding for touch on mobile */
-//   font-size: 12px;
-//   line-height: 1.2;
-//   height: auto;
-//   display: inline-flex;
-//   align-items: center;
-//   justify-content: center;
-//   text-align: center;
-// }
-
 .button-group {
   width: 100%;
   gap: 0.5em;
@@ -1089,97 +1002,13 @@ export default {
   line-height: 1.4;
   white-space: nowrap;
 
-  @media (max-width: 768px) {
+  @media (max-width: 995px) and (min-width: 768px) {
     font-size: 0.55rem;
   }
+
+  @media (max-width: 768px) {
+    // font-size: 0.55rem;
+    font-size: 14px;
+  }
 }
-
-// .btn-xs {
-//   flex: 1;
-//   /* take equal width */
-//   display: inline-flex;
-//   align-items: center;
-//   justify-content: center;
-//   margin-top: 10px;
-//   padding: 1em 1em;
-//   //font-size: clamp(0.55rem, 1vw, 0.65rem);
-//   font-size: 0.65rem;
-//   font-weight: 600;
-//   line-height: 1.4;
-//   white-space: nowrap;
-// }
-
-// .btn-xs {
-//     /* padding: 10px; */
-//     // width: 48%;
-//     // align-items: center;
-//     // justify-content: center;
-
-//       display: inline-flex;
-//       align-items: center;
-//       justify-content: center;
-//       margin-top: 10px;
-//       padding: 0.4em 0.8em;
-//       font-size: clamp(0.65rem, 1.5vw, 0.75rem);
-//       // font-size: 0.75rem;
-//       max-width: 100px; 
-//       // font-size: 0.65rem;   /* relative to root, scales with browser zoom */
-//       font-weight: 600;
-//       line-height: 1.4;
-//       height: auto;
-//       white-space: nowrap;
-
-// }
-
-
-// .btn-xs {
-//   display: inline-flex;
-//   align-items: center;
-//   justify-content: center;
-//   margin-top: 10px;
-//   padding: 0.4em 0.8em;
-//   font-size: 0.70em;
-//   // font-size: clamp(0.65rem, 1.5vw, 0.85rem); /* min, fluid, max */
-//   font-weight: 600;
-//   line-height: 1.4;
-//   height: auto;
-//   max-width: 80px !important; /* prevents the button from growing too wide */
-//   white-space: nowrap;
-// }
-
-// @media (max-width: 480px) {
-//   .btn-xs {
-//     width: 100%;
-//     max-width: 100%; /* override cap so full-width works on tiny screens */
-//   }
-// }
-
-// .btn-xs {
-//   display: inline-flex;
-//   align-items: center;
-//   justify-content: center;
-//   margin-top: 10px;
-//   padding: 0.4em 0.7em;
-//   font-size: clamp(0.55rem, 1.5vw, 0.75rem);
-//   max-width: 100px; 
-//   // font-size: 0.65rem;   /* relative to root, scales with browser zoom */
-//   font-weight: 600;
-//   line-height: 1.4;
-//   height: auto;
-//   white-space: nowrap;
-// }
-
-// @media (max-width: 480px) {
-//   .btn-xs {
-//     width: 100%;  /* optional: full-width on tiny screens */
-//   }
-// }
-
-
-// .btn-xs {
-//   margin-top: 5px;
-//   padding: 2px 8px;   /* Vertical and Horizontal padding */
-//   font-size: 12px;    /* Smaller text */
-//   line-height: 1.2;   /* Tighter line height */
-//   height: auto;       /* Ensures the button shrinks to content */
-// }</style>
+</style>

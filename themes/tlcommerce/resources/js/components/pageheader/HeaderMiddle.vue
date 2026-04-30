@@ -1,269 +1,158 @@
 <template>
-  <!-- Header Top -->
-  <!-- <div
-    class="custom-header-mid header-top py-20 c1-bg"
-    @scroll="scrollHandler"
-    ref="fooHeader"
-  > -->
+
   <div :class="headerClasses" @scroll="scrollHandler" ref="fooHeader">
-    <div class="custom-container2">
-      <div class="row align-items-center">
+    <!-- <div class="custom-container2"> -->
+    <div class="row align-items-center">
 
-        <div class="col-lg-3">
-          <div class="logo-wrapper d-flex align-items-center">
+      <div class="col-lg-3 col-md-4">
+        <div class="logo-wrapper d-flex align-items-center">
 
-            <template v-if="!isSticky">
-              <template v-if="mode == 'dark'">
-                <the-logo v-if="siteProperties.logo_dark" :header-logo-style="headerLogoStyle"
-                  :logo="siteProperties.logo_dark" :title="siteProperties.site_name" />
-                <h2 class="site-title" v-else>
-                  <a href="/">{{ siteProperties.site_name }}</a>
-                </h2>
-              </template>
-              <template v-else>
-                <the-logo :header-logo-style="headerLogoStyle" :logo="siteProperties.logo"
-                  :title="siteProperties.site_name" />
-              </template>
+          <template v-if="!isSticky">
+            <template v-if="mode == 'dark'">
+              <the-logo v-if="siteProperties.logo_dark" :header-logo-style="headerLogoStyle"
+                :logo="siteProperties.logo_dark" :title="siteProperties.site_name" />
+              <h2 class="site-title" v-else>
+                <a href="/">{{ siteProperties.site_name }}</a>
+              </h2>
             </template>
-
             <template v-else>
-              <template v-if="mode == 'dark'">
-                <the-logo v-if="siteProperties.sticky_black_logo" :header-logo-style="headerLogoStyle"
-                  :logo="siteProperties.sticky_black_logo" :title="siteProperties.site_name" />
-                <h2 class="site-title" v-else>
-                  <a href="/">{{ siteProperties.site_name }}</a>
-                </h2>
-              </template>
-              <template v-else>
-                <the-logo :header-logo-style="headerLogoStyle" :logo="siteProperties.sticky_logo"
-                  :title="siteProperties.site_name" />
-              </template>
+              <the-logo :header-logo-style="headerLogoStyle" :logo="siteProperties.logo"
+                :title="siteProperties.site_name" />
             </template>
-
-          </div>
-        </div>
-
-        <!-- <div class="col-lg-3" v-if="!this.isSticky">
-        <div class="col-lg-3" v-if="!this.isSticky">
-          <template v-if="mode == 'dark'">
-            <the-logo
-              :header-logo-style="headerLogoStyle"
-              :logo="siteProperties.logo_dark"
-              :title="siteProperties.site_name"
-              v-if="siteProperties.logo_dark"
-            />
-            <h2 class="site-title" v-else>
-              <a href="/">{{ siteProperties.site_name }}</a>
-            </h2>
           </template>
+
           <template v-else>
-            <the-logo
-              :header-logo-style="headerLogoStyle"
-              :logo="siteProperties.logo"
-              :title="siteProperties.site_name"
-              v-if="siteProperties.logo"
-            />
-            <h2 class="site-title" v-else>
-              <a href="/">{{ siteProperties.site_name }}</a>
-            </h2>
-          </template>
-        </div>
-        <div class="col-lg-3" v-else>
-          <template v-if="mode == 'dark'">
-            <div v-if="siteProperties.sticky_black_logo">
-              <the-logo
-                :header-logo-style="headerLogoStyle"
-                :logo="siteProperties.sticky_black_logo"
-                :title="siteProperties.site_name"
-              />
-            </div>
-            <div v-else>
-              <h2 class="site-title">
+            <template v-if="mode == 'dark'">
+              <the-logo v-if="siteProperties.sticky_black_logo" :header-logo-style="headerLogoStyle"
+                :logo="siteProperties.sticky_black_logo" :title="siteProperties.site_name" />
+              <h2 class="site-title" v-else>
                 <a href="/">{{ siteProperties.site_name }}</a>
               </h2>
-            </div>
+            </template>
+            <template v-else>
+              <the-logo :header-logo-style="headerLogoStyle" :logo="siteProperties.sticky_logo"
+                :title="siteProperties.site_name" />
+            </template>
           </template>
-          <template v-else>
-            <div v-if="siteProperties.sticky_logo">
 
-              <the-logo
-                :header-logo-style="headerLogoStyle"
-                :logo="siteProperties.sticky_logo"
-                :title="siteProperties.site_name"
-              />
-            </div>
-            <div v-else>
-              <h2 class="site-title">
-                <a href="/">{{ siteProperties.site_name }}</a>
-              </h2>
-            </div>
-          </template>
-        </div> -->
-        <div class="col-lg-6 position-relative">
-          <!-- Search Form -->
-          <search-form @search-suggestions="getSearchProducts" rounded style-two />
-          <!-- End Search Form -->
-          <div class="search-suggestion box-shadow bg-white" v-if="suggestionsOpen">
-            <div v-if="
-              tag_suggestions.length ||
-              category_suggestions ||
-              products_suggestions
-            ">
-              <!--Tags suggestions List-->
-              <div v-if="tag_suggestions.length">
-                <div class="px-2 py-1 text-uppercase fs-10 text-right text-muted bg-soft-secondary">
-                  {{ $t("Popular Suggestions") }}
-                </div>
-                <ul class="list-unstyled mb-0">
-                  <!-- <li class="d-block text-left suggestion_list" v-for="(tag, index) in tag_suggestions" :key="index"> -->
-                  <li class="d-block text-left suggestion_list" v-for="(tag, index) in tag_suggestions" :key="index"
-                    @click="closeSuggestions">
-                    <router-link :to="`/product/search?tag=${tag.permalink}`">{{
-                      tag.name
-                      }}</router-link>
-                  </li>
-                </ul>
-              </div>
-              <!--End Tags suggestion List--->
-
-              <!--Categories suggestions List-->
-              <!-- <div v-if="category_suggestions">
-                <div
-                  class="px-2 py-1 text-uppercase fs-10 text-right text-muted bg-soft-secondary"
-                >
-                  {{ $t("Category Suggestions") }}
-                </div>
-                <ul class="list-unstyled mb-0">
-                  <li
-                    class="d-block text-left suggestion_list"
-                    v-for="(category, index) in category_suggestions"
-                    :key="index"
-                  >
-                    <router-link :to="`/products/category/${category.slug}`">{{
-                      category.name
-                    }}</router-link>
-                  </li>
-                </ul>
-              </div> -->
-              <!--End Categories suggestion List--->
-              <div v-if="products_suggestions">
-                <div ref="searchSuggestion"
-                  class="px-2 py-1 text-uppercase fs-10 text-right text-muted bg-soft-secondary">
-                  {{ $t("Products Suggestions") }}
-                </div>
-                <!--Product List-->
-                <ul class="list-unstyled mb-0">
-                  <!-- <li
-                    class="d-block text-left suggestion_list"
-                    v-for="(product, index) in products_suggestions"
-                    :key="index"
-                  > -->
-                  <li class="d-block text-left suggestion_list" v-for="(product, index) in products_suggestions"
-                    :key="index" @click="closeSuggestions">
-                    <single-product :item="product" small />
-                  </li>
-                </ul>
-                <!--End Product List--->
-              </div>
-            </div>
-
-            <div class="p-3 text-center mt-1" v-else>
-              {{ $t("Sorry, nothing found for") }}
-              <strong>{{ search_key }}</strong>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-3">
-          <!-- Header Buttons -->
-
-
-
-
-          <ul class="header-btn-group nav justify-content-end">
-
-            <!-- <li v-if="enable_product_compare == 1">
-              <router-link to="/compare" class="btn-circle custom-icon-btn">
-                <span class="material-icons">compare_arrows</span>
-                <span
-                  class="count position-absolute d-flex align-items-center justify-content-center"
-                  >{{ compareItem }}</span
-                >
-              </router-link>
-            </li> -->
-            <li>
-              <router-link to="/dashboard/wishlist" class="btn-circle custom-icon-btn">
-                <base-icon-svg name="wishlist" class="material-icons" :width="16.5" :height="16.5" />
-                <span class="count position-absolute d-flex align-items-center justify-content-center">{{ wishlistItem
-                  }}</span>
-              </router-link>
-            </li>
-
-            <li>
-              <router-link to="/cart" class="btn-circle custom-icon-btn">
-                <span class="material-icons">shopping_cart</span>
-                <span class="count position-absolute d-flex align-items-center justify-content-center">{{ cartItem
-                  }}</span>
-              </router-link>
-            </li>
-
-            <li ref="dropdownMenu2" v-if="!dataLoading" :class="{ 'active': showMyAccount }">
-              <span class="my-account-btn custom-menu" @click.prevent="showMyAccount = !showMyAccount">
-                {{ $t("My Account") }}
-                <span class="material-icons ms-1">expand_more</span>
-              </span>
-              <div class="my-account-dropdown" v-if="showMyAccount">
-                <!-- <span>Items count: {{ offcanvas.menuItems.length }}</span> -->
-                <ul class="list-unstyled mb-0" v-if="isCustomerLogin">
-                  <template v-for="(item, index) in offcanvas.menuItems">
-                    <menu-item v-if="!item.submenu" :key="`item-${index}`" :item="item" off-canvas
-                      :header-menu-style="headerMenuStyle" />
-
-                    <menu-dropdown v-else :key="`group-${index}`" :item="item" off-canvas :open-group="isGroupActive(item, $route.fullPath)
-                      " :header-menu-style="headerMenuStyle" />
-
-                  </template>
-
-                  <li>
-                    <router-link to="#" @click.prevent="customerLogout()" class="custom-menu">
-                      {{ $t("Logout") }}
-                    </router-link>
-                  </li>
-                </ul>
-                <!-- <ul class="list-unstyled" v-if="isCustomerLogin">
-                    <li>
-                      <router-link to="/dashboard" class="custom-menu">{{
-                        $t("Dashboard")
-                      }}</router-link>
-                    </li>
-                    <li>
-                      <router-link
-                        to="#"
-                        @click.prevent="customerLogout()"
-                        class="custom-menu"
-                      >
-                        {{ $t("Logout") }}
-                      </router-link>
-                    </li>
-                  </ul> -->
-                <ul class="list-unstyled" v-else>
-                  <li>
-                    <router-link to="/login" class="custom-menu">{{
-                      $t("Login")
-                    }}</router-link>
-                  </li>
-                  <li>
-                    <router-link to="/register" class="custom-menu">{{
-                      $t("Registration")
-                    }}</router-link>
-                  </li>
-                </ul>
-              </div>
-            </li>
-          </ul>
-          <!-- End Header Buttons -->
         </div>
       </div>
+
+      <div class="col-lg-6 col-md-5">
+        <!-- <div class="col-lg-6 position-relative"> -->
+        <!-- Search Form -->
+        <search-form @search-suggestions="getSearchProducts" rounded style-two />
+        <!-- End Search Form -->
+        <div class="search-suggestion box-shadow bg-white" v-if="suggestionsOpen">
+          <div v-if="
+            tag_suggestions.length ||
+            category_suggestions ||
+            products_suggestions
+          ">
+            <!--Tags suggestions List-->
+            <div v-if="tag_suggestions.length">
+              <div class="px-2 py-1 text-uppercase fs-10 text-right text-muted bg-soft-secondary">
+                {{ $t("Popular Suggestions") }}
+              </div>
+              <ul class="list-unstyled mb-0">
+                <!-- <li class="d-block text-left suggestion_list" v-for="(tag, index) in tag_suggestions" :key="index"> -->
+                <li class="d-block text-left suggestion_list" v-for="(tag, index) in tag_suggestions" :key="index"
+                  @click="closeSuggestions">
+                  <router-link :to="`/product/search?tag=${tag.permalink}`">{{
+                    tag.name
+                  }}</router-link>
+                </li>
+              </ul>
+            </div>
+
+            <!--End Categories suggestion List--->
+            <div v-if="products_suggestions">
+              <div ref="searchSuggestion"
+                class="px-2 py-1 text-uppercase fs-10 text-right text-muted bg-soft-secondary">
+                {{ $t("Products Suggestions") }}
+              </div>
+              <!--Product List-->
+              <ul class="list-unstyled mb-0">
+
+                <li class="d-block text-left suggestion_list" v-for="(product, index) in products_suggestions"
+                  :key="index" @click="closeSuggestions">
+                  <single-product :item="product" small />
+                </li>
+              </ul>
+              <!--End Product List--->
+            </div>
+          </div>
+
+          <div class="p-3 text-center mt-1" v-else>
+            {{ $t("Sorry, nothing found for") }}
+            <strong>{{ search_key }}</strong>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-3">
+        <!-- Header Buttons -->
+
+        <ul class="header-btn-group nav justify-content-end" style="padding-right: 5px !important;">
+
+          <li>
+            <router-link to="/dashboard/wishlist" class="btn-circle custom-icon-btn">
+              <base-icon-svg name="wishlist" class="material-icons" :width="16.5" :height="16.5" />
+              <span class="count position-absolute d-flex align-items-center justify-content-center">{{ wishlistItem
+              }}</span>
+            </router-link>
+          </li>
+
+          <li>
+            <router-link to="/cart" class="btn-circle custom-icon-btn">
+              <span class="material-icons">shopping_cart</span>
+              <span class="count position-absolute d-flex align-items-center justify-content-center">{{ cartItem
+              }}</span>
+            </router-link>
+          </li>
+
+          <li ref="dropdownMenu2" v-if="!dataLoading" :class="{ 'active': showMyAccount }">
+            <span class="my-account-btn custom-menu" @click.prevent="showMyAccount = !showMyAccount">
+              {{ $t("My Account") }}
+              <span class="material-icons ms-1">expand_more</span>
+            </span>
+            <div class="my-account-dropdown" v-if="showMyAccount">
+              <!-- <span>Items count: {{ offcanvas.menuItems.length }}</span> -->
+              <ul class="list-unstyled mb-0" v-if="isCustomerLogin">
+                <template v-for="(item, index) in offcanvas.menuItems">
+                  <menu-item v-if="!item.submenu" :key="`item-${index}`" :item="item" off-canvas
+                    :header-menu-style="headerMenuStyle" />
+
+                  <menu-dropdown v-else :key="`group-${index}`" :item="item" off-canvas :open-group="isGroupActive(item, $route.fullPath)
+                    " :header-menu-style="headerMenuStyle" />
+
+                </template>
+
+                <li>
+                  <router-link to="#" @click.prevent="customerLogout()" class="custom-menu">
+                    {{ $t("Logout") }}
+                  </router-link>
+                </li>
+              </ul>
+
+              <ul class="list-unstyled" v-else>
+                <li>
+                  <router-link to="/login" class="custom-menu">{{
+                    $t("Login")
+                  }}</router-link>
+                </li>
+                <li>
+                  <router-link to="/register" class="custom-menu">{{
+                    $t("Registration")
+                  }}</router-link>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+        <!-- End Header Buttons -->
+      </div>
     </div>
+    <!-- </div> -->
   </div>
 
   <!-- End Header Top -->
@@ -773,6 +662,23 @@ export default {
     margin: 0 !important;
     /* Reset any global margins */
   }
+
+  @media (max-width: 995px) and (min-width: 768px) {
+    font-size: 0.55rem !important;
+  }
+}
+
+@media (max-width: 995px) and (min-width: 768px) {
+  .custom-icon-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+  }
+
+  .custom-icon-btn svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
 }
 
 /* Rotate arrow when menu is open */
@@ -894,6 +800,22 @@ li.active .my-account-btn .material-icons {
   .my-account-dropdown {
     right: -10px;
     /* Adjust for mobile edges */
+  }
+}
+
+.header-btn-group {
+  flex-wrap: nowrap;
+}
+
+.my-account-btn {
+  // existing styles...
+
+  @media (max-width: 1199px) {
+    padding: 6px 10px;
+    font-size: 12px;
+
+    // Optionally hide the label, keep only the icon
+    // span:not(.material-icons) { display: none; }
   }
 }
 </style>

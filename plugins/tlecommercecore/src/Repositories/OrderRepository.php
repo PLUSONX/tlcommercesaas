@@ -2650,6 +2650,9 @@ class OrderRepository
             if ($order_info->payment_method == config('tlecommercecore.payment_methods.payzah')) {
                 $payment_method = 'Payzah';
             }
+            else if ($order_info->payment_method == config('tlecommercecore.payment_methods.myfatoorah')) {
+                $payment_method = 'Myfatoorah';
+            }
 
 
             // if ($order_info->payment_method == config('tlecommercecore.payment_methods.paypal')) {
@@ -2697,7 +2700,7 @@ class OrderRepository
             $system_properties =
                 [
                     'title' => getGeneralSetting('system_name'),
-                    'logo' => url($logo),
+                    'logo'  => $logo ? url($logo) : null,
                     'address' => SettingsRepository::getEcommerceSetting('invoice_address'),
                     'phone' => SettingsRepository::getEcommerceSetting('invoice_phone'),
                     'email' => SettingsRepository::getEcommerceSetting('invoice_email'),

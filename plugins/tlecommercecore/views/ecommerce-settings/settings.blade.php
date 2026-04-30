@@ -193,7 +193,7 @@
                         <!-- <button class="btn long ecommerce-settings-update-btn">
                             {{ translate('Save Changes') }}
                         </button> -->
-                        <button class="btn long btn-orange">
+                        <button class="btn long btn-orange ecommerce-settings-update-btn">
                             {{ translate('Save Changes') }}
                         </button>
                     </div>
@@ -293,12 +293,13 @@
              **/
             $('.ecommerce-settings-update-btn').on('click', function(e) {
                 e.preventDefault();
+                var formData = $("#ecommerce-settings-form").serialize();
                 $.ajax({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
                     },
                     type: "POST",
-                    data: $("#ecommerce-settings-form").serialize(),
+                    data: formData,
                     url: '{{ route('plugin.tlcommercecore.ecommerce.configuration.update') }}',
                     success: function(response) {
                         if (response.success) {

@@ -1,66 +1,8 @@
 <template>
   <div :class="mtClass">
-    <!-- <page-header :items="bItems" /> -->
-    <!-- <div class="pt-30 pt-lg-60 pb-60 light-bg"> -->
-    <!-- <div class="light-bg"> -->
+
     <div class="custom-container2">
-      <!-- <div class="row"> -->
-      <!-- <div class="col-lg-3">
-            <div class="widget_wrap" :class="{ active: wToggle }"> -->
-      <!-- <button
-                class="close-btn btn-circle d-lg-none"
-                @click.prevent="wToggle = !wToggle"
-              >
-                <span class="material-icons"> close </span>
-              </button> -->
-      <!-- <div class="widget_wrap-inner"> -->
-      <!-- <WidgetTopCategory
-                  v-if="!categoryLoading"
-                  :categories="categories"
-                  :selected-cat="category_filter"
-                  @filter="addCategoryFilter"
-                /> -->
-      <!-- <div
-                  v-if="categoryLoading"
-                  class="widget widget-style-1 widget_top_category mb-4"
-                >
-                  <skeleton height="300px"></skeleton>
-                </div> -->
-      <!-- <WidgetBrand
-                  v-if="!brandLoading"
-                  :brands="brands"
-                  :selected-brand="brand_filter"
-                  @filter="addBrandFilter"
-                /> -->
-      <!-- <div
-                  v-if="brandLoading"
-                  class="widget widget-style-1 widget_top_category mb-4"
-                >
-                  <skeleton height="300px"></skeleton>
-                </div> -->
-      <!-- <WidgetRating
-                  :selected-item="rating_filter"
-                  @filter="addRatingFilter"
-                /> -->
-      <!-- <WidgetPrice
-                  :selected-option="price_filter"
-                  @filter="addPriceFilter"
-                /> -->
-      <!-- </div> -->
-      <!-- </div>
-          </div> -->
-      <!-- <div class="col-lg-9">
-            <div class="row">
-              <div class="col-12">
-                <div class="mb-40 shadow-card">
-                  <div class="row">
-                    <div class="col-lg-6 order-1 order-lg-0 col-xl-6">
-                      <div class="section-header"> -->
-      <!-- <div class="col-lg-9"> -->
-      <!-- <div class="row"> -->
-      <!-- <div class="col-12"> -->
-      <!-- <div class="mb-40 shadow-card"> -->
-      <!-- <div class="row"> -->
+
       <div class="card mb-3">
 
         <div class="col-lg-12">
@@ -94,158 +36,22 @@
           </div>
         </div>
 
-        <!-- <div class="col-lg-4 order-1 order-lg-0 col-xl-6">
-            <div class="section-header">
-              <h3 class="product_header" v-if="!categoryLoading">
-                {{ $t("Products") }}
-              </h3>
-              <h3 class="product_header" v-if="categoryLoading">
-                <skeleton border-radius="5px" width="150px" height="30px"></skeleton>
-              </h3>
-              <div v-if="categoryLoading">
-                <p class="mt-1">
-                  <skeleton border-radius="5px" width="50px" height="10px"></skeleton>
-                </p>
-              </div>
-              <div v-if="!categoryLoading">
-                <p v-if="totalItems > 0">
-                  {{ totalItems }} {{ $t("items found") }}
-                </p>
-                <p v-else>{{ $t("No item found") }}</p>
-              </div>
-            </div>
-          </div> -->
-        <!-- <sorting-option
-                      class="col-lg-6 order-0 order-lg-1 text-lg-right"
-                      :data-loading="categoryLoading"
-                      :selected-item="sorting_by"
-                      @sorting-items="sortingItems"
-                      @filter-toggle="wToggle = !wToggle"
-                    ></sorting-option> -->
-        <!-- </div> -->
-        <!-- Brand Collapse Box -->
-        <!-- <brand-collapse-box
-                    :brands="brands"
-                    :brand-loading="brandLoading"
-                    @select-brand="addBrandFilter"
-                    v-if="!brandLoading && brands?.length > 0"
-                  ></brand-collapse-box> -->
-        <!-- End Brand Collapse Box -->
-        <!--Filter items-->
-        <!-- <div
-                    class="filter-tag-wrap"
-                    v-if="
-                      brand_filter.id ||
-                      category_filter.id ||
-                      price_filter.max ||
-                      rating_filter != null
-                    "
-                  > -->
-        <!-- <div class="filter-tags">
-                      <h6 class="filtered-by mb-0">{{ $t("Filtered By") }}:</h6>
-
-                      <div class="ant-tag" v-if="brand_filter.id">
-                        <span class="ant-tag-text">{{
-                          brand_filter.name
-                        }}</span>
-                        <span
-                          class="material-icons"
-                          @click.prevent="removeTag('brand')"
-                          >close</span
-                        >
-                      </div>
-                      <div class="ant-tag" v-if="category_filter.id">
-                        <span class="ant-tag-text">{{
-                          category_filter.name
-                        }}</span>
-                        <span
-                          class="material-icons"
-                          @click.prevent="removeTag('category')"
-                          >close</span
-                        >
-                      </div>
-                      <div class="ant-tag" v-if="rating_filter != null">
-                        <span class="ant-tag-text"
-                          >{{ rating_filter }} Star</span
-                        >
-                        <span
-                          class="material-icons"
-                          @click.prevent="removeTag('rating')"
-                          >close</span
-                        >
-                      </div>
-                      <div class="ant-tag" v-if="price_filter.max">
-                        <span class="ant-tag-text">
-                          <the-currency
-                            :amount="price_filter.min"
-                          ></the-currency
-                          >-
-                          <the-currency
-                            :amount="price_filter.max"
-                          ></the-currency>
-                        </span>
-                        <span
-                          class="material-icons"
-                          @click.prevent="removeTag('price')"
-                          >close</span
-                        >
-                      </div>
-
-                      <span class="clear-all" @click.prevent="removeAllTag">{{
-                        $t("CLEAR ALL")
-                      }}</span>
-                    </div> -->
       </div>
-      <!--End filter items-->
-      <!-- </div> -->
-      <!-- </div> -->
+
     </div>
     <div class="row g-0 mobile-gap-10" v-if="productsLoading">
-      <!-- <div class="col-lg-3 col-6" v-for="(item, index) in productSkeletons" :key="index">
-      <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
-    </div> -->
+
       <div class="col-6" v-for="(item, index) in productSkeletons" :key="index">
         <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
       </div>
     </div>
     <div class="row g-0 mobile-gap-10" v-else>
-      <!-- <div
-                v-for="product in paginatedItems"
-                :key="product.id"
-                class="col-lg-5 col-6"
-              > -->
-      <!-- <div v-for="product in paginatedItems" :key="product.id" class="col-6">
-      <single-product :item="product" />
-    </div> -->
+
       <div v-for="product in paginatedItems" :key="product.id" class="col-6 compact-card p-2 pb-0">
         <single-product :item="product" styleEight />
       </div>
     </div>
-    <!-- <div class="row align-items-center mt-10" v-if="!productsLoading">
-              <div class="col-md-6">
-                <ShowingPerPage
-                  class="text-center text-md-start"
-                  :items-per-page="perPage"
-                  :total-items="totalItems"
-                  :current-page="currentPage"
-                />
-              </div>
-              <div
-                class="col-md-6 d-flex justify-content-center justify-content-md-end mt-3 mt-md-0"
-              >
-                <pagination
-                  :options="paginationOptions"
-                  v-model="currentPage"
-                  :records="totalItems"
-                  :per-page="perPage"
-                  @paginate="getProducts"
-                />
-              </div>
-            </div> -->
-    <!-- </div> -->
-    <!-- </div> -->
-    <!-- </div> -->
-    <!-- </div> -->
+
   </div>
 </template>
 
@@ -476,25 +282,43 @@ export default {
 </script>
 
 <style scoped>
-/* .col-lg-4 {
-  border-radius: 12px; 
-} */
+.card {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0;
+  box-shadow: none;
+}
 
+.col-6 :deep(> div) {
+  border-radius: 12px;
+  overflow: hidden;
+}
 
-/* Target the actual product card inside the column */
+.compact-card :deep(.single-product-item) {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.compact-card :deep(img) {
+  width: 60% !important;
+  height: auto !important;
+  display: block;
+  margin: 0 auto;
+}
+</style>
+
+<!-- <style scoped>
+
 .col-6 :deep(.product-card),
-/* Replace .product-card with the actual class inside SingleProduct */
 .col-6 :deep(.style-eight-wrapper) {
   border-radius: 12px !important;
   overflow: hidden;
-  /* This is crucial! */
   background: #fff;
-  /* Ensures the radius is visible against the background */
   border: 1px solid #eee;
-  /* Optional: makes the edge more defined */
 }
 
-/* If SingleProduct doesn't have a wrapper class, target the component directly */
 .col-6 :deep(> div) {
   border-radius: 12px;
   overflow: hidden;
@@ -507,18 +331,36 @@ export default {
   margin: 0 !important;
   padding: 0 !important;
   border: none !important;
-  /* Optional: remove border for a seamless look */
   border-radius: 0;
-  /* Optional: square edges for full width */
   box-shadow: none;
-  /* Optional: cleaner look */
+
+
 }
+
+
+@media (max-width: 995px) and (min-width: 768px) {
+  .compact-card :deep(.single-product-item) {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+.compact-card :deep(.single-product-item) {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
 
 .compact-card :deep(img) {
   height: auto !important;
   width: 60% !important;
-  /* adjust this */
   display: block;
   margin: 0 auto;
+
+
+  @media (max-width: 768px) {
+    width: 60% !important;
+  }
+
 }
-</style>
+</style> -->

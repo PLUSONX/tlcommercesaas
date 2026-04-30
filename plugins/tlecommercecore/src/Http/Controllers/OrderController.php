@@ -195,6 +195,10 @@ class OrderController extends Controller
             file_put_contents($qr_temp, $qr_svg_content);
             // \Log::info('QR code generated successfully');
 
+            // Log::info('qr data', [
+            //     'qr_temp' => $qr_temp,
+            // ]);
+
             $order_code_bar_code = DNS1D::getBarcodePNG($shipping_label_content['order_code'], 'C39+', 1, 85);
             $tracking_id_bar_code = DNS1D::getBarcodePNG($shipping_label_content['tracking_id'], 'C39+', 1, 50);
             // \Log::info('Barcodes generated successfully');
@@ -460,10 +464,35 @@ class OrderController extends Controller
 
             $invoice_data = $this->order_repository->getInvoiceData($request['order_id'], $request['invoice_products']);
 
+            Log::info('before order_url!');
+
+            $order_id = $invoice_data['products']->first()->order_id;
+
+            try {
+                $order_url = route('plugin.tlcommercecore.orders.details', ['id' => $order_id]);
+                Log::info('URL Generated: ' . $order_url);
+            } catch (\Exception $e) {
+                Log::error('Route Generation Failed: ' . $e->getMessage());
+            }
+
+            // $order_url = route('plugin.tlcommercecore.orders.details', ['id' => $invoice_data['order_id']]);
+
+            Log::info('after order_url!');
+
             // Generate QR as SVG and save to temp file
-            $qr_svg_content = QrCode::format('svg')->size(200)->errorCorrection('H')->generate($invoice_data['order_code']);
+            // $qr_svg_content = QrCode::format('svg')->size(200)->errorCorrection('H')->generate($invoice_data['order_code']);
+            $qr_svg_content = QrCode::format('svg')
+                                ->size(200)
+                                ->errorCorrection('H')
+                                ->generate($order_url);
+
             $qr_temp = public_path('temp_qr_invoice_' . $invoice_data['order_code'] . '.svg');
             file_put_contents($qr_temp, $qr_svg_content);
+
+            Log::info('qr data', [
+                'url_encoded' => $order_url,
+                'file_path' => $qr_temp,
+            ]);
 
             // Register cleanup
             register_shutdown_function(function() use ($qr_temp) {

@@ -61,7 +61,7 @@ return [
         'bank' => 9,
         'gpay' => 10,
         'payzah' => 11,
-        'powertranzpay' => 12,
+        'myfatoorah' => 12,
         'avariamoney' => 13,
         'paymob' => 15,
         'mercado-pago' => 16

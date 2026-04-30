@@ -1,14 +1,8 @@
 <template>
   <div :class="layoutClass">
-    <!-- Split Screen Layout (Desktop Only) -->
     <template v-if="isSplitScreen && !isMobile">
       <div class="split-screen-container" :style="containerStyle">
-        <!-- Main Content Side -->
         <div class="split-screen-content" :class="[contentSideClass, 'force-mobile-view']" :style="contentStyle">
-
-          <!-- <pre>DEBUG: {{ data ? 'Data object exists' : 'Data object is NULL' }}</pre>
-        <pre>PROPS: {{ data?.site_properties }}</pre> -->
-
           <header class="header__two love-sticky" style="margin-bottom: 30px;">
 
             <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
@@ -23,13 +17,8 @@
             <slot></slot>
           </div>
 
-          <!-- <company-footer class="company-footer" /> -->
-
         </div>
 
-
-
-        <!-- Feature Side (Banner/Product/Video) -->
         <div class="split-screen-feature" :class="featureSideClass" :style="featureStyle">
           <BannerFeature :settings="splitScreenSettings" :imagePath="featureImagePath" v-if="isSplitScreen" />
 
@@ -63,17 +52,6 @@
           </CModal>
           <!--End website popup-->
 
-
-          <!-- <p>Split Screen Settings: {{ splitScreenSettings }}</p>
-          <p>Is Split Screen: {{ isSplitScreen }}</p>
-          <p>Feature Image Path: {{ featureImagePath }}</p>
-
-          <component 
-            :is="featureComponent" 
-            :settings="splitScreenSettings"
-            :imagePath="featureImagePath"
-            v-if="isSplitScreen"
-          /> -->
         </div>
       </div>
     </template>
@@ -83,37 +61,18 @@
 
       <div class="layout__two">
         <preloader :loading="preloaderLoading"></preloader>
-        <!-- <top-bar-banner
-          :properties="top_bar_banner_properties"
-          v-if="top_bar_banner_properties"
-        ></top-bar-banner> -->
+
         <top-bar-banner :properties="top_bar_banner_properties" v-if="
           top_bar_banner_properties != null &&
           top_bar_banner_properties.topbar_banner_status == 1
         "></top-bar-banner>
         <!-- Header -->
         <header class="header__two love-sticky">
-          <!-- <header-top
-            :data-loading="MenuItemsLoading"
-            :currencies="data.currencies"
-            :languages="data.languages"
-            :right-menu-items="rightMenuItems"
-            :left-menu-items="leftMenuItems"
-            :header-menu-style="headerMenuStyle"
-            @change-language-currency="setCurrencyLanguage"
-            @logout-customer="logoutCustomer"
-          ></header-top> -->
+
           <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
             :wishlist-item="wishlistItem" :compare-item="compareItem" :header-logo-style="headerLogoStyle"
             :header-menu-style="headerMenuStyle" class="d-none d-lg-block"></header-middle>
-          <!-- <header-bottom
-            :data-loading="MenuItemsLoading"
-            :mega-categories="data.megaCategories"
-            :menu-items="headerBottomMenu"
-            :header-style="headerStyle"
-            :header-menu-style="headerMenuStyle"
-            class="d-none d-lg-block"
-          ></header-bottom> -->
+
         </header>
 
         <mobile-header :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
@@ -125,136 +84,12 @@
           <slot />
         </div>
 
-        <!-- <company-footer v-if="isMobileView" class="company-footer" /> -->
 
-        <!-- <StickyFooter v-if="!isSingleProduct" /> -->
-
-        <!-- Footer -->
-        <!-- <footer
-          :class="
-            this.footerStyle.custom_footer == 1
-              ? 'custom-footer footer footer__two c1-bg'
-              : 'footer footer__two c1-bg'
-          "
-          :style="{ backgroundImage: `url('${footerBgImg}')` }"
-        > -->
-        <!-- Footer Top -->
-        <!-- <div class="footer-top">
-            <div class="custom-container2">
-              <div class="row justify-content-between">
-                <v-runtime-template :template="widget_html"></v-runtime-template>
-              </div>
-            </div>
-          </div> -->
-        <!-- End Footer Top -->
-        <!-- Footer Bottom -->
-        <!-- <div class="footer-bottom">
-            <div class="custom-container2">
-              <div class="border-top text-center py-4">
-                <copyright :site-properties="data.site_properties" />
-              </div>
-            </div>
-          </div> -->
-        <!-- End Footer Bottom -->
-        <!-- </footer> -->
-        <!-- End Footer -->
-
-        <!--Cookie Consent-->
-        <!-- <gdpr
-          v-if="gdpr_properties != null && gdpr_properties.gdpr_status == 1"
-          :properties="gdpr_properties"
-        ></gdpr> -->
-        <!--End Cookie Consent-->
-
-        <!-- Dark Light Switcher -->
-        <!-- <div class="floating-mode-switcher-wrap" v-if="dark_light_status == '1'">
-          <label class="dl-switch">
-            <input
-              class="dark-looks-mode-changer"
-              @change="toggleDark"
-              :checked="mode == 'dark'"
-              type="checkbox"
-            />
-            <span class="dl-slider"></span>
-            <span class="dl-light">Light</span>
-            <span class="dl-dark">Dark</span>
-          </label>
-        </div> -->
-        <!-- End Dark Light Switcher -->
-        <!--Website popup-->
-        <!-- <CModal
-          :visible="visibleWebsitePopup"
-          alignment="center"
-          class="website-popup-modal"
-          @close="
-            () => {
-              visibleWebsitePopup = false;
-            }
-          "
-        >
-          <CModalBody
-            class="modal-body p-0 position-relative website-popup-modal-body rounded-0"
-          >
-            <button
-              class="btn-circle custom-modal-btn position-absolute size-35"
-              @click="closePopupModal()"
-            >
-              <base-icon-svg name="close" :width="10" :height="10" />
-            </button>
-            <div
-              class="m-0"
-              v-html="website_popup_properties.website_popup_content"
-            ></div>
-            <subscribe-form
-              class="mt-20"
-              v-if="website_popup_properties.website_popup_subscribe_status == 1"
-            ></subscribe-form>
-          </CModalBody>
-        </CModal> -->
-        <!--End website popup-->
 
         <BackToTop />
       </div>
 
     </template>
-
-    <!-- <StickyFooter v-if="!isSingleProduct" /> -->
-
-    <!-- Footer -->
-    <!-- <footer
-          :class="
-            this.footerStyle.custom_footer == 1
-              ? 'custom-footer footer footer__two c1-bg'
-              : 'footer footer__two c1-bg'
-          "
-          :style="{ backgroundImage: `url('${footerBgImg}')` }"
-        >  -->
-
-    <!-- <footer
-          class="footer footer__two c1-bg"
-          :style="{ backgroundImage: `url('${footerBgImg}')` }"
-        >  -->
-    <!-- Footer Top -->
-    <!-- <div class="footer-top">
-            <div class="custom-container2">
-              <div class="row justify-content-between">
-                <v-runtime-template :template="widget_html"></v-runtime-template>
-              </div>
-            </div>
-          </div>  -->
-    <!-- End Footer Top -->
-    <!-- Footer Bottom -->
-    <!-- <div class="footer-bottom">
-            <div class="custom-container2">
-              <div class="border-top text-center py-4">
-                <copyright :site-properties="data.site_properties" />
-              </div>
-            </div>
-          </div>  -->
-    <!-- End Footer Bottom -->
-    <!-- </footer> -->
-    <!-- End Footer -->
-
 
     <!--Cookie Consent-->
     <gdpr v-if="gdpr_properties != null && gdpr_properties.gdpr_status == 1" :properties="gdpr_properties"></gdpr>
