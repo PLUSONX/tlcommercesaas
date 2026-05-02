@@ -28,6 +28,7 @@ class ShareFacebookWithViews
             View::share('facebook_integration', $facebook);
         }
 
-        return $next($request);
+        return $response;
+        // return $next($request);
     }
 }
