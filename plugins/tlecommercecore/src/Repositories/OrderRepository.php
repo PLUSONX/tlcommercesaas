@@ -2636,9 +2636,23 @@ class OrderRepository
                     'total_paid',
                     'order_discount',
                     'payment_status',
-                    'tax',
                 ]
             )->get();
+
+            // $products = OrderHasProducts::whereIn('id', $order_products)->select(
+            //     [
+            //         'product_id',
+            //         'order_id',
+            //         'variant_id as variant',
+            //         'quantity',
+            //         'unit_price',
+            //         'delivery_cost',
+            //         'total_paid',
+            //         'order_discount',
+            //         'payment_status',
+            //         'tax',
+            //     ]
+            // )->get();
 
             $payment_method = null;
 

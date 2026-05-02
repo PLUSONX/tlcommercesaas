@@ -586,7 +586,11 @@ class OrderController extends Controller
                     : $pdf->download($invoice_data['order_code'] . '.pdf');
             }
 
+            Log::info('before html!');
+
             $html = view('plugin/tlecommercecore::orders.invoice.invoice', $data)->render();
+
+            Log::info('after html!');
 
             $pdf = BPDF::loadHTML($html)
                 ->set_option('isRemoteEnabled', true)

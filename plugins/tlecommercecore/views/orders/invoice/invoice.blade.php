@@ -196,7 +196,6 @@
     @php
         $total_amount = 0;
         $sub_total = 0;
-        $total_tax = 0;
         $total_discount = 0;
         $total_shipping_cost = 0;
         $total_paid = 0;
@@ -205,9 +204,8 @@
         <thead class="thead-light">
             <tr>
                 <td scope="col" class="invoice-p">{{ translate('Name', getLocale()) }}</td>
-                <td scope="col" class="invoice-p">{{ translate('Quantity', getLocale()) }}</td>
-                <td scope="col" class="invoice-p">{{ translate('Unit Price', getLocale()) }}</td>
-                <td scope="col" class="invoice-p">{{ translate('Tax', getLocale()) }}</td>
+                <td scope="col" class="invoice-p text-center">{{ translate('Quantity', getLocale()) }}</td>
+                <td scope="col" class="invoice-p text-center">{{ translate('Unit Price', getLocale()) }}</td>
                 <td scope="col" class="text-right invoice-p">{{ translate('Total', getLocale()) }}</td>
             </tr>
         </thead>
@@ -215,10 +213,9 @@
             @foreach ($order_info['products'] as $item)
                 @php
                     $sub_total += $item->unit_price * $item->quantity;
-                    $total_tax += $item->tax;
                     $total_shipping_cost += $item->delivery_cost;
                     $total_discount += $item->couponDiscountedAmount();
-                    $total_amount += $item->unit_price * $item->quantity + $item->tax + $item->delivery_cost;
+                    $total_amount += $item->unit_price * $item->quantity + $item->delivery_cost;
                     $total_paid += $item->total_paid;
 
                 @endphp
@@ -229,9 +226,8 @@
                             <p class="invoice-p">{{ $item->variant }}</p>
                         @endif
                     </td>
-                    <td class="invoice-p">{{ $item->quantity }}</td>
-                    <td class="invoice-p currency">{{ currencyExchange($item->unit_price, true, null, false) }}</td>
-                    <td class="invoice-p currency">{{ currencyExchange($item->tax, true, null, false) }}</td>
+                    <td class="invoice-p text-center">{{ $item->quantity }}</td>
+                    <td class="invoice-p currency text-center">{{ currencyExchange($item->unit_price, true, null, false) }}</td>
                     <td class="text-right invoice-p currency">
                         {{ currencyExchange($item->unit_price * $item->quantity, true, null, false) }}
                     </td>
@@ -264,11 +260,6 @@
                             <td class="border-top-0 invoice-p p-0">{{ translate('Subtotal', getLocale()) }}</td>
                             <td class="border-top-0 text-right invoice-p p-0 currency">
                                 {{ currencyExchange($sub_total, true, null, false) }}</td>
-                        </tr>
-                        <tr>
-                            <td class="border-top-0 invoice-p p-0">{{ translate('Tax', getLocale()) }}</td>
-                            <td class="border-top-0 text-right invoice-p p-0 currency">
-                                {{ currencyExchange($total_tax, true, null, false) }}</td>
                         </tr>
                         <tr>
                             <td class="border-top-0 invoice-p p-0">{{ translate('Shipping', getLocale()) }}</td>
