@@ -85,6 +85,9 @@ class StoreController extends Controller
                 'data' => request()->all(),
                 'error' => $ex
             ];
+            Log::error('Createstore method error', [
+                    'error' => json_encode($error),
+            ]);
             Log::channel('tenant_database')->info(json_encode($error));
             DB::rollBack();
             return response()->json([

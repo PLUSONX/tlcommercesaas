@@ -64,7 +64,7 @@ export default {
       };
 
       if (window.fbq) {
-        window.fbq('track', 'Intiate checkout', {
+        window.fbq('track', 'Initiate checkout', {
           content_ids: this.item.id,
           content_name: this.item.name,
           content_type: 'product',
@@ -114,7 +114,7 @@ export default {
           this.item.shopInfo != null ? this.item.shopInfo.slug : null,
       };
 
-      console.log("cart_item: ", cart_item);
+      // console.log("cart_item: ", cart_item);
 
       if (window.fbq) {
         window.fbq('track', 'Add to cart', {

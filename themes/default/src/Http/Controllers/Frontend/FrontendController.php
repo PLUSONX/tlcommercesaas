@@ -28,8 +28,12 @@ class FrontendController extends Controller
     /**
      * Home Page
      */
-    public function home()
+     public function home()
     {
+        return view('theme/default::frontend.custom.custom_home');
+    }
+    // public function home()
+    // {
         // dd(view()->getFinder()->getHints());
 
         //  dd([
@@ -45,27 +49,27 @@ class FrontendController extends Controller
         //     'active_theme' => getActiveTheme()
         // ]);
 
-        if (isActivePluging('pagebuilder')) {
+        // if (isActivePluging('pagebuilder')) {
 
-            $page = TlPage::where('is_home', true)->first();
+        //     $page = TlPage::where('is_home', true)->first();
 
-            if ($page != null) {
-                $page_sections = '';
+        //     if ($page != null) {
+        //         $page_sections = '';
 
-                if ($page->page_type == 'builder') {
-                    $page_sections = \Plugin\PageBuilder\Helpers\BuilderHelper::getSectionLayoutWidgets($page->id);
-                }
-                // return view('theme.default::frontend.pages.home', compact('page', 'page_sections'));
-            //    return view('theme.default::theme.default.home');
-            return view('theme/default::frontend.pages.home', compact('page', 'page_sections'));
+        //         if ($page->page_type == 'builder') {
+        //             $page_sections = \Plugin\PageBuilder\Helpers\BuilderHelper::getSectionLayoutWidgets($page->id);
+        //         }
+        //         // return view('theme.default::frontend.pages.home', compact('page', 'page_sections'));
+        //     //    return view('theme.default::theme.default.home');
+        //     return view('theme/default::frontend.pages.home', compact('page', 'page_sections'));
 
-            }
-        }
-        else{
+        //     }
+        // }
+        // else{
 
-            abort(404);
-        }
-    }
+        //     abort(404);
+        // }
+    // }
 
     /**
      * Ecommerce Home Page

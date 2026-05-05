@@ -257,24 +257,26 @@
 #section_206_13 {
     /* background-color: #ff5A1f !important; */
 
-    background-image: url("https://platepilots.com/themes/default/updated_home_screen_banner.png");
+    /* background-image: url("https://platepilots.com/themes/default/updated_home_screen_banner.png"); */
     /* background-image: url("http://127.0.0.1:8000/themes/default/updated_home_screen_banner.png"); */
+    background-image: url("http://127.0.0.1:8000/themes/default/BACKGROUND.png");
     /* background-color:#4e2ea9 !important; */
-    background-size: cover !important;
-    background-position: center !important;
+    /* background-color: #fff; */
+    /* background-size: cover !important;
+    background-position: center !important; */
     /* background-position: center !important; */
-    background-repeat: no-repeat !important;
+    /* background-repeat: no-repeat !important;*/
     padding-top: 80px !important;
     /* padding-top: 130px !important; */
     /* padding-bottom: 60px !important; */
 }
 
 #section_179_13 {
-    background-color: #ffffff !important;
+    background-color: #D9D9D9 !important;
     background-size: initial !important;
     background-position: left !important;
     background-repeat: no-repeat !important;
-    padding-top: 0px !important;
+    padding-top: 10px !important;
     padding-bottom: 0px !important;
 }
 
