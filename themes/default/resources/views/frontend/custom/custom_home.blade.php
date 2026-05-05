@@ -956,7 +956,7 @@ footer{background:var(--ink2);padding:72px 0 36px}
         <div class="hero-dash-frame">
           <div class="hdf-bar">
             <div class="hdf-dots"><div class="hdf-dot"></div><div class="hdf-dot"></div><div class="hdf-dot"></div></div>
-            <div class="hdf-url">app.orderflow.io/dashboard</div>
+            <div class="hdf-url">platepilots.com/admin/dashboard</div>
           </div>
           <div class="hdf-body">
             <div class="hdf-sidebar">
