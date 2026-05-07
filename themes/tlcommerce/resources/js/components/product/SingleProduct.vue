@@ -1020,8 +1020,16 @@ export default {
 
 @media (max-width: 500px) {
 
-  .btn-xs {
-    font-size: 10px !important;
+  .button-group {
+    width: 80% !important;
+    gap: 0.2em;
+    padding-right: 8px !important;
   }
+
+  .btn-xs {
+    font-size: 12px !important;
+    padding: 0.8em 0.8em;
+  }
+
 }
 </style>

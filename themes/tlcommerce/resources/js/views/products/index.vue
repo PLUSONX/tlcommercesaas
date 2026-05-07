@@ -307,6 +307,25 @@ export default {
   display: block;
   margin: 0 auto;
 }
+
+@media (max-width: 500px) {
+  .mobile-gap-10 {
+    --bs-gutter-x: 0rem !important;
+    --bs-gutter-y: 0rem !important;
+  }
+
+  .mobile-gap-10 .compact-card {
+    padding: 1px !important;
+    padding-bottom: 0 !important;
+  }
+
+  .mobile-gap-10 .compact-card :deep(.single-product-item) {
+    box-shadow: none !important;
+    border-radius: 6px !important;
+    margin-bottom: 0 !important;
+    padding-right: 4px !important;
+  }
+}
 </style>
 
 <!-- <style scoped>
