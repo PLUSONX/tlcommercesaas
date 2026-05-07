@@ -1017,4 +1017,11 @@ export default {
     font-size: 12px !important;
   }
 }
+
+@media (max-width: 500px) {
+
+  .btn-xs {
+    font-size: 8px !important;
+  }
+}
 </style>
