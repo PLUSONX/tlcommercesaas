@@ -63,12 +63,15 @@ class AuthenticationController extends Controller
         $credentials = $request->only(
             'email', 
             'password',
-            'token'
+            'token',
+            'remember_me'
             );
 
         Log::info('Credentials Check 1', [
                 'credentials 1' => json_encode($credentials),
         ]);
+
+        $rememberMe = $request->boolean('remember_me');
 
         // dd($credentials);
 
@@ -134,6 +137,7 @@ class AuthenticationController extends Controller
                                     'token' => hash('sha256', $loginToken),
                                     'tenant_id' => $tenant->id,
                                     'email' => $credentials['email'],
+                                    'remember_me' => $rememberMe ? 1 : 0, 
                                     'created_at' => now(),
                                     'expires_at' => now()->addMinutes(5), // 5 minute expiry
                                 ]);
@@ -218,6 +222,7 @@ class AuthenticationController extends Controller
                                     'token' => hash('sha256', $loginToken),
                                     'tenant_id' => $tenant->id,
                                     'email' => $credentials['email'],
+                                    'remember_me' => $rememberMe ? 1 : 0, 
                                     'created_at' => now(),
                                     'expires_at' => now()->addMinutes(5), // 5 minute expiry
                                 ]);

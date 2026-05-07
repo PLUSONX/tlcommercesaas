@@ -47,13 +47,22 @@ Route::get('/auth/token-login', function () {
         return redirect()->route('login')->with('error', 'User not found');
     }
 
+    Log::info('user check', [
+        'user' => json_encode($user),
+    ]);
+
+    $remember_me = (bool) $tokenData->remember_me;
+
+    Log::info('Rememberme check', [
+        'value' => $remember_me,
+    ]);
 
     // Delete the used token
     \DB::connection('mysql')->table('tenant_login_tokens')
         ->where('token', hash('sha256', $token))
         ->delete();
 
-\Auth::login($user, true);
+    \Auth::login($user, $remember_me);
 // session()->put('password_hash_' . \Auth::getDefaultDriver(), $user->password); // ← add this
 // session()->save(); // force session save
 

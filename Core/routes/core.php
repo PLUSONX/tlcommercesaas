@@ -71,15 +71,18 @@ Route::get('/auth/token-login', function () {
 
     \Log::info('User found, logging in');
 
+    // $rememberMe = (bool) $tokenData->remember_me;
+
     // Delete the used token
     \DB::connection('mysql')->table('tenant_login_tokens')
         ->where('token', hash('sha256', $token))
         ->delete();
 
     // Log the user in
-    \Auth::login($user);
+    // \Auth::login($user);
+    \Auth::login($user, (bool) $tokenData->remember_me); 
 
-    \Log::info('User logged in, redirecting to dashboard');
+    \Log::info('User logged in with remember_me: ' . ($rememberMe ? 'true' : 'false'));
 
     // Redirect to dashboard
     return redirect('/admin/dashboard');

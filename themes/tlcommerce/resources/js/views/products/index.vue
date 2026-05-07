@@ -316,14 +316,13 @@ export default {
 
   .mobile-gap-10 .compact-card {
     padding: 1px !important;
-    padding-bottom: 0 !important;
+    /* padding-bottom: 2px !important; */
   }
 
   .mobile-gap-10 .compact-card :deep(.single-product-item) {
     box-shadow: none !important;
     border-radius: 6px !important;
     margin-bottom: 0 !important;
-    padding-right: 4px !important;
   }
 }
 </style>
