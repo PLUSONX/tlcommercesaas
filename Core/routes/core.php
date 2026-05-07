@@ -145,6 +145,12 @@ Route::get('reset-password/{token}', [AuthenticationController::class, 'resetPas
 Route::post('reset-your-password', [AuthenticationController::class, 'resetPasswordPost'])->name('core.reset.password.post');
 
 Route::get('/', function () {
+
+    $rememberedTenant = Cookie::get('remembered_tenant_url');
+    if ($rememberedTenant) {
+        return redirect()->away($rememberedTenant);
+    }
+
     return redirect()->route('core.login');
 });
 

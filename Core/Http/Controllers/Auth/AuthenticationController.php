@@ -165,10 +165,17 @@ class AuthenticationController extends Controller
                                 // $tenantUrl = $this->buildTenantDashboardUrl($tenant) . '?login_token=' . $loginToken;
                                 $tenantUrl = $this->buildTenantLoginUrl($tenant) . '?login_token=' . $loginToken;
 
-                                 // Build URL to the token-login endpoint (not dashboard)
-                                 
+                                $response = redirect()->away($tenantUrl);
+
+                                if ($rememberMe) {
+                                    $response = $response->withCookie(
+                                        cookie('remembered_tenant_url', $this->buildTenantDashboardUrl($tenant), 60 * 24 * 365)
+                                    );
+                                }
+
                                  toastNotification('success', translate("Welcome back!"));
-                                 return redirect()->away($tenantUrl);
+                                 return $response;
+                                //  return redirect()->away($tenantUrl);
                             }
 
                             tenancy()->end();
@@ -243,8 +250,17 @@ class AuthenticationController extends Controller
 
                             \Log::info('tenantUrl: ' . $tenantUrl);
 
+                            $response = redirect()->away($tenantUrl);
+
+                            if ($rememberMe) {
+                                $response = $response->withCookie(
+                                    cookie('remembered_tenant_url', $this->buildTenantDashboardUrl($tenant), 60 * 24 * 365)
+                                );
+                            }
+
                             toastNotification('success', translate("Welcome back!"));
-                            return redirect()->away($tenantUrl);  // was missing
+                            return $response;
+                            // return redirect()->away($tenantUrl);  // was missing
                         }
 
                         tenancy()->end();
