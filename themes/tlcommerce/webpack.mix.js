@@ -18,6 +18,7 @@ mix.webpackConfig({
     ],
     output: {
         publicPath: '/themes/tlcommerce/',
+        filename: 'public/js/[name].js?id=[contenthash]',
         chunkFilename: 'public/js/[name].js?id=[chunkhash]',
     },
     optimization: {
