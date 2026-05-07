@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Validator;
 use Theme\Default\Models\HomePageSection;
 use Theme\Default\Repositories\PageRepository;
 use Theme\Default\Models\HomeSectionProperties;
+use Illuminate\Support\Facades\Cookie;
 
 class FrontendController extends Controller
 {
@@ -31,6 +32,21 @@ class FrontendController extends Controller
      */
      public function home()
     {
+        $rawCookie = \Cookie::get('remembered_tenant_url');
+        $decoded = $rawCookie ? base64_decode($rawCookie) : null;
+        
+        // Extract the URL part - find 'http' and take everything from there
+        $rememberedTenantUrl = null;
+        if ($decoded && str_contains($decoded, 'http')) {
+            $rememberedTenantUrl = substr($decoded, strpos($decoded, 'http'));
+        }
+        
+        \Log::info('Home route hit', ['remembered_tenant_url' => $rememberedTenantUrl]);
+        
+        if ($rememberedTenantUrl) {
+            return redirect()->away($rememberedTenantUrl);
+        }
+
         return view('theme/default::frontend.custom.custom_home');
     }
     // public function home()

@@ -22,6 +22,7 @@ use Theme\Default\Http\Controllers\Frontend\NewsletterController;
 // \Log::info('WEB.PHP FINISHED');
 //Frontend
 Route::middleware('tract.visitor')->group(function () {
+    
     Route::get('/', [FrontendController::class, 'home'])->name('theme.default.home');
     // All Blog Related Routes
     Route::get('/blogs', [BlogController::class, 'blogs'])->name('theme.default.allBlog');

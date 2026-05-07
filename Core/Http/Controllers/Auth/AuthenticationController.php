@@ -168,8 +168,12 @@ class AuthenticationController extends Controller
                                 $response = redirect()->away($tenantUrl);
 
                                 if ($rememberMe) {
+                                    $tenantDashboardUrl = $this->buildTenantDashboardUrl($tenant);
+                                    
+                                    \Log::info('Setting remembered_tenant_url cookie', ['url' => $tenantDashboardUrl]);
+                                    
                                     $response = $response->withCookie(
-                                        cookie('remembered_tenant_url', $this->buildTenantDashboardUrl($tenant), 60 * 24 * 365)
+                                        \Cookie::make('remembered_tenant_url', base64_encode($tenantDashboardUrl), 60 * 24 * 365)
                                     );
                                 }
 
@@ -253,8 +257,12 @@ class AuthenticationController extends Controller
                             $response = redirect()->away($tenantUrl);
 
                             if ($rememberMe) {
+                                $tenantDashboardUrl = $this->buildTenantDashboardUrl($tenant);
+                                
+                                \Log::info('Setting remembered_tenant_url cookie', ['url' => $tenantDashboardUrl]);
+                                
                                 $response = $response->withCookie(
-                                    cookie('remembered_tenant_url', $this->buildTenantDashboardUrl($tenant), 60 * 24 * 365)
+                                    \Cookie::make('remembered_tenant_url', base64_encode($tenantDashboardUrl), 60 * 24 * 365)
                                 );
                             }
 
@@ -504,6 +512,8 @@ class AuthenticationController extends Controller
      */
     public function logout()
     {
+        Log::info('logout method called!!!');
+
         $user = Auth::user();
 
         // Handle case where user is already logged out
