@@ -34,6 +34,7 @@ use Core\Http\Controllers\Tenant\BlogCategoryController as TenantBlogCategoryCon
 use Plugin\Saas\Http\Controllers\Admin\StoreController;
 use App\Models\Tenant;
 use App\Models\User;
+use Illuminate\Support\Facades\Cookie;
 
 
 
@@ -145,11 +146,6 @@ Route::get('reset-password/{token}', [AuthenticationController::class, 'resetPas
 Route::post('reset-your-password', [AuthenticationController::class, 'resetPasswordPost'])->name('core.reset.password.post');
 
 Route::get('/', function () {
-
-    $rememberedTenant = Cookie::get('remembered_tenant_url');
-    if ($rememberedTenant) {
-        return redirect()->away($rememberedTenant);
-    }
 
     return redirect()->route('core.login');
 });

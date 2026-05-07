@@ -20,6 +20,7 @@ use Core\Models\AdminLoginActivityLog;
 use Illuminate\Support\Facades\Session;
 use Core\Http\Controllers\Api\DeviceTokenController;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cookie;
 
 class AuthenticationController extends Controller
 {
@@ -42,6 +43,22 @@ class AuthenticationController extends Controller
     {
         // dd("LOGIN CONTROLLER WORKS");
         // return 'LOGIN CONTROLLER WORKS';
+
+        $rawCookie = \Cookie::get('remembered_tenant_url');
+        $decoded = $rawCookie ? base64_decode($rawCookie) : null;
+        
+        // Extract the URL part - find 'http' and take everything from there
+        $rememberedTenantUrl = null;
+        if ($decoded && str_contains($decoded, 'http')) {
+            $rememberedTenantUrl = substr($decoded, strpos($decoded, 'http'));
+        }
+        
+        \Log::info('Home route hit', ['remembered_tenant_url' => $rememberedTenantUrl]);
+        
+        if ($rememberedTenantUrl) {
+            return redirect()->away($rememberedTenantUrl);
+        }
+
         $this->setGeneralSettings();
         if (Auth::user()) {
             return redirect()->route('admin.dashboard');
