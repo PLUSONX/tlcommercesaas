@@ -1021,7 +1021,7 @@ export default {
 @media (max-width: 500px) {
 
   .btn-xs {
-    font-size: 8px !important;
+    font-size: 10px !important;
   }
 }
 </style>
