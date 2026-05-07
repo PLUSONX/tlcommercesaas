@@ -45,7 +45,8 @@
 
       <div class="row justify-content-between align-items-baseline">
 
-        <div class="col-auto pe-0">
+        <!-- <div class="col-auto pe-0"> -->
+        <div class="col pe-0" style="min-width: 0;">
           <!-- Title -->
           <h4 class="product-title">
             <router-link :to="`/products/${item.slug}`">
@@ -55,7 +56,8 @@
           <!-- End Title -->
         </div>
 
-        <div class="col-auto text-end">
+        <!-- <div class="col-auto text-end"> -->
+        <div class="col-auto text-end flex-shrink-0" style="max-width: 45%;">
           <!-- Price -->
           <span class="product-price d-flex flex-wrap c1">
             <the-currency :amount="item.price" tag="span" v-if="item.base_price > item.price"></the-currency>
@@ -999,16 +1001,20 @@ export default {
   padding: 1em 1em;
   font-size: 14px;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 0.5;
   white-space: nowrap;
 
   @media (max-width: 995px) and (min-width: 768px) {
     font-size: 0.55rem;
   }
 
-  @media (max-width: 768px) {
-    // font-size: 0.55rem;
-    font-size: 14px;
+
+}
+
+@media (max-width: 768px) {
+
+  .btn-xs {
+    font-size: 12px !important;
   }
 }
 </style>

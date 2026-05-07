@@ -18,7 +18,7 @@
       <div class="col-12">
         <label class="font-weight-bold fz-12 mb-2">{{
           $t("Payment method")
-        }}</label>
+          }}</label>
         <ul class="list-unstyled form-selector-list mb-3">
           <li class="single-form-selector" v-for="(payment, index) in paymentMethods" :key="index">
             <span class="custom-radio-btn">
@@ -588,13 +588,13 @@ export default {
         .then((response) => {
           if (response.data.success) {
             if (response.data.response_url) {
-              if (window.fbq) {
-                window.fbq('track', 'Checkout Successful.', {
-                  bank_name: this.bankDetails.bankName ?? "",
-                  content_type: 'product',
-                  currency: 'KD'
-                });
-              };
+              // if (window.fbq) {
+              //   window.fbq('track', 'Checkout Successful.', {
+              //     bank_name: this.bankDetails.bankName ?? "",
+              //     content_type: 'product',
+              //     currency: 'KD'
+              //   });
+              // };
               // console.log("response_url: ", response.data.response_url);
               this.$store.dispatch("flushCartData").then(() => {
                 window.location.href = response.data.response_url;

@@ -2,6 +2,7 @@
 
 namespace Theme\Default\Http\Controllers\Frontend;
 
+use Illuminate\Support\Facades\Log;
 use Core\Models\TlPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -195,21 +196,33 @@ class FrontendController extends Controller
     public function sendMessage(Request $request)
     {
         try {
+
+            Log::info('SendMessage method called!!!');
+
             $validator = Validator::make($request->all(), [
                 'email' => 'required|email',
-                'name' => 'required',
-                'subject' => 'required',
+                'firstName' => 'required',
+                'lastName' => 'required',
+                'businessName' => 'required',
+                'businessType' => 'required',
                 'message' => 'required',
             ]);
 
             if ($validator->fails()) {
                 toastNotification('error', front_translate('Please fill in all fields and ensure that the data entered is valid.'));
-                return redirect('/contact');
+                return redirect('/');
             }
 
             $active_theme = getActiveTheme();
             $contact_option = getThemeOption('contact', $active_theme->id);
-            $mail_to = isset($contact_option['contact_sent_email']) ? $contact_option['contact_sent_email'] : null;
+            // $mail_to = isset($contact_option['contact_sent_email']) ? $contact_option['contact_sent_email'] : null;
+            $mail_to = 'theaegon786@gmail.com';
+
+
+            Log::info('message Data', [
+                    'mail_to' => $mail_to,
+                ]);
+
 
             if (!isset($mail_to)) {
                 toastNotification('error', front_translate('Email sending failed. Please contact with admin'));
@@ -217,10 +230,13 @@ class FrontendController extends Controller
             }
 
             $mailData = [
-                'name' => xss_clean($request['name']),
+                'firstName' => xss_clean($request['firstName']),
+                'lastName' => xss_clean($request['lastName']),
+                'businessName' => xss_clean($request['businessName']),
+                'businessType' => xss_clean($request['businessType']),
                 'email' => xss_clean($request['email']),
                 'message' => xss_clean($request['message']),
-                'subject' => xss_clean($request['subject'])
+                'subject' => xss_clean('Contact Form Submission')
             ];
             Mail::to($mail_to)->send(new ContactEmail($mailData));
             toastNotification('success', front_translate('Email Sent Successfully'));
@@ -233,6 +249,47 @@ class FrontendController extends Controller
             return redirect('/contact');
         }
     }
+    // public function sendMessage(Request $request)
+    // {
+    //     try {
+    //         $validator = Validator::make($request->all(), [
+    //             'email' => 'required|email',
+    //             'name' => 'required',
+    //             'subject' => 'required',
+    //             'message' => 'required',
+    //         ]);
+
+    //         if ($validator->fails()) {
+    //             toastNotification('error', front_translate('Please fill in all fields and ensure that the data entered is valid.'));
+    //             return redirect('/contact');
+    //         }
+
+    //         $active_theme = getActiveTheme();
+    //         $contact_option = getThemeOption('contact', $active_theme->id);
+    //         $mail_to = isset($contact_option['contact_sent_email']) ? $contact_option['contact_sent_email'] : null;
+
+    //         if (!isset($mail_to)) {
+    //             toastNotification('error', front_translate('Email sending failed. Please contact with admin'));
+    //             return redirect('/contact');
+    //         }
+
+    //         $mailData = [
+    //             'name' => xss_clean($request['name']),
+    //             'email' => xss_clean($request['email']),
+    //             'message' => xss_clean($request['message']),
+    //             'subject' => xss_clean($request['subject'])
+    //         ];
+    //         Mail::to($mail_to)->send(new ContactEmail($mailData));
+    //         toastNotification('success', front_translate('Email Sent Successfully'));
+    //         return redirect('/contact');
+    //     } catch (\Exception $e) {
+    //         toastNotification('error', front_translate('Email sending failed. Please contact with admin'));
+    //         return redirect('/contact');
+    //     } catch (Error $e) {
+    //         toastNotification('error', front_translate('Email sending failed. Please contact with admin'));
+    //         return redirect('/contact');
+    //     }
+    // }
 
     /**
      * change to dark mood or light mood

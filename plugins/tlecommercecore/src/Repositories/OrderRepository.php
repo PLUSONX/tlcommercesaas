@@ -1830,16 +1830,21 @@ class OrderRepository
     public function cancelOrder($order_id, $seller_id = null)
     {
         try {
-            DB::beginTransaction();
+            Log::info("cancelOrder, method called!!!", ['order_id' => $order_id]);
+
+            // DB::beginTransaction();
             $notifiable_sellers = [];
             $order = Orders::where('id', $order_id)->first();
 
+            Log::info("after order");
+
             if ($order != null) {
                 $query = OrderHasProducts::where('order_id', $order_id);
-                if ($seller_id != null) {
-                    $query = $query->where('seller_id', $seller_id);
-                }
-                $all_products = $query->select(['delivery_status', 'seller_id', 'order_id', 'id'])->get();
+                // if ($seller_id != null) {
+                //     $query = $query->where('seller_id', $seller_id);
+                // }
+                // $all_products = $query->select(['delivery_status', 'seller_id', 'order_id', 'id'])->get();
+                $all_products = $query->select(['delivery_status', 'order_id', 'id'])->get();
                 //Update order has product table
                 foreach ($all_products as $product) {
 
@@ -1847,18 +1852,27 @@ class OrderRepository
                     $product->save();
                     $this->insertOrderTrackingData($order_id, $product->id, 'Your order has been cancelled');
                     //Filter seller ids
-                    if ($seller_id == null && $product->seller_id != null && auth()->user()->user_type == null && isActivePluging('multivendor')) {
-                        if (!in_array($product->seller_id, $notifiable_sellers)) {
-                            array_push($notifiable_sellers, $product->seller_id);
-                        }
-                    }
+                    // if ($seller_id == null && $product->seller_id != null && auth()->user()->user_type == null && isActivePluging('multivendor')) {
+                    //     if (!in_array($product->seller_id, $notifiable_sellers)) {
+                    //         array_push($notifiable_sellers, $product->seller_id);
+                    //     }
+                    // }
                 }
 
+                Log::info("before order update");
+
                 //Update order table status
-                if ($order->products->count() == $all_products->count()) {
-                    $order->delivery_status = config('tlecommercecore.order_delivery_status.cancelled');
+                // if ($order->products->count() == $all_products->count()) {
+                //     Log::info("before order update 2");
+                //     $order->delivery_status = config('tlecommercecore.order_delivery_status.cancelled');
+                    $order->delivery_status = 4;
                     $order->save();
-                }
+                // }
+                
+                Log::info("after order update");
+
+                $fresh = Orders::find($order_id);
+                Log::info("Fresh order status after save", ['delivery_status' => $fresh->delivery_status]);
 
                 //Send notification
                 if (auth('jwt-customer')->user() != null) {
@@ -1886,23 +1900,36 @@ class OrderRepository
                     // EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $message, $btn_title, $mail_title);
                 }
 
+                Log::info("after email");
+
                 //Send notification to seller
                 // foreach ($notifiable_sellers as $seller_id) {
                 //     $seller_message = "An order has been cancelled. Order code " . $order->order_code;
                 //     EcommerceNotification::sendOrderItemUpdateStatusNotificationToSeller($order->id, $seller_id, $seller_message);
                 // }
 
-                DB::commit();
+                // DB::commit();
+
+                $raw = DB::select("SELECT id, delivery_status FROM tl_com_orders WHERE id = ?", [$order_id]);
+                Log::info("Raw DB check after commit", ['result' => $raw]);
+
+                Log::info("after commit");
                 return true;
             }
 
-            DB::rollBack();
+            // DB::rollBack();
             return false;
-        } catch (\Exception $e) {
-            DB::rollBack();
+       } catch (\Exception $e) {
+            // DB::rollBack();
+            Log::error("cancelOrder Exception: " . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
             return false;
         } catch (\Error $e) {
-            DB::rollBack();
+            // DB::rollBack();
+            Log::error("cancelOrder Error: " . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
             return false;
         }
     }

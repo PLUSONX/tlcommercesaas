@@ -205,6 +205,14 @@ $isCentralDomain = in_array($host, $centralDomains);
                         <!-- End Form Group -->
 
                         <div class="d-flex justify-content-end mb-20">
+
+                            <!-- <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="remember_me" id="remember_me" value="1">
+                                <label class="form-check-label" for="remember_me" style="font-size: 0.9rem;">
+                                    {{ translate('Remember Me') }}
+                                </label>
+                            </div> -->
+
                             <a href="{{ route('core.password.reset.link') }}" style="color: #FF5A1F; font-size: 0.9rem;" >{{ translate('Forgot Password?') }}</a>
                         </div>
 

@@ -7,7 +7,10 @@
     <title>Document</title>
 </head>
 <body>
-    <p>Name: {{ $data['name'] }}</p>
+    <p>First Name: {{ $data['firstName'] }}</p>
+    <p>Last Name: {{ $data['lastName'] }}</p>
+    <p>Business Name: {{ $data['businessName'] }}</p>
+    <p>Business Type: {{ $data['businessType'] }}</p>
     <p>Email: {{ $data['email'] }}</p>
     <p>Subject: {{ $data['subject'] }}</p>
     <article>{{ $data['message'] }}</article>

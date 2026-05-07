@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Platepilot — Crafted with Vision</title>
@@ -2146,7 +2147,7 @@ footer{background:var(--ink2);padding:72px 0 36px}
           </div>
           <div class="contact-info-item">
             <div class="ci-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.18 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 013.11 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L7.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0121 16z"/></svg></div>
-            <div><div class="ci-label">Phone</div><div class="ci-value">+965 9773 8123 </div></div>
+            <div><div class="ci-label">Phone</div><div class="ci-value">+965 9666 7390</div></div>
           </div>
           <div class="contact-info-item">
             <div class="ci-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
@@ -2155,6 +2156,53 @@ footer{background:var(--ink2);padding:72px 0 36px}
         </div>
       </div>
       <div class="fade-up d2">
+        <div class="contact-form-card">
+            <div class="form-title">Request an audience</div>
+            <div class="form-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">First Name</label>
+                        <input class="form-input" type="text" id="first_name" placeholder="Khalid"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Last Name</label>
+                        <input class="form-input" type="text" id="last_name" placeholder="Hassan"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Business Email</label>
+                    <input class="form-input" type="email" id="email" placeholder="you@restaurant.com"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Business Name</label>
+                    <input class="form-input" type="text" id="business_name" placeholder="Your restaurant or brand"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Business Type</label>
+                    <select class="form-select" id="business_type">
+                        <option>Restaurant</option>
+                        <option>Cloud Kitchen</option>
+                        <option>Café</option>
+                        <option>Multi-Branch Chain</option>
+                        <option>Retail Food Brand</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Message</label>
+                    <textarea class="form-textarea" id="message" placeholder="Tell us about your ordering needs…"></textarea>
+                </div>
+                <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:15px;padding:14px" type="button" id="submitBtn">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="16" height="16">
+                        <line x1="22" y1="2" x2="11" y2="13"/>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                    Submit
+                </button>
+            </div>
+        </div>
+    </div>
+
+      <!-- <div class="fade-up d2">
         <div class="contact-form-card">
           <div class="form-title">Request an audience</div>
           <div class="form-body">
@@ -2181,7 +2229,7 @@ footer{background:var(--ink2);padding:72px 0 36px}
             </button>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </section>
@@ -2385,6 +2433,46 @@ new Chart(document.getElementById('revenueChart'), {
     }
   }
 });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    document.getElementById('submitBtn').addEventListener('click', function () {
+        const btn = this;
+
+        const data = {
+            firstName:    document.getElementById('first_name').value,
+            lastName:     document.getElementById('last_name').value,
+            email:         document.getElementById('email').value,
+            businessName: document.getElementById('business_name').value,
+            businessType: document.getElementById('business_type').value,
+            message:       document.getElementById('message').value,
+        };
+
+        console.log("data: ", data);
+
+        btn.disabled = true;
+        btn.innerHTML = 'Sending…';
+
+        axios.post('/sent-message', data, {
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(function (response) {
+            btn.innerHTML = '✓ Sent!';
+            // Optional: reset fields
+            ['first_name','last_name','email','business_name','message'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('business_type').selectedIndex = 0;
+        })
+        .catch(function (error) {
+            console.error(error);
+            btn.disabled = false;
+            btn.innerHTML = 'Submit';
+            alert('Something went wrong. Please try again.');
+        });
+    });
 </script>
 </body>
 </html>
