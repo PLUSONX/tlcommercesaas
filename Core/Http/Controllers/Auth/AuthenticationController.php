@@ -457,7 +457,7 @@ class AuthenticationController extends Controller
         // Get tenant domain/subdomain
         $domain = $tenant->domains()->first();
 
-        \Log::info('centralUser: ' . json_encode($centralUser));
+        // \Log::info('centralUser: ' . json_encode($centralUser));
 
 
         if (!$domain) {
