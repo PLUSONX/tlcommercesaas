@@ -185,7 +185,7 @@ $isCentralDomain = in_array($host, $centralDomains);
                             <div class="text-danger mt-2">{{ $errors->first('password') }}</div>
                             @endif
                         </div> -->
-                        <div class="form-group mb-10">
+                        <!-- <div class="form-group mb-10">
                             <label for="password" class="mb-2 font-14 black">{{ translate('Password') }}</label>
                             
                             <div class="input-with-icon">
@@ -196,6 +196,43 @@ $isCentralDomain = in_array($host, $centralDomains);
                                     name="password" 
                                     class="theme-input-style" 
                                     placeholder="{{ translate('Password') }}">
+                            </div>
+
+                            @if ($errors->has('password'))
+                                <div class="text-danger mt-2">{{ $errors->first('password') }}</div>
+                            @endif
+                        </div> -->
+
+                        <div class="form-group mb-10">
+                            <label for="password" class="mb-2 font-14 black">{{ translate('Password') }}</label>
+
+                            <div class="input-with-icon">
+                                <x-lucide-lock class="input-icon" />
+
+                                <input type="password"
+                                    id="password"
+                                    name="password"
+                                    class="theme-input-style"
+                                    placeholder="{{ translate('Password') }}">
+
+                                <button type="button"
+                                    id="togglePassword"
+                                    class="password-toggle-btn"
+                                    tabindex="-1"
+                                    aria-label="Toggle password visibility">
+                                    {{-- Eye icon (shown by default) --}}
+                                    <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                    {{-- Eye-off icon (hidden by default) --}}
+                                    <svg class="eye-off-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                                        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                                        <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                                        <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                                        <line x1="2" y1="2" x2="22" y2="22"/>
+                                    </svg>
+                                </button>
                             </div>
 
                             @if ($errors->has('password'))
@@ -253,6 +290,28 @@ $isCentralDomain = in_array($host, $centralDomains);
             document.getElementById('token').value = savedToken;
         }
     });
+
+  
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const input = document.getElementById('password');
+            const eyeIcon = this.querySelector('.eye-icon');
+            const eyeOffIcon = this.querySelector('.eye-off-icon');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeIcon.style.display = 'none';
+                eyeOffIcon.style.display = 'inline';
+            } else {
+                input.type = 'password';
+                eyeIcon.style.display = 'inline';
+                eyeOffIcon.style.display = 'none';
+            }
+        });
+    });
 </script>
 
 
@@ -290,6 +349,36 @@ button.btn-orange:active:focus {
 .text_color:hover {
     color: #fff !important;
     text-decoration: underline; /* Optional: adds a line on hover for better UX */
+}
+
+
+.input-with-icon {
+    position: relative;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: inherit;
+    display: flex;
+    align-items: center;
+}
+
+.password-toggle-btn svg {
+    width: 18px;
+    height: 18px;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.password-toggle-btn:hover svg {
+    opacity: 1;
 }
 
 </style>
