@@ -36,7 +36,7 @@
                             <strong>15 {{ $t('days') }}</strong>
                         </div>
 
-                        <div v-if="['kfc', 'tryguardi', 'TryGuardi'].includes(tenant)">
+                        <div v-if="['kfc', 'tryguardi', 'TryGuardi', 'Guardi'].includes(tenant)">
                             <strong>12-24 {{ $t('Hours') }}</strong>
                         </div>
                     </div>
