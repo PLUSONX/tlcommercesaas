@@ -163,7 +163,7 @@
      <!--End comment-->
      <div class="form-row">
          <div class="col-12 text-right">
-             <button class="btn long update-order-status rounded">{{ translate('Update') }}</button>
+             <button class="btn long update-order-status rounded btn-orange">{{ translate('Update') }}</button>
          </div>
      </div>
  </form>
@@ -324,3 +324,33 @@
          });
      })(jQuery);
  </script>
+
+<style>
+
+button.btn-orange,
+a.btn-orange {
+    background: #FF5A1F !important;
+    border-color: #ff8c00 !important;
+    color: #fff !important;
+    transition: background 0.2s ease;
+    box-shadow: none !important;
+}
+
+button.btn-orange:hover,
+a.btn-orange:hover {
+    background: #fff !important;
+    border: 1px solid #FF5A1F !important;
+    /* border-color: #FF5A1F !important; */
+    color: #FF5A1F !important;
+    box-shadow: none !important;
+}
+
+button.btn-orange:focus,
+button.btn-orange:active,
+button.btn-orange:active:focus {
+    background: #FF5A1F !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+</style>

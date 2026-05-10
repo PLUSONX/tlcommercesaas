@@ -34,6 +34,11 @@ class OrderController extends Controller
     {
         $orders = $this->order_repository->orderList($request, config('tlecommercecore.order_type.home_delivery'), 'inhouse', null);
         $order_counter = $this->order_repository->orderCounter(config('tlecommercecore.order_type.home_delivery'));
+
+        // Log::info('inhouse method called', [
+        //             'orders' => json_encode($orders),
+        // ]);
+
         return view('plugin/tlecommercecore::orders.inhouse_orders.index')->with(
             [
                 'orders' => $orders,
