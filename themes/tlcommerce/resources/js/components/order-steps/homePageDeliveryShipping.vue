@@ -36,7 +36,7 @@
                             <strong>15 {{ $t('days') }}</strong>
                         </div>
 
-                        <div v-if="tenant === 'kfc'">
+                        <div v-if="['kfc', 'tryguardi', 'TryGuardi'].includes(tenant)">
                             <strong>12-24 {{ $t('Hours') }}</strong>
                         </div>
                     </div>
@@ -164,7 +164,7 @@ export default {
     mounted() {
         // console.log('siteSettings:', this.$store.state.siteSettings);
         // console.log('siteProperties:', this.$store.state.siteProperties);
-        console.log('site_name:', this.$store.state.siteProperties.site_name);
+        // console.log('site_name:', this.$store.state.siteProperties.site_name);
         // this.tenant = this.$store.state.siteProperties.site_name;
     },
 
