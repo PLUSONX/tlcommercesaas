@@ -5,7 +5,20 @@
       <div class="custom-container2">
         <div class="login-form-wrap">
           <form class="loginForm white-box px-3 py-4 p-md-5">
-            <h3 class="mb-4">{{ $t("Login") }}</h3>
+
+            <div class="d-flex justify-content-between align-items-center w-100 ml-3">
+
+              <h3 class="mb-4">{{ $t("Login") }}</h3>
+
+              <router-link to="/" class="back-home-btn">
+                <i class="fas fa-arrow-left"></i>
+                <span>{{ $t("Home") }}</span>
+              </router-link>
+
+            </div>
+
+
+
             <p v-bind:class="notificationClass" v-if="notification">
               {{ notification }}
             </p>
@@ -13,21 +26,12 @@
               <div class="col-12">
                 <div class="form-group mb-20">
                   <label class="font-weight-bold fz-12 mb-2">
-                    {{ $t("Email") }} <span class="text-danger">*</span></label
-                  >
+                    {{ $t("Email") }} <span class="text-danger">*</span></label>
                   <div class="">
-                    <input
-                      type="email"
-                      v-bind:placeholder="$t('Email')"
-                      class="theme-input-style"
-                      v-model="customerData.email"
-                    />
+                    <input type="email" v-bind:placeholder="$t('Email')" class="theme-input-style"
+                      v-model="customerData.email" />
                     <template v-if="errors.email">
-                      <p
-                        class="fz-12 text-danger mt-1"
-                        v-for="(error, index) in errors.email"
-                        :key="index"
-                      >
+                      <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.email" :key="index">
                         {{ error }}
                       </p>
                     </template>
@@ -38,21 +42,12 @@
                 <div class="form-group mb-20">
                   <label class="font-weight-bold fz-12 mb-2">
                     {{ $t("Password")
-                    }}<span class="text-danger">*</span></label
-                  >
+                    }}<span class="text-danger">*</span></label>
                   <div class="">
-                    <input
-                      type="password"
-                      v-bind:placeholder="$t('Password')"
-                      class="theme-input-style"
-                      v-model="customerData.password"
-                    />
+                    <input type="password" v-bind:placeholder="$t('Password')" class="theme-input-style"
+                      v-model="customerData.password" />
                     <template v-if="errors.password">
-                      <p
-                        class="fz-12 text-danger mt-1"
-                        v-for="(error, index) in errors.password"
-                        :key="index"
-                      >
+                      <p class="fz-12 text-danger mt-1" v-for="(error, index) in errors.password" :key="index">
                         {{ error }}
                       </p>
                     </template>
@@ -63,11 +58,7 @@
 
             <div class="align-items-baseline row">
               <div class="col-sm-6">
-                <button
-                  @click.prevent="customerLogin"
-                  :disabled="formSubmitting"
-                  class="btn btn-fill"
-                >
+                <button @click.prevent="customerLogin" :disabled="formSubmitting" class="btn btn-fill">
                   <span v-if="formSubmitting">
                     <CSpinner component="span" size="sm" aria-hidden="true" />
                     {{ $t("Please wait") }}
@@ -194,3 +185,39 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* ── Back to Home Button ──────────────────────────────────────── */
+.back-home-btn {
+  /* position: fixed;*/
+  /* top: 30px;
+  left: 16px; */
+  /* z-index: 1050; */
+  margin-bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  color: #2d3748;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 50px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.back-home-btn:hover {
+  background: #f7fafc;
+  border-color: #4a90e2;
+  color: #4a90e2;
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+  text-decoration: none;
+}
+
+.back-home-btn i {
+  font-size: 0.8rem;
+}
+</style>

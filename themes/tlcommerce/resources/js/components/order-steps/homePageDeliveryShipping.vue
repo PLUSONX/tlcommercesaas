@@ -32,7 +32,13 @@
                         <span class="text-muted small">{{ $t('Earliest Arrival') }}</span>
                     </div>
                     <div v-if="selectedCity" class="arrival-time">
-                        <strong>1 {{ $t('Hour') }}</strong>
+                        <div v-if="tenant === 'Raneem'">
+                            <strong>15 {{ $t('days') }}</strong>
+                        </div>
+
+                        <div v-if="tenant === 'kfc'">
+                            <strong>12-24 {{ $t('Hours') }}</strong>
+                        </div>
                     </div>
                 </div>
 
@@ -130,6 +136,8 @@
 
 <script>
 
+import { mapState, mapGetters } from "vuex";
+
 export default {
 
     props: {
@@ -137,7 +145,8 @@ export default {
         config: Object,
         customerAddress: Object,
         isCustomerLogin: Boolean,
-        pickupPoints: Array
+        pickupPoints: Array,
+        tenant: String,
     },
 
     computed: {
@@ -147,6 +156,16 @@ export default {
         selectedState() {
             return this.$store.state.shippingDetails?.state || null;
         },
+        tenant() {
+            return this.$store.state.siteProperties?.site_name;
+        },
+    },
+
+    mounted() {
+        // console.log('siteSettings:', this.$store.state.siteSettings);
+        // console.log('siteProperties:', this.$store.state.siteProperties);
+        // console.log('site_name:', this.$store.state.siteProperties.site_name);
+        // this.tenant = this.$store.state.siteProperties.site_name;
     },
 
     methods: {

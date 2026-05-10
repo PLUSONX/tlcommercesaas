@@ -8,8 +8,8 @@
 @endsection
 @section('main_content')
     <div class="row">
-        <div class="d-sm-flex justify-content-between align-items-center w-100 ml-3">
-            <h4 class="font-20">{{ translate('Inhouse Orders') }}</h4>
+        <div class="d-flex justify-content-between align-items-center w-100 ml-3">
+            <h4 class="font-20 mb-0">{{ translate('Inhouse Orders') }}</h4>
 
             <button type="button"
                 id="toggle-updated-filter-btn"
