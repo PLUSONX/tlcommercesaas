@@ -56,7 +56,9 @@ class DashboardController extends Controller
                 $productQuery = \Plugin\TlcommerceCore\Models\Product::select('id');
 
                 // Sales
-                $salesQuery = \Plugin\TlcommerceCore\Models\Orders::query();
+                // $salesQuery = \Plugin\TlcommerceCore\Models\Orders::query();
+                $salesQuery = \Plugin\TlcommerceCore\Models\Orders::query()
+                    ->where('payment_status', config('tlecommercecore.order_payment_status.paid'));
 
                 // Orders
                 $ordersQuery = DB::table('tl_com_ordered_products')

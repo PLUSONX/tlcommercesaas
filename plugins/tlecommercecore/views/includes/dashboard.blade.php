@@ -8,7 +8,8 @@
     $total_products = \Plugin\TlcommerceCore\Models\Product::select('id')
         ->get()
         ->count();
-    $total_sales = \Plugin\TlcommerceCore\Models\Orders::sum('total_payable_amount');
+
+    $total_sales = \Plugin\TlcommerceCore\Models\Orders::where('payment_status', config('tlecommercecore.order_payment_status.paid'))->sum('total_payable_amount');
     
     $recent_orders = \Plugin\TlcommerceCore\Models\Orders::with(['customer_info', 'guest_customer'])
         ->select('order_code', 'id', 'created_at', 'total_payable_amount', 'customer_id', 'guest_customer_id', 'delivery_status', 'payment_status')
