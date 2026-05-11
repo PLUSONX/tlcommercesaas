@@ -50,7 +50,7 @@
             </div>
         </div>
         <!-- Role List-->
-        <div class="col-md-6">
+        <div class="col-md-12">
             <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <!-- <div class="card-body">
                     <div class="d-sm-flex justify-content-between align-items-center">
@@ -80,9 +80,9 @@
                                         <td>{{ $role->name }}</td>
                                         @if (auth()->user()->can('Edit Role') ||
                                                 auth()->user()->can('Delete Role'))
-                                            <td>
-                                                <div class="dropdown-button">
-                                                    <a href="#" class="d-flex align-items-center"
+                                            <td class="text-center" style="width: 50px;">
+                                                <div class="dropdown">
+                                                    <a href="#" class="d-flex align-items-center justify-content-center"
                                                         data-toggle="dropdown">
                                                         <div class="menu-icon style--two mr-0">
                                                             <span></span>
@@ -92,11 +92,11 @@
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-right">
                                                         @if (auth()->user()->can('Edit Role'))
-                                                            <a href="#"
+                                                            <a class="dropdown-item" href="#"
                                                                 onclick="showEditableForm('{{ $role->id }}')">Edit</a>
                                                         @endif
                                                         @if (auth()->user()->can('Delete Role'))
-                                                            <a href="#"
+                                                            <a class="dropdown-item" href="#"
                                                                 onclick="deleteConfirmation('{{ $role->id }}')">Delete</a>
                                                         @endif
                                                     </div>
@@ -116,7 +116,7 @@
         </div>
         <!-- Role List-->
 
-        <div class="col-12">
+        <div class="col-md-12">
             <div class="card bg-transparent mb-20">
 
                 <div class="card-body">
@@ -130,7 +130,7 @@
 
         @if (auth()->user()->can('Create Role') ||
                 auth()->user()->can('Edit Role'))
-            <div class="col-md-7 mb-30">
+            <div class="col-md-12 mb-30">
                 @if (auth()->user()->can('Create Role'))
                     <!-- Add new role-->
                     <div class="card" style="border-radius: 12px !important; overflow: hidden !important;">
@@ -485,6 +485,7 @@
                 '#add_role_up_icon'
             ]);
         }
+        
 
         /**
          * hiding role updating form
@@ -504,6 +505,10 @@
             flash()
             $('#update_role').show();
             $('#add_role').hide();
+
+            setTimeout(function() {
+                document.getElementById('update_role').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
             // $.ajax({
             //     url: "{{ route('core.edit.role') }}",
             //     method: "GET",
@@ -539,6 +544,7 @@
             //         }
             //     }
             // });
+
             $.get("{{ route('core.edit.role') }}", {
                     id: role_id
                 },
@@ -573,6 +579,8 @@
                 let error_message = error_response.message
                 toastr.error(error_message, "!");
             });
+
+            
         }
 
         /**
@@ -866,5 +874,26 @@
     /* .pagination .page-item .page-link:focus {
         box-shadow: 0 0 0 0.2rem rgba(255, 90, 31, 0.25);
     } */
+
+
+/* Ensure the container is the anchor point for the menu */
+.dropdown {
+    position: relative;
+}
+
+/* Force the dropdown to appear directly below the trigger */
+.dropdown-menu {
+    margin-top: 5px; /* Optional: adds a little space below the dots */
+    top: 15% !important; 
+}
+
+/* Ensure the table cell doesn't clip the dropdown */
+.table-responsive {
+    overflow: visible !important;
+}
+
+#role_table td {
+    vertical-align: middle;
+}
 
 </style>
