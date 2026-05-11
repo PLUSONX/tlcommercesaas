@@ -334,22 +334,22 @@
          <div class="col-12">
             <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="table-responsive">
-                    <table id="conditionTable" class="hoverable text-nowrap">
+                    <table id="conditionTable" class="hoverable text-nowrap" style="table-layout: fixed; width: 100%;">
                         <thead>
                             <tr>
-                                <th>
-                                    <label class="position-relative mr-2">
+                                <!-- <th>
+                                    <label class="position-relative">
                                         <input type="checkbox" name="select_all" class="select-all">
                                         <span class="checkmark"></span>
                                     </label>
-                                </th>
+                                </th> -->
                                 <th class="font-16">{{ translate('Order Code') }}</th>
                                 <th class="font-16">{{ translate('Order Date') }}</th>
                                 <th class="font-16">{{ translate('Customer') }}</th>
-                                <th class="font-16">{{ translate('Num. of Products') }}</th>
-                                <th class="font-16">{{ translate('Amount') }}</th>
-                                <th class="font-16">{{ translate('Payment Status') }}</th>
-                                <th class="font-16 text-center">{{ translate('Order Status') }}</th>
+                                <th class="font-16 text-center" style="padding: 0px !important; width: 80px !important;">{{ translate('Products') }}</th>
+                                <th class="font-16 text-center" style="padding: 0px !important; width: 80px !important;">{{ translate('Amount') }}</th>
+                                <th class="font-16 text-center" >{{ translate('Payment') }}</th>
+                                <th class="font-16 text-center">{{ translate('Order') }}</th>
                                 <th class="font-16 text-center">{{ translate('Actions') }}</th>
                             </tr>
                         </thead>
@@ -357,27 +357,37 @@
                             @if ($orders->count() > 0)
                                 @foreach ($orders as $key => $order)
                                     <tr>
-                                        <td>
+                                        <!-- <td style="width: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                             <div class="d-flex align-items-center ">
-                                                <label class="position-relative mr-2">
+                                                <label class="position-relative m-0">
                                                     <input type="checkbox" name="items[]" class="item-id"
                                                         value="{{ $order->id }}">
                                                     <span class="checkmark"></span>
                                                 </label>
                                             </div>
-                                        </td>
-                                        <td>
-                                            <a
+                                        </td> -->
+                                        <td style="width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            <a title="View Details" class="order-link"
                                                 href="{{ route('plugin.tlcommercecore.orders.details', ['id' => $order->id]) }}">
                                                 {{ $order->order_code }}
-                                                @if ($order->read_at == null)
+                                                <!-- @if ($order->read_at == null)
                                                     <span class="badge" style="background-color: #FF5A1F; color: #fff;">{{ translate('New') }}</span>
-                                                @endif
+                                                @endif -->
                                             </a>
 
                                         </td>
-                                        <td>{{ $order->created_at }}</td>
-                                        <td>
+
+                                        <td style="width: 100px;">
+                                            <div style="width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" 
+                                                title="{{ $order->created_at }}">
+                                                {{ date('d M, Y', strtotime($order->created_at)) }}
+                                            </div>
+                                        </td>
+
+                                        <!-- <td  style="width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            {{ $order->created_at }}</td> -->
+
+                                        <td style="width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                             @if ($order->customer_name != null)
                                                 <a
                                                     href="{{ route('plugin.tlcommercecore.customers.details', ['id' => $order->customer_id]) }}">
@@ -389,8 +399,8 @@
                                                 <span class="badge font-12" style="background-color: #FF5A1F; color: #fff;">{{ translate('Guest') }}</span>
                                             @endif
                                         </td>
-                                        <td class="text-center">{{ $order->total_product }}</td>
-                                        <td class="text-center">{!! currencyExchange($order->total_payable_amount) !!}</td>
+                                        <td class="text-center" style="width: 20px;">{{ $order->total_product }}</td>
+                                        <td class="text-center" style="width: 20px;">{!! currencyExchange($order->total_payable_amount) !!}</td>
 
                                         <td class="text-center">
                                             @if ($order->payment_status == config('tlecommercecore.order_payment_status.paid'))
@@ -405,6 +415,35 @@
                                                 </span>
                                             @endif
                                         </td>
+
+                                        <td class="text-center">
+                                            @if ($order->delivery_status == config('tlecommercecore.order_delivery_status.pending'))
+                                                <span class="badge-payment badge-pending">
+                                                    <i class="fa fa-check-circle mr-1"></i> {{ translate('Pending') }}
+                                                </span>
+                                            @elseif ($order->delivery_status == config('tlecommercecore.order_delivery_status.processing'))
+                                                <span class="badge-payment badge-processing">
+                                                    <i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Processing') }}
+                                                </span>
+                                            @elseif ($order->delivery_status == config('tlecommercecore.order_delivery_status.ready_to_ship'))
+                                                <span class="badge-payment badge-ready">
+                                                    <i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Ready To Ship') }}
+                                                </span>
+                                            @elseif ($order->delivery_status == config('tlecommercecore.order_delivery_status.shipped'))
+                                                <span class="badge-payment badge-shipped">
+                                                    <i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Shipped') }}
+                                                </span>
+                                            @elseif ($order->delivery_status == config('tlecommercecore.order_delivery_status.delivered'))
+                                                <span class="badge-payment badge-delivered">
+                                                    <i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Delivered') }}
+                                                </span>
+                                            @elseif ($order->delivery_status == config('tlecommercecore.order_delivery_status.cancelled'))
+                                                <span class="badge-payment badge-cancelled">
+                                                    <i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Cancelled') }}
+                                                </span>
+                                            @endif
+                                        </td>
+                                        
 
                                         <td>
                                             @if ($order->delivery_status == config('tlecommercecore.order_delivery_status.pending'))
@@ -479,7 +518,7 @@
                                             @endif
                                         </td>
 
-                                        <td>
+                                        <!-- <td>
                                             <div class="dropdown-button">
                                                 <a href="#" class="d-flex align-items-center justify-content-center"
                                                     data-toggle="dropdown">
@@ -494,7 +533,7 @@
                                                         href="{{ route('plugin.tlcommercecore.orders.details', ['id' => $order->id]) }}">{{ translate('Details') }}</a>
                                                 </div>
                                             </div>
-                                        </td>
+                                        </td> -->
                                     </tr>
                                 @endforeach
                             @else
@@ -1035,6 +1074,49 @@ button.btn-orange:active:focus {
     border: 1px solid #28a745;
 }
 
+
+/* Pending: Neutral Grey/Blue (Waiting to start) */
+.badge-pending {
+    background-color: rgba(108, 117, 125, 0.1);
+    color: #6c757d;
+    border: 1px solid #6c757d;
+}
+
+/* Processing: Your Theme Color #FF5A1F (Active work) */
+.badge-processing {
+    background-color: rgba(255, 90, 31, 0.1);
+    color: #FF5A1F;
+    border: 1px solid #FF5A1F;
+}
+
+/* Ready to Ship: Purple (Transitioning) */
+.badge-ready {
+    background-color: rgba(111, 66, 193, 0.1);
+    color: #6f42c1;
+    border: 1px solid #6f42c1;
+}
+
+/* Shipped: Information Blue (In transit) */
+.badge-shipped {
+    background-color: rgba(0, 123, 255, 0.1);
+    color: #007bff;
+    border: 1px solid #007bff;
+}
+
+/* Delivered: Success Green (Completed) */
+.badge-delivered {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+    border: 1px solid #28a745;
+}
+
+/* Cancelled: Danger Red (Stopped) */
+.badge-cancelled {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    border: 1px solid #dc3545;
+}
+
 /* Base style for the filter links */
 .filter-area .btn-filter-item {
     background: transparent !important; /* Always transparent initially */
@@ -1047,6 +1129,10 @@ button.btn-orange:active:focus {
     margin-right: 8px;
     transition: all 0.2s ease-in-out;
     text-decoration: none;
+}
+
+.order-link:hover {
+    color: #FF5A1F !important;
 }
 
 /* Hover: Subtle hint of orange on the border and text */
