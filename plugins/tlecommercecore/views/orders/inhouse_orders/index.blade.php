@@ -461,7 +461,7 @@
                                             @endif
                                             @if ($order->delivery_status == config('tlecommercecore.order_delivery_status.processing') 
                                                 ||
-                                                $order->delivery_status == config('tlecommercecore.order_delivery_status.delivered'
+                                                $order->delivery_status == config('tlecommercecore.order_delivery_status.delivered')
                                                 ||
                                                 $order->delivery_status == config('tlecommercecore.order_delivery_status.cancelled')    
                                             )
