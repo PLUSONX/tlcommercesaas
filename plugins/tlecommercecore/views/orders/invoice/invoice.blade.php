@@ -148,6 +148,12 @@
                         {{ $order_info['order_code'] }}</p>
                     <p class="invoice-p">{{ translate('Order date', getLocale()) }}: {{ $order_info['date'] }}
                     </p>
+                    @if(!empty($payment_date))
+                        <p class="invoice-p">
+                            {{ translate('Payment Date', getLocale()) }}: 
+                            {{ \Carbon\Carbon::parse($payment_date)->format('d M Y') }}
+                        </p>
+                    @endif
                     <p class="invoice-p">{{ translate('Payment method', getLocale()) }}:
                         {{ $order_info['payment_method'] }}</p>
                 </td>
@@ -211,11 +217,17 @@
     <table class="table invoice-product-table section p5 ">
         <thead class="thead-light">
             <tr>
+                <td scope="col" class="invoice-p" style="width: 50%;">{{ translate('Name', getLocale()) }}</td>
+                <td scope="col" class="invoice-p text-center" style="width: 15%;">{{ translate('Quantity', getLocale()) }}</td>
+                <td scope="col" class="invoice-p text-center" style="width: 15%;">{{ translate('Unit Price', getLocale()) }}</td>
+                <td scope="col" class="invoice-p text-right" style="width: 20%; text-align: right !important;">{{ translate('Total', getLocale()) }}</td>
+            </tr>
+            <!-- <tr>
                 <td scope="col" class="invoice-p">{{ translate('Name', getLocale()) }}</td>
                 <td scope="col" class="invoice-p text-center">{{ translate('Quantity', getLocale()) }}</td>
                 <td scope="col" class="invoice-p text-center">{{ translate('Unit Price', getLocale()) }}</td>
-                <td scope="col" class="text-right invoice-p">{{ translate('Total', getLocale()) }}</td>
-            </tr>
+                <td scope="col" class="text-right invoice-p" style="text-align: right !important;">{{ translate('Total', getLocale()) }}</td>
+            </tr> -->
         </thead>
         <tbody>
             @foreach ($order_info['products'] as $item)
@@ -281,12 +293,14 @@
                                 {{ $total_shipping_cost == 0 ? translate('Free', getLocale()) : currencyExchange($total_shipping_cost, true, null, false) }}
                             </td>
                         </tr>
-                        <!-- <tr>
+                        @if ($total_discount > 0)
+                        <tr>
                             <td class="border-top-0 invoice-p p-0">{{ translate('Discount', getLocale()) }}</td>
                             <td class="border-top-0 invoice-p text-right p-0 currency">
                                 {{ currencyExchange($total_discount, true, null, false) }}
                             </td>
-                        </tr> -->
+                        </tr>
+                        @endif
                         <tr>
                             <td class="border-top-0 invoice-p p-0">{{ translate('Grand Total', getLocale()) }}
                             </td>

@@ -13,6 +13,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Plugin\TlcommerceCore\Repositories\OrderRepository;
 use Plugin\TlcommerceCore\Http\Requests\DeliveryStatusUpdateRequest;
 use Plugin\TlcommerceCore\Models\Currency;
+use Plugin\TlcommerceCore\Models\PaymentTransaction;
 use Plugin\TlcommerceCore\Repositories\SettingsRepository;
 
 class OrderController extends Controller
@@ -554,9 +555,20 @@ class OrderController extends Controller
                 }
             }
 
+            Log::info('before transaction!');
+
+            $transaction = PaymentTransaction::where('payment_for', 'LIKE', '%Order ID: ' . $order_id . '%')->first();
+
+            Log::info('after transaction!');
+
+            Log::error('Transaction data', [
+                    'transaction' => json_encode($transaction),
+            ]);
+
             $data = [
                 'title'        => $invoice_data['order_code'],
                 'date'         => date('m/d/Y'),
+                'payment_date' => $transaction ? ($transaction->updated_at ?? $transaction->created_at) : null,
                 'order_info'   => $order_info,
                 'qr_code'      => $qr_temp,
                 'font_family'  => $font_family,
