@@ -447,7 +447,7 @@
 
                                         <td>
                                             @if ($order->delivery_status == config('tlecommercecore.order_delivery_status.pending'))
-                                                <button class="btn-success order-accept-btn w-50" style="border-radius: 6px; height: 30px;
+                                                <button class="btn-success order-accept-btn w-50" style="border-radius: 6px; height: 30px;"
                                                     data-order="{{ $order->id }}" title="Accept order">
                                                     <i style="font-size: 18px;" class="icofont-check-circled"></i>
                                                 </button>
@@ -605,7 +605,7 @@
                     </button>
                 </div>
                 <div class="modal-body text-center">
-                    <p class="mt-1">{{ translate('Are you sure to accept  this order') }}?</p>
+                    <p class="mt-1">{{ translate('Are you sure you want to accept  this order') }}?</p>
                     <form method="POST" action="{{ route('plugin.tlcommercecore.orders.accept') }}">
                         @csrf
                         <input type="hidden" name="order_id" id="acceptOrderId">
@@ -717,6 +717,8 @@
                 e.preventDefault();
                 let $this = $(this);
                 let id = $this.data('order');
+                // console.log("this: ", $this);
+                // console.log("id: ", id);
                 $("#acceptOrderId").val(id);
                 $("#order-accept-modal").modal('show');
             });
@@ -874,7 +876,7 @@
                 
                 let orderId = $(this).data('id');
 
-                console.log("orderId: ", orderId);
+                // console.log("orderId: ", orderId);
 
                 $('#modal_order_id').val(orderId);
 
@@ -885,7 +887,7 @@
                     type: 'GET',
                     success: function(response) {
                         if (response.couriers) {
-                            console.log("couriers: ", response.couriers);
+                            // console.log("couriers: ", response.couriers);
                             
                             // 2. Prepare the initial placeholder
                             let options = '<option value="">Select a Courier</option>';
@@ -1005,6 +1007,7 @@ a.btn-orange {
     /* border: 1px: !important; */
     color: #fff !important;
     transition: background 0.2s ease;
+    box-shadow: none !important;
 }
 
 button.btn-orange:hover,
