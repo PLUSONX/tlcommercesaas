@@ -45,18 +45,18 @@
                           <span v-if="orderDetails.shipping_details.address != null">{{
                             orderDetails.shipping_details.address }},</span>
                           <span v-if="orderDetails.shipping_details.city != null">{{ orderDetails.shipping_details.city
-                          }},</span>
+                            }},</span>
                           <span v-if="orderDetails.shipping_details.state != null">{{
                             orderDetails.shipping_details.state }},</span>
                           <span v-if="orderDetails.shipping_details.country">{{ orderDetails.shipping_details.country
-                          }}.</span>
+                            }}.</span>
                         </p>
                       </li>
                       <li>
                         <span>{{ $t("Postal Code") }}:</span>
                         <span>{{
                           orderDetails.shipping_details.postal_code
-                        }}</span>
+                          }}</span>
                       </li>
                     </template>
                   </ul>
@@ -95,19 +95,19 @@
                       <span>{{ $t("Order Status") }}:</span>
                       <span class="text-info">{{
                         orderDetails.delivery_status_label
-                      }}</span>
+                        }}</span>
                     </li>
                     <li class="text-capitalize">
                       <span>{{ $t("Payment Status") }}:</span>
                       <span class="text-info">{{
                         orderDetails.payment_status_label
-                      }}</span>
+                        }}</span>
                     </li>
                     <li class="text-capitalize">
                       <span>{{ $t("Payment method") }}:</span>
                       <span class="text-info">{{
                         orderDetails.payment_method
-                      }}</span>
+                        }}</span>
                     </li>
                   </ul>
                 </div>
@@ -123,10 +123,10 @@
                     <CTableRow>
                       <CTableHeaderCell>{{
                         $t("Product Name")
-                      }}</CTableHeaderCell>
+                        }}</CTableHeaderCell>
                       <CTableHeaderCell>{{
                         $t("Price") + "/" + $t("Unit")
-                      }}</CTableHeaderCell>
+                        }}</CTableHeaderCell>
                       <CTableHeaderCell>{{ $t("Quantity") }}</CTableHeaderCell>
                       <CTableHeaderCell>{{ $t("Total") }}</CTableHeaderCell>
                     </CTableRow>
@@ -387,21 +387,54 @@ export default {
         })
         .then((response) => {
           console.log("response: ", response);
+          console.log("response.data.success: ", response.data.success);  // debug
+          console.log("response.data.data: ", response.data.data);        // debug
+
           if (response.data.success) {
             this.orderDetails = response.data.data;
             this.success = true;
-            this.trackMetaPurchase(response.data.data);
+
+            try {
+              this.trackMetaPurchase(response.data.data);
+            } catch (trackingError) {
+              console.error("trackMetaPurchase failed:", trackingError);
+            }
+
           } else {
             this.$toast.error("Order not found");
           }
+
           this.dataLoading = false;
         })
         .catch((error) => {
           this.dataLoading = false;
-          console.log("error: ", error);
+          console.error("Axios error: ", error);
           this.$toast.error("Order not found");
         });
     },
+    // guestCustomerOrderDetails() {
+    //   console.log("guestCustomerOrderDetails method called!!!");
+    //   axios
+    //     .post("/api/v1/ecommerce-core/guest/order/details", {
+    //       order_code: this.order_code,
+    //     })
+    //     .then((response) => {
+    //       console.log("response: ", response);
+    //       if (response.data.success) {
+    //         this.orderDetails = response.data.data;
+    //         this.success = true;
+    //         this.trackMetaPurchase(response.data.data);
+    //       } else {
+    //         this.$toast.error("Order not found");
+    //       }
+    //       this.dataLoading = false;
+    //     })
+    //     .catch((error) => {
+    //       this.dataLoading = false;
+    //       console.log("error: ", error);
+    //       this.$toast.error("Order not found");
+    //     });
+    // },
 
     trackMetaPurchase(order) {
       if (window.fbq) {
