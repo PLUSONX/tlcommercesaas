@@ -2756,7 +2756,7 @@ class OrderRepository
                 'payment_method' => $payment_method,
                 'billing_info' => $billing_info,
                 'system_properties' => $system_properties,
-                'products' => $products
+                'products' => $products,
             ];
             return $data;
         } catch (\Exception $e) {

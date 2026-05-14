@@ -55,6 +55,14 @@
             background: #EBEBEB;
         }
 
+        .invoice-summary-table {
+            table-layout: fixed;
+        }
+
+        .invoice-summary-table td {
+            white-space: normal;
+            word-break: break-word;
+        }
         /* .invoice-p {
             margin-bottom: 0px;
             font-size: 12px;
@@ -277,16 +285,45 @@
                 <td colspan="2">
                     <table class="table table-borderless w-100 invoice-summary-table">
                         <tr>
+                            <td class="border-top-0 invoice-p p-0" style="width: 70%;">{{ translate('Subtotal', getLocale()) }}</td>
+                            <td class="border-top-0 text-right invoice-p p-0 currency" style="width: 30%;">
+                                {{ currencyExchange($sub_total, true, null, false) }}</td>
+                        </tr>
+                        <tr>
+                            <td class="border-top-0 invoice-p p-0" style="width: 70%;">{{ translate('Shipping', getLocale()) }}</td>
+                            <td class="border-top-0 text-right invoice-p p-0 currency" style="width: 30%;">
+                                {{ $total_shipping_cost == 0 ? translate('Free', getLocale()) : currencyExchange($total_shipping_cost, true, null, false) }}
+                            </td>
+                        </tr>
+                        @if ($total_discount > 0)
+                        <tr>
+                            <td class="border-top-0 invoice-p p-0" style="width: 70%;">{{ translate('Discount', getLocale()) }}</td>
+                            <td class="border-top-0 invoice-p text-right p-0 currency" style="width: 30%;">
+                                {{ currencyExchange($total_discount, true, null, false) }}
+                            </td>
+                        </tr>
+                        @endif
+                        <tr>
+                            <td class="border-top-0 invoice-p p-0" style="width: 70%;">{{ translate('Grand Total', getLocale()) }}</td>
+                            <td class="border-top-0 invoice-p text-right p-0 currency" style="width: 30%;">
+                                {{ currencyExchange($total_amount - $total_discount, true, null, false) }}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <!-- <td colspan="2">
+                    <table class="table table-borderless w-100 invoice-summary-table">
+                        <tr>
                             <td class="border-top-0 invoice-p p-0">{{ translate('Subtotal', getLocale()) }}</td>
                             <td class="border-top-0 text-right invoice-p p-0 currency">
                                 {{ currencyExchange($sub_total, true, null, false) }}</td>
                         </tr>
-                        <!-- <tr>
+                        <tr>
                             <td class="border-top-0 invoice-p p-0">{{ translate('Shipping', getLocale()) }}</td>
                             <td class="border-top-0 text-right invoice-p p-0 currency">
                                 {{ currencyExchange($total_shipping_cost, true, null, false) }}
                             </td>
-                        </tr> -->
+                        </tr>
                         <tr>
                             <td class="border-top-0 invoice-p p-0">{{ translate('Shipping', getLocale()) }}</td>
                             <td class="border-top-0 text-right invoice-p p-0 currency">
@@ -308,21 +345,21 @@
                                 {{ currencyExchange($total_amount - $total_discount, true, null, false) }}
                             </td>
                         </tr>
-                        <!-- <tr>
+                        <tr>
                             <td class="border-top-0 invoice-p p-0">{{ translate('Paid', getLocale()) }}</td>
                             <td class="border-top-0 invoice-p text-right p-0 currency">
                                 {{ currencyExchange($total_paid, true, null, false) }}
                             </td>
-                        </tr> -->
-                        <!-- <tr>
+                        </tr> 
+                         <tr>
                             <td class="border-top-0 invoice-p p-0">{{ translate('Total Due', getLocale()) }}</td>
                             <td class="border-top-0 invoice-p text-right p-0 currency">
                                 {{ currencyExchange($total_amount - $total_discount - $total_paid, true, null, false) }}
                             </td>
-                        </tr> -->
+                        </tr>
 
                     </table>
-                </td>
+                </td> -->
             <tr>
 
         </tbody>

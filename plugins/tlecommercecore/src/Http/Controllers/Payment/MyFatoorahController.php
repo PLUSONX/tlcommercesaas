@@ -483,12 +483,12 @@ private function updateOrderTransaction($orderId)
     // Find the order by ID and update payment_status
     Orders::where('id', $orderId)
         ->update([
-            'payment_status' => 1, // mark as failed or whatever your logic requires
+            'payment_status' => 1, 
         ]);
 
     OrderHasProducts::where('order_id', $orderId)
         ->update([
-            'payment_status' => 1, // mark as failed or whatever your logic requires
+            'payment_status' => 1, 
         ]);
 
     \Log::info('Order payment status updated successfully', [
