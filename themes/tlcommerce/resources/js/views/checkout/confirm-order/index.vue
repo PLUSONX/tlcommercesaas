@@ -380,15 +380,15 @@ export default {
      * Get guest customer order details
      */
     guestCustomerOrderDetails() {
-      console.log("guestCustomerOrderDetails method called!!!");
+      // console.log("guestCustomerOrderDetails method called!!!");
       axios
         .post("/api/v1/ecommerce-core/guest/order/details", {
           order_code: this.order_code,
         })
         .then((response) => {
-          console.log("response: ", response);
-          console.log("response.data.success: ", response.data.success);  // debug
-          console.log("response.data.data: ", response.data.data);        // debug
+          // console.log("response: ", response);
+          // console.log("response.data.success: ", response.data.success);  // debug
+          // console.log("response.data.data: ", response.data.data);        // debug
 
           if (response.data.success) {
             this.orderDetails = response.data.data;
@@ -418,14 +418,21 @@ export default {
       if (window.fbq) {
         const items = order.products?.data ?? [];
 
-        const productIds = items.map(item => item.id);
+        const contentIds = items.map(item => String(item.id));
+
+        // Richer format preferred by Meta for catalog ads
+        const contents = items.map(item => ({
+          id: String(item.id),
+          quantity: item.quantity ?? 1,
+        }));
 
         window.fbq('track', 'Purchase', {
-          content_ids: productIds,
+          content_ids: contentIds,   // array of strings
+          contents: contents,        // richer product data
           content_type: 'product',
           value: order.total_payable_amount,
-          currency: 'KD',
-          num_items: items.length
+          currency: 'KWD',           // ✅ correct ISO 4217 code
+          num_items: items.length,
         });
       }
     }

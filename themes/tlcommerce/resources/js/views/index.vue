@@ -253,7 +253,13 @@ export default {
         }
 
         if (window.fbq) {
-            window.fbq('track', 'Page View');
+            const siteName = this.$store.state.siteSettings?.site_name ?? 'Store';
+
+            window.fbq('track', 'ViewContent', {
+                content_name: siteName,
+                content_category: 'Store',
+                currency: 'KWD',
+            });
         }
 
     },

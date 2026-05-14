@@ -494,7 +494,7 @@ export default {
   }),
   mounted() {
     if (window.fbq) {
-      window.fbq('track', 'View Content', {
+      window.fbq('track', 'ViewContent', {
         content_ids: [this.item.id],
         content_name: this.item.name,
         content_type: 'product',
@@ -572,12 +572,12 @@ export default {
       };
 
       if (window.fbq) {
-        window.fbq('track', 'Intiate checkout', {
+        window.fbq('track', 'AddToCart', {
           content_ids: this.item.id,
           content_name: this.item.name,
           content_type: 'product',
-          value: this.item.price, // Total value for the items added
-          currency: 'KD' // You can pass this as a prop if you have multi-currency
+          value: this.item.price,
+          currency: 'KWD'
         });
       };
       // console.log("cart-item: ", cart_item);
@@ -672,12 +672,12 @@ export default {
       };
 
       if (window.fbq) {
-        window.fbq('track', 'Add to cart', {
+        window.fbq('track', 'AddToCart', {
           content_id: this.item.id,
           content_name: this.item.name,
           content_type: 'product',
           value: this.item.price, // Total value for the items added
-          currency: 'KD' // You can pass this as a prop if you have multi-currency
+          currency: 'KWD' // You can pass this as a prop if you have multi-currency
         });
       };
 

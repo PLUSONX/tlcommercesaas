@@ -475,20 +475,7 @@ export default {
       );
       formData.append("name", this.$store.state.guestCustomerInfo.name);
       formData.append("email", this.$store.state.guestCustomerInfo.email);
-      // if (this.$store.state.isActiveCreateNewAccount) {
-      //   formData.append(
-      //     "password",
-      //     this.$store.state.guestCustomerInfo.password
-      //   );
-      //   formData.append(
-      //     "password_confirmation",
-      //     this.$store.state.guestCustomerInfo.confirm_password
-      //   );
-      //   formData.append(
-      //     "create_new_account",
-      //     this.$store.state.isActiveCreateNewAccount
-      //   );
-      // }
+
       formData.append("payment_id", this.selected_payment_method.id);
       formData.append("note", this.additional_order_note);
       //pickup point delivery
@@ -528,34 +515,6 @@ export default {
           formData.append("billing_address", JSON.stringify(billingAddress));
         }
       }
-      // }
-
-      // if (!this.isActivePickupPoint && this.isActiveHomeDelivery) {
-      //   let shippingAddress = this.getAddressData(
-      //     this.$store.state.shippingDetails
-      //   );
-      //   formData.append("shipping_address", JSON.stringify(shippingAddress));
-      //   //Billing address
-      //   if (this.config?.enable_billing_address == this.enums.status.ACTIVE) {
-      //     //Shipping address as billing address
-      //     if (
-      //       this.config?.use_shipping_address_as_billing_address ==
-      //       this.enums.status.ACTIVE
-      //     ) {
-      //       formData.append("billing_address", JSON.stringify(shippingAddress));
-      //     }
-      //     //Billing address as billing address
-      //     if (
-      //       this.config?.use_shipping_address_as_billing_address !=
-      //       this.enums.status.ACTIVE
-      //     ) {
-      //       let billingAddress = this.getAddressData(
-      //         this.$store.state.billingDetails
-      //       );
-      //       formData.append("billing_address", JSON.stringify(billingAddress));
-      //     }
-      //   }
-      // }
 
       if (
         this.selected_payment_method != null &&
@@ -574,28 +533,25 @@ export default {
         formData.append("receipt", this.return_images);
       }
       formData.append("products", JSON.stringify(this.productPackages));
-      // console.log("productPackages: ", this.productPackages);
-      // console.log("formData: ", formData);
-      if (window.fbq) {
-        window.fbq('track', 'Checkout Started.', {
-          bank_name: this.bankDetails.bankName ?? "",
-          content_type: 'product',
-          currency: 'KD'
-        });
-      };
+
+      const items = this.$store.state.checkoutItems ?? [];
+
+      window.fbq('track', 'InitiateCheckout', {
+        content_ids: items.map(item => String(item.id)),
+        contents: items.map(item => ({
+          id: String(item.id),
+          quantity: item.quantity ?? 1,
+        })),
+        currency: 'KWD',
+        value: this.cartTotal,   // numeric total
+        num_items: items.length,
+      });
+
       axios
         .post("/api/v1/ecommerce-core/guest/checkout", formData)
         .then((response) => {
           if (response.data.success) {
             if (response.data.response_url) {
-              // if (window.fbq) {
-              //   window.fbq('track', 'Checkout Successful.', {
-              //     bank_name: this.bankDetails.bankName ?? "",
-              //     content_type: 'product',
-              //     currency: 'KD'
-              //   });
-              // };
-              // console.log("response_url: ", response.data.response_url);
               this.$store.dispatch("flushCartData").then(() => {
                 window.location.href = response.data.response_url;
               });
