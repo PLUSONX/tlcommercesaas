@@ -74,7 +74,7 @@
 
             fbq('init', '{{ $fbPixelId }}');
 
-            // fbq('track', 'PageView');
+            fbq('track', 'PageView');
             // window.fbq = fbq;
         </script>
         <noscript>
