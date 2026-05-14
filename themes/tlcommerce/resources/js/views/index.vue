@@ -253,7 +253,11 @@ export default {
         }
 
         if (window.fbq) {
+
+            console.log("Inside window.fbq!!!");
             const siteName = this.$store.state.siteSettings?.site_name ?? 'Store';
+
+            window.fbq('track', 'ViewContent');
 
             window.fbq('track', 'ViewContent', {
                 content_name: siteName,
