@@ -45,18 +45,18 @@
                           <span v-if="orderDetails.shipping_details.address != null">{{
                             orderDetails.shipping_details.address }},</span>
                           <span v-if="orderDetails.shipping_details.city != null">{{ orderDetails.shipping_details.city
-                            }},</span>
+                          }},</span>
                           <span v-if="orderDetails.shipping_details.state != null">{{
                             orderDetails.shipping_details.state }},</span>
                           <span v-if="orderDetails.shipping_details.country">{{ orderDetails.shipping_details.country
-                            }}.</span>
+                          }}.</span>
                         </p>
                       </li>
                       <li>
                         <span>{{ $t("Postal Code") }}:</span>
                         <span>{{
                           orderDetails.shipping_details.postal_code
-                          }}</span>
+                        }}</span>
                       </li>
                     </template>
                   </ul>
@@ -95,19 +95,19 @@
                       <span>{{ $t("Order Status") }}:</span>
                       <span class="text-info">{{
                         orderDetails.delivery_status_label
-                        }}</span>
+                      }}</span>
                     </li>
                     <li class="text-capitalize">
                       <span>{{ $t("Payment Status") }}:</span>
                       <span class="text-info">{{
                         orderDetails.payment_status_label
-                        }}</span>
+                      }}</span>
                     </li>
                     <li class="text-capitalize">
                       <span>{{ $t("Payment method") }}:</span>
                       <span class="text-info">{{
                         orderDetails.payment_method
-                        }}</span>
+                      }}</span>
                     </li>
                   </ul>
                 </div>
@@ -123,10 +123,10 @@
                     <CTableRow>
                       <CTableHeaderCell>{{
                         $t("Product Name")
-                        }}</CTableHeaderCell>
+                      }}</CTableHeaderCell>
                       <CTableHeaderCell>{{
                         $t("Price") + "/" + $t("Unit")
-                        }}</CTableHeaderCell>
+                      }}</CTableHeaderCell>
                       <CTableHeaderCell>{{ $t("Quantity") }}</CTableHeaderCell>
                       <CTableHeaderCell>{{ $t("Total") }}</CTableHeaderCell>
                     </CTableRow>
@@ -412,6 +412,23 @@ export default {
           this.$toast.error("Order not found");
         });
     },
+
+
+    trackMetaPurchase(order) {
+      if (window.fbq) {
+        const items = order.products?.data ?? [];
+
+        const productIds = items.map(item => item.id);
+
+        window.fbq('track', 'Purchase', {
+          content_ids: productIds,
+          content_type: 'product',
+          value: order.total_payable_amount,
+          currency: 'KD',
+          num_items: items.length
+        });
+      }
+    }
     // guestCustomerOrderDetails() {
     //   console.log("guestCustomerOrderDetails method called!!!");
     //   axios
@@ -436,21 +453,21 @@ export default {
     //     });
     // },
 
-    trackMetaPurchase(order) {
-      if (window.fbq) {
-        // Extracting product IDs from the order items
-        const productIds = order.details.map(item => item.id);
+    // trackMetaPurchase(order) {
+    //   if (window.fbq) {
+    //     // Extracting product IDs from the order items
+    //     const productIds = order.details.map(item => item.id);
 
-        window.fbq('track', 'Purchase', {
-          content_ids: productIds,
-          content_type: 'product',
-          value: order.total_payable_amount, // Ensure this matches your API field name
-          currency: 'KD', // Replace with order.currency if available
-          num_items: order.details.length
-        });
-        // console.log('Meta Purchase Tracked');
-      }
-    }
+    //     window.fbq('track', 'Purchase', {
+    //       content_ids: productIds,
+    //       content_type: 'product',
+    //       value: order.total_payable_amount, // Ensure this matches your API field name
+    //       currency: 'KD', // Replace with order.currency if available
+    //       num_items: order.details.length
+    //     });
+    //     // console.log('Meta Purchase Tracked');
+    //   }
+    // }
   },
 };
 </script>
