@@ -35,11 +35,11 @@
                       <CTableHeaderCell>{{ $t("ID") }}</CTableHeaderCell>
                       <CTableHeaderCell>{{
                         $t("Order Date")
-                      }}</CTableHeaderCell>
+                        }}</CTableHeaderCell>
                       <CTableHeaderCell>{{ $t("Amount") }}</CTableHeaderCell>
                       <CTableHeaderCell>{{
                         $t("Num of Products")
-                      }}</CTableHeaderCell>
+                        }}</CTableHeaderCell>
                       <CTableHeaderCell>{{ $t("Actions") }}</CTableHeaderCell>
                     </CTableRow>
                   </CTableHead>
@@ -56,7 +56,7 @@
                       </CTableDataCell>
                       <CTableDataCell>{{
                         tdata.total_products
-                      }}</CTableDataCell>
+                        }}</CTableDataCell>
                       <CTableDataCell>
                         <CDropdown>
                           <CDropdownToggle><span class="material-icons">
@@ -243,7 +243,7 @@ export default {
         .then((response) => {
           if (response.data.success) {
             this.tableData = response.data.data;
-            console.log("Purchase History Data: ", this.tableData);
+            // console.log("Purchase History Data: ", this.tableData);
             this.totalRows = response.data.meta.total;
             this.success = true;
             this.loading = false;

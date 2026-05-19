@@ -1218,7 +1218,7 @@
                     type: 'GET',
                     success: function(response) {
                         if (response.couriers) {
-                            console.log("couriers: ", response.couriers);
+                            // console.log("couriers: ", response.couriers);
                             
                             // 2. Prepare the initial placeholder
                             let options = '<option value="">Select a Courier</option>';

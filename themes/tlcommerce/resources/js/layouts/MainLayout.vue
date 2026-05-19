@@ -415,7 +415,7 @@ export default {
     ]),
 
     featureComponent() {
-      console.log("feature Component method called!!")
+      // console.log("feature Component method called!!")
       // Return the appropriate component based on feature_type
       // const type = this.featureType;
       const type = 'banner';

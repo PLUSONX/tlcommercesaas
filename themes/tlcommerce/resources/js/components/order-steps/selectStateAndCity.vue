@@ -80,7 +80,7 @@
                                 <p class="alert alert-danger">{{ $t("No address found") }}</p>
                                 <router-link to="/dashboard/address" class="btn_underline">{{
                                     $t("Add new address")
-                                }}</router-link>
+                                    }}</router-link>
                             </div>
                         </div>
                     </div>
@@ -337,7 +337,7 @@ export default {
                 country: this.$t("Select Country"),
             };
 
-            console.log("store: ", this.$store);
+            // console.log("store: ", this.$store);
 
             this.isActivePickupPoint = this.$store.state.isActivePickupPoint;
             this.isActiveHomeDelivery = this.$store.state.isActiveHomeDelivery;

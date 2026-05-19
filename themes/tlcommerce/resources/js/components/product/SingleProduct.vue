@@ -43,7 +43,9 @@
       </div>
       <!-- End Rating -->
 
-      <div class="row justify-content-between align-items-baseline">
+      <!-- <div class="row justify-content-between align-items-baseline"> -->
+
+      <div class="row justify-content-between align-items-baseline d-flex flex-column flex-sm-row">
 
         <!-- <div class="col-auto pe-0"> -->
         <div class="col pe-0" style="min-width: 0;">
@@ -57,7 +59,9 @@
         </div>
 
         <!-- <div class="col-auto text-end"> -->
-        <div class="col-auto text-end flex-shrink-0" style="max-width: 45%;">
+        <!-- <div class="col-auto text-end flex-shrink-0" style="max-width: 45%;"> -->
+        <div class="col-auto text-start text-sm-end flex-shrink-0" style="max-width: 100%;">
+
           <!-- Price -->
           <span class="product-price d-flex flex-wrap c1">
             <the-currency :amount="item.price" tag="span" v-if="item.base_price > item.price"></the-currency>
@@ -1029,6 +1033,15 @@ export default {
   .btn-xs {
     font-size: 12px !important;
     padding: 0.8em 0.8em;
+  }
+
+  .row.flex-column {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+
+    .col-auto {
+      max-width: 100% !important;
+    }
   }
 
 }
