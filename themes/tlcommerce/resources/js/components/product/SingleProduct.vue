@@ -860,9 +860,14 @@ export default {
     line-height: 1.4;
     margin: 8px 0;
     overflow: hidden;
+    text-transform: uppercase;
 
     @media (max-width: 479px) {
       font-size: 15px;
+      margin-bottom: 2px !important;
+      padding-bottom: 2px !important;
+      line-height: 15px !important;
+      height: 25px !important;
     }
   }
 
@@ -871,11 +876,21 @@ export default {
     // padding-top: 5px;
     min-height: 134px;
 
+    @media (min-width: 480px) and (max-width: 501px) {
+      // min-height: unset !important;
+      padding-left: 15% !important;
+    }
+
     @media (max-width: 479px) {
-      padding: 14px;
+      padding-bottom: 14px;
       padding-top: 18px;
+      min-height: unset !important;
+      padding-left: 8px !important;
+      padding-right: 4px !important;
     }
   }
+
+
 
   &:hover {
     .product-action-buttons {
@@ -1027,7 +1042,7 @@ export default {
   .button-group {
     width: 80% !important;
     gap: 0.2em;
-    padding-right: 8px !important;
+    // padding-right: 8px !important;
   }
 
   .btn-xs {

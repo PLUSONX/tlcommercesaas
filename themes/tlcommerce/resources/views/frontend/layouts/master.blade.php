@@ -109,8 +109,10 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
-        rel="stylesheet">
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
+        rel="stylesheet"> -->
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap"
+    rel="stylesheet">
 
     <link rel="stylesheet" href="{{ asset('backend/assets/plugins/fontawsome/css/all.min.css') }}">
     <link rel="stylesheet" href=" {{ asset('themes/default/public/assets/css/font-awesome.min.css') }}">
@@ -185,6 +187,12 @@
         {!! $custom_js_properties['header_custom_js_code'] !!}
     @endif
     <!--End custom script-->
+
+    <style>
+        *:not(.material-icons):not([class*="fa-"]):not([class*="ti-"]) {
+            font-family: 'Bricolage Grotesque', sans-serif !important;
+        }
+    </style>
 </head>
 
 <body class="antialiased">
