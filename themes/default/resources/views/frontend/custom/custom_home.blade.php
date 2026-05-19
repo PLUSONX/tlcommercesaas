@@ -363,9 +363,10 @@ button{cursor:pointer;font-family:inherit;border:none}
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, max-content));
     justify-content: center;
-    gap: 14px;
+    gap: 24px;
   }
   .int-card {
+    width: 200px;
     padding: 20px 16px; background: var(--white); border-radius: var(--radius-md);
     border: 1.5px solid var(--gray-200); text-align: center;
     transition: all 0.25s; cursor: pointer;
