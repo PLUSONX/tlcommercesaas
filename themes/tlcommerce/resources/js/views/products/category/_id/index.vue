@@ -73,7 +73,7 @@
                 <div class="ant-tag" v-if="brand_filter.id">
                   <span class="ant-tag-text">{{
                     brand_filter.name
-                    }}</span>
+                  }}</span>
                   <span class="material-icons" @click.prevent="removeTag('brand')">close</span>
                 </div>
 
@@ -91,7 +91,7 @@
 
                 <span class="clear-all" @click.prevent="removeAllTag">{{
                   $t("CLEAR ALL")
-                  }}</span>
+                }}</span>
               </div>
             </div>
             <!--End filter items-->
@@ -114,8 +114,9 @@
           <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
         </div>
       </div>
-      <div class="row mobile-gap-10" v-else>
-        <div v-for="product in paginatedItems" :key="product.id" class="col-6">
+      <div class="row g-0 mobile-gap-10" v-else>
+        <!-- <div v-for="product in paginatedItems" :key="product.id" class="col-6"> -->
+        <div v-for="product in paginatedItems" :key="product.id" class="col-6 compact-card p-2 pb-0">
           <single-product :item="product" styleEight />
         </div>
       </div>
@@ -368,40 +369,57 @@ export default {
 </script>
 
 <style scoped>
-.force-mobile-layout .row>[class*="col-"] {
-  flex: 0 0 100% !important;
-  max-width: 100% !important;
-}
-
-.force-mobile-layout .product-content .image,
-.force-mobile-layout .product-content .product-img {
-  min-width: 0 !important;
-  max-width: 100px;
-}
-
-
-
-.force-mobile-layout .cart-image-review {
-  max-width: 100% !important;
-  height: auto !important;
-  flex-shrink: 1 !important;
-}
-
-.force-mobile-layout .d-none.d-lg-block,
-.force-mobile-layout .d-lg-block {
-  display: none !important;
-}
-
-.force-mobile-layout .d-block.d-lg-none,
-.force-mobile-layout .d-lg-none {
-  display: block !important;
-}
-
-
-.force-mobile-layout .d-block.d-lg-none.col-12 {
+.card {
   width: 100% !important;
-  display: flex !important;
-  flex-wrap: wrap !important;
-  justify-content: space-between !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.col-6 :deep(> div) {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.compact-card :deep(.single-product-item) {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.compact-card :deep(img) {
+  width: 60% !important;
+  height: auto !important;
+  display: block;
+  margin: 0 auto;
+}
+
+@media (max-width: 500px) {
+  .mobile-gap-10 {
+    --bs-gutter-x: 0rem !important;
+    --bs-gutter-y: 0rem !important;
+  }
+
+  .mobile-gap-10 .compact-card {
+    padding: 4px !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+    /* padding-bottom: 2px !important; */
+  }
+
+  .mobile-gap-10 .compact-card :deep(.single-product-item) {
+    box-shadow: none !important;
+    border-radius: 6px !important;
+    margin-bottom: 0 !important;
+  }
+
+  .compact-card :deep(.product-summary) {
+    min-height: unset !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+  }
+
+
 }
 </style>
