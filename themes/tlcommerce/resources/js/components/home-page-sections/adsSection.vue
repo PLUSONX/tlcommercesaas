@@ -3,11 +3,7 @@
   <section class="mb-15 mt-15 ads-section home-page-section" :style="cssVars">
     <div class="custom-container2">
       <div class="row">
-        <div
-          v-for="(ad, index) in properties.ads"
-          :key="`ad-${index}`"
-          :class="`col-lg-${ad.column}`"
-        >
+        <div v-for="(ad, index) in cleanAds" :key="`ad-${index}`" :class="`col-lg-${ad.column}`">
           <a :href="ad.url" target="_blank" class="d-block mb-30 mh-294">
             <v-lazy-image class="w-100 lmh-294" :src="ad.image" :alt="index" />
           </a>
@@ -44,8 +40,7 @@ export default {
           this.properties.background_position,
         "--section-background-image-size": this.properties.background_size,
         "--section-background-image-repeat": this.properties.background_repeat,
-        "--section-padding": `${
-          this.properties.padding_top +
+        "--section-padding": `${this.properties.padding_top +
           "px " +
           this.properties.padding_right +
           "px " +
@@ -53,9 +48,8 @@ export default {
           "px " +
           this.properties.padding_left +
           "px"
-        }`,
-        "--section-margin": `${
-          this.properties.margin_top +
+          }`,
+        "--section-margin": `${this.properties.margin_top +
           "px " +
           this.properties.margin_right +
           "px " +
@@ -63,7 +57,7 @@ export default {
           "px " +
           this.properties.margin_left +
           "px"
-        }`,
+          }`,
         //Button
         "--button-color": this.properties.btn_color,
         "--button-background-color": this.properties.btn_bg_color,
@@ -76,6 +70,13 @@ export default {
         "--button-hover-bg-color": this.properties.btn_bg_hover_color,
         "--button-hover-color": this.properties.btn_hover_color,
       };
+    },
+
+    cleanAds() {
+      return (this.properties.ads || []).map(ad => ({
+        ...ad,
+        image: ad.image?.startsWith('/public') ? ad.image.slice(7) : ad.image,
+      }));
     },
   },
 };
@@ -90,6 +91,7 @@ export default {
   background-size: var(--section-background-image-size);
   background-repeat: var(--section-background-image-repeat);
 }
+
 .mh-294 {
   max-height: 294px;
   overflow: hidden;

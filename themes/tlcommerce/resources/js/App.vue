@@ -24,15 +24,28 @@ export default {
       return this.$route.meta.layout || MainLayout;
     },
   },
-  async created() {
-    this.themeStyle = await axios.get(
-      "/api/theme/tlcommerce/v1/get-theme-color"
-    );
-    let themeColor = this.themeStyle.data.themeColor.theme_primary_color;
+  mounted() {
+    console.log('🟡 App.vue mounted!');
 
-    if (themeColor != null) {
-      document.documentElement.style.setProperty("--mainC", themeColor);
-    }
   },
+  async created() {
+    console.log('🟡 App created - fetching theme...');
+    try {
+      this.themeStyle = await axios.get("/api/theme/tlcommerce/v1/get-theme-color");
+      console.log('✅ themeStyle set:', this.themeStyle);
+    } catch (e) {
+      console.log('❌ theme fetch failed:', e);
+    }
+  }
+  // async created() {
+  //   this.themeStyle = await axios.get(
+  //     "/api/theme/tlcommerce/v1/get-theme-color"
+  //   );
+  //   let themeColor = this.themeStyle.data.themeColor.theme_primary_color;
+
+  //   if (themeColor != null) {
+  //     document.documentElement.style.setProperty("--mainC", themeColor);
+  //   }
+  // },
 };
 </script>

@@ -40,6 +40,10 @@
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./featured_blog_widget.vue?vue&type=template&id=6d5a0960 */
 
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./footer_left_menu.vue?vue&type=template&id=b84ab43a */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./footer_right_menu.vue?vue&type=template&id=32c19986 */
+
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./index.vue?vue&type=template&id=5f55b3e4 */
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./newsletter_widget.vue?vue&type=template&id=5f068d6c */
@@ -104,7 +108,11 @@
 
 /*! ./footer_left_menu.vue?vue&type=script&lang=js */
 
+/*! ./footer_left_menu.vue?vue&type=template&id=b84ab43a */
+
 /*! ./footer_right_menu.vue?vue&type=script&lang=js */
+
+/*! ./footer_right_menu.vue?vue&type=template&id=32c19986 */
 
 /*! ./index.vue?vue&type=script&lang=js */
 
@@ -260,6 +268,14 @@
   !*** ./resources/js/components/ui/BlogCard.vue?vue&type=template&id=085b4f92&scoped=true ***!
   \*******************************************************************************************/
 
+/*!*******************************************************************************************!*\
+  !*** ./resources/js/components/widget/footer_left_menu.vue?vue&type=template&id=b84ab43a ***!
+  \*******************************************************************************************/
+
+/*!********************************************************************************************!*\
+  !*** ./resources/js/components/widget/footer_right_menu.vue?vue&type=template&id=32c19986 ***!
+  \********************************************************************************************/
+
 /*!********************************************************************************************!*\
   !*** ./resources/js/components/widget/newsletter_widget.vue?vue&type=template&id=5f068d6c ***!
   \********************************************************************************************/
@@ -355,6 +371,14 @@
 /*!*********************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/BlogCard.vue?vue&type=template&id=085b4f92&scoped=true ***!
   \*********************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/widget/footer_left_menu.vue?vue&type=template&id=b84ab43a ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!**********************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/widget/footer_right_menu.vue?vue&type=template&id=32c19986 ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!**********************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/widget/newsletter_widget.vue?vue&type=template&id=5f068d6c ***!

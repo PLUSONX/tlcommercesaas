@@ -1,8 +1,9 @@
 <template>
   <!-- Categories -->
-  <section class="category-section home-page-section">
+  <section class="category-section home-page-section"
+    :style="isSplitScreen ? { background: 'transparent', backgroundColor: 'transparent' } : {}">
     <div class="px-3 px-sm-0">
-      <!-- <swiper v-if="properties.categories.length && properties.style == 'slider'" :modules="modules" :loop="true"
+      <swiper v-if="properties.categories.length && properties.style == 'slider'" :modules="modules" :loop="true"
         :centeredSlides="true" :autoplay="{
           delay: 2500,
           disableOnInteraction: false,
@@ -26,31 +27,6 @@
             slidesPerView: 5,
             spaceBetween: 20,
           },
-        }"> -->
-      <swiper v-if="properties.categories.length && properties.style == 'slider'" :modules="modules" :loop="true"
-        :centeredSlides="false" :autoplay="{
-          delay: 2500,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: true,
-        }" :pagination="{
-          clickable: true,
-        }" class="category-slider category-full-width theme-slider-dots" :breakpoints="{
-          '0': {
-            slidesPerView: 2,
-            spaceBetween: 5,
-          },
-          '768': {
-            slidesPerView: 3,
-            spaceBetween: 2,
-          },
-          '1024': {
-            slidesPerView: 4,
-            spaceBetween: 2,
-          },
-          '1440': {
-            slidesPerView: 5,
-            spaceBetween: 2,
-          },
         }">
         <swiper-slide v-for="(cat, index) in properties.categories" :key="`category-${index}`">
           <category-card :cat="cat" />
@@ -70,6 +46,7 @@
 <script>
 import { defineAsyncComponent } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
+import { mapGetters } from "vuex";
 const CategoryCard = defineAsyncComponent(() =>
   import("../../ui/CategoryCard.vue")
 );
@@ -94,20 +71,8 @@ export default {
       default: {},
     },
   },
+  computed: {
+    ...mapGetters('layout', ['isSplitScreen']),
+  },
 };
 </script>
-
-<style scoped>
-:deep(.swiper-slide) {
-  width: auto !important;
-  /* Let the content define the width */
-  display: flex;
-  justify-content: center;
-}
-
-/* Ensure the card doesn't force a giant width */
-:deep(.category-card) {
-  width: 80px;
-  /* Adjust this to roughly the width of your circular image */
-}
-</style>

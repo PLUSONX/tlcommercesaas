@@ -2,7 +2,9 @@ const mix = require('laravel-mix');
 const path = require('path');
 const webpack = require('webpack');
 
-mix.setPublicPath('public'); // Tells Mix that 'public' is the base inside this folder
+// mix.setPublicPath('public'); // Tells Mix that 'public' is the base inside this folder
+
+mix.setPublicPath('../../public/themes/tlcommerce'); // Output directly to where blade loads from
 
 mix.js('resources/js/main.js', 'js') // Outputs to themes/tlcommerce/public/js/main.js
     .vue();
@@ -18,8 +20,6 @@ mix.webpackConfig({
     ],
     output: {
         publicPath: '/themes/tlcommerce/',
-        filename: 'public/js/[name].js?id=[contenthash]',
-        chunkFilename: 'public/js/[name].js?id=[chunkhash]',
     },
     optimization: {
         splitChunks: {

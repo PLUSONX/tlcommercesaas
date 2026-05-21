@@ -1,19 +1,11 @@
 <template>
-  <div
-    class="video-card overflow-hidden position-relative"
-    :style="styleObject"
-  >
+  <div class="video-card overflow-hidden position-relative" :style="styleObject">
     <FsLightbox :toggler="toggler" :sources="[src]" />
     <template v-for="(image, imageIndex) in items">
       <div v-if="thumb" :key="imageIndex" class="bg-overlay w-100 h-100">
-        <img
-          class="radius-10"
-          :src="thumb"
-          :alt="title ? title : 'Video Thumbnail'"
-        />
+        <img class="radius-10" :src="cleanImage" :alt="title ? title : 'Video Thumbnail'" />
 
-        <div
-          class="
+        <div class="
             d-flex
             flex-column
             justify-content-center
@@ -23,21 +15,13 @@
             h-100
             fixed-top
             text-white
-          "
-        >
-          <button
-            :class="
-              styleTwo
-                ? 'btn-video-play'
-                : 'bg-transparent border-0 p-0 text-white'
-            "
-            @click="toggler = !toggler"
-          >
-            <base-icon-svg
-              :name="styleTwo ? 'play_3' : play"
-              :height="styleTwo ? 23 : 120"
-              :width="styleTwo ? 28 : 120"
-            />
+          ">
+          <button :class="styleTwo
+              ? 'btn-video-play'
+              : 'bg-transparent border-0 p-0 text-white'
+            " @click="toggler = !toggler">
+            <base-icon-svg :name="styleTwo ? 'play_3' : play" :height="styleTwo ? 23 : 120"
+              :width="styleTwo ? 28 : 120" />
           </button>
         </div>
       </div>
@@ -105,6 +89,12 @@ export default {
         "--btn-icon-color": this.btnIconColor,
       };
     },
+
+    cleanImage() {
+      const img = this.thumb;
+      if (!img) return '';
+      return img.startsWith('/public') ? img.slice(7) : img;
+    },
   },
 };
 </script>
@@ -114,11 +104,13 @@ export default {
   .bg-overlay {
     min-height: 500px;
   }
+
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
+
   .btn_play {
     color: var(--btn-icon-color) !important;
     border-color: var(--btn-border-color) !important;

@@ -1,0 +1,39 @@
+/*! -!../../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./index.vue?vue&type=script&lang=js */
+
+/*! -!../../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./index.vue?vue&type=template&id=d9db6608 */
+
+/*! ./index.vue?vue&type=script&lang=js */
+
+/*! ./index.vue?vue&type=template&id=d9db6608 */
+
+/*! ./node_modules/vue-loader/dist/exportHelper.js */
+
+/*! @/components/page-builder/BuilderSection.vue */
+
+/*! @/components/pageheader/PageHeader.vue */
+
+/*! axios */
+
+/*! import() */
+
+/*! vue */
+
+/*!***********************************************!*\
+  !*** ./resources/js/views/page/_id/index.vue ***!
+  \***********************************************/
+
+/*!***********************************************************************!*\
+  !*** ./resources/js/views/page/_id/index.vue?vue&type=script&lang=js ***!
+  \***********************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./resources/js/views/page/_id/index.vue?vue&type=template&id=d9db6608 ***!
+  \*****************************************************************************/
+
+/*!***************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/views/page/_id/index.vue?vue&type=script&lang=js ***!
+  \***************************************************************************************************************************************************************************************************/
+
+/*!*******************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/views/page/_id/index.vue?vue&type=template&id=d9db6608 ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************/

@@ -1,15 +1,12 @@
 <template>
   <!-- Widget -->
-  <!-- <div class="widget widget-style-1 widget_top_category mb-4">
+  <div class="widget widget-style-1 widget_top_category mb-4">
     <h5>
       <span>{{ $t("Top Categories") }}</span>
-      <span
-        @click.prevent="showCategoryWidget = !showCategoryWidget"
-        class="widget-collapse-toggle"
-        ><span class="material-icons">
+      <span @click.prevent="showCategoryWidget = !showCategoryWidget" class="widget-collapse-toggle"><span
+          class="material-icons">
           {{ showCategoryWidget ? "expand_less" : "expand_more" }}
-        </span></span
-      >
+        </span></span>
     </h5>
     <ul class="list-unstyled mb-0" v-if="showCategoryWidget">
       <template v-for="(cat, index) in categories">
@@ -17,23 +14,17 @@
           <div v-if="link">
             <router-link :to="`/products/category/${cat.slug}`">{{
               cat.name
-            }}</router-link>
+              }}</router-link>
           </div>
           <div v-else>
-            <input
-              type="radio"
-              name="category_group"
-              :id="cat.name"
-              :value="cat.name"
-              :checked="cat == selectedCat"
-              @change="filter(cat)"
-            />
+            <input type="radio" name="category_group" :id="cat.name" :value="cat.name" :checked="cat == selectedCat"
+              @change="filter(cat)" />
             <label :for="cat.name">{{ cat.name }}</label>
           </div>
         </li>
       </template>
 
-      <li v-if="categories?.length > max_cat">
+      <li v-if="categories.length > max_cat">
         <button class="btn_underline" @click.prevent="ViewMore('cat')">
           {{ $t("View More") }}
         </button>
@@ -44,7 +35,7 @@
         </button>
       </li>
     </ul>
-  </div> -->
+  </div>
   <!-- Widget -->
 </template>
 
@@ -75,7 +66,7 @@ export default {
   methods: {
     ViewMore(item) {
       if (item === "cat") {
-        this.max_cat = this.categories?.length ?? 0;
+        this.max_cat = this.categories.length;
       }
     },
     ViewLess(item) {

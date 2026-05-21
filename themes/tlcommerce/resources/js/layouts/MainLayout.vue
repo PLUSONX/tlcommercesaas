@@ -1,5 +1,11 @@
 <template>
   <div :class="layoutClass">
+    <!-- <div style="position:fixed;top:0;left:0;z-index:9999;background:yellow;padding:10px;">
+      onMainLyout: isSplitScreen: {{ isSplitScreen }} | isMobile: {{ isMobile }}
+    </div> -->
+    <!-- <div style="position:fixed;top:0;left:0;z-index:9999;background:yellow;padding:10px;">
+      <h1 style="color: red;">Test again</h1>
+    </div> -->
     <template v-if="isSplitScreen && !isMobile">
       <div class="split-screen-container" :style="containerStyle">
         <div class="split-screen-content" :class="[contentSideClass, 'force-mobile-view']" :style="contentStyle">
@@ -36,7 +42,7 @@
           </div>
           <!-- End Dark Light Switcher -->
           <!--Website popup-->
-          <CModal :visible="visibleWebsitePopup" alignment="center" class="website-popup-modal" @close="
+          <!-- <CModal :visible="visibleWebsitePopup" alignment="center" class="website-popup-modal" @close="
             () => {
               visibleWebsitePopup = false;
             }
@@ -49,31 +55,30 @@
               <subscribe-form class="mt-20"
                 v-if="website_popup_properties.website_popup_subscribe_status == 1"></subscribe-form>
             </CModalBody>
-          </CModal>
+          </CModal> -->
           <!--End website popup-->
 
         </div>
       </div>
     </template>
 
-    <!-- Default Layout (Always on Mobile) -->
-    <template v-else>
+    <template v-else-if="isSplitScreen && isMobile">
 
       <div class="layout__two">
         <preloader :loading="preloaderLoading"></preloader>
 
-        <top-bar-banner :properties="top_bar_banner_properties" v-if="
+        <!-- <top-bar-banner :properties="top_bar_banner_properties" v-if="
           top_bar_banner_properties != null &&
           top_bar_banner_properties.topbar_banner_status == 1
-        "></top-bar-banner>
+        "></top-bar-banner> -->
         <!-- Header -->
-        <header class="header__two love-sticky">
+        <!-- <header class="header__two love-sticky">
 
           <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
             :wishlist-item="wishlistItem" :compare-item="compareItem" :header-logo-style="headerLogoStyle"
             :header-menu-style="headerMenuStyle" class="d-none d-lg-block"></header-middle>
 
-        </header>
+        </header> -->
 
         <mobile-header :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
           :header-style="headerStyle" :header-menu-style="headerMenuStyle"
@@ -88,6 +93,133 @@
 
         <BackToTop />
       </div>
+    </template>
+
+    <!-- Default Layout -->
+    <template v-else>
+
+
+      <div class="layout__two">
+        <preloader :loading="preloaderLoading"></preloader>
+        <top-bar-banner :properties="top_bar_banner_properties" v-if="
+          top_bar_banner_properties != null &&
+          top_bar_banner_properties.topbar_banner_status == 1
+        "></top-bar-banner>
+        <!-- Header -->
+        <header class="header__two love-sticky">
+          <header-top :data-loading="MenuItemsLoading" :currencies="data.currencies" :languages="data.languages"
+            :right-menu-items="rightMenuItems" :left-menu-items="leftMenuItems" :header-menu-style="headerMenuStyle"
+            @change-language-currency="setCurrencyLanguage" @logout-customer="logoutCustomer"></header-top>
+          <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
+            :wishlist-item="wishlistItem" :compare-item="compareItem" :header-logo-style="headerLogoStyle"
+            :header-menu-style="headerMenuStyle" class="d-none d-lg-block"></header-middle>
+          <header-bottom :data-loading="MenuItemsLoading" :mega-categories="data.megaCategories"
+            :menu-items="headerBottomMenu" :header-style="headerStyle" :header-menu-style="headerMenuStyle"
+            class="d-none d-lg-block"></header-bottom>
+        </header>
+
+        <mobile-header :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
+          :header-style="headerStyle" :header-menu-style="headerMenuStyle"
+          :header-logo-style="headerLogoStyle"></mobile-header>
+        <!-- End Header -->
+
+        <div class="main_content light-bg">
+          <slot />
+        </div>
+
+        <StickyFooter v-if="!isSingleProduct" />
+
+        <!-- Footer -->
+        <footer :class="this.footerStyle.custom_footer == 1
+          ? 'custom-footer footer footer__two c1-bg'
+          : 'footer footer__two c1-bg'
+          " :style="{ backgroundImage: `url('${footerBgImg}')` }">
+          <!-- Footer Top -->
+          <div class="footer-top">
+            <div class="custom-container2">
+              <div class="row justify-content-between">
+                <v-runtime-template :template="widget_html"></v-runtime-template>
+              </div>
+            </div>
+          </div>
+          <!-- End Footer Top -->
+          <!-- Footer Bottom -->
+          <div class="footer-bottom">
+            <div class="custom-container2">
+              <div class="border-top text-center py-4">
+                <copyright :site-properties="data.site_properties" />
+              </div>
+            </div>
+          </div>
+          <!-- End Footer Bottom -->
+        </footer>
+        <!-- End Footer -->
+
+        <!--Cookie Consent-->
+        <gdpr v-if="gdpr_properties != null && gdpr_properties.gdpr_status == 1" :properties="gdpr_properties"></gdpr>
+        <!--End Cookie Consent-->
+
+        <!-- Dark Light Switcher -->
+        <div class="floating-mode-switcher-wrap" v-if="dark_light_status == '1'">
+          <label class="dl-switch">
+            <input class="dark-looks-mode-changer" @change="toggleDark" :checked="mode == 'dark'" type="checkbox" />
+            <span class="dl-slider"></span>
+            <span class="dl-light">Light</span>
+            <span class="dl-dark">Dark</span>
+          </label>
+        </div>
+        <!-- End Dark Light Switcher -->
+        <!--Website popup-->
+        <CModal :visible="visibleWebsitePopup" alignment="center" class="website-popup-modal" @close="
+          () => {
+            visibleWebsitePopup = false;
+          }
+        ">
+          <CModalBody class="modal-body p-0 position-relative website-popup-modal-body rounded-0">
+            <button class="btn-circle custom-modal-btn position-absolute size-35" @click="closePopupModal()">
+              <base-icon-svg name="close" :width="10" :height="10" />
+            </button>
+            <!-- <div class="m-0" v-html="website_popup_properties?.website_popup_content"></div>
+            <subscribe-form class="mt-20"
+              v-if="website_popup_properties?.website_popup_subscribe_status == 1">
+            </subscribe-form> -->
+            <div class="m-0"></div>
+            <subscribe-form class="mt-20">
+            </subscribe-form>
+          </CModalBody>
+        </CModal>
+        <!--End website popup-->
+
+        <BackToTop />
+      </div>
+
+      <!-- <div class="layout__two">
+        <preloader :loading="preloaderLoading"></preloader>
+
+        <top-bar-banner :properties="top_bar_banner_properties" v-if="
+          top_bar_banner_properties != null &&
+          top_bar_banner_properties.topbar_banner_status == 1
+        "></top-bar-banner>
+        <header class="header__two love-sticky">
+
+          <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
+            :wishlist-item="wishlistItem" :compare-item="compareItem" :header-logo-style="headerLogoStyle"
+            :header-menu-style="headerMenuStyle" class="d-none d-lg-block"></header-middle>
+
+        </header>
+
+        <mobile-header :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
+          :header-style="headerStyle" :header-menu-style="headerMenuStyle"
+          :header-logo-style="headerLogoStyle"></mobile-header>
+
+        <div class="main_content light-bg">
+          <slot />
+        </div>
+
+
+
+        <BackToTop />
+      </div> -->
 
     </template>
 
@@ -278,17 +410,23 @@ export default {
      * Get Mega categories
      */
     function getMegacategories() {
+
+      console.log("getMegacategories method called!!!")
+
       const headers = {
         "Content-Type": "application/json",
         "Accept-Language": localStorage.getItem("locale") || "en",
       };
 
       axios
-        .get("/api/v1/ecommerce-core/mega-categories", {
+        .post("/api/v1/ecommerce-core/mega-categories", {
           headers: headers,
         })
         .then((response) => {
           if (response.data.success) {
+
+            console.log("category in mainlayout.vue: ", response);
+
             data.megaCategories = response.data.data;
           }
         })
@@ -371,88 +509,34 @@ export default {
   //   }
   // },
   computed: {
-
-    isMobile() {
-      // Get split screen state from store
-      const splitScreen = this.$store.getters['layout/isSplitScreen'];
-      const actualMobile = this.$store.getters['layout/isMobile'];
-
-      // If split screen is active, always treat as mobile
-      if (splitScreen) {
-        return true;
-      }
-
-      // Otherwise use the actual mobile detection
-      return actualMobile;
-    },
     ...mapState({
       preloaderLoading: (state) => state.preloaderLoading,
       mode: (state) => state.mode,
-      customerToken: (state) => {
-        // console.log("state:", state);
-        // console.log("state.customerToken:", state.customerToken)
-        return state.customerToken;
-      },
-      // customerToken: (state) => state.customerToken,
+      customerToken: (state) => state.customerToken,
       isCustomerLogin: (state) => state.isCustomerLogin,
       wishlistItem: (state) =>
         state.customerDashboardInfo != null
-          ? state.customerDashboardInfo.total_wishlisted_product
-          : 0,
+          ? state.customerDashboardInfo.total_wishlisted_product : 0,
       cartItem: (state) =>
         state.cart.length ? state.cart.reduce((a, b) => a + b.quantity, 0) : 0,
       compareItem: (state) =>
         state.compareItems.length ? state.compareItems.length : 0,
     }),
 
-    // NEW: Layout computed properties
     ...mapGetters('layout', [
       'isSplitScreen',
       'splitScreenSettings',
       'contentPosition',
       'featureImagePath',
-      'isMobile'
+      'isMobile',
     ]),
 
-    featureComponent() {
-      // console.log("feature Component method called!!")
-      // Return the appropriate component based on feature_type
-      // const type = this.featureType;
-      const type = 'banner';
-
-      if (type == 'banner') {
-        return () => import('@/components/features/BannerFeature.vue');
-      }
-      // else if (type === 'product') {
-      //   return () => import('./components/ProductFeature.vue');
-      // } else if (type === 'video') {
-      //   return () => import('./components/VideoFeature.vue');
-      // }
-
-      return null;
-    },
-
-    featureSideClass() {
-      return this.contentPosition === 'left' ? 'order-2' : 'order-1';
-    },
-
-    featureStyle() {
-      // You can add dynamic styling based on splitScreenSettings
-      return {
-        backgroundColor: this.splitScreenSettings?.background_color || '#f8f9fa'
-      };
-    },
-
     layoutClass() {
-      if (this.isMobile) {
-        return 'layout__two';
-      }
       return this.isSplitScreen ? 'layout-split-screen' : 'layout__two';
     },
 
     containerStyle() {
-      if (!this.isSplitScreen || this.isMobile) return {};
-
+      if (!this.isSplitScreen) return {};
       return {
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
@@ -477,12 +561,10 @@ export default {
 
     featureStyle() {
       if (!this.splitScreenSettings) return {};
-
       return {
         backgroundColor: this.splitScreenSettings.background_color || '#ffffff',
         backgroundImage: this.splitScreenSettings.feature_image
-          ? `url(${this.splitScreenSettings.feature_image})`
-          : 'none',
+          ? `url(${this.splitScreenSettings.feature_image})` : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center'
       };
@@ -490,17 +572,134 @@ export default {
 
     featureComponent() {
       if (!this.splitScreenSettings) return null;
-
       const componentMap = {
         'banner': 'BannerFeature',
         'product': 'ProductFeature',
         'video': 'VideoFeature'
       };
-
       return componentMap[this.splitScreenSettings.feature_type] || 'BannerFeature';
     }
-
   },
+  // computed: {
+
+  //   isMobile() {
+  //     const splitScreen = this.$store.getters['layout/isSplitScreen'];
+  //     const actualMobile = this.$store.getters['layout/isMobile'];
+
+  //     if (splitScreen) {
+  //       return true;
+  //     }
+
+  //     return actualMobile;
+  //   },
+  //   ...mapState({
+  //     preloaderLoading: (state) => state.preloaderLoading,
+  //     mode: (state) => state.mode,
+  //     customerToken: (state) => {
+  //       // console.log("state:", state);
+  //       // console.log("state.customerToken:", state.customerToken)
+  //       return state.customerToken;
+  //     },
+  //     // customerToken: (state) => state.customerToken,
+  //     isCustomerLogin: (state) => state.isCustomerLogin,
+  //     wishlistItem: (state) =>
+  //       state.customerDashboardInfo != null
+  //         ? state.customerDashboardInfo.total_wishlisted_product
+  //         : 0,
+  //     cartItem: (state) =>
+  //       state.cart.length ? state.cart.reduce((a, b) => a + b.quantity, 0) : 0,
+  //     compareItem: (state) =>
+  //       state.compareItems.length ? state.compareItems.length : 0,
+  //   }),
+
+  //   // NEW: Layout computed properties
+  //   ...mapGetters('layout', [
+  //     'isSplitScreen',
+  //     'splitScreenSettings',
+  //     'contentPosition',
+  //     'featureImagePath',
+  //     // 'isMobile'
+  //   ]),
+
+  //   featureComponent() {
+  //     const type = 'banner';
+
+  //     if (type == 'banner') {
+  //       return () => import('@/components/features/BannerFeature.vue');
+  //     }
+
+  //     return null;
+  //   },
+
+  //   featureSideClass() {
+  //     return this.contentPosition === 'left' ? 'order-2' : 'order-1';
+  //   },
+
+  //   featureStyle() {
+  //     // You can add dynamic styling based on splitScreenSettings
+  //     return {
+  //       backgroundColor: this.splitScreenSettings?.background_color || '#f8f9fa'
+  //     };
+  //   },
+
+  //   layoutClass() {
+  //     // if (this.isMobile) {
+  //     //   return 'layout__two';
+  //     // }
+  //     return this.isSplitScreen ? 'layout-split-screen' : 'layout__two';
+  //   },
+
+  //   containerStyle() {
+  //     if (!this.isSplitScreen || this.isMobile) return {};
+
+  //     return {
+  //       display: 'grid',
+  //       gridTemplateColumns: '1fr 1fr',
+  //       minHeight: '100vh'
+  //     };
+  //   },
+
+  //   contentSideClass() {
+  //     return this.contentPosition === 'left' ? 'order-1' : 'order-2';
+  //   },
+
+  //   featureSideClass() {
+  //     return this.contentPosition === 'left' ? 'order-2' : 'order-1';
+  //   },
+
+  //   contentStyle() {
+  //     return {
+  //       backgroundColor: '#ffffff',
+  //       overflowY: 'auto'
+  //     };
+  //   },
+
+  //   featureStyle() {
+  //     if (!this.splitScreenSettings) return {};
+
+  //     return {
+  //       backgroundColor: this.splitScreenSettings.background_color || '#ffffff',
+  //       backgroundImage: this.splitScreenSettings.feature_image
+  //         ? `url(${this.splitScreenSettings.feature_image})`
+  //         : 'none',
+  //       backgroundSize: 'cover',
+  //       backgroundPosition: 'center'
+  //     };
+  //   },
+
+  //   featureComponent() {
+  //     if (!this.splitScreenSettings) return null;
+
+  //     const componentMap = {
+  //       'banner': 'BannerFeature',
+  //       'product': 'ProductFeature',
+  //       'video': 'VideoFeature'
+  //     };
+
+  //     return componentMap[this.splitScreenSettings.feature_type] || 'BannerFeature';
+  //   }
+
+  // },
   // computed: mapState({
   //   preloaderLoading: (state) => state.preloaderLoading,
   //   mode: (state) => state.mode,
@@ -534,6 +733,14 @@ export default {
     this.checkMobileView();
     window.addEventListener('resize', this.handleResize);
     this.initResizeObserver();
+
+    console.log('🟡 MainLayout mounted!');
+    console.log('isSplitScreen:', this.isSplitScreen);
+    console.log('isMobile:', this.isMobile);
+
+    if (!this.isSplitScreen) {
+      this.visibleWebsitePopup = true;
+    }
   },
 
   beforeUnmount() {
@@ -579,6 +786,8 @@ export default {
     translateLanguage(val) {
       return this.$t(val);
     },
+
+
 
     /**
      * Check customer authentication
@@ -965,6 +1174,12 @@ export default {
 
 .modal.website-popup-modal .modal-content {
   border-radius: 0px !important;
+}
+
+:deep(.website-popup-modal .modal-content) {
+  border-radius: 6px !important;
+  overflow: visible !important;
+
 }
 
 .custom-modal-btn {

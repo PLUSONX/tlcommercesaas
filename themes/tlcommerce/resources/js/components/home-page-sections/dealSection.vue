@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <section class="pt-15 pb-15 deals-section home-page-section" :style="styleObject" :class="{
     'force-mobile-layout': forcedMobile,
     'mobile-content-wrapper': forcedMobile
@@ -13,23 +13,7 @@
             :titleColor="properties.title_color" />
         </div>
       </div>
-      <!-- <swiper v-if="dealProducts.length" :slidesPerView="6" :modules="modules" :spaceBetween="1" :autoplay="{
-        delay: 2500,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      }" :loop="true" :pagination="{
-        clickable: true,
-      }" class="product-grid-slider theme-slider-dots" :breakpoints="{
-        '0': {
-          slidesPerView: 2,
-        },
-        '768': {
-          slidesPerView: 3,
-        },
-        '1024': {
-          slidesPerView: 6,
-        },
-      }"> -->
+  
       <swiper v-if="dealProducts.length" :slidesPerView="6" :modules="modules" :spaceBetween="1" :autoplay="{
         delay: 2500,
         disableOnInteraction: false,
@@ -51,8 +35,51 @@
       </div>
     </div>
   </section>
+</template> -->
+<template>
+  <section class="pt-15 pb-15 deals-section home-page-section" :style="styleObject">
+    <div class="custom-container2" v-if="success && !dataLoading">
+      <div class="row align-items-center my-3">
+        <div class="col-md-6 mb-2 mb-md-0">
+          <section-title class="section-title" :title="dealDetails.title" :titleColor="properties.title_color" />
+        </div>
+        <div class="col-md-6">
+          <countdown class="justify-content-md-end" :deadline="dealDetails.deadline"
+            :titleColor="properties.title_color" />
+        </div>
+      </div>
+      <swiper v-if="dealProducts.length" :slidesPerView="6" :modules="modules" :spaceBetween="1" :autoplay="{
+        delay: 2500,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true,
+      }" :loop="true" :pagination="{
+          clickable: true,
+        }" class="product-grid-slider theme-slider-dots" :breakpoints="{
+          '0': {
+            slidesPerView: 2,
+          },
+          '768': {
+            slidesPerView: 3,
+          },
+          '1024': {
+            slidesPerView: 6,
+          },
+        }">
+        <swiper-slide v-for="(item, index) in dealProducts" :key="`slide-${index}`">
+          <single-product :item="item" />
+        </swiper-slide>
+      </swiper>
+      <div class="col-md-12 text-center mt-20">
+        <router-link class="btn btn-sm rounded-0 mb-30 section_btn" :style="styleObject"
+          :to="`/deals/${dealDetails.permalink}`">
+          {{
+            properties.btn_title != null ? properties.btn_title : $t("View All")
+          }}
+        </router-link>
+      </div>
+    </div>
+  </section>
 </template>
-
 <script>
 import { defineAsyncComponent } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";

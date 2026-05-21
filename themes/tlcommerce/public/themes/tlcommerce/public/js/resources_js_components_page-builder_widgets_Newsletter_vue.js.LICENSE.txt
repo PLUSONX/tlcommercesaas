@@ -1,0 +1,33 @@
+/*! -!../../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Newsletter.vue?vue&type=script&lang=js */
+
+/*! -!../../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Newsletter.vue?vue&type=template&id=10602a30 */
+
+/*! ./Newsletter.vue?vue&type=script&lang=js */
+
+/*! ./Newsletter.vue?vue&type=template&id=10602a30 */
+
+/*! ./node_modules/vue-loader/dist/exportHelper.js */
+
+/*! axios */
+
+/*! vue */
+
+/*!*********************************************************************!*\
+  !*** ./resources/js/components/page-builder/widgets/Newsletter.vue ***!
+  \*********************************************************************/
+
+/*!*********************************************************************************************!*\
+  !*** ./resources/js/components/page-builder/widgets/Newsletter.vue?vue&type=script&lang=js ***!
+  \*********************************************************************************************/
+
+/*!***************************************************************************************************!*\
+  !*** ./resources/js/components/page-builder/widgets/Newsletter.vue?vue&type=template&id=10602a30 ***!
+  \***************************************************************************************************/
+
+/*!*************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/page-builder/widgets/Newsletter.vue?vue&type=script&lang=js ***!
+  \*************************************************************************************************************************************************************************************************************************/
+
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/page-builder/widgets/Newsletter.vue?vue&type=template&id=10602a30 ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************/

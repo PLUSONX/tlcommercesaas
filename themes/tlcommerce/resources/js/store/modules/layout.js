@@ -48,9 +48,9 @@ export default {
 
     getters: {
         isSplitScreen: (state) => {
-            if (state.isMobileView) {
-                return false; // Force default layout on mobile
-            }
+            // if (state.isMobileView) {
+            //     return false; // Force default layout on mobile
+            // }
             return state.activeLayout?.type === 'split_screen';
         },
 

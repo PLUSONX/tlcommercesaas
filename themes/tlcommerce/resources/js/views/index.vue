@@ -1,5 +1,8 @@
 <template>
 
+
+    <!-- <h1 style="color: red; position:fixed;top:0;left:0;z-index:9999;background:yellow;padding:10px;">Test</h1> -->
+
     <div class="light-bg" v-if="pageLoading">
         <Skeleton class="w-100 pt-20" style="height: 100vh;"></skeleton>
         <!-- <skeleton height="100vh" class="w-100 pt-20"></skeleton> -->
@@ -75,6 +78,15 @@
             </section>
         </div>
         <!-- End Banner -->
+
+        <!-- <div>
+
+            <HomePageDeliveryShipping v-if="showContactInfo && !isSplitScreen" :enums="enums" :config="configuration"
+                :customer-address="customerAddress" :is-customer-login="isCustomerLogin"
+                :pickup-points="pickupPoints" />
+
+        </div> -->
+
         <!--Dynamic Sections-->
         <div v-for="(section, index) in sections" :key="index">
             <deal-section v-if="section.layout === 'flashdeal'" :content="section.content"
@@ -105,10 +117,10 @@
         </div>
         <!--End Dynamic Sections-->
 
-        <HomePageDeliveryShipping v-if="showContactInfo" :enums="enums" :config="configuration"
+        <HomePageDeliveryShipping v-if="showContactInfo && isSplitScreen" :enums="enums" :config="configuration"
             :customer-address="customerAddress" :is-customer-login="isCustomerLogin" :pickup-points="pickupPoints" />
 
-        <ProductPage :disable-margin="true" />
+        <ProductPage v-if="isSplitScreen" :disable-margin="true" />
 
     </div>
 
@@ -267,6 +279,8 @@ export default {
                 currency: 'KWD',
             });
         }
+
+        console.log('🟡 index.vue mounted!');
 
     },
 

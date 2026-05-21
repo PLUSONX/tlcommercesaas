@@ -46,7 +46,7 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
     Route::get('brands', [ProductController::class, 'brands']);
     Route::get('categories', [ProductController::class, 'categories']);
     Route::get('parent-categories', [ProductController::class, 'parentCategories']);
-    Route::get('mega-categories', [ProductController::class, 'megaCategories']);
+    Route::post('mega-categories', [ProductController::class, 'megaCategories']);
 
 
 

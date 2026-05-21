@@ -2,6 +2,7 @@
 
 namespace Plugin\TlcommerceCore\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
@@ -546,6 +547,8 @@ class ProductController extends Controller
      */
     public function megaCategories()
     {
+        \Log::info('megaCategories method called');
+
         $categories = Cache::remember('mega-categories', 60 * 60 * 24, function () {
             return  ProductCategory::with(['category_translations', 'childs'])
                 ->whereNull('parent')
@@ -554,6 +557,8 @@ class ProductController extends Controller
                 ->orderBy('id', 'ASC')
                 ->get();
         });
+
+        \Log::info('returning megaCategories !!!');
 
         return new CategoryCollection($categories);
     }

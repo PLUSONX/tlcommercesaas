@@ -1,15 +1,11 @@
 <template>
   <div class="">
-    <!-- <page-header class="pt-3 pb-3" :items="bItems" /> -->
+    <page-header class="pt-3 pb-3" :items="bItems" />
     <div class="pt-60 pb-60 light-bg">
       <div class="custom-container2">
         <div class="row">
           <div class="col-12" v-if="!categoryLoading">
-            <div
-              class="card mb-30"
-              v-for="(cat, index) in megaCategories"
-              :key="index"
-            >
+            <div class="card mb-30" v-for="(cat, index) in megaCategories" :key="index">
               <div class="card-header">
                 <h5 class="mb-0 py-1">
                   <router-link :to="`/products/category/${cat.slug}`">
@@ -22,30 +18,20 @@
                   <div class="row gx-0">
                     <div class="col-12">
                       <div class="row child-category-wrapper">
-                        <div
-                          v-for="(subCatGroup, i) in cat.childs.data"
-                          :key="`subCatGroup-${i}`"
-                          class="col-lg-2 child-category"
-                        >
+                        <div v-for="(subCatGroup, i) in cat.childs.data" :key="`subCatGroup-${i}`"
+                          class="col-lg-2 child-category">
                           <!-- Sub Category Group -->
                           <div class="sub-category-group">
                             <h6 class="sub-category-title">
-                              <router-link
-                                :to="`/products/category/${subCatGroup.slug}`"
-                              >
+                              <router-link :to="`/products/category/${subCatGroup.slug}`">
                                 {{ subCatGroup.name }}
                               </router-link>
                             </h6>
 
                             <ul class="sub-category list-unstyled mb-0">
-                              <li
-                                v-for="(item, j) in subCatGroup.childs.data"
-                                :key="`item-${j}`"
-                                class="sub-category-link"
-                              >
-                                <router-link
-                                  :to="`/products/category/${item.slug}`"
-                                >
+                              <li v-for="(item, j) in subCatGroup.childs.data" :key="`item-${j}`"
+                                class="sub-category-link">
+                                <router-link :to="`/products/category/${item.slug}`">
                                   {{ item.name }}
                                 </router-link>
                               </li>
@@ -109,19 +95,42 @@ export default {
       };
 
       axios
-        .get("/api/v1/ecommerce-core/mega-categories", {
-          headers: headers,
-        })
+        .post("/api/v1/ecommerce-core/mega-categories", {}, { headers })
         .then((response) => {
-          if (response.data.success) {
+          if (response.status === 200) {
+            console.log("response in category.vue: ", response);
             this.megaCategories = response.data.data;
           }
           this.categoryLoading = false;
         })
         .catch((error) => {
+          console.error("getMegaCategories error:", error);
           this.categoryLoading = false;
         });
     },
+    // getMegaCategories() {
+    //   console.log("getMegaCategories method called!!!");
+    //   const headers = {
+    //     "Content-Type": "application/json",
+    //     "Accept-Language": localStorage.getItem("locale") || "en",
+    //   };
+
+    //   axios
+    //     .get("/api/v1/ecommerce-core/mega-categories", {
+    //       headers: headers,
+    //     })
+    //     .then((response) => {
+    //       console.log("response from categories 1: ", response);
+    //       if (response.status === 200) {
+    //         console.log("response from categories 2: ", response);
+    //         this.megaCategories = response.data.data;
+    //       }
+    //       this.categoryLoading = false;
+    //     })
+    //     .catch((error) => {
+    //       this.categoryLoading = false;
+    //     });
+    // },
   },
 };
 </script>
