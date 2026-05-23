@@ -453,7 +453,7 @@
                                                 </button>
                                             @endif
                                             @if ($order->delivery_status == config('tlecommercecore.order_delivery_status.pending'))
-                                                <button class="btn-danger order-cancel-btn w-50" style="border-radius: 6px; height: 30px;
+                                                <button class="btn-danger order-cancel-btn w-50" style="border-radius: 6px; height: 30px;"
                                                     data-order="{{ $order->id }}" title="Cancel order">
                                                     <i style="font-size: 18px;"
                                                         class="icofont-delete"></i>
@@ -706,6 +706,8 @@
                 e.preventDefault();
                 let $this = $(this);
                 let id = $this.data('order');
+                // console.log("this: ", $this);
+                // console.log("id: ", id);
                 $("#cancelOrderId").val(id);
                 $("#order-cancel-modal").modal('show');
             });
