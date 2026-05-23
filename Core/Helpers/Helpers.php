@@ -155,6 +155,14 @@ if (!function_exists('isTenant')) {
         return false;
     }
 }
+if (!function_exists('isCentralDomain')) {
+    function isCentralDomain(?string $host = null): bool
+    {
+        $host = clean_domain($host ?? app('request')->getHost());
+
+        return in_array($host, config('tenancy.central_domains', []), true);
+    }
+}
 if (!function_exists('routeApplicableMiddlewares')) {
     /**
      * Will return application middleware list
@@ -163,17 +171,24 @@ if (!function_exists('routeApplicableMiddlewares')) {
      */
     function routeApplicableMiddlewares()
     {
+        if (!isCentralDomain()) {
+            return [
+                'api' => [
+                    'api',
+                    InitializeTenancyByDomainCustomized::class,
+                    PreventAccessFromCentralDomains::class,
+                ],
+                'web' => [
+                    'web',
+                    InitializeTenancyByDomainCustomized::class,
+                    PreventAccessFromCentralDomains::class,
+                ],
+            ];
+        }
+
         return [
-            'api' => [
-                'api',
-                InitializeTenancyByDomainCustomized::class,
-                PreventAccessFromCentralDomains::class,
-            ],
-            'web' => [
-                'web',
-                InitializeTenancyByDomainCustomized::class,
-                PreventAccessFromCentralDomains::class,
-            ],
+            'api' => ['api'],
+            'web' => ['web'],
         ];
     }
 }

@@ -18,10 +18,10 @@ return [
     // 'central_domains' => [
     //     env('CENTRAL_DOMAIN', 'localhost')
     // ],
-    'central_domains' => [
-        'localhost',
-        '127.0.0.1',
-    ],
+    'central_domains' => array_values(array_unique(array_filter(array_map(
+        static fn (string $domain): string => trim($domain),
+        explode(',', env('CENTRAL_DOMAIN', 'localhost,127.0.0.1,platepilots.com'))
+    )))),
 
     /**
      * Tenancy bootstrappers are executed when tenancy is initialized.
