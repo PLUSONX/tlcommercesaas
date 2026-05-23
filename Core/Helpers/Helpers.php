@@ -188,6 +188,77 @@ if (!function_exists('tenantCacheKey')) {
         return $id ? "{$id}:{$key}" : $key;
     }
 }
+if (!function_exists('tenantCssId')) {
+    /**
+     * Resolve tenant id for per-tenant theme CSS paths (read + write).
+     */
+    function tenantCssId(): ?string
+    {
+        $id = tenant('id') ?? (function_exists('isTenant') && isTenant() ? isTenant() : null);
+
+        if ($id) {
+            return (string) $id;
+        }
+
+        $setting = getGeneralSetting('tenant_id');
+
+        return ($setting !== null && $setting !== '') ? (string) $setting : null;
+    }
+}
+if (!function_exists('tenantCssRelativePath')) {
+    /**
+     * Public-relative path for tenant theme CSS (no leading slash).
+     */
+    function tenantCssRelativePath(string $filename): string
+    {
+        $id = tenantCssId();
+
+        if ($id) {
+            return "themes/tlcommerce/public/css/{$id}/{$filename}";
+        }
+
+        return "themes/tlcommerce/public/css/{$filename}";
+    }
+}
+if (!function_exists('tenantCssDiskPath')) {
+    function tenantCssDiskPath(string $filename): string
+    {
+        return base_path(tenantCssRelativePath($filename));
+    }
+}
+if (!function_exists('tenantBuilderRelativePath')) {
+    function tenantBuilderRelativePath(string $themeLocation, string $filename): string
+    {
+        $id = tenantCssId();
+        $base = "themes/{$themeLocation}/public/builder-assets";
+
+        if ($id) {
+            return "{$base}/{$id}/css/{$filename}";
+        }
+
+        return "{$base}/css/{$filename}";
+    }
+}
+if (!function_exists('tenantBuilderDiskPath')) {
+    function tenantBuilderDiskPath(string $themeLocation, string $filename): string
+    {
+        return base_path(tenantBuilderRelativePath($themeLocation, $filename));
+    }
+}
+if (!function_exists('resolveThemePrimaryColor')) {
+    function resolveThemePrimaryColor(?array $themeColor, string $default = '#ef2543'): string
+    {
+        if (empty($themeColor['theme_primary_color'])) {
+            return $default;
+        }
+
+        if (!empty($themeColor['theme_primary_color_transparent']) && (string) $themeColor['theme_primary_color_transparent'] === '1') {
+            return 'transparent';
+        }
+
+        return $themeColor['theme_primary_color'];
+    }
+}
 // if (!function_exists('routeApplicableMiddlewares')) {
 //     /**
 //      * Will return application middleware list

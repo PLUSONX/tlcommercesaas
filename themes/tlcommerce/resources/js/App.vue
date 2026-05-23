@@ -24,28 +24,23 @@ export default {
       return this.$route.meta.layout || MainLayout;
     },
   },
-  mounted() {
-    console.log('🟡 App.vue mounted!');
-
-  },
   async created() {
-    console.log('🟡 App created - fetching theme...');
     try {
       this.themeStyle = await axios.get("/api/theme/tlcommerce/v1/get-theme-color");
-      console.log('✅ themeStyle set:', this.themeStyle);
-    } catch (e) {
-      console.log('❌ theme fetch failed:', e);
-    }
-  }
-  // async created() {
-  //   this.themeStyle = await axios.get(
-  //     "/api/theme/tlcommerce/v1/get-theme-color"
-  //   );
-  //   let themeColor = this.themeStyle.data.themeColor.theme_primary_color;
+      const themeColor = this.themeStyle?.data?.themeColor;
 
-  //   if (themeColor != null) {
-  //     document.documentElement.style.setProperty("--mainC", themeColor);
-  //   }
-  // },
+      if (themeColor?.theme_primary_color) {
+        const color =
+          themeColor.theme_primary_color_transparent == "1" ||
+          themeColor.theme_primary_color_transparent == 1
+            ? "transparent"
+            : themeColor.theme_primary_color;
+
+        document.documentElement.style.setProperty("--mainC", color);
+      }
+    } catch (e) {
+      // Blade already injects --mainC before Vue mounts.
+    }
+  },
 };
 </script>

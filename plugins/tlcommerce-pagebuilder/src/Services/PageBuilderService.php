@@ -374,9 +374,7 @@ class PageBuilderService
     {
         $this->createThemeBasedBuilderCssProperty();
 
-        $tenant_id = getGeneralSetting('tenant_id');
-
-        $css_path = base_path("themes/{$this->active_theme->location}/public/builder-assets/{$tenant_id}/css/{$file_name}.css");
+        $css_path = tenantBuilderDiskPath($this->active_theme->location, "{$file_name}.css");
 
         if (!File::isDirectory(dirname($css_path))) {
             File::makeDirectory(dirname($css_path), 0755, true, true);

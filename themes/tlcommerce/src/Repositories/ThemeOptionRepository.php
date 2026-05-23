@@ -82,10 +82,12 @@ class ThemeOptionRepository
             case 'social':
                 $this->setSocialIconStyle();
                 break;
+            case 'theme_color':
+                $this->setThemeColorStyle();
+                break;
             case 'custom_css':
                 $custom_css = $request->custom_css_code;
-                $tenant_id = getGeneralSetting('tenant_id');
-                $path = base_path("themes/tlcommerce/public/css/{$tenant_id}/custom_css.css");
+                $path = tenantCssDiskPath('custom_css.css');
                 if (file_exists($path)) {
                     unlink($path);
                 }
@@ -163,8 +165,7 @@ class ThemeOptionRepository
             $styleProperties = makeCssProperties($themeOption);
         }
 
-        $tenant_id = getGeneralSetting('tenant_id');
-        $path = base_path("themes/tlcommerce/public/css/{$tenant_id}/blog.css");
+        $path = tenantCssDiskPath('blog.css');
         if (!File::isDirectory(dirname($path))) {
             File::makeDirectory(dirname($path), 0755, true, true);
         }
@@ -213,8 +214,7 @@ class ThemeOptionRepository
             $styleProperties = makeCssProperties($themeOption);
         }
 
-        $tenant_id = getGeneralSetting('tenant_id');
-        $path = base_path("themes/tlcommerce/public/css/{$tenant_id}/sidebar_options.css");
+        $path = tenantCssDiskPath('sidebar_options.css');
         if (!File::isDirectory(dirname($path))) {
             File::makeDirectory(dirname($path), 0755, true, true);
         }
@@ -267,8 +267,7 @@ class ThemeOptionRepository
             $styleProperties = makeCssProperties($themeOption);
         }
 
-        $tenant_id = getGeneralSetting('tenant_id');
-        $path = base_path("themes/tlcommerce/public/css/{$tenant_id}/page_404.css");
+        $path = tenantCssDiskPath('page_404.css');
         if (!File::isDirectory(dirname($path))) {
             File::makeDirectory(dirname($path), 0755, true, true);
         }
@@ -337,8 +336,7 @@ class ThemeOptionRepository
             }
             $styleProperties = makeCssProperties($themeOption);
         }
-        $tenant_id = getGeneralSetting('tenant_id');
-        $path = base_path("themes/tlcommerce/public/css/{$tenant_id}/footer.css");
+        $path = tenantCssDiskPath('footer.css');
         if (!File::isDirectory(dirname($path))) {
             File::makeDirectory(dirname($path), 0755, true, true);
         }
@@ -392,8 +390,7 @@ class ThemeOptionRepository
             }
             $styleProperties = makeCssProperties($themeOption);
         }
-        $tenant_id = getGeneralSetting('tenant_id');
-        $path = base_path("themes/tlcommerce/public/css/{$tenant_id}/back_to_top.css");
+        $path = tenantCssDiskPath('back_to_top.css');
         if (!File::isDirectory(dirname($path))) {
             File::makeDirectory(dirname($path), 0755, true, true);
         }
@@ -446,8 +443,7 @@ class ThemeOptionRepository
             }
             $styleProperties = makeCssProperties($themeOption);
         }
-        $tenant_id = getGeneralSetting('tenant_id');
-        $path = base_path("themes/tlcommerce/public/css/{$tenant_id}/social_icon.css");
+        $path = tenantCssDiskPath('social_icon.css');
         if (!File::isDirectory(dirname($path))) {
             File::makeDirectory(dirname($path), 0755, true, true);
         }
@@ -576,8 +572,7 @@ class ThemeOptionRepository
             }
             $styleProperties = makeCssProperties($themeOption);
         }
-        $tenant_id = getGeneralSetting('tenant_id');
-        $path = base_path("themes/tlcommerce/public/css/{$tenant_id}/header.css");
+        $path = tenantCssDiskPath('header.css');
         if (!File::isDirectory(dirname($path))) {
             File::makeDirectory(dirname($path), 0755, true, true);
         }
@@ -645,8 +640,7 @@ class ThemeOptionRepository
             }
             $styleProperties = makeCssProperties($themeOption);
         }
-        $tenant_id = getGeneralSetting('tenant_id');
-        $path = base_path("themes/tlcommerce/public/css/{$tenant_id}/header_logo.css");
+        $path = tenantCssDiskPath('header_logo.css');
         if (!File::isDirectory(dirname($path))) {
             File::makeDirectory(dirname($path), 0755, true, true);
         }
@@ -705,8 +699,7 @@ class ThemeOptionRepository
             }
             $styleProperties = makeCssProperties($themeOption);
         }
-        $tenant_id = getGeneralSetting('tenant_id');
-        $path = base_path("themes/tlcommerce/public/css/{$tenant_id}/menu.css");
+        $path = tenantCssDiskPath('menu.css');
         if (!File::isDirectory(dirname($path))) {
             File::makeDirectory(dirname($path), 0755, true, true);
         }
@@ -764,14 +757,32 @@ class ThemeOptionRepository
             }
             $styleProperties = makeCssProperties($themeOption);
         }
-        $tenant_id = getGeneralSetting('tenant_id');
-        $path = base_path("themes/tlcommerce/public/css/{$tenant_id}/subscribe.css");
+        $path = tenantCssDiskPath('subscribe.css');
         if (!File::isDirectory(dirname($path))) {
             File::makeDirectory(dirname($path), 0755, true, true);
         }
 
         setFolderPermissions($path);
         file_put_contents($path, $styleProperties);
+    }
+
+    /**
+     * Write theme primary color CSS variable file.
+     */
+    public function setThemeColorStyle()
+    {
+        $theme = getActiveTheme();
+        $themeColor = getThemeOption('theme_color', $theme->id);
+        $mainColor = resolveThemePrimaryColor($themeColor);
+        $css = ":root { --mainC: {$mainColor}; }\n";
+
+        $path = tenantCssDiskPath('theme_color.css');
+        if (!File::isDirectory(dirname($path))) {
+            File::makeDirectory(dirname($path), 0755, true, true);
+        }
+
+        setFolderPermissions($path);
+        file_put_contents($path, $css);
     }
 
 
@@ -801,8 +812,7 @@ class ThemeOptionRepository
 
         // reset section
         if ($request->submitType == 'reset_section') {
-            $tenant_id = getGeneralSetting('tenant_id');
-            $path = base_path("themes/tlcommerce/public/css/{$tenant_id}/" . $request->option_name . ".css");
+            $path = tenantCssDiskPath($request->option_name . '.css');
             if (file_exists($path)) {
                 unlink($path);
             }
@@ -815,8 +825,7 @@ class ThemeOptionRepository
         //  reset all file
         if ($request->submitType == 'reset_all') {
             for ($i = 0; $i < sizeof($themeOptionCssFile); $i++) {
-                $tenant_id = getGeneralSetting('tenant_id');
-                $path = base_path("themes/tlcommerce/public/css/{$tenant_id}/" . $themeOptionCssFile[$i] . ".css");
+                $path = tenantCssDiskPath($themeOptionCssFile[$i] . '.css');
                 if (file_exists($path)) {
                     unlink($path);
                 }

@@ -3,8 +3,6 @@
         return \Core\Repositories\SettingsRepository::siteSeoProperties();
     });
 
-    $tenant_id = getGeneralSetting('tenant_id');
-
     /*$twitter_image_updated = str_replace('public/', '', $site_seo_properties['site_meta_image'])*/
 
 
@@ -31,8 +29,8 @@
     @if (isActivePluging('tlcommerce-pagebuilder') && isset($page) && $page->page_type == 'builder')
         @php
             $active_theme = getActiveTheme();
-            $builder_css_file = base_path("themes/{$active_theme->location}/public/builder-assets/{$tenant_id}/css/{$page->permalink}.css");
-            $builder_css_path = asset("themes/{$active_theme->location}/public/builder-assets/{$tenant_id}/css/{$page->permalink}.css");
+            $builder_css_file = tenantBuilderDiskPath($active_theme->location, "{$page->permalink}.css");
+            $builder_css_path = asset(tenantBuilderRelativePath($active_theme->location, "{$page->permalink}.css"));
         @endphp
         @if (file_exists($builder_css_file))
             <link rel="stylesheet" href="{{ $builder_css_path . '?v=' . time() }}">

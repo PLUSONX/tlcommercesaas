@@ -1,6 +1,3 @@
-@php
-    $tenant_id = getGeneralSetting('tenant_id');
-@endphp
 @extends('theme/tlcommerce::frontend.layouts.master')
 @section('seo')
     @if ($page_details != null)
@@ -37,8 +34,8 @@
     @if ($page_details)
         @php
             $active_theme = getActiveTheme();
-            $builder_css_file = base_path("themes/{$active_theme->location}/public/builder-assets/{$tenant_id}/css/{$page_details->permalink}.css");
-            $builder_css_path = "/themes/{$active_theme->location}/public/builder-assets/{$tenant_id}/css/{$page_details->permalink}.css";
+            $builder_css_file = tenantBuilderDiskPath($active_theme->location, "{$page_details->permalink}.css");
+            $builder_css_path = tenantBuilderRelativePath($active_theme->location, "{$page_details->permalink}.css");
         @endphp
 
         @if (isActivePluging('tlcommerce-pagebuilder') &&
