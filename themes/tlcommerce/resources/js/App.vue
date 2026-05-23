@@ -30,13 +30,10 @@ export default {
       const themeColor = this.themeStyle?.data?.themeColor;
 
       if (themeColor?.theme_primary_color) {
-        const color =
-          themeColor.theme_primary_color_transparent == "1" ||
-          themeColor.theme_primary_color_transparent == 1
-            ? "transparent"
-            : themeColor.theme_primary_color;
-
-        document.documentElement.style.setProperty("--mainC", color);
+        document.documentElement.style.setProperty(
+          "--mainC",
+          themeColor.theme_primary_color
+        );
       }
     } catch (e) {
       // Blade already injects --mainC before Vue mounts.

@@ -246,14 +246,15 @@ if (!function_exists('tenantBuilderDiskPath')) {
     }
 }
 if (!function_exists('resolveThemePrimaryColor')) {
+    /**
+     * Resolve --mainC from theme color settings.
+     * The transparent checkbox is not applied here; header/menu transparency
+     * is handled separately in generated header.css / menu.css.
+     */
     function resolveThemePrimaryColor(?array $themeColor, string $default = '#ef2543'): string
     {
         if (empty($themeColor['theme_primary_color'])) {
             return $default;
-        }
-
-        if (!empty($themeColor['theme_primary_color_transparent']) && (string) $themeColor['theme_primary_color_transparent'] === '1') {
-            return 'transparent';
         }
 
         return $themeColor['theme_primary_color'];
