@@ -3,7 +3,6 @@
 namespace Theme\Default\Repositories;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
 use Theme\Default\Models\TlThemeOptionSettings;
 
 class ThemeOptionRepository
@@ -43,8 +42,6 @@ class ThemeOptionRepository
         if (count($data) > 0) {
             TlThemeOptionSettings::insert($data);
         }
-        // cache clear for theme option
-        Cache::forget('theme-option-settings');
 
         // if theme option is subscribe then updating the Mailchimp env
         if ($option_name == 'subscribe') {
@@ -823,8 +820,6 @@ class ThemeOptionRepository
         $options = $options->update([
             'field_value' =>  DB::raw('field_reset_value')
         ]);
-        // cache clear for theme option
-        Cache::forget('theme-option-settings');
     }
 
 
@@ -872,9 +867,6 @@ class ThemeOptionRepository
         $option->field_value = xss_clean($encoded_data);
 
         $option->exists ? $option->update() : $option->save();
-
-        // cache clear for theme option
-        Cache::forget('theme-option-settings');
     }
 
 
@@ -916,9 +908,6 @@ class ThemeOptionRepository
         $option->field_value = $encoded_data;
 
         $option->save();
-
-        // cache clear for theme option
-        Cache::forget('theme-option-settings');
     }
 
 

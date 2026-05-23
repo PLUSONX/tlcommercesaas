@@ -6,7 +6,6 @@ use JsonException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Response;
 use Theme\Default\Models\TlThemeOptionSettings;
 use Theme\Default\Repositories\ThemeOptionRepository;
@@ -119,14 +118,10 @@ class ThemeOptionController extends Controller
             if ($jsonInputData !== '') {
                 TlThemeOptionSettings::where('theme_id', $active_theme->id)->delete();
                 TlThemeOptionSettings::insert($jsonInputData);
-                // cache clear for theme option
-                Cache::forget('theme-option-settings');
                 toastNotification('success', translate('Theme Option Import Success'));
             } elseif (isset($jsonFileData)) {
                 TlThemeOptionSettings::where('theme_id', $active_theme->id)->delete();
                 TlThemeOptionSettings::insert($jsonFileData);
-                // cache clear for theme option
-                Cache::forget('theme-option-settings');
                 toastNotification('success', translate('Theme Option Import Success'));
             } else {
                 toastNotification('error', translate('Import File or Clipboard Text is Required'));

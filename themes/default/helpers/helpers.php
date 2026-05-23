@@ -515,27 +515,21 @@ if (!function_exists('getThemeOption')) {
      */
     function getThemeOption($option_name, $active_theme_id)
     {
-        $options = Cache::rememberForever('theme-option-settings', function () use ($active_theme_id) {
-            return DB::table('tl_theme_option_settings')
-                ->where('theme_id', $active_theme_id)
-                ->select([
-                    'tl_theme_option_settings.option_name',
-                    'tl_theme_option_settings.field_name',
-                    'tl_theme_option_settings.field_value'
-                ])
-                ->get();
-        });
+        $options = DB::table('tl_theme_option_settings')
+            ->where('option_name', $option_name)
+            ->where('theme_id', $active_theme_id)
+            ->select([
+                'tl_theme_option_settings.field_name',
+                'tl_theme_option_settings.field_value',
+            ])
+            ->get();
 
         $update_options = [];
         foreach ($options as $key => $value) {
-            $update_options[$value->option_name][$value->field_name] = $value->field_value;
+            $update_options[$value->field_name] = $value->field_value;
         }
 
-        if (isset($option_name) && isset($update_options[$option_name])) {
-            return $update_options[$option_name];
-        } else {
-            return [];
-        }
+        return $update_options;
     }
 }
 
