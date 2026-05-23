@@ -149,12 +149,10 @@ export default {
 
       if (this.disableMargin) return '';
 
-      if (this.isSplitScreen) {
+      if (this.isSplitScreen && !this.isMobile) {
         return 'mt-50';
       }
-      else {
-        return 'mt-1';
-      }
+      return 'mt-1';
     }
 
   },
@@ -294,6 +292,17 @@ export default {
 .col-6 :deep(> div) {
   border-radius: 12px;
   overflow: hidden;
+}
+
+@media (max-width: 479px) {
+  .compact-card :deep(> .single-product-item) {
+    overflow: visible;
+  }
+
+  .compact-card :deep(.single-product-item > .position-relative) {
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+  }
 }
 
 .compact-card :deep(.single-product-item) {

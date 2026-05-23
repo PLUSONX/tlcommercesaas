@@ -236,21 +236,17 @@ export default {
         ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
 
         forcedMobile() {
-            // identical intent to MainLayout.vue
-            if (this.isSplitScreen) {
+            if (this.isSplitScreen && !this.isMobile) {
                 return true;
             }
             return this.isMobile;
         },
 
         mtClass() {
-
-            if (this.isSplitScreen) {
+            if (this.isSplitScreen && !this.isMobile) {
                 return 'mt-50';
             }
-            else {
-                return 'mt-1';
-            }
+            return 'mt-1';
         }
 
     },
@@ -383,7 +379,7 @@ export default {
 };
 </script>
 <style lang="scss">
-.product-banner-overflow-auto {
+.home__two .product-banner-overflow-auto {
     overflow: hidden;
 
     .swiper {
@@ -391,7 +387,7 @@ export default {
     }
 }
 
-.swiper-slide {
+.home__two .product-banner-overflow-auto .swiper-slide {
     border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }

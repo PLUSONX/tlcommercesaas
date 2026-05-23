@@ -1,13 +1,16 @@
 <template>
 
-  <template v-if="isSplitScreen">
+  <template v-if="isSplitScreen && !isMobile">
 
-    <div class="page-container">
+    <div class="page-container split-screen-product-layout">
 
-      <div class="productDetails" :class="{
-        'force-mobile-layout': forcedMobile,
-        'mobile-content-wrapper': forcedMobile
-      }">
+      <div
+        class="productDetails split-screen-product-scroll"
+        :class="{
+          'force-mobile-layout': forcedMobile,
+          'mobile-content-wrapper': forcedMobile,
+        }"
+      >
         <!-- <page-header :items="bItems" /> -->
 
         <!-- Product details Hash Menu -->
@@ -226,7 +229,7 @@
 
       <!-- <custom-footer class="custom-footer" v-if="!isMobileView" :item="productData" /> -->
 
-      <custom-footer class="custom-footer" v-if="!isMobileView" :item="productData" />
+      <custom-footer class="custom-footer" v-if="showSplitProductFooter" :item="productData" />
 
       <!-- <custom-footer :item="product ? product.data : null" /> -->
 
@@ -561,7 +564,6 @@ export default {
       galleryKey: 1,
       sectionTitle: this.$t("Related Products"),
       productLoading: true,
-      isMobileView: false
     };
   },
   computed: {
@@ -571,18 +573,17 @@ export default {
 
     ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
 
-    forcedMobile() {
-      // identical intent to MainLayout.vue
-      if (this.isSplitScreen) {
-        this.isMobileView = false;
-        return true;
-      }
-
-      this.isMobileView = true;
-      return this.isMobile;
+    isSplitScreenDesktop() {
+      return this.isSplitScreen && !this.isMobile;
     },
 
+    forcedMobile() {
+      return this.isSplitScreenDesktop;
+    },
 
+    showSplitProductFooter() {
+      return this.isSplitScreenDesktop;
+    },
 
     productData() {
       return this.product ?? null
@@ -609,13 +610,13 @@ export default {
     },
   },
   mounted() {
-    // console.log("Products Details Mounted!!!!");
     window.addEventListener("scroll", this.scrollHandler);
     this.getProductDetails();
     this.getCategories();
     this.getTopSellingProducts();
-
-    // console.log("product: ", this.product);
+  },
+  beforeUnmount() {
+    window.removeEventListener("scroll", this.scrollHandler);
   },
   methods: {
     /**
@@ -971,40 +972,23 @@ export default {
 }
 
 
-.page-container {
+/* Desktop split-screen only — nested scroll for the shop panel */
+.split-screen-product-layout {
   display: flex;
   flex-direction: column;
-  // bottom: 80px !important;
-  // margin-bottom: 40px !important;
-  // padding-bottom: 40px !important;
-  // height: 95vh;
-  // height: 100dvh; 
-  //padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-.productDetails {
+.split-screen-product-scroll {
   flex: 1;
   overflow-y: auto;
 }
 
-@media (max-width: 768px) {
-  .page-container {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 100px);
-  }
-
-  .button-group {
-    padding-bottom: 8px;
-    /* just a little breathing room */
-  }
-}
-
 .custom-footer {
   position: fixed;
-  bottom: 0px;
+  bottom: 0;
   left: 0;
   width: 50%;
   z-index: 100;
   background: transparent;
-  // padding-bottom: 40px;
 }
 </style>

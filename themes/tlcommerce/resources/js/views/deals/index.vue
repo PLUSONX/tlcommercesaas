@@ -146,8 +146,7 @@ export default {
     ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
 
     forcedMobile() {
-      // identical intent to MainLayout.vue
-      if (this.isSplitScreen) {
+      if (this.isSplitScreen && !this.isMobile) {
         return true;
       }
       return this.isMobile;

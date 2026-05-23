@@ -45,22 +45,17 @@
 
       <!-- <div class="row justify-content-between align-items-baseline"> -->
 
-      <div class="row justify-content-between align-items-baseline d-flex flex-column flex-sm-row">
-
-        <!-- <div class="col-auto pe-0"> -->
-        <div class="col pe-0" style="min-width: 0;">
-          <!-- Title -->
+      <div
+        class="row product-title-price-row justify-content-between align-items-baseline d-flex flex-column flex-sm-row">
+        <div class="col pe-0 product-title-col">
           <h4 class="product-title">
             <router-link :to="`/products/${item.slug}`">
               {{ item.name }}
             </router-link>
           </h4>
-          <!-- End Title -->
         </div>
 
-        <!-- <div class="col-auto text-end"> -->
-        <!-- <div class="col-auto text-end flex-shrink-0" style="max-width: 45%;"> -->
-        <div class="col-auto text-start text-sm-end flex-shrink-0" style="max-width: 100%;">
+        <div class="col-auto text-start text-sm-end flex-shrink-0 product-price-col">
 
           <!-- Price -->
           <span class="product-price d-flex flex-wrap c1">
@@ -852,9 +847,8 @@ export default {
 
   .product-title {
     -webkit-box-orient: vertical;
-    // -webkit-line-clamp: 2;
     display: -webkit-box;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
     height: 40px;
     line-height: 1.4;
@@ -863,30 +857,58 @@ export default {
     text-transform: uppercase;
 
     @media (max-width: 479px) {
-      font-size: 15px;
-      margin-bottom: 2px !important;
-      padding-bottom: 2px !important;
-      line-height: 15px !important;
-      height: 25px !important;
+      -webkit-line-clamp: 3;
+      display: -webkit-box;
+      height: auto;
+      max-height: none;
+      min-height: 2.8em;
+      font-size: 12px;
+      line-height: 1.35;
+      margin: 0 0 6px;
+      padding: 0;
+      word-break: break-word;
+      overflow: hidden;
+    }
+  }
+
+  .product-title-price-row {
+    @media (max-width: 479px) {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      margin-bottom: 4px;
+      margin-left: 5px !important;
+
+      .product-title-col,
+      .product-price-col {
+        width: 90%;
+        max-width: 90%;
+        flex: 0 0 auto;
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      .product-price-col {
+        text-align: start !important;
+      }
+
+      .product-price {
+        flex-wrap: wrap;
+        gap: 4px 8px;
+      }
     }
   }
 
   .product-summary {
     padding: 10px;
-    // padding-top: 5px;
     min-height: 134px;
 
     @media (min-width: 480px) and (max-width: 501px) {
-      // min-height: unset !important;
       padding-left: 15% !important;
     }
 
     @media (max-width: 479px) {
-      padding-bottom: 14px;
-      padding-top: 18px;
-      min-height: unset !important;
-      padding-left: 8px !important;
-      padding-right: 4px !important;
+      padding: 12px 8px 14px;
+      min-height: auto;
     }
   }
 

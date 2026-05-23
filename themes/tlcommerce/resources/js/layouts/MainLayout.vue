@@ -532,11 +532,14 @@ export default {
     ]),
 
     layoutClass() {
-      return this.isSplitScreen ? 'layout-split-screen' : 'layout__two';
+      if (this.isSplitScreen && !this.isMobile) {
+        return 'layout-split-screen';
+      }
+      return 'layout__two';
     },
 
     containerStyle() {
-      if (!this.isSplitScreen) return {};
+      if (!this.isSplitScreen || this.isMobile) return {};
       return {
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
@@ -728,9 +731,7 @@ export default {
     }
     this.$store.state.$t = this.translateLanguage;
 
-    // NEW: Initialize layout detection
-    this.fetchActiveLayout();
-    this.checkMobileView();
+    this.initLayout();
     window.addEventListener('resize', this.handleResize);
     this.initResizeObserver();
 
@@ -771,7 +772,13 @@ export default {
       clearTimeout(this.resizeTimeout);
       this.resizeTimeout = setTimeout(() => {
         this.checkMobileView();
-      }, 150);
+      }, 100);
+    },
+
+    async initLayout() {
+      this.checkMobileView();
+      await this.fetchActiveLayout();
+      this.checkMobileView();
     },
 
     initResizeObserver() {

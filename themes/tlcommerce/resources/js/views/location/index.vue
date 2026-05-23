@@ -233,12 +233,12 @@ export default {
         ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
 
         forcedMobile() {
-            if (this.isSplitScreen) return true;
+            if (this.isSplitScreen && !this.isMobile) return true;
             return this.isMobile;
         },
 
         mtClass() {
-            return this.isSplitScreen ? 'mt-50' : 'mt-1';
+            return this.isSplitScreen && !this.isMobile ? 'mt-50' : 'mt-1';
         },
 
         config() {

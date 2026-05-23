@@ -1,0 +1,31 @@
+{
+  "folders": [
+    {
+      "name": "tlcommercesaas (root)",
+      "path": "."
+    },
+    {
+      "name": "Core",
+      "path": "Core"
+    },
+    {
+      "name": "plugins",
+      "path": "plugins"
+    },
+    {
+      "name": "theme — tlcommerce",
+      "path": "themes/tlcommerce"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/vendor": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/vendor": true,
+      "themes/tlcommerce/public/js": true
+    }
+  }
+}
