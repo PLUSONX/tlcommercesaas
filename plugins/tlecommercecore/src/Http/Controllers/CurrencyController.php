@@ -173,8 +173,8 @@ class CurrencyController extends Controller
      */
     public function resetActiveCurrenciesCache()
     {
-        cache()->forget('active-currencies');
-        $currencies = Cache::rememberForever('active-currencies', function () {
+        cache()->forget(tenantCacheKey('active-currencies'));
+        $currencies = Cache::rememberForever(tenantCacheKey('active-currencies'), function () {
             return Currency::where('status', config('settings.general_status.active'))
                 ->select('id', 'name', 'code', 'symbol', 'conversion_rate', 'position', 'thousand_separator', 'decimal_separator', 'number_of_decimal')
                 ->get();

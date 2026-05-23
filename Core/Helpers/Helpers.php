@@ -163,23 +163,29 @@ if (!function_exists('routeApplicableMiddlewares')) {
      */
     function routeApplicableMiddlewares()
     {
-        $middlewares = ['api' => ['api'], 'web' => ['web']];
-
-        if (isTenant()) {
-            $middlewares['api'] = [
+        return [
+            'api' => [
                 'api',
                 InitializeTenancyByDomainCustomized::class,
                 PreventAccessFromCentralDomains::class,
-            ];
-
-            $middlewares['web'] = [
+            ],
+            'web' => [
                 'web',
                 InitializeTenancyByDomainCustomized::class,
                 PreventAccessFromCentralDomains::class,
-            ];
-        }
+            ],
+        ];
+    }
+}
+if (!function_exists('tenantCacheKey')) {
+    /**
+     * Scope a cache key to the current tenant when tenancy is available.
+     */
+    function tenantCacheKey(string $key): string
+    {
+        $id = tenant('id') ?? (function_exists('isTenant') && isTenant() ? isTenant() : null);
 
-        return $middlewares;
+        return $id ? "{$id}:{$key}" : $key;
     }
 }
 // if (!function_exists('routeApplicableMiddlewares')) {

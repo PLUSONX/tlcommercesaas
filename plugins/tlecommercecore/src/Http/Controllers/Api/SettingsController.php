@@ -28,23 +28,23 @@ class SettingsController extends Controller
         // \Log::info('siteProperties method called!!!!');
 
         try {
-            $languages = Cache::rememberForever('-active-languages', function () {
+            $languages = Cache::rememberForever(tenantCacheKey('-active-languages'), function () {
                 return Language::where('status', config('settings.general_status.active'))
                     ->select('id', 'native_name as title', 'code')
                     ->get();
             });
 
-            $currencies = Cache::rememberForever('active-currencies', function () {
+            $currencies = Cache::rememberForever(tenantCacheKey('active-currencies'), function () {
                 return Currency::where('status', config('settings.general_status.active'))
                     ->select('id', 'name', 'code', 'symbol', 'conversion_rate', 'position', 'thousand_separator', 'decimal_separator', 'number_of_decimal')
                     ->get();
             });
 
-            $siteProperties = Cache::rememberForever('site-properties', function () {
+            $siteProperties = Cache::rememberForever(tenantCacheKey('site-properties'), function () {
                 return CoreSettingRepository::SiteProperties();
             });
 
-            $site_Settings = Cache::rememberForever('e-commerce-settings', function () {
+            $site_Settings = Cache::rememberForever(tenantCacheKey('e-commerce-settings'), function () {
                 return  SettingsRepository::siteSettings();
             });
 

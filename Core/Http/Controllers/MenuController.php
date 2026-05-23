@@ -707,8 +707,8 @@ class MenuController extends Controller
 
   public function resetMenuCache()
   {
-    cache()->forget('header-bottom-middle-menus');
-    cache()->forget('header-top-right-menus');
-    cache()->forget('header-top-left-menus');
+    cache()->forget(tenantCacheKey('header-bottom-middle-menus'));
+    cache()->forget(tenantCacheKey('header-top-right-menus'));
+    cache()->forget(tenantCacheKey('header-top-left-menus'));
   }
 }

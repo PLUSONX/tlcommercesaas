@@ -337,13 +337,13 @@ class HomePageController extends Controller
     public function resetHomepageSectionCache()
     {
 
-        cache()->forget('home-page-sections-properties');
-        Cache::remember("home-page-sections-properties", 100 * 60, function () {
+        cache()->forget(tenantCacheKey('home-page-sections-properties'));
+        Cache::remember(tenantCacheKey('home-page-sections-properties'), 100 * 60, function () {
             return HomeSectionProperties::all();
         });
 
-        cache()->forget('home-page-sections');
-        Cache::remember("home-page-sections", 100 * 60, function () {
+        cache()->forget(tenantCacheKey('home-page-sections'));
+        Cache::remember(tenantCacheKey('home-page-sections'), 100 * 60, function () {
             return
                 HomePageSection::with(['section_properties' => function ($q) {
                     $q->select('section_id', 'key_name', 'key_value');

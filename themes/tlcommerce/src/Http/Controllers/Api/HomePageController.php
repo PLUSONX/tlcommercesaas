@@ -35,7 +35,7 @@ class HomePageController extends Controller
     public function homePageSections()
     {
 
-        $sections = Cache::remember("home-page-sections", 100 * 60, function () {
+        $sections = Cache::remember(tenantCacheKey('home-page-sections'), 100 * 60, function () {
             return
                 HomePageSection::with(['section_properties' => function ($q) {
                     $q->select('section_id', 'key_name', 'key_value');

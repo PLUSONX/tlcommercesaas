@@ -6,7 +6,7 @@
     use Illuminate\Support\Facades\Cache;
     use Illuminate\Support\Facades\Log;
 
-    $siteProperties = Cache::rememberForever('site-properties', function () {
+    $siteProperties = Cache::rememberForever(tenantCacheKey('site-properties'), function () {
         return CoreSettingRepository::SiteProperties();
     });
 
@@ -35,7 +35,7 @@
             ? 'dark'
             : '';
 
-    $tenant_id = getGeneralSetting('tenant_id');
+    $tenant_id = tenant('id') ?? getGeneralSetting('tenant_id');
 
 
     $facebook_integration = null;
@@ -123,25 +123,25 @@
 
 
       <link rel="stylesheet" type="text/css"
-        href="{{ asset('themes/default/public/assets/css/' . $tenant_id . '/back_to_top.css') }}">
+        href="{{ asset('themes/tlcommerce/public/css/' . $tenant_id . '/back_to_top.css') }}">
     <link rel="stylesheet" type="text/css"
-        href="{{ asset('themes/default/public/assets/css/' . $tenant_id . '/header.css') }}">
+        href="{{ asset('themes/tlcommerce/public/css/' . $tenant_id . '/header.css') }}">
     <link rel="stylesheet" type="text/css"
-        href="{{ asset('themes/default/public/assets/css/' . $tenant_id . '/header_logo.css') }}">
+        href="{{ asset('themes/tlcommerce/public/css/' . $tenant_id . '/header_logo.css') }}">
     <link rel="stylesheet" type="text/css"
-        href="{{ asset('themes/default/public/assets/css/' . $tenant_id . '/menu.css') }}">
+        href="{{ asset('themes/tlcommerce/public/css/' . $tenant_id . '/menu.css') }}">
     <link rel="stylesheet" type="text/css"
-        href="{{ asset('themes/default/public/assets/css/' . $tenant_id . '/blog.css') }}">
+        href="{{ asset('themes/tlcommerce/public/css/' . $tenant_id . '/blog.css') }}">
     <link rel="stylesheet" type="text/css"
-        href="{{ asset('themes/default/public/assets/css/' . $tenant_id . '/sidebar_options.css') }}">
+        href="{{ asset('themes/tlcommerce/public/css/' . $tenant_id . '/sidebar_options.css') }}">
     <link rel="stylesheet" type="text/css"
-        href="{{ asset('themes/default/public/assets/css/' . $tenant_id . '/page_404.css') }}">
+        href="{{ asset('themes/tlcommerce/public/css/' . $tenant_id . '/page_404.css') }}">
     <link rel="stylesheet" type="text/css"
-        href="{{ asset('themes/default/public/assets/css/' . $tenant_id . '/subscribe.css') }}">
+        href="{{ asset('themes/tlcommerce/public/css/' . $tenant_id . '/subscribe.css') }}">
     <link rel="stylesheet" type="text/css"
-        href="{{ asset('themes/default/public/assets/css/' . $tenant_id . '/footer.css') }}">
+        href="{{ asset('themes/tlcommerce/public/css/' . $tenant_id . '/footer.css') }}">
     <link rel="stylesheet" type="text/css"
-        href="{{ asset('themes/default/public/assets/css/' . $tenant_id . '/social_icon.css') }}">
+        href="{{ asset('themes/tlcommerce/public/css/' . $tenant_id . '/social_icon.css') }}">
     <!-- <link rel="stylesheet" type="text/css"
         href="{{ asset('/themes/tlcommerce/public/css/' . $tenant_id . '/back_to_top.css') }}">
     <link rel="stylesheet" type="text/css"
@@ -199,7 +199,7 @@
     <div id="app">
     </div>
     <link rel="stylesheet" type="text/css"
-        href="{{ asset('themes/tlcommerce/public/assets/css/' . $tenant_id . '/custom_css.css') }}">
+        href="{{ asset('themes/tlcommerce/public/css/' . $tenant_id . '/custom_css.css') }}">
     <script>
 
         //set site title

@@ -297,9 +297,9 @@ class SettingsRepository
      */
     public static function resetEcommerceCache()
     {
-        cache()->forget('default-currency-details');
-        cache()->forget('e-commerce-settings');
-        cache()->rememberForever('e-commerce-settings', function () {
+        cache()->forget(tenantCacheKey('default-currency-details'));
+        cache()->forget(tenantCacheKey('e-commerce-settings'));
+        cache()->rememberForever(tenantCacheKey('e-commerce-settings'), function () {
             return  self::siteSettings();
         });
     }

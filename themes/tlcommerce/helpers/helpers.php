@@ -372,7 +372,7 @@ if (!function_exists('getHomePageSectionProperties')) {
      */
     function getHomePageSectionProperties($section_id, $key_name)
     {
-        $all_properties = Cache::remember("home-page-sections-properties", 100 * 60, function () {
+        $all_properties = Cache::remember(tenantCacheKey('home-page-sections-properties'), 100 * 60, function () {
             return HomeSectionProperties::all();
         });
         $properties = $all_properties->where('section_id', $section_id)->where('key_name', $key_name)->first();

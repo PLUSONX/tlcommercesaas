@@ -193,7 +193,7 @@ if (!function_exists('currencyExchange')) {
     function currencyExchange($value, $formatting = true, $target_currency_id = NULL, $is_html = true)
     {
         //Get system currency
-        $default_currency_details = Cache::rememberForever('default-currency-details', function () {
+        $default_currency_details = Cache::rememberForever(tenantCacheKey('default-currency-details'), function () {
             $default_currency_id = Plugin\TlcommerceCore\Repositories\SettingsRepository::getEcommerceSetting('default_currency');
             return Plugin\TlcommerceCore\Models\Currency::find($default_currency_id);
         });

@@ -84,7 +84,7 @@ class LayoutSettingsController extends Controller
     {
         try {
 
-            $header_bottom_middle_menus = Cache::rememberForever('header-bottom-middle-menus', function () {
+            $header_bottom_middle_menus = Cache::rememberForever(tenantCacheKey('header-bottom-middle-menus'), function () {
                 return $this->headerBottomMiddleMenus();
             });
 
@@ -92,7 +92,7 @@ class LayoutSettingsController extends Controller
                 array_shift($header_bottom_middle_menus);
             }
 
-            $header_top_right_menus = Cache::rememberForever('header-top-right-menus', function () {
+            $header_top_right_menus = Cache::rememberForever(tenantCacheKey('header-top-right-menus'), function () {
                 return $this->headerTopRightMenus();
             });
 
@@ -100,7 +100,7 @@ class LayoutSettingsController extends Controller
                 array_shift($header_top_right_menus);
             }
 
-            $header_top_left_menus = Cache::rememberForever('header-top-left-menus', function () {
+            $header_top_left_menus = Cache::rememberForever(tenantCacheKey('header-top-left-menus'), function () {
                 return $this->headerTopLeftMenus();
             });
 

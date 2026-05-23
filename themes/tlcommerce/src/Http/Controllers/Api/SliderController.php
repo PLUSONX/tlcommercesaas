@@ -16,7 +16,7 @@ class SliderController extends Controller
      */
     public function sliders()
     {
-        return Cache::rememberForever('home-page-sliders-resource', function () {
+        return Cache::rememberForever(tenantCacheKey('home-page-sliders-resource'), function () {
             return new SliderResource(Sliders::select('url', 'desktop', 'mobile')->where('status', config('settings.general_status.active'))->get());
         });
     }
