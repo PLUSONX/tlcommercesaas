@@ -276,7 +276,7 @@ export default {
             });
         }
 
-        console.log('🟡 index.vue mounted!');
+        // console.log('🟡 index.vue mounted!');
 
     },
 

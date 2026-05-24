@@ -735,13 +735,9 @@ export default {
     window.addEventListener('resize', this.handleResize);
     this.initResizeObserver();
 
-    console.log('🟡 MainLayout mounted!');
-    console.log('isSplitScreen:', this.isSplitScreen);
-    console.log('isMobile:', this.isMobile);
 
-    if (!this.isSplitScreen) {
-      this.visibleWebsitePopup = true;
-    }
+
+
   },
 
   beforeUnmount() {

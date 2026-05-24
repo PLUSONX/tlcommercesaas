@@ -2450,7 +2450,7 @@ new Chart(document.getElementById('revenueChart'), {
             message:       document.getElementById('message').value,
         };
 
-        console.log("data: ", data);
+        // console.log("data: ", data);
 
         btn.disabled = true;
         btn.innerHTML = 'Sending…';

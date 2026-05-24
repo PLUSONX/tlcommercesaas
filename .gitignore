@@ -29,6 +29,7 @@ storage/tenant*/logs/*.log
 /public/hot
 /public/build
 /public/mix-manifest.json
+public/tenant/
 
 # =========================
 # IDE / OS
