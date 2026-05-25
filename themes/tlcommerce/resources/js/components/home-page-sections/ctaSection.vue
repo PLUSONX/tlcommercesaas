@@ -57,7 +57,7 @@ export default {
       return {
         //Section
         "--section-background-color": this.properties.bg_color,
-        "--section-background-image": `url(${this.properties.bg_image})`,
+        "--section-background-image": `url(${this.cleanBgImage})`,
         "--section-background-image-position":
           this.properties.background_position,
         "--section-background-image-size": this.properties.background_size,
@@ -98,6 +98,12 @@ export default {
 
     cleanImage() {
       const img = this.properties?.cta_image;
+      if (!img) return '';
+      return img.startsWith('/public') ? img.slice(7) : img;
+    },
+
+    cleanBgImage() {
+      const img = this.properties?.bg_image;
       if (!img) return '';
       return img.startsWith('/public') ? img.slice(7) : img;
     },
