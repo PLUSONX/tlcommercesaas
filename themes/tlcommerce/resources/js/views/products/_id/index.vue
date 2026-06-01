@@ -1,5 +1,8 @@
 <template>
-  <div class="product-page-root">
+  <div
+    class="product-page-root"
+    :class="{ 'has-product-footer': isSplitScreen && productData }"
+  >
     <div v-if="isSplitScreen && !isMobile" class="page-container split-screen-product-layout">
       <div class="productDetails split-screen-product-scroll" :class="{
         'force-mobile-layout': forcedMobile,
@@ -221,19 +224,6 @@
 
       </div>
 
-      <!-- <custom-footer class="custom-footer" v-if="!isMobileView" :item="productData" /> -->
-
-      <custom-footer class="custom-footer" v-if="showSplitProductFooter" :item="productData" />
-
-      <!-- <custom-footer :item="product ? product.data : null" /> -->
-
-      <!-- <custom-footer
-      v-if="product && product.data"
-      :item="product.data"
-    /> -->
-
-      <!-- <custom-footer :item="product.data" /> -->
-
     </div>
     <div v-else class="productDetails">
       <page-header :items="bItems" />
@@ -435,6 +425,12 @@
       </section>
       <!-- End Related Product -->
     </div>
+
+    <custom-footer
+      v-if="isSplitScreen && productData"
+      class="custom-footer"
+      :item="productData"
+    />
   </div>
 </template>
 
@@ -1039,6 +1035,11 @@ export default {
 .split-screen-product-scroll {
   flex: 1;
   overflow-y: auto;
+}
+
+.product-page-root.has-product-footer .productDetails,
+.product-page-root.has-product-footer .split-screen-product-scroll {
+  padding-bottom: 70px;
 }
 
 .custom-footer {

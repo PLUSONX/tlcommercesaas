@@ -204,7 +204,7 @@
     <!-- <script src="{{ asset('themes/tlcommerce/public/js/main.js?v=210') }}"></script>  -->
 
     <!-- <script src="{{ asset('themes/tlcommerce/js/main.js?v=210') }}"></script> -->
-     <script src="{{ asset('themes/tlcommerce/js/main.js?v=214') }}"></script>
+     <script src="{{ asset('themes/tlcommerce/js/main.js?v=215') }}"></script>
     <!-- <script src="{{ asset('themes/tlcommerce/public/js/main.js?v=210') }}"></script> -->
 
 
