@@ -1,5 +1,6 @@
 <template>
   <div :class="layoutClass">
+    <preloader v-if="!layoutReady" :loading="true" />
     <!-- <div style="position:fixed;top:0;left:0;z-index:9999;background:yellow;padding:10px;">
       onMainLyout: isSplitScreen: {{ isSplitScreen }} | isMobile: {{ isMobile }}
     </div> -->
@@ -7,7 +8,7 @@
       <h1 style="color: red;">Test again</h1>
     </div> -->
     <!-- <template v-if="isSplitScreen && !isMobile"> -->
-    <template v-if="isSplitScreen">
+    <template v-else-if="isSplitScreen">
       <div class="split-screen-container" :style="containerStyle">
         <div class="split-screen-content" :class="[contentSideClass, 'force-mobile-view']" :style="contentStyle">
           <div
@@ -16,6 +17,7 @@
           >
             <div class="split-screen-search-inline-host"></div>
             <custom-header
+              :key="$route.fullPath"
               :site-properties="data.site_properties"
               :mode="mode"
               :header-logo-style="headerLogoStyle"
@@ -26,7 +28,13 @@
           </div>
 
           <div ref="splitContentScroll" class="content-split-nudge">
-            <slot></slot>
+            <router-view v-slot="{ Component, route }">
+              <component
+                v-if="showRouteOutlet && Component"
+                :is="Component"
+                :key="`${route.name}-${route.fullPath}-${outletKey}`"
+              />
+            </router-view>
           </div>
 
         </div>
@@ -124,7 +132,13 @@
         <!-- End Header -->
 
         <div class="main_content light-bg">
-          <slot />
+          <router-view v-slot="{ Component, route }">
+            <component
+              v-if="showRouteOutlet && Component"
+              :is="Component"
+              :key="`${route.name}-${route.fullPath}-${outletKey}`"
+            />
+          </router-view>
         </div>
 
         <StickyFooter v-if="!isSingleProduct" />
@@ -445,6 +459,14 @@ export default {
     };
   },
 
+  provide() {
+    return {
+      resetRouteOutlet: async () => {
+        await this.resetRouteOutlet();
+      },
+    };
+  },
+
   data() {
     return {
       config: config,
@@ -476,6 +498,8 @@ export default {
       subscriptionFormStyle: {},
       footerBgImg: "#",
       isSingleProduct: true,
+      outletKey: 0,
+      showRouteOutlet: true,
       load_complete: false,
 
       visibleWebsitePopup: false,
@@ -526,6 +550,10 @@ export default {
         state.compareItems.length ? state.compareItems.length : 0,
     }),
 
+    ...mapState('layout', {
+      layoutLoading: (state) => state.loading,
+    }),
+
     ...mapGetters('layout', [
       'isSplitScreen',
       'splitScreenSettings',
@@ -533,6 +561,10 @@ export default {
       'featureImagePath',
       'isMobile',
     ]),
+
+    layoutReady() {
+      return !this.layoutLoading;
+    },
 
     layoutClass() {
       return this.isSplitScreen ? 'layout-split-screen' : 'layout__two';
@@ -757,6 +789,10 @@ export default {
   },
 
   methods: {
+    async resetRouteOutlet() {
+      this.showRouteOutlet = false;
+      await this.$nextTick();
+    },
 
     // Your existing methods...
     ...mapActions('layout', ['fetchActiveLayout', 'updateMobileView']),
@@ -1159,7 +1195,11 @@ export default {
   },
 
   watch: {
-    $route() {
+    $route(to, from) {
+      if (from?.name === "product" && to.name === "home" && this.showRouteOutlet) {
+        this.outletKey += 1;
+      }
+
       if (this.$route.name === "product") {
         this.isSingleProduct = true;
       } else {
@@ -1167,6 +1207,7 @@ export default {
       }
 
       this.$nextTick(() => {
+        this.showRouteOutlet = true;
         const scrollEl = this.$refs.splitContentScroll;
         if (scrollEl) {
           scrollEl.scrollTop = 0;

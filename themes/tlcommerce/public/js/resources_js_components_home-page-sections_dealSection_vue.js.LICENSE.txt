@@ -32,6 +32,8 @@
 
 /*! ./sectionPreloader.vue?vue&type=template&id=c0e5e672 */
 
+/*! @/utils/sectionProps */
+
 /*! axios */
 
 /*! swiper */
@@ -41,6 +43,10 @@
 /*! vue */
 
 /*! vuex */
+
+/*!********************************************!*\
+  !*** ./resources/js/utils/sectionProps.js ***!
+  \********************************************/
 
 /*!********************************************************************!*\
   !*** ./resources/js/components/home-page-sections/dealSection.vue ***!

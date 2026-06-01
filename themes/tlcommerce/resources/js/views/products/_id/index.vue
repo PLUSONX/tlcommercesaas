@@ -1,9 +1,6 @@
 <template>
-
-  <template v-if="isSplitScreen && !isMobile">
-
-    <div class="page-container split-screen-product-layout">
-
+  <div class="product-page-root">
+    <div v-if="isSplitScreen && !isMobile" class="page-container split-screen-product-layout">
       <div class="productDetails split-screen-product-scroll" :class="{
         'force-mobile-layout': forcedMobile,
         'mobile-content-wrapper': forcedMobile,
@@ -238,12 +235,7 @@
       <!-- <custom-footer :item="product.data" /> -->
 
     </div>
-  </template>
-
-  <template v-else>
-
-
-    <div class="productDetails">
+    <div v-else class="productDetails">
       <page-header :items="bItems" />
 
       <!-- Product details Hash Menu -->
@@ -443,8 +435,7 @@
       </section>
       <!-- End Related Product -->
     </div>
-  </template>
-
+  </div>
 </template>
 
 
@@ -561,6 +552,8 @@ export default {
       galleryKey: 1,
       sectionTitle: this.$t("Related Products"),
       productLoading: true,
+      _isUnmounted: false,
+      requestCancelSource: null,
     };
   },
   computed: {
@@ -597,41 +590,71 @@ export default {
     };
   },
   watch: {
-    $route: {
-      deep: true,
-      handler(to, from) {
-        this.tabPaneActiveKey = 1;
-        this.getProductDetails();
-        window.scrollTo(0, 0);
-      },
+    $route(to, from) {
+      if (to.name !== "product") {
+        return;
+      }
+      if (from?.name === "product" && from.params?.id === to.params?.id) {
+        return;
+      }
+      this.tabPaneActiveKey = 1;
+      this.getProductDetails();
+      window.scrollTo(0, 0);
     },
   },
   mounted() {
     window.addEventListener("scroll", this.scrollHandler);
+    this.beginRequestCycle();
     this.getProductDetails();
     this.getCategories();
     this.getTopSellingProducts();
   },
   beforeUnmount() {
+    this._isUnmounted = true;
+    this.requestCancelSource?.cancel("navigated away");
     window.removeEventListener("scroll", this.scrollHandler);
+    this.productLoading = true;
+    this.product = null;
+    this.relatedProducts = [];
   },
   methods: {
+    beginRequestCycle() {
+      this.requestCancelSource?.cancel("navigated away");
+      this.requestCancelSource = axios.CancelToken.source();
+    },
+
+    getCancelToken() {
+      if (!this.requestCancelSource) {
+        this.requestCancelSource = axios.CancelToken.source();
+      }
+      return this.requestCancelSource.token;
+    },
+
     /**
      * Get single product details
      */
     getProductDetails() {
+      if (this._isUnmounted || this.$route.name !== "product") {
+        return;
+      }
+      this.beginRequestCycle();
       axios
-        .post("/api/v1/ecommerce-core/product-details", {
-          permalink: this.$route.params.id,
-          preview:
-            typeof this.$route.query.preview != "undefined"
-              ? this.$route.query.preview
-              : null,
-        })
+        .post(
+          "/api/v1/ecommerce-core/product-details",
+          {
+            permalink: this.$route.params.id,
+            preview:
+              typeof this.$route.query.preview != "undefined"
+                ? this.$route.query.preview
+                : null,
+          },
+          { cancelToken: this.getCancelToken() }
+        )
         .then((response) => {
-          // if (response.data.success) {
+          if (this._isUnmounted || this.$route.name !== "product") {
+            return;
+          }
           if (response.data) {
-            // console.log("product: ", response.data);
             this.getRelatedProducts(response.data.data.id);
             document.title = response.data.data.name;
             this.product = response.data.data;
@@ -641,6 +664,9 @@ export default {
           }
         })
         .catch((error) => {
+          if (axios.isCancel(error) || this._isUnmounted) {
+            return;
+          }
           this.productLoading = false;
         });
     },
@@ -648,12 +674,25 @@ export default {
      * Top selling  Products
      */
     getTopSellingProducts(id) {
+      if (this._isUnmounted || this.$route.name !== "product") {
+        return;
+      }
       axios
-        .post("/api/v1/ecommerce-core/top-selling-products")
+        .post(
+          "/api/v1/ecommerce-core/top-selling-products",
+          {},
+          { cancelToken: this.getCancelToken() }
+        )
         .then((response) => {
-          this.topSellingProducts = response.data.data;
+          if (this._isUnmounted || this.$route.name !== "product") {
+            return;
+          }
+          this.topSellingProducts = response.data?.data ?? [];
         })
         .catch((error) => {
+          if (axios.isCancel(error) || this._isUnmounted) {
+            return;
+          }
           this.topSellingProducts = [];
         });
     },
@@ -662,14 +701,25 @@ export default {
      * Related Products
      */
     getRelatedProducts(id) {
+      if (this._isUnmounted || this.$route.name !== "product") {
+        return;
+      }
       axios
-        .post("/api/v1/ecommerce-core/related-products", {
-          id: id,
-        })
+        .post(
+          "/api/v1/ecommerce-core/related-products",
+          { id: id },
+          { cancelToken: this.getCancelToken() }
+        )
         .then((response) => {
-          this.relatedProducts = response.data.data;
+          if (this._isUnmounted || this.$route.name !== "product") {
+            return;
+          }
+          this.relatedProducts = response.data?.data ?? [];
         })
         .catch((error) => {
+          if (axios.isCancel(error) || this._isUnmounted) {
+            return;
+          }
           this.relatedProducts = [];
         });
     },
@@ -678,14 +728,25 @@ export default {
      *
      */
     getCategories() {
+      if (this._isUnmounted || this.$route.name !== "product") {
+        return;
+      }
       axios
-        .get("/api/v1/ecommerce-core/parent-categories")
+        .get("/api/v1/ecommerce-core/parent-categories", {
+          cancelToken: this.getCancelToken(),
+        })
         .then((response) => {
+          if (this._isUnmounted || this.$route.name !== "product") {
+            return;
+          }
           if (response.status === 200) {
-            this.topCategories = response.data.data;
+            this.topCategories = response.data?.data ?? [];
           }
         })
         .catch((error) => {
+          if (axios.isCancel(error) || this._isUnmounted) {
+            return;
+          }
           this.topCategories = [];
         });
     },

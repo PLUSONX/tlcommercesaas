@@ -18,9 +18,15 @@
 
 /*! ./node_modules/vue-loader/dist/exportHelper.js */
 
+/*! @/utils/sectionProps */
+
 /*! v-lazy-image */
 
 /*! vue */
+
+/*!********************************************!*\
+  !*** ./resources/js/utils/sectionProps.js ***!
+  \********************************************/
 
 /*!*******************************************************************!*\
   !*** ./resources/js/components/home-page-sections/adsSection.vue ***!

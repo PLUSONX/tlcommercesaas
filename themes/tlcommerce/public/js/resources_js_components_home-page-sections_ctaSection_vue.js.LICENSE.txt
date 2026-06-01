@@ -20,9 +20,15 @@
 
 /*! ./node_modules/vue-loader/dist/exportHelper.js */
 
+/*! @/utils/sectionProps */
+
 /*! import() */
 
 /*! vue */
+
+/*!********************************************!*\
+  !*** ./resources/js/utils/sectionProps.js ***!
+  \********************************************/
 
 /*!*******************************************************************!*\
   !*** ./resources/js/components/home-page-sections/ctaSection.vue ***!

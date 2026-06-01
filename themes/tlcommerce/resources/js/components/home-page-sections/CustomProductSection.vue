@@ -1,41 +1,55 @@
 <template>
-
-  <!-- <section 
-  v-if="true" 
-  style="min-height: 100px; background: red !important; border: 5px solid yellow;"
->
-  <h1>TESTING: I AM HERE</h1>
-  <pre>{{ properties[0].products.data.length }}</pre>
-</section> -->
-
-  <section class="collection-section home-page-section" :style="styleObject" v-if="properties[0].products.data.length">
+  <section
+    v-if="productList.length"
+    class="collection-section home-page-section"
+    :style="styleObject"
+  >
     <div class="custom-container2">
       <div class="row align-items-center">
         <div class="col-md-6">
-          <section-title class="mb-30 section-title" :title="properties[0]?.category_info != null
-              ? properties[0]?.category_info.name
-              : (properties?.title ? $t(properties.title) : '')
-            " :titleColor="properties?.title_color" />
+          <section-title
+            class="mb-30 section-title"
+            :title="
+              sectionBlock?.category_info != null
+                ? sectionBlock.category_info.name
+                : sectionProps?.title
+                  ? $t(sectionProps.title)
+                  : ''
+            "
+            :titleColor="sectionProps?.title_color"
+          />
         </div>
-        <div class="col-md-6 text-md-end" v-if="properties?.content == 'category'">
-          <router-link v-if="properties[0]?.category_info != null" class="btn btn-sm rounded-0 mb-30 section_btn"
-            :style="styleObject" :to="`/products/category/${properties[0]?.category_info.slug}`">
+        <div class="col-md-6 text-md-end" v-if="sectionProps?.content == 'category'">
+          <router-link
+            v-if="sectionBlock?.category_info != null"
+            class="btn btn-sm rounded-0 mb-30 section_btn"
+            :style="styleObject"
+            :to="`/products/category/${sectionBlock.category_info.slug}`"
+          >
             {{
-              properties.btn_title != null
-                ? properties.btn_title
+              sectionProps.btn_title != null
+                ? sectionProps.btn_title
                 : $t("View All")
             }}
           </router-link>
         </div>
       </div>
-      <swiper v-if="properties[0].products.data.length" :slidesPerView="6" :modules="modules" :spaceBetween="1"
+      <swiper
+        v-if="productList.length"
+        :slidesPerView="6"
+        :modules="modules"
+        :spaceBetween="1"
         :autoplay="{
           delay: 4000,
           disableOnInteraction: false,
           pauseOnMouseEnter: true,
-        }" :loop="true" :pagination="{
+        }"
+        :loop="true"
+        :pagination="{
           clickable: true,
-        }" class="product-grid-slider theme-slider-dots" :breakpoints="{
+        }"
+        class="product-grid-slider theme-slider-dots"
+        :breakpoints="{
           '0': {
             slidesPerView: 2,
           },
@@ -48,8 +62,9 @@
           '1024': {
             slidesPerView: 6,
           },
-        }">
-        <swiper-slide v-for="(item, index) in properties[0].products.data" :key="`slide-${index}`">
+        }"
+      >
+        <swiper-slide v-for="(item, index) in productList" :key="`slide-${index}`">
           <single-product :item="item" />
         </swiper-slide>
       </swiper>
@@ -58,10 +73,9 @@
 </template>
 <script>
 import { defineAsyncComponent } from "vue";
-// Import Swiper Vue.js components
 import { Swiper, SwiperSlide } from "swiper/vue";
-// import required modules
 import { Autoplay, Pagination } from "swiper";
+
 const SingleProduct = defineAsyncComponent(() =>
   import("../product/SingleProduct.vue")
 );
@@ -84,68 +98,70 @@ export default {
       required: false,
     },
     properties: {
-      type: Array,
-      required: false,
+      type: [Object, Array],
+      default: () => ({}),
     },
-  },
-  data() {
-    return {
-      collectionDetails: {},
-    };
   },
   computed: {
+    sectionBlock() {
+      if (Array.isArray(this.properties)) {
+        return this.properties[0] || {};
+      }
+      return this.properties || {};
+    },
+
+    productList() {
+      return this.sectionBlock?.products?.data ?? [];
+    },
+
+    sectionProps() {
+      if (Array.isArray(this.properties)) {
+        return this.properties[0] || {};
+      }
+      return this.properties || {};
+    },
+
     styleObject() {
+      const props = this.sectionProps;
+      const bgImage = props.bg_image;
       return {
-        //Section
-        "--section-background-color": this.properties.bg_color,
-        "--section-background-image": `url(${this.properties.bg_image?.startsWith('/public')
-            ? this.properties.bg_image.slice(7)
-            : this.properties.bg_image
-          })`,
-        // "--section-background-image": `url(${this.properties.bg_image})`,
-        "--section-background-image-position":
-          this.properties.background_position,
-        "--section-background-image-size": this.properties.background_size,
-        "--section-background-image-repeat": this.properties.background_repeat,
-        "--section-padding": `${this.properties.padding_top +
+        "--section-background-color": props.bg_color,
+        "--section-background-image": `url(${
+          bgImage?.startsWith("/public") ? bgImage.slice(7) : bgImage
+        })`,
+        "--section-background-image-position": props.background_position,
+        "--section-background-image-size": props.background_size,
+        "--section-background-image-repeat": props.background_repeat,
+        "--section-padding": `${
+          props.padding_top +
           "px " +
-          this.properties.padding_right +
+          props.padding_right +
           "px " +
-          this.properties.padding_bottom +
+          props.padding_bottom +
           "px " +
-          this.properties.padding_left +
+          props.padding_left +
           "px"
-          }`,
-        "--section-margin": `${this.properties.margin_top +
+        }`,
+        "--section-margin": `${
+          props.margin_top +
           "px " +
-          this.properties.margin_right +
+          props.margin_right +
           "px " +
-          this.properties.margin_bottom +
+          props.margin_bottom +
           "px " +
-          this.properties.margin_left +
+          props.margin_left +
           "px"
-          }`,
-        //Button
-        "--button-color": this.properties.btn_color,
-        "--button-background-color": this.properties.btn_bg_color,
+        }`,
+        "--button-color": props.btn_color,
+        "--button-background-color": props.btn_bg_color,
         "--button-border":
-          this.properties.btn_border != null
-            ? this.properties.btn_border + "px solid"
-            : 0 + "px",
-        "--button-border-color": this.properties.btn_border_color,
-        "--button-hover-border-color": this.properties.btn_border_hover_color,
-        "--button-hover-bg-color": this.properties.btn_bg_hover_color,
-        "--button-hover-color": this.properties.btn_hover_color,
+          props.btn_border != null ? props.btn_border + "px solid" : "0px",
+        "--button-border-color": props.btn_border_color,
+        "--button-hover-border-color": props.btn_border_hover_color,
+        "--button-hover-bg-color": props.btn_bg_hover_color,
+        "--button-hover-color": props.btn_hover_color,
       };
     },
-  },
-  mounted() {
-    // console.log("CustomProductSection: Component Mounted");
-    // console.log("Full Properties:", this.properties);
-    // if (this.properties[0]) {
-    //     console.log("Products Object:", this.properties[0].products);
-    // }
-
   },
 };
 </script>

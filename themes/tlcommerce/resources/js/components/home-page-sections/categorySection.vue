@@ -11,7 +11,7 @@
     >
       <div class="px-3 px-sm-0">
         <swiper
-          v-if="properties.categories.data.length"
+          v-if="categoryList.length"
           :modules="modules"
           :loop="splitScreenSwiperLoop"
           :centeredSlides="false"
@@ -24,7 +24,7 @@
           :breakpoints="swiperBreakpoints"
         >
           <swiper-slide
-            v-for="(cat, index) in properties.categories.data"
+            v-for="(cat, index) in categoryList"
             :key="`category-${index}`"
           >
             <category-card :cat="cat" />
@@ -43,7 +43,7 @@
     >
       <div class="px-3 px-sm-0">
         <swiper
-          v-if="properties.categories.data.length"
+          v-if="categoryList.length"
           :modules="modules"
           :loop="true"
           :centeredSlides="true"
@@ -76,7 +76,7 @@
           }"
         >
           <swiper-slide
-            v-for="(cat, index) in properties.categories.data"
+            v-for="(cat, index) in categoryList"
             :key="`category-${index}`"
           >
             <category-card :cat="cat" />
@@ -113,40 +113,48 @@ export default {
       required: false,
     },
     properties: {
-      type: Array,
-      required: false,
+      type: Object,
+      default: () => ({}),
     },
   },
   computed: {
+    categoryList() {
+      return this.properties?.categories?.data ?? [];
+    },
+
+    sectionProperties() {
+      return this.properties || {};
+    },
+
     styleObject() {
+      const props = this.sectionProperties;
       return {
         //Section
-        "--section-background-color": this.properties.bg_color,
-        "--section-bg-image": `url(${this.properties.bg_image})`,
-        "--section-background-image-position":
-          this.properties.background_position,
-        "--section-background-image-size": this.properties.background_size,
-        "--section-background-image-repeat": this.properties.background_repeat,
+        "--section-background-color": props.bg_color,
+        "--section-bg-image": `url(${props.bg_image})`,
+        "--section-background-image-position": props.background_position,
+        "--section-background-image-size": props.background_size,
+        "--section-background-image-repeat": props.background_repeat,
         //Padding
         "--section-padding": `${
-          this.properties.padding_top +
+          props.padding_top +
           "px " +
-          this.properties.padding_right +
+          props.padding_right +
           "px " +
-          this.properties.padding_bottom +
+          props.padding_bottom +
           "px " +
-          this.properties.padding_left +
+          props.padding_left +
           "px"
         }`,
         //Margin
         "--section-margin": `${
-          this.properties.margin_top +
+          props.margin_top +
           "px " +
-          this.properties.margin_right +
+          props.margin_right +
           "px " +
-          this.properties.margin_bottom +
+          props.margin_bottom +
           "px " +
-          this.properties.margin_left +
+          props.margin_left +
           "px"
         }`,
       };
@@ -168,7 +176,7 @@ export default {
     },
 
     splitScreenCategoryCount() {
-      return this.properties?.categories?.data?.length || 0;
+      return this.categoryList.length;
     },
 
     splitScreenSwiperLoop() {

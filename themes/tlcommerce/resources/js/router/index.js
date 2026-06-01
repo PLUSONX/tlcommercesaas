@@ -268,8 +268,11 @@ const router = createRouter({
       redirect: "/404",
     },
   ],
-  scrollBehavior: function (to, _from, savedPosition) {
-    return window.scrollTo(0, 0);
+  scrollBehavior(_to, _from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    }
+    return { top: 0, left: 0 };
   },
   history: createWebHistory('/'),
 });
@@ -280,4 +283,15 @@ router.beforeEach((to, from, next) => {
     .then(() => next())
     .catch(() => next());
 });
+
+router.afterEach(() => {
+  requestAnimationFrame(() => {
+    const scrollEl = document.querySelector(".content-split-nudge");
+    if (scrollEl) {
+      scrollEl.scrollTop = 0;
+    }
+    window.scrollTo(0, 0);
+  });
+});
+
 export default router;

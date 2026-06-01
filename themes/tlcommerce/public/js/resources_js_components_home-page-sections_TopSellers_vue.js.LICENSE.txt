@@ -44,6 +44,8 @@
 
 /*! @/components/shop/SingleShop.vue */
 
+/*! @/utils/sectionProps */
+
 /*! axios */
 
 /*! swiper */
@@ -53,6 +55,10 @@
 /*! vue */
 
 /*! vuex */
+
+/*!********************************************!*\
+  !*** ./resources/js/utils/sectionProps.js ***!
+  \********************************************/
 
 /*!*****************************************************!*\
   !*** ./resources/js/components/shop/SingleShop.vue ***!

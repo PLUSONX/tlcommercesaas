@@ -91,6 +91,7 @@
             :customer-address="customerAddress" :is-customer-login="isCustomerLogin" :pickup-points="pickupPoints" />
 
         <!--Dynamic Sections-->
+        <template v-if="dataAvailable && homeContentReady">
         <div v-for="(section, index) in sections" :key="index">
             <deal-section v-if="section.layout === 'flashdeal'" :content="section.content"
                 :properties="section.properties"></deal-section>
@@ -118,12 +119,13 @@
             <top-sellers v-if="section.layout === 'seller_list'" :content="section.content"
                 :properties="section.properties"></top-sellers>
         </div>
+        </template>
         <!--End Dynamic Sections-->
 
         <!-- <HomePageDeliveryShipping v-if="showContactInfo && isSplitScreen" :enums="enums" :config="configuration"
             :customer-address="customerAddress" :is-customer-login="isCustomerLogin" :pickup-points="pickupPoints" /> -->
 
-        <ProductPage v-if="isSplitScreen" :disable-margin="true" />
+        <ProductPage v-if="isSplitScreen && homeContentReady" :disable-margin="true" />
 
     </div>
 
@@ -215,6 +217,7 @@ export default {
             banners: [],
             sections: [],
             dataAvailable: false,
+            homeContentReady: false,
             sliderLoading: true,
             page: {},
             page_section: {},
@@ -255,6 +258,7 @@ export default {
 
     },
     mounted() {
+        this.homeContentReady = false;
         document.title = localStorage.getItem("site_title");
         this.getSections();
 
@@ -290,7 +294,7 @@ export default {
                 "/api/theme/tlcommerce/v1/active-sliders"
             );
             if (response.status === 200) {
-                this.banners = response.data.data;
+                this.banners = response.data?.data ?? [];
                 this.sliderLoading = false;
             }
         } catch (error) {
@@ -325,23 +329,13 @@ export default {
                         if (!this.active_pagebuilder) {
                             this.loaded();
                         }
-
-                        // if(this.sections != null) {
-
-                        //     for (var i = 0; i < this.sections.length; i++) {
-
-                        //         if(this.sections[i].layout == 'custom_product_section') {
-
-                        //             console.log("section: ", this.sections[i]);
-
-                        //             console.log("section: ", this.sections[i].properties);
-                        //         }
-                        //     }
-                        // }
+                    } else {
+                        this.loaded();
                     }
                 })
                 .catch((error) => {
                     this.sections = [];
+                    this.loaded();
                 });
         },
         /**
@@ -349,6 +343,9 @@ export default {
          */
         loaded() {
             this.pageLoading = false;
+            this.$nextTick(() => {
+                this.homeContentReady = true;
+            });
         },
 
         //-------- HomePageDeliveryShipping --------

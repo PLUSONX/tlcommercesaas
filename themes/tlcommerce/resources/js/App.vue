@@ -1,8 +1,6 @@
 <template>
   <div v-if="themeStyle">
-    <component :is="layout">
-      <RouterView :key="$route.fullPath" />
-    </component>
+    <component :is="layout" />
   </div>
 </template>
 

@@ -15,18 +15,18 @@ const i18n = createI18n({
 const loadedLanguages = [];
 
 function setI18nLanguage(lang) {
-    i18n.locale = lang;
+    i18n.global.locale.value = lang;
     axios.defaults.headers.common["Accept-Language"] = lang;
     document.querySelector("html").setAttribute("lang", lang);
     return lang;
 }
 
 export async function loadLanguageAsync(lang) {
-
     if (loadedLanguages.includes(lang)) {
-        if (i18n.locale !== lang) {
+        if (i18n.global.locale.value !== lang) {
             return Promise.resolve(setI18nLanguage(lang));
         }
+        return Promise.resolve();
     }
 
     return axios.get(`/api/v1/locale/${lang}`)

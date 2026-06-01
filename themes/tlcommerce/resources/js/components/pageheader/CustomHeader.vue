@@ -90,6 +90,12 @@ export default {
       default: () => ({}),
     },
   },
+  inject: {
+    resetRouteOutlet: {
+      from: "resetRouteOutlet",
+      default: null,
+    },
+  },
   data() {
     return {
       offcanvas,
@@ -127,16 +133,31 @@ export default {
     },
   },
   methods: {
-    goBack() {
-      const previous = window.history.state?.back;
-      const goHome = () => this.$router.push({ name: "home" });
+    async goBack() {
+      this.closeHeaderOverlays();
 
-      if (previous === "/" || previous === null || previous === undefined) {
-        goHome();
+      if (this.$route.name === "product") {
+        if (this.resetRouteOutlet) {
+          await this.resetRouteOutlet();
+        }
+        try {
+          if (window.history.length > 1) {
+            this.$router.go(-1);
+          } else {
+            await this.$router.replace({ name: "home" });
+          }
+        } catch {
+          // Ignore duplicate navigation to home
+        }
         return;
       }
 
-      this.$router.back().catch(goHome);
+      this.$router.go(-1);
+    },
+    closeHeaderOverlays() {
+      document
+        .querySelector(".split-screen-search-inline-host")
+        ?.classList.remove("is-open");
     },
   },
 };

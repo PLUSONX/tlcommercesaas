@@ -2,11 +2,11 @@
   <section class="cta-section home-page-section" :style="styleObject">
     <div class="custom-container2">
       <div class="row align-items-center">
-        <div v-if="properties.video_url" class="col-lg-4 d-flex justify-content-center">
-          <video-card :src="properties.video_url" :btn-border-color="properties.play_btn_border_color"
-            :btn-icon-color="properties.play_btn_color" />
+        <div v-if="sectionStyleProps.video_url" class="col-lg-4 d-flex justify-content-center">
+          <video-card :src="sectionStyleProps.video_url" :btn-border-color="sectionStyleProps.play_btn_border_color"
+            :btn-icon-color="sectionStyleProps.play_btn_color" />
         </div>
-        <div v-if="properties.cta_image" class="col-lg-4">
+        <div v-if="sectionStyleProps.cta_image" class="col-lg-4">
           <!-- CTA Image -->
           <div class="cta-image position-relative text-center my-50 my-lg-0">
             <img :src="cleanImage" alt="" />
@@ -16,16 +16,18 @@
         <div class="col-lg-4">
           <!-- CTA Content -->
           <div class="cta-content position-relative text-white text-center text-lg-start">
-            <span class="d-inline-block section_title" v-if="properties.meta_title">
-              {{ properties.meta_title }}
+            <span class="d-inline-block section_title" v-if="sectionStyleProps.meta_title">
+              {{ sectionStyleProps.meta_title }}
             </span>
-            <h2 class="text-white section_title">{{ properties.title }}</h2>
-            <p class="mb-3 section_title" v-if="properties.featured_title">
-              {{ $t(properties.featured_title) }}
+            <h2 class="text-white section_title">{{ sectionStyleProps.title }}</h2>
+            <p class="mb-3 section_title" v-if="sectionStyleProps.featured_title">
+              {{ $t(sectionStyleProps.featured_title) }}
             </p>
-            <router-link v-if="properties.btn_title" :to="`/products/${properties.product_details.permalink}`"
+            <router-link
+              v-if="sectionStyleProps.btn_title && sectionStyleProps.product_details?.permalink"
+              :to="`/products/${sectionStyleProps.product_details.permalink}`"
               class="text-white btn-underline section_btn">
-              {{ properties.btn_title }}
+              {{ sectionStyleProps.btn_title }}
             </router-link>
           </div>
           <!-- End CTA Content -->
@@ -36,6 +38,7 @@
 </template>
 <script>
 import { defineAsyncComponent } from "vue";
+import { normalizeSectionProps } from "@/utils/sectionProps";
 const VideoCard = defineAsyncComponent(() => import("../ui/VideoCard.vue"));
 export default {
   name: "ctaSection",
@@ -53,57 +56,59 @@ export default {
     },
   },
   computed: {
+    sectionStyleProps() {
+      return normalizeSectionProps(this.properties);
+    },
+
     styleObject() {
+      const p = this.sectionStyleProps;
       return {
         //Section
-        "--section-background-color": this.properties.bg_color,
+        "--section-background-color": p.bg_color,
         "--section-background-image": `url(${this.cleanBgImage})`,
-        "--section-background-image-position":
-          this.properties.background_position,
-        "--section-background-image-size": this.properties.background_size,
-        "--section-background-image-repeat": this.properties.background_repeat,
-        "--section-padding": `${this.properties.padding_top +
+        "--section-background-image-position": p.background_position,
+        "--section-background-image-size": p.background_size,
+        "--section-background-image-repeat": p.background_repeat,
+        "--section-padding": `${p.padding_top +
           "px " +
-          this.properties.padding_right +
+          p.padding_right +
           "px " +
-          this.properties.padding_bottom +
+          p.padding_bottom +
           "px " +
-          this.properties.padding_left +
+          p.padding_left +
           "px"
           }`,
-        "--section-margin": `${this.properties.margin_top +
+        "--section-margin": `${p.margin_top +
           "px " +
-          this.properties.margin_right +
+          p.margin_right +
           "px " +
-          this.properties.margin_bottom +
+          p.margin_bottom +
           "px " +
-          this.properties.margin_left +
+          p.margin_left +
           "px"
           }`,
         //Title
-        "--title-color": this.properties.title_color,
+        "--title-color": p.title_color,
         //Button
-        "--button-color": this.properties.btn_color,
-        "--button-background-color": this.properties.btn_bg_color,
+        "--button-color": p.btn_color,
+        "--button-background-color": p.btn_bg_color,
         "--button-border":
-          this.properties.btn_border != null
-            ? this.properties.btn_border + "px solid"
-            : 0 + "px",
-        "--button-border-color": this.properties.btn_border_color,
-        "--button-hover-border-color": this.properties.btn_border_hover_color,
-        "--button-hover-bg-color": this.properties.btn_bg_hover_color,
-        "--button-hover-color": this.properties.btn_hover_color,
+          p.btn_border != null ? p.btn_border + "px solid" : 0 + "px",
+        "--button-border-color": p.btn_border_color,
+        "--button-hover-border-color": p.btn_border_hover_color,
+        "--button-hover-bg-color": p.btn_bg_hover_color,
+        "--button-hover-color": p.btn_hover_color,
       };
     },
 
     cleanImage() {
-      const img = this.properties?.cta_image;
+      const img = this.sectionStyleProps?.cta_image;
       if (!img) return '';
       return img.startsWith('/public') ? img.slice(7) : img;
     },
 
     cleanBgImage() {
-      const img = this.properties?.bg_image;
+      const img = this.sectionStyleProps?.bg_image;
       if (!img) return '';
       return img.startsWith('/public') ? img.slice(7) : img;
     },

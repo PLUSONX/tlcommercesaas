@@ -20,11 +20,17 @@
 
 /*! ./node_modules/vue-loader/dist/exportHelper.js */
 
+/*! @/utils/sectionProps */
+
 /*! axios */
 
 /*! import() */
 
 /*! vue */
+
+/*!********************************************!*\
+  !*** ./resources/js/utils/sectionProps.js ***!
+  \********************************************/
 
 /*!********************************************************************!*\
   !*** ./resources/js/components/home-page-sections/blogSection.vue ***!

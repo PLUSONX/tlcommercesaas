@@ -173,7 +173,7 @@ export default {
         .get("/api/v1/ecommerce-core/parent-categories")
         .then((response) => {
           if (response.status === 200) {
-            this.categories = response.data.data;
+            this.categories = response.data?.data ?? [];
             this.categoryLoading = false;
           }
         })
@@ -189,7 +189,7 @@ export default {
         .get("/api/v1/ecommerce-core/brands")
         .then((response) => {
           if (response.status === 200) {
-            this.brands = response.data.data;
+            this.brands = response.data?.data ?? [];
             this.brandLoading = false;
           }
         })
@@ -216,8 +216,8 @@ export default {
         })
         .then((response) => {
           if (response.status === 200) {
-            this.paginatedItems = response.data.data;
-            this.totalItems = response.data.meta.total;
+            this.paginatedItems = response.data?.data ?? [];
+            this.totalItems = response.data?.meta?.total ?? 0;
 
             // console.log("paginated_Items: ", this.paginatedItems);
             // console.log("total_Items: ", this.totalItems);

@@ -1,6 +1,6 @@
 <template>
   <!-- Top Pick Up -->
-  <section class="collection-section home-page-section" :style="styleObject">
+  <section v-if="collectionReady" class="collection-section home-page-section" :style="styleObject">
     <div class="custom-container2">
       <div class="row align-items-center">
         <div class="col-md-6">
@@ -70,6 +70,7 @@
 import { defineAsyncComponent } from "vue";
 // Import Swiper Vue.js components
 import { Swiper, SwiperSlide } from "swiper/vue";
+import { normalizeSectionProps } from "@/utils/sectionProps";
 // import required modules
 import { Autoplay, Pagination } from "swiper";
 const SingleProduct = defineAsyncComponent(() =>
@@ -103,50 +104,53 @@ export default {
     return {
       collectionDetails: {},
       collectionProducts: [],
+      collectionReady: false,
       bgImage: null,
     };
   },
   computed: {
+    sectionStyleProps() {
+      return normalizeSectionProps(this.properties);
+    },
+
     styleObject() {
+      const p = this.sectionStyleProps;
       return {
         //Section
-        "--section-background-color": this.properties.bg_color,
-        "--section-background-image": `url(${this.properties.bg_image})`,
-        "--section-background-image-position":
-          this.properties.background_position,
-        "--section-background-image-size": this.properties.background_size,
-        "--section-background-image-repeat": this.properties.background_repeat,
+        "--section-background-color": p.bg_color,
+        "--section-background-image": `url(${p.bg_image})`,
+        "--section-background-image-position": p.background_position,
+        "--section-background-image-size": p.background_size,
+        "--section-background-image-repeat": p.background_repeat,
         "--section-padding": `${
-          this.properties.padding_top +
+          p.padding_top +
           "px " +
-          this.properties.padding_right +
+          p.padding_right +
           "px " +
-          this.properties.padding_bottom +
+          p.padding_bottom +
           "px " +
-          this.properties.padding_left +
+          p.padding_left +
           "px"
         }`,
         "--section-margin": `${
-          this.properties.margin_top +
+          p.margin_top +
           "px " +
-          this.properties.margin_right +
+          p.margin_right +
           "px " +
-          this.properties.margin_bottom +
+          p.margin_bottom +
           "px " +
-          this.properties.margin_left +
+          p.margin_left +
           "px"
         }`,
         //Button
-        "--button-color": this.properties.btn_color,
-        "--button-background-color": this.properties.btn_bg_color,
+        "--button-color": p.btn_color,
+        "--button-background-color": p.btn_bg_color,
         "--button-border":
-          this.properties.btn_border != null
-            ? this.properties.btn_border + "px solid"
-            : 0 + "px",
-        "--button-border-color": this.properties.btn_border_color,
-        "--button-hover-border-color": this.properties.btn_border_hover_color,
-        "--button-hover-bg-color": this.properties.btn_bg_hover_color,
-        "--button-hover-color": this.properties.btn_hover_color,
+          p.btn_border != null ? p.btn_border + "px solid" : 0 + "px",
+        "--button-border-color": p.btn_border_color,
+        "--button-hover-border-color": p.btn_border_hover_color,
+        "--button-hover-bg-color": p.btn_bg_hover_color,
+        "--button-hover-color": p.btn_hover_color,
       };
     },
   },
@@ -164,8 +168,10 @@ export default {
         })
         .then((response) => {
           if (response.data.success) {
-            this.collectionDetails = response.data.details;
-            this.collectionProducts = response.data.collection_products.data;
+            this.collectionDetails = response.data.details ?? {};
+            this.collectionProducts =
+              response.data?.collection_products?.data ?? [];
+            this.collectionReady = true;
           }
         })
         .catch((error) => {});

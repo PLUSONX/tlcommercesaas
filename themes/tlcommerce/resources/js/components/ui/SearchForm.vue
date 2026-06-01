@@ -6,8 +6,8 @@
     </button>
     <!-- End Search Toggle -->
 
-    <teleport :to="teleportTarget" :disabled="!overlayTeleport">
-      <form v-if="mobileStyle"
+    <teleport :to="teleportTarget" :disabled="!overlayTeleport || !searchFormActive">
+      <form v-if="mobileStyle && (!overlayTeleport || searchFormActive)"
         class="search-form mobile-search-form w-100 d-flex align-items-center"
         :class="[
           { active: searchFormActive },
@@ -99,9 +99,9 @@ export default {
     };
   },
   watch: {
-    $route(to, from) {
-      const destinationRouteName = to.name;
-      if (destinationRouteName != "searchProduct") {
+    $route() {
+      this.closeSearchForm();
+      if (this.$route.name !== "searchProduct") {
         this.searching_Key = "";
       }
     },
