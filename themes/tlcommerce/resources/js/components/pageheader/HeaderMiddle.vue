@@ -165,7 +165,6 @@ import MenuItem from "../../components/menu/MenuItem.vue";
 import MenuDropdown from "../../components/menu/MenuDropdown.vue";
 import axios from "axios";
 import offcanvas from "@/fakeDB/offcanvas.json";
-import TheOffcanvas from "@/components/menu/TheOffcanvas.vue";
 
 export default {
   name: "HeaderMiddle",
@@ -174,7 +173,6 @@ export default {
     SingleProduct,
     MenuItem,
     MenuDropdown,
-    TheOffcanvas,
   },
   emits: ["logout-customer"],
   props: {
@@ -242,13 +240,6 @@ export default {
       type: Array,
       default: () => []
     },
-    headerMenuStyle: {
-      type: Object,
-      required: false,
-      default: () => {
-        return {};
-      },
-    },
     headerStyle: {
       type: Object,
       required: false,
@@ -283,32 +274,31 @@ export default {
       notifications: (state) => state.notifications,
       totalNotifications: (state) =>
         state.notifications.length ? state.notifications.length : 0,
-      isGroupActive() {
-        return (item, path) => {
-          let openGroup = false;
-          const func = (item) => {
-            if (item.submenu) {
-              item.submenu.forEach((item) => {
-                if (path === item.url) {
-                  openGroup = true;
-                } else if (item.submenu) {
-                  func(item);
-                }
-              });
-            }
-          };
-          func(item, path);
-          return openGroup;
-        };
-      },
-
-
     }),
 
     ...mapGetters('layout', [
       'isSplitScreen',
       'isMobile'
     ]),
+
+    isGroupActive() {
+      return (item, path) => {
+        let openGroup = false;
+        const func = (item) => {
+          if (item.submenu) {
+            item.submenu.forEach((item) => {
+              if (path === item.url) {
+                openGroup = true;
+              } else if (item.submenu) {
+                func(item);
+              }
+            });
+          }
+        };
+        func(item, path);
+        return openGroup;
+      };
+    },
 
     headerClasses() {
       return {

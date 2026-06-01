@@ -18,7 +18,9 @@
           :watch-overflow="true"
           :autoplay="false"
           :pagination="splitScreenSwiperPagination"
-          class="category-slider category-full-width theme-slider-dots"
+          :slides-per-view="'auto'"
+          :space-between="splitCategoryGap"
+          class="category-slider category-full-width theme-slider-dots category-slider--split"
           :breakpoints="swiperBreakpoints"
         >
           <swiper-slide
@@ -181,20 +183,17 @@ export default {
       return { clickable: true };
     },
 
-    swiperBreakpoints() {
-      const count = this.splitScreenCategoryCount;
-      const cap = (max) => (count ? Math.min(max, count) : max);
+    splitCategoryGap() {
+      return 16;
+    },
 
-      if (this.forcedMobile) {
-        return {
-          "0": { slidesPerView: cap(4), spaceBetween: 2 },
-        };
-      }
+    swiperBreakpoints() {
+      const gap = this.splitCategoryGap;
       return {
-        "0": { slidesPerView: cap(4), spaceBetween: 2 },
-        "768": { slidesPerView: cap(8), spaceBetween: 0 },
-        "1024": { slidesPerView: cap(10), spaceBetween: 0 },
-        "1440": { slidesPerView: cap(12), spaceBetween: 0 },
+        "0": { slidesPerView: "auto", spaceBetween: gap },
+        "768": { slidesPerView: "auto", spaceBetween: gap },
+        "1024": { slidesPerView: "auto", spaceBetween: gap },
+        "1440": { slidesPerView: "auto", spaceBetween: gap },
       };
     },
   },
@@ -206,6 +205,7 @@ export default {
 .category-section--split {
   background-color: transparent !important;
   background-image: none !important;
+  --category-split-gap: 16px;
 }
 
 .category-section--split :deep(.category-slider .swiper-wrapper) {
@@ -217,31 +217,34 @@ export default {
   justify-content: flex-start;
 }
 
-/* Override theme .category-full-width slide max-width (260px) — causes card-like gaps */
-.category-section--split :deep(.category-full-width .swiper-slide),
-.category-section--split :deep(.category-slider .swiper-slide) {
+.category-section--split :deep(.category-slider--split .swiper-slide) {
   width: auto !important;
   max-width: none !important;
   flex-shrink: 0;
+  box-sizing: border-box;
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
   opacity: 1 !important;
   padding: 0 !important;
-  margin: 0 !important;
 }
 
 .category-section--split :deep(.category-card),
 .category-section--split :deep(.category-card--split) {
-  width: auto !important;
+  width: max-content !important;
   min-width: 0 !important;
   padding: 0 !important;
-  margin: 0 !important;
+  margin: 0 var(--category-split-gap) 0 0 !important;
   background: transparent !important;
   background-color: transparent !important;
   box-shadow: none !important;
   border: none !important;
   border-radius: 0 !important;
+}
+
+.category-section--split :deep(.swiper-slide:last-child .category-card),
+.category-section--split :deep(.swiper-slide:last-child .category-card--split) {
+  margin-right: 0 !important;
 }
 
 .force-mobile-layout .row > [class*="col-"] {

@@ -1,20 +1,12 @@
 <template>
-  <router-link
-    v-if="styleTwo"
-    class="category-card--two bg-cover"
-    :to="`/products/category/${cat.slug}`"
-    :style="cleanImage ? { backgroundImage: `url(${cleanImage})` } : ''"
-  >
+  <router-link v-if="styleTwo" class="category-card--two bg-cover" :to="`/products/category/${cat.slug}`"
+    :style="cleanImage ? { backgroundImage: `url(${cleanImage})` } : ''">
     <span class="category-content text-center d-block">
       <span class="category-name d-block">{{ cat.name }}</span>
     </span>
   </router-link>
 
-  <router-link
-    v-else
-    :class="cardClass"
-    :to="`/products/category/${cat.slug}`"
-  >
+  <router-link v-else :class="cardClass" :to="`/products/category/${cat.slug}`">
     <v-lazy-image :src="cleanImage" :alt="cat.name" />
     <span>{{ cat.name }}</span>
   </router-link>
@@ -67,8 +59,8 @@ export default {
 
 /* split-screen layout */
 .category-card--split {
-  padding: 0 !important;
-  margin: 0 !important;
+  padding: 0;
+  margin: 0 16px 0 0;
   background: transparent !important;
   background-color: transparent !important;
   box-shadow: none !important;
@@ -77,7 +69,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: auto !important;
+  width: max-content !important;
   max-width: none !important;
   line-height: 1.4;
   text-align: center;
@@ -173,12 +165,10 @@ export default {
         height: 100%;
         content: "";
         background: rgb(255, 255, 255);
-        background: linear-gradient(
-          90deg,
-          rgba(255, 255, 255, 0) 0%,
-          rgba(255, 255, 255, 1) 50%,
-          rgba(255, 255, 255, 0) 100%
-        );
+        background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 1) 50%,
+            rgba(255, 255, 255, 0) 100%);
         z-index: -1;
         opacity: 0.4;
       }

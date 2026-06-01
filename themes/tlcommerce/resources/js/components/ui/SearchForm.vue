@@ -6,33 +6,49 @@
     </button>
     <!-- End Search Toggle -->
 
-    <!-- <form class="search-form" :class="[
-      mobileStyle
-        ? 'mobile-search-form position-absolute w-100 h-100 d-flex align-items-center'
-        : '',
-      { active: searchFormActive },
-    ]" action="#"> -->
-    <form class="search-form" :class="[
-      mobileStyle
-        ? 'mobile-search-form position-absolute w-100 d-flex align-items-center'
-        : '',
-      { active: searchFormActive },
-    ]" action="#">
-      <button v-if="mobileStyle" type="button"
-        class="goback border-0 mr-20 d-inline-flex align-items-center justify-content-center" @click="toggleSearchForm">
-        <base-icon-svg name="undo" :height="20" :width="20" />
-      </button>
+    <teleport :to="teleportTarget" :disabled="!overlayTeleport">
+      <form v-if="mobileStyle"
+        class="search-form mobile-search-form w-100 d-flex align-items-center"
+        :class="[
+          { active: searchFormActive },
+          overlayTeleport ? 'mobile-search-form--split-inline' : 'position-absolute',
+        ]"
+        action="#">
+        <button type="button"
+          class="goback border-0 mr-20 d-inline-flex align-items-center justify-content-center"
+          @click="toggleSearchForm">
+          <base-icon-svg name="undo" :height="20" :width="20" />
+        </button>
 
+        <div class="input-group" :class="[
+          { 'style--rounded': rounded },
+          { 'style--two': styleTwo },
+          { 'style--three': styleThree },
+          { 'style--four': styleFour },
+        ]">
+          <input type="text" v-bind:placeholder="$t('Enter your search key')" class="form-control"
+            v-model="searching_Key" v-on:keyup="getSearchSuggestions"
+            style="position: relative; z-index: 99999; pointer-events: all;" />
+          <button v-if="!styleFour" type="submit" class="btn btn_fill custom-search-btn"
+            @click.prevent="searchProducts">
+            {{ $t("Search") }}
+          </button>
+          <button v-else type="submit" class="search-icon-btn" @click.prevent="searchProducts">
+            <span class="material-icons"> search </span>
+          </button>
+        </div>
+      </form>
+    </teleport>
+
+    <form v-if="!mobileStyle" class="search-form" action="#">
       <div class="input-group" :class="[
         { 'style--rounded': rounded },
         { 'style--two': styleTwo },
         { 'style--three': styleThree },
         { 'style--four': styleFour },
       ]">
-        <!-- <input type="text" v-bind:placeholder="$t('Enter your search key')" class="form-control" v-model="searching_Key"
-          v-on:keyup="getSearchSuggestions" /> -->
         <input type="text" v-bind:placeholder="$t('Enter your search key')" class="form-control" v-model="searching_Key"
-          v-on:keyup="getSearchSuggestions" style="position: relative; z-index: 99999; pointer-events: all;" />
+          v-on:keyup="getSearchSuggestions" />
         <button v-if="!styleFour" type="submit" class="btn btn_fill custom-search-btn" @click.prevent="searchProducts">
           {{ $t("Search") }}
         </button>
@@ -46,7 +62,7 @@
 
 <script>
 
-import { mapState, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 export default {
   name: "SearchForm",
   emits: ["search-suggestions"],
@@ -71,6 +87,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    overlayTeleport: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
@@ -85,13 +105,38 @@ export default {
         this.searching_Key = "";
       }
     },
+    isMobile(isMobile) {
+      if (isMobile && this.searchFormActive) {
+        this.closeSearchForm();
+      }
+    },
+  },
+  computed: {
+    ...mapGetters('layout', ['isMobile']),
+    teleportTarget() {
+      return this.overlayTeleport || "body";
+    },
+  },
+  beforeUnmount() {
+    this.syncOverlayHost(false);
   },
   methods: {
+    syncOverlayHost(isOpen) {
+      if (!this.overlayTeleport) {
+        return;
+      }
+
+      const host = document.querySelector(this.overlayTeleport);
+      if (!host) {
+        return;
+      }
+
+      host.classList.toggle("is-open", isOpen);
+    },
     /**
      * get search suggestions
      */
     getSearchSuggestions(event) {
-      // console.log("getSearchSuggestions called!!!");
       if (event.key != "Enter") {
         this.$emit("search-suggestions", this.searching_Key);
       }
@@ -127,18 +172,43 @@ export default {
      *
      */
     searchProducts() {
-      // console.log("searchProducts called!!!");
-
       this.searchFormActive = false;
+      this.syncOverlayHost(false);
       this.$router.push("/product/search?search_key=" + this.searching_Key);
     },
     toggleSearchForm() {
-      // console.log("toggleSearchForm called!!!");
-
       this.searchFormActive = !this.searchFormActive;
+      this.syncOverlayHost(this.searchFormActive);
+    },
+    closeSearchForm() {
+      this.searchFormActive = false;
+      this.syncOverlayHost(false);
     },
   },
 };
 </script>
 
-<style></style>
+<style scoped>
+.search-form-wrapper {
+  position: relative;
+}
+
+:deep(.mobile-search-form:not(.mobile-search-form--split-inline):not(.active)) {
+  transform: translate3d(0, -100%, 0);
+  pointer-events: none;
+  visibility: hidden;
+}
+
+:deep(.mobile-search-form:not(.mobile-search-form--split-inline).active) {
+  transform: translate3d(0, 0, 0);
+  visibility: visible;
+}
+
+:deep(.mobile-search-form--split-inline:not(.active)) {
+  display: none;
+}
+
+:deep(.mobile-search-form--split-inline.active) {
+  display: flex;
+}
+</style>

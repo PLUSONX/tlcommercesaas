@@ -1,5 +1,6 @@
 <template>
-    <div class="p-1">
+    <!-- <div class="p-1"> -->
+    <div>
         <div class="delivery-container">
 
             <div v-if="!isCustomerLogin" class="delivery-card">
@@ -203,7 +204,7 @@ export default {
 .delivery-card {
     background: #f8f9fa;
     border: 1px solid #e2e2e2;
-    border-radius: 8px;
+    /* border-radius: 8px; */
     overflow: hidden;
     /* Important: keeps child backgrounds inside the rounded corners */
     width: 100%;

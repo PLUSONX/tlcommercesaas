@@ -46,8 +46,13 @@ export default {
     //Add item to cart
     let productInCart = state.cart.find((product) => product.id === item.id && product.variant === item.variant);
     if (productInCart) {
-      productInCart.quantity += item.quantity;
-      if (productInCart.quantity <= productInCart.max_item) {
+      const nextQuantity = Number(productInCart.quantity) + Number(item.quantity);
+      if (nextQuantity <= productInCart.max_item) {
+        state.cart = state.cart.map((product) =>
+          product.id === item.id && product.variant === item.variant
+            ? { ...product, quantity: nextQuantity }
+            : product
+        );
         localStorage.setItem("cart", JSON.stringify(state.cart));
         $toast.success(state.$t("Product add to cart successfully") +
           '<a href="/cart" class="btn btn-sm m-md-2 m-lg-2 ml-1">'
@@ -55,11 +60,10 @@ export default {
           "</a>"
         );
       } else {
-        productInCart.quantity -= item.quantity;
         $toast.error(state.$t("Cross the available quantity"));
       }
     } else {
-      state.cart.push(item);
+      state.cart = [...state.cart, item];
       localStorage.setItem("cart", JSON.stringify(state.cart));
       $toast.success(state.$t("Product add to cart successfully") +
         '<a href="/cart" class="btn btn-sm m-md-2 m-lg-2 ml-1">'

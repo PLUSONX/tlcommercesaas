@@ -87,6 +87,9 @@
 
         </div> -->
 
+        <HomePageDeliveryShipping v-if="showContactInfo && isSplitScreen" :enums="enums" :config="configuration"
+            :customer-address="customerAddress" :is-customer-login="isCustomerLogin" :pickup-points="pickupPoints" />
+
         <!--Dynamic Sections-->
         <div v-for="(section, index) in sections" :key="index">
             <deal-section v-if="section.layout === 'flashdeal'" :content="section.content"
@@ -117,8 +120,8 @@
         </div>
         <!--End Dynamic Sections-->
 
-        <HomePageDeliveryShipping v-if="showContactInfo && isSplitScreen" :enums="enums" :config="configuration"
-            :customer-address="customerAddress" :is-customer-login="isCustomerLogin" :pickup-points="pickupPoints" />
+        <!-- <HomePageDeliveryShipping v-if="showContactInfo && isSplitScreen" :enums="enums" :config="configuration"
+            :customer-address="customerAddress" :is-customer-login="isCustomerLogin" :pickup-points="pickupPoints" /> -->
 
         <ProductPage v-if="isSplitScreen" :disable-margin="true" />
 
@@ -244,7 +247,8 @@ export default {
 
         mtClass() {
             if (this.isSplitScreen && !this.isMobile) {
-                return 'mt-50';
+                // return 'mt-50';
+                return 'mt-0';
             }
             return 'mt-1';
         }

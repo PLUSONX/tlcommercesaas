@@ -73,16 +73,6 @@ export default {
         });
       };
 
-      // if (window.fbq) {
-      //   window.fbq('track', 'InitiateCheckout', {
-      //     content_ids: this.item.id,
-      //     content_name: this.item.name,
-      //     content_type: 'product',
-      //     value: this.item.price, // Total value for the items added
-      //     currency: 'KD' // You can pass this as a prop if you have multi-currency
-      //   });
-      // };
-      // console.log("cart-item: ", cart_item);
 
       this.$store.dispatch("addToCart", cart_item);
       this.$router.push("/cart");
@@ -139,44 +129,7 @@ export default {
       this.$store.dispatch("addToCart", cart_item);
     },
 
-    // addToCart() {
-    //   console.log('addToCart called');
 
-    //   console.log("item: ", this.item);
-
-    //   let cart_item = {
-    //     uid: Date.now(),
-    //     id: this.item.id,
-    //     name: this.item.name,
-    //     permalink: this.item.slug,
-    //     image: this.item.thumbnail_image,
-    //     variant: null,
-    //     variant_code: null,
-    //     unitPrice: this.item.price,
-    //     oldPrice: this.item.oldPrice,
-    //     attachment: null,
-    //     quantity: this.quantityValue ?? 0,
-    //     max_item: this.max_qty ?? 0,
-    //     min_item: this.min_qty ?? 0,
-    //     seller: this.item.seller ?? null,
-    //     shop_name: this.item.shop != null ? this.item.shop.shop_name : null,
-    //     shop_slug: this.item.shop != null ? this.item.shop.shop_slug : null,
-    //   };
-
-    //   console.log("cart_item: ", cart_item);
-
-    //   if (window.fbq) {
-    //     window.fbq('track', 'Add to cart', {
-    //       content_id: this.item.id,
-    //       content_name: this.item.name,
-    //       content_type: 'product',
-    //       value: this.item.price, // Total value for the items added
-    //       currency: 'KD' // You can pass this as a prop if you have multi-currency
-    //     });
-    //   };
-
-    //   this.$store.dispatch("addToCart", cart_item);
-    // },
   }
 };
 </script>

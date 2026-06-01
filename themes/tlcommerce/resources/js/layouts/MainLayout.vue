@@ -6,27 +6,40 @@
     <!-- <div style="position:fixed;top:0;left:0;z-index:9999;background:yellow;padding:10px;">
       <h1 style="color: red;">Test again</h1>
     </div> -->
-    <template v-if="isSplitScreen && !isMobile">
+    <!-- <template v-if="isSplitScreen && !isMobile"> -->
+    <template v-if="isSplitScreen">
       <div class="split-screen-container" :style="containerStyle">
         <div class="split-screen-content" :class="[contentSideClass, 'force-mobile-view']" :style="contentStyle">
-          <header class="header__two love-sticky" style="margin-bottom: 30px;">
+          <div
+            class="split-screen-header-sticky"
+            :class="{ 'split-screen-header-sticky--compact': isSplitScreen && isMobile }"
+          >
+            <div class="split-screen-search-inline-host"></div>
+            <custom-header
+              :site-properties="data.site_properties"
+              :mode="mode"
+              :header-logo-style="headerLogoStyle"
+              :cart-item="cartItem"
+              :header-style="headerStyle"
+              :header-menu-style="headerMenuStyle"
+            />
+          </div>
 
-            <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
-              :wishlist-item="wishlistItem" :compare-item="compareItem" :header-logo-style="headerLogoStyle"
-              :header-menu-style="headerMenuStyle" :menu-items="rightMenuItems" :data-loading="MenuItemsLoading"
-              :right-menu-items="rightMenuItems" :left-menu-items="leftMenuItems"
-              @logout-customer="logoutCustomer"></header-middle>
-
-          </header>
-
-          <div class="content-split-nudge">
+          <div ref="splitContentScroll" class="content-split-nudge">
             <slot></slot>
           </div>
 
         </div>
 
         <div class="split-screen-feature" :class="featureSideClass" :style="featureStyle">
-          <BannerFeature :settings="splitScreenSettings" :imagePath="featureImagePath" v-if="isSplitScreen" />
+          <BannerFeature
+            v-if="isSplitScreen && !isMobile"
+            :settings="splitScreenSettings"
+            :imagePath="featureImagePath"
+            :cart-item="cartItem"
+            :header-style="headerStyle"
+            :header-menu-style="headerMenuStyle"
+          />
 
 
           <!--End Cookie Consent-->
@@ -62,28 +75,14 @@
       </div>
     </template>
 
-    <template v-else-if="isSplitScreen && isMobile">
+    <!-- <template v-else-if="isSplitScreen && isMobile">
 
       <div class="layout__two">
         <preloader :loading="preloaderLoading"></preloader>
 
-        <!-- <top-bar-banner :properties="top_bar_banner_properties" v-if="
-          top_bar_banner_properties != null &&
-          top_bar_banner_properties.topbar_banner_status == 1
-        "></top-bar-banner> -->
-        <!-- Header -->
-        <!-- <header class="header__two love-sticky">
-
-          <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
-            :wishlist-item="wishlistItem" :compare-item="compareItem" :header-logo-style="headerLogoStyle"
-            :header-menu-style="headerMenuStyle" class="d-none d-lg-block"></header-middle>
-
-        </header> -->
-
         <mobile-header :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
           :header-style="headerStyle" :header-menu-style="headerMenuStyle"
           :header-logo-style="headerLogoStyle"></mobile-header>
-        <!-- End Header -->
 
         <div class="main_content light-bg">
           <slot />
@@ -93,7 +92,7 @@
 
         <BackToTop />
       </div>
-    </template>
+    </template> -->
 
     <!-- Default Layout -->
     <template v-else>
@@ -112,7 +111,8 @@
             @change-language-currency="setCurrencyLanguage" @logout-customer="logoutCustomer"></header-top>
           <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
             :wishlist-item="wishlistItem" :compare-item="compareItem" :header-logo-style="headerLogoStyle"
-            :header-menu-style="headerMenuStyle" class="d-none d-lg-block"></header-middle>
+            :header-menu-style="headerMenuStyle" :data-loading="MenuItemsLoading"
+            class="d-none d-lg-block"></header-middle>
           <header-bottom :data-loading="MenuItemsLoading" :mega-categories="data.megaCategories"
             :menu-items="headerBottomMenu" :header-style="headerStyle" :header-menu-style="headerMenuStyle"
             class="d-none d-lg-block"></header-bottom>
@@ -235,6 +235,7 @@ import { mapState, mapGetters, mapActions } from "vuex";
 import config from "../config.js";
 const axios = require("axios").default;
 import VRuntimeTemplate from "vue3-runtime-template";
+import HeaderMiddle from "@/components/pageheader/HeaderMiddle.vue";
 
 const address_widget = defineAsyncComponent(() =>
   import("@/components/widget/address_widget.vue")
@@ -262,9 +263,6 @@ const HeaderTop = defineAsyncComponent(() =>
   import("@/components/pageheader/HeaderTop.vue")
 );
 
-const HeaderMiddle = defineAsyncComponent(() =>
-  import("@/components/pageheader/HeaderMiddle.vue")
-);
 const HeaderBottom = defineAsyncComponent(() =>
   import("@/components/pageheader/HeaderBottom.vue")
 );
@@ -301,6 +299,10 @@ const recent_blog_widget = defineAsyncComponent(() =>
 
 const BannerFeature = defineAsyncComponent(() =>
   import("@/components/features/BannerFeature.vue")
+);
+
+const CustomHeader = defineAsyncComponent(() =>
+  import("@/components/pageheader/CustomHeader.vue")
 );
 
 // import ProductPage from '@/views/products/index.vue';
@@ -345,6 +347,7 @@ export default {
     VRuntimeTemplate,
     Preloader,
     BannerFeature,
+    CustomHeader,
     CompanyFooter
   },
   setup() {
@@ -532,10 +535,7 @@ export default {
     ]),
 
     layoutClass() {
-      if (this.isSplitScreen && !this.isMobile) {
-        return 'layout-split-screen';
-      }
-      return 'layout__two';
+      return this.isSplitScreen ? 'layout-split-screen' : 'layout__two';
     },
 
     containerStyle() {
@@ -556,10 +556,13 @@ export default {
     },
 
     contentStyle() {
-      return {
+      const style = {
         backgroundColor: '#ffffff',
-        overflowY: 'auto'
       };
+      if (this.isSplitScreen && !this.isMobile) {
+        style.overflowY = 'auto';
+      }
+      return style;
     },
 
     featureStyle() {
@@ -1156,12 +1159,19 @@ export default {
   },
 
   watch: {
-    $route(to, from) {
+    $route() {
       if (this.$route.name === "product") {
         this.isSingleProduct = true;
       } else {
         this.isSingleProduct = false;
       }
+
+      this.$nextTick(() => {
+        const scrollEl = this.$refs.splitContentScroll;
+        if (scrollEl) {
+          scrollEl.scrollTop = 0;
+        }
+      });
     },
   },
   beforeDestroy() {
@@ -1217,29 +1227,50 @@ export default {
 
 .split-screen-container {
   width: 100%;
-  align-items: flex-start;
-  height: fit-content;
-  min-height: unset;
+  align-items: stretch;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.layout-split-screen {
+  height: 100vh;
+  overflow: hidden;
 }
 
 .split-screen-content {
-  padding: 2rem;
+  position: relative;
   display: flex;
   flex-direction: column;
   padding: 0 !important;
   margin: 0 !important;
-  height: fit-content;
-  min-height: unset;
+  height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.split-screen-search-inline-host {
+  max-height: 0;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: max-height 0.25s ease-out;
+
+  &.is-open {
+    max-height: 72px;
+  }
+
+  :deep(.mobile-search-form) {
+    position: relative !important;
+    transform: none !important;
+    visibility: visible;
+  }
 }
 
 .split-screen-feature {
   position: sticky;
-  /* Adjust this value to match your header's actual height */
-  top: 80px;
-
-  /* The height should be the full viewport MINUS the header height */
-  height: calc(100vh - 80px);
-
+  top: 0;
+  height: 100vh;
+  max-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1261,17 +1292,44 @@ export default {
 @media (max-width: 768px) {
   .layout-split-screen {
     display: block !important;
+    height: auto;
+    overflow: visible;
   }
 
   .split-screen-container {
     display: block !important;
     grid-template-columns: none !important;
+    height: auto;
+    overflow: visible;
   }
 
-  .split-screen-content,
-  .split-screen-feature {
+  .split-screen-content {
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
     order: initial !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+  }
+
+  .split-screen-feature {
+    display: none !important;
+  }
+
+  .split-screen-header-sticky--compact {
+    position: static;
+    flex-shrink: 0;
+    z-index: 999;
+    background: #f8f9fa;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  .content-split-nudge {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 

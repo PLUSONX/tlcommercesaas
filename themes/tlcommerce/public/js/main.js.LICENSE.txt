@@ -51,17 +51,37 @@
 
 /*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./app.scss */
 
+/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Countdown.vue?vue&type=style&index=0&id=51e03521&lang=scss */
+
+/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsContent.vue?vue&type=style&index=0&id=7aaf0cbc&lang=scss&scoped=true */
+
+/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true */
+
+/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./HeaderMiddle.vue?vue&type=style&index=0&id=b9d0460c&lang=scss&scoped=true */
+
+/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SingleProduct.vue?vue&type=style&index=0&id=630a158c&lang=scss&scoped=true */
+
 /*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Skeleton.vue?vue&type=style&index=0&id=382eb9b4&lang=scss&scoped=true */
 
 /*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./google-icons.css */
 
 /*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./CompanyFooter.vue?vue&type=style&index=0&id=5bab03e8&scoped=true&lang=css */
 
+/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SearchForm.vue?vue&type=style&index=0&id=48b04d4c&scoped=true&lang=css */
+
 /*! !!../../../css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./bootstrap.css */
+
+/*! !!../../../css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./free-mode.min.css */
+
+/*! !!../../../css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./navigation.min.css */
+
+/*! !!../../../css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./thumbs.min.css */
 
 /*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MainLayout.vue?vue&type=style&index=0&id=5a6a1827&scoped=true&lang=scss */
 
 /*! !!../../css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./theme-sugar.css */
+
+/*! !!../css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./swiper.min.css */
 
 /*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */
 
@@ -73,17 +93,35 @@
 
 /*! !../../style-loader/dist/runtime/injectStylesIntoStyleTag.js */
 
+/*! !../style-loader/dist/runtime/injectStylesIntoStyleTag.js */
+
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./BaseFileInput.vue?vue&type=script&lang=js */
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./BaseIconSvg.vue?vue&type=script&lang=js */
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./CompanyFooter.vue?vue&type=script&lang=js */
 
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Countdown.vue?vue&type=script&lang=js */
+
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Currency.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsContent.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsGallery.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./HeaderMiddle.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MenuDropdown.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MenuItem.vue?vue&type=script&lang=js */
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./NotFound.vue?vue&type=script&lang=js */
 
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SearchForm.vue?vue&type=script&lang=js */
+
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SectionTitle.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SingleProduct.vue?vue&type=script&lang=js */
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Skeleton.vue?vue&type=script&lang=js */
 
@@ -95,19 +133,47 @@
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./CompanyFooter.vue?vue&type=template&id=5bab03e8&scoped=true */
 
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Countdown.vue?vue&type=template&id=51e03521 */
+
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Currency.vue?vue&type=template&id=6a5ef1bc */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsContent.vue?vue&type=template&id=7aaf0cbc&scoped=true */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsGallery.vue?vue&type=template&id=59bea7fb&scoped=true */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./HeaderMiddle.vue?vue&type=template&id=b9d0460c&scoped=true */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MenuDropdown.vue?vue&type=template&id=0f2f1ea5 */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MenuItem.vue?vue&type=template&id=1101a2a7 */
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./NotFound.vue?vue&type=template&id=bcc9ff00 */
 
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SearchForm.vue?vue&type=template&id=48b04d4c&scoped=true */
+
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SectionTitle.vue?vue&type=template&id=a774a7f8 */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SingleProduct.vue?vue&type=template&id=630a158c&scoped=true */
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Skeleton.vue?vue&type=template&id=382eb9b4&scoped=true */
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./TheLogo.vue?vue&type=template&id=840f138a */
 
+/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Countdown.vue?vue&type=style&index=0&id=51e03521&lang=scss */
+
+/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsContent.vue?vue&type=style&index=0&id=7aaf0cbc&lang=scss&scoped=true */
+
+/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true */
+
+/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./HeaderMiddle.vue?vue&type=style&index=0&id=b9d0460c&lang=scss&scoped=true */
+
+/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SingleProduct.vue?vue&type=style&index=0&id=630a158c&lang=scss&scoped=true */
+
 /*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Skeleton.vue?vue&type=style&index=0&id=382eb9b4&lang=scss&scoped=true */
 
 /*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./CompanyFooter.vue?vue&type=style&index=0&id=5bab03e8&scoped=true&lang=css */
+
+/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SearchForm.vue?vue&type=style&index=0&id=48b04d4c&scoped=true&lang=css */
 
 /*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MainLayout.vue?vue&type=script&lang=js */
 
@@ -127,11 +193,47 @@
 
 /*! ../../../node_modules/css-loader/dist/runtime/api.js */
 
+/*! ../../components/menu/MenuDropdown.vue */
+
+/*! ../../components/menu/MenuItem.vue */
+
+/*! ../../config.js */
+
 /*! ../../css-loader/dist/runtime/api.js */
+
+/*! ../../enums/enums */
+
+/*! ../../shared/classes-to-selector.js */
+
+/*! ../../shared/create-element-if-not-defined.js */
+
+/*! ../../shared/create-shadow.js */
+
+/*! ../../shared/dom.js */
+
+/*! ../../shared/effect-init.js */
+
+/*! ../../shared/effect-target.js */
+
+/*! ../../shared/effect-virtual-transition-end.js */
+
+/*! ../../shared/utils.js */
 
 /*! ../cancel/Cancel */
 
 /*! ../cancel/isCancel */
+
+/*! ../components-shared/get-changed-params.js */
+
+/*! ../components-shared/get-params.js */
+
+/*! ../components-shared/mount-swiper.js */
+
+/*! ../components-shared/update-on-virtual-data.js */
+
+/*! ../components-shared/update-swiper.js */
+
+/*! ../components-shared/utils.js */
 
 /*! ../components/ui/CompanyFooter.vue */
 
@@ -140,6 +242,8 @@
 /*! ../core/buildFullPath */
 
 /*! ../core/createError */
+
+/*! ../css-loader/dist/runtime/api.js */
 
 /*! ../defaults */
 
@@ -155,13 +259,29 @@
 
 /*! ../i18n_setup */
 
+/*! ../product/SingleProduct.vue */
+
 /*! ../router/index */
+
+/*! ../shared/calc-looped-slides.js */
+
+/*! ../shared/dom.js */
+
+/*! ../shared/get-browser.js */
+
+/*! ../shared/get-device.js */
+
+/*! ../shared/get-support.js */
+
+/*! ../shared/utils.js */
 
 /*! ../shop/views/all_shops.vue */
 
 /*! ../shop/views/shop_page.vue */
 
 /*! ../store */
+
+/*! ../ui/Countdown.vue */
 
 /*! ../utils */
 
@@ -241,6 +361,8 @@
 
 /*! ../views/products/index.vue */
 
+/*! ../views/store-info/index.vue */
+
 /*! ./../core/settle */
 
 /*! ./../defaults */
@@ -279,9 +401,33 @@
 
 /*! ./CompanyFooter.vue?vue&type=template&id=5bab03e8&scoped=true */
 
+/*! ./Countdown.vue?vue&type=script&lang=js */
+
+/*! ./Countdown.vue?vue&type=style&index=0&id=51e03521&lang=scss */
+
+/*! ./Countdown.vue?vue&type=template&id=51e03521 */
+
 /*! ./Currency.vue?vue&type=script&lang=js */
 
 /*! ./Currency.vue?vue&type=template&id=6a5ef1bc */
+
+/*! ./DetailsContent.vue?vue&type=script&lang=js */
+
+/*! ./DetailsContent.vue?vue&type=style&index=0&id=7aaf0cbc&lang=scss&scoped=true */
+
+/*! ./DetailsContent.vue?vue&type=template&id=7aaf0cbc&scoped=true */
+
+/*! ./DetailsGallery.vue?vue&type=script&lang=js */
+
+/*! ./DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true */
+
+/*! ./DetailsGallery.vue?vue&type=template&id=59bea7fb&scoped=true */
+
+/*! ./HeaderMiddle.vue?vue&type=script&lang=js */
+
+/*! ./HeaderMiddle.vue?vue&type=style&index=0&id=b9d0460c&lang=scss&scoped=true */
+
+/*! ./HeaderMiddle.vue?vue&type=template&id=b9d0460c&scoped=true */
 
 /*! ./InterceptorManager */
 
@@ -291,13 +437,35 @@
 
 /*! ./MainLayout.vue?vue&type=template&id=5a6a1827&scoped=true */
 
+/*! ./MenuDropdown.vue?vue&type=script&lang=js */
+
+/*! ./MenuDropdown.vue?vue&type=template&id=0f2f1ea5 */
+
+/*! ./MenuItem.vue */
+
+/*! ./MenuItem.vue?vue&type=script&lang=js */
+
+/*! ./MenuItem.vue?vue&type=template&id=1101a2a7 */
+
 /*! ./NotFound.vue?vue&type=script&lang=js */
 
 /*! ./NotFound.vue?vue&type=template&id=bcc9ff00 */
 
+/*! ./SearchForm.vue?vue&type=script&lang=js */
+
+/*! ./SearchForm.vue?vue&type=style&index=0&id=48b04d4c&scoped=true&lang=css */
+
+/*! ./SearchForm.vue?vue&type=template&id=48b04d4c&scoped=true */
+
 /*! ./SectionTitle.vue?vue&type=script&lang=js */
 
 /*! ./SectionTitle.vue?vue&type=template&id=a774a7f8 */
+
+/*! ./SingleProduct.vue?vue&type=script&lang=js */
+
+/*! ./SingleProduct.vue?vue&type=style&index=0&id=630a158c&lang=scss&scoped=true */
+
+/*! ./SingleProduct.vue?vue&type=template&id=630a158c&scoped=true */
 
 /*! ./Skeleton.vue?vue&type=script&lang=js */
 
@@ -313,15 +481,23 @@
 
 /*! ./adapters/xhr */
 
+/*! ./addClasses.js */
+
 /*! ./assets/css/google-icons.css */
 
 /*! ./assets/sass/app.scss */
+
+/*! ./breakpoints/index.js */
 
 /*! ./cancel/Cancel */
 
 /*! ./cancel/CancelToken */
 
 /*! ./cancel/isCancel */
+
+/*! ./check-overflow/index.js */
+
+/*! ./classes/index.js */
 
 /*! ./components/global/BaseFileInput.vue */
 
@@ -339,7 +515,11 @@
 
 /*! ./const.js */
 
+/*! ./context.js */
+
 /*! ./core/Axios */
+
+/*! ./core/core.js */
 
 /*! ./core/enhanceError */
 
@@ -349,7 +529,11 @@
 
 /*! ./defaults */
 
+/*! ./defaults.js */
+
 /*! ./dispatchRequest */
+
+/*! ./dom.js */
 
 /*! ./enhanceError */
 
@@ -357,7 +541,21 @@
 
 /*! ./env/data */
 
+/*! ./events-emitter.js */
+
+/*! ./events/index.js */
+
+/*! ./get-children.js */
+
+/*! ./get-support.js */
+
+/*! ./getBreakpoint.js */
+
+/*! ./getTranslate.js */
+
 /*! ./getters.js */
+
+/*! ./grab-cursor/index.js */
 
 /*! ./helpers/bind */
 
@@ -369,31 +567,199 @@
 
 /*! ./i18n_setup */
 
+/*! ./images/index.js */
+
 /*! ./layouts/MainLayout.vue */
 
 /*! ./lib/axios */
 
+/*! ./loadImage.js */
+
+/*! ./loop.js */
+
+/*! ./loop/index.js */
+
+/*! ./loopCreate.js */
+
+/*! ./loopDestroy.js */
+
+/*! ./loopFix.js */
+
+/*! ./maxTranslate.js */
+
 /*! ./mergeConfig */
 
+/*! ./methods/addSlide.js */
+
+/*! ./methods/appendSlide.js */
+
+/*! ./methods/prependSlide.js */
+
+/*! ./methods/removeAllSlides.js */
+
+/*! ./methods/removeSlide.js */
+
+/*! ./minTranslate.js */
+
+/*! ./moduleExtendParams.js */
+
+/*! ./modules/a11y/a11y.js */
+
+/*! ./modules/autoplay/autoplay.js */
+
+/*! ./modules/controller/controller.js */
+
+/*! ./modules/effect-cards/effect-cards.js */
+
+/*! ./modules/effect-coverflow/effect-coverflow.js */
+
+/*! ./modules/effect-creative/effect-creative.js */
+
+/*! ./modules/effect-cube/effect-cube.js */
+
+/*! ./modules/effect-fade/effect-fade.js */
+
+/*! ./modules/effect-flip/effect-flip.js */
+
+/*! ./modules/free-mode/free-mode.js */
+
+/*! ./modules/grid/grid.js */
+
+/*! ./modules/hash-navigation/hash-navigation.js */
+
+/*! ./modules/history/history.js */
+
+/*! ./modules/keyboard/keyboard.js */
+
 /*! ./modules/layout */
+
+/*! ./modules/lazy/lazy.js */
+
+/*! ./modules/manipulation/manipulation.js */
+
+/*! ./modules/mousewheel/mousewheel.js */
+
+/*! ./modules/navigation/navigation.js */
+
+/*! ./modules/observer/observer.js */
+
+/*! ./modules/pagination/pagination.js */
+
+/*! ./modules/parallax/parallax.js */
+
+/*! ./modules/resize/resize.js */
+
+/*! ./modules/scrollbar/scrollbar.js */
+
+/*! ./modules/thumbs/thumbs.js */
+
+/*! ./modules/virtual/virtual.js */
+
+/*! ./modules/zoom/zoom.js */
 
 /*! ./mutations.js */
 
 /*! ./node_modules/vue-loader/dist/exportHelper.js */
 
+/*! ./onClick.js */
+
+/*! ./onResize.js */
+
+/*! ./onScroll.js */
+
+/*! ./onTouchEnd.js */
+
+/*! ./onTouchMove.js */
+
+/*! ./onTouchStart.js */
+
+/*! ./params-list.js */
+
+/*! ./preloadImages.js */
+
 /*! ./proxy.js */
+
+/*! ./removeClasses.js */
 
 /*! ./router */
 
+/*! ./setBreakpoint.js */
+
+/*! ./setGrabCursor.js */
+
+/*! ./setTransition.js */
+
+/*! ./setTranslate.js */
+
+/*! ./slide/index.js */
+
+/*! ./slideNext.js */
+
+/*! ./slidePrev.js */
+
+/*! ./slideReset.js */
+
+/*! ./slideTo.js */
+
+/*! ./slideToClickedSlide.js */
+
+/*! ./slideToClosest.js */
+
+/*! ./slideToLoop.js */
+
 /*! ./store */
+
+/*! ./swiper-slide.js */
+
+/*! ./swiper.js */
 
 /*! ./time.js */
 
 /*! ./transformData */
 
+/*! ./transition/index.js */
+
+/*! ./transitionEmit.js */
+
+/*! ./transitionEnd.js */
+
+/*! ./transitionStart.js */
+
+/*! ./translate/index.js */
+
+/*! ./translateTo.js */
+
+/*! ./unsetGrabCursor.js */
+
+/*! ./update/index.js */
+
+/*! ./updateActiveIndex.js */
+
+/*! ./updateAutoHeight.js */
+
+/*! ./updateClickedSlide.js */
+
+/*! ./updateProgress.js */
+
+/*! ./updateSize.js */
+
+/*! ./updateSlides.js */
+
+/*! ./updateSlidesClasses.js */
+
+/*! ./updateSlidesOffset.js */
+
+/*! ./updateSlidesProgress.js */
+
 /*! ./utils */
 
+/*! ./utils.js */
+
+/*! ./virtual.js */
+
 /*! @/components/features/BannerFeature.vue */
+
+/*! @/components/pageheader/CustomHeader.vue */
 
 /*! @/components/pageheader/HeaderBottom.vue */
 
@@ -403,6 +769,10 @@
 
 /*! @/components/pageheader/MobileHeader.vue */
 
+/*! @/components/product/DetailsContent.vue */
+
+/*! @/components/product/DetailsGallery.vue */
+
 /*! @/components/ui/BackToTop.vue */
 
 /*! @/components/ui/Copyright.vue */
@@ -410,6 +780,8 @@
 /*! @/components/ui/Gdpr.vue */
 
 /*! @/components/ui/Preloader.vue */
+
+/*! @/components/ui/SearchForm.vue */
 
 /*! @/components/ui/StickyFooter.vue */
 
@@ -430,6 +802,8 @@
 /*! @/components/widget/recent_blog_widget.vue */
 
 /*! @/components/widget/social_links.vue */
+
+/*! @/fakeDB/offcanvas.json */
 
 /*! @coreui/coreui/dist/css/coreui.min.css */
 
@@ -463,7 +837,11 @@
 
 /*! bootstrap/dist/css/bootstrap.css */
 
+/*! dom7 */
+
 /*! dot-object */
+
+/*! fslightbox-vue/v3 */
 
 /*! import() */
 
@@ -545,11 +923,29 @@
 
 /*! import() | SinglePage */
 
+/*! import() | StoreInfo */
+
 /*! import() | TagBlogs */
 
 /*! process/browser.js */
 
 /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
+
+/*! ssr-window */
+
+/*! swiper */
+
+/*! swiper/css */
+
+/*! swiper/css/free-mode */
+
+/*! swiper/css/navigation */
+
+/*! swiper/css/thumbs */
+
+/*! swiper/vue */
+
+/*! v-lazy-image */
 
 /*! vue */
 
@@ -592,12 +988,20 @@
   \*************************************/
 
 /*!*************************************!*\
+  !*** ./resources/js/enums/enums.js ***!
+  \*************************************/
+
+/*!*************************************!*\
   !*** ./resources/js/store/index.js ***!
   \*************************************/
 
 /*!**************************************!*\
   !*** ./resources/js/router/index.js ***!
   \**************************************/
+
+/*!***************************************!*\
+  !*** ./node_modules/dom7/dom7.esm.js ***!
+  \***************************************/
 
 /*!***************************************!*\
   !*** ./resources/js/store/actions.js ***!
@@ -620,12 +1024,36 @@
   \*****************************************/
 
 /*!*****************************************!*\
+  !*** ./node_modules/swiper/vue/loop.js ***!
+  \*****************************************/
+
+/*!*****************************************!*\
   !*** ./resources/js/store/mutations.js ***!
   \*****************************************/
 
 /*!******************************************!*\
   !*** ./node_modules/dot-object/index.js ***!
   \******************************************/
+
+/*!******************************************!*\
+  !*** ./node_modules/swiper/core/core.js ***!
+  \******************************************/
+
+/*!*******************************************!*\
+  !*** ./node_modules/fslightbox-vue/v3.js ***!
+  \*******************************************/
+
+/*!*******************************************!*\
+  !*** ./node_modules/swiper/shared/dom.js ***!
+  \*******************************************/
+
+/*!*******************************************!*\
+  !*** ./node_modules/swiper/swiper.esm.js ***!
+  \*******************************************/
+
+/*!*******************************************!*\
+  !*** ./node_modules/swiper/vue/swiper.js ***!
+  \*******************************************/
 
 /*!*******************************************!*\
   !*** ./resources/js/assets/sass/app.scss ***!
@@ -639,12 +1067,36 @@
   !*** ./node_modules/axios/lib/env/data.js ***!
   \********************************************/
 
+/*!********************************************!*\
+  !*** ./node_modules/swiper/swiper.min.css ***!
+  \********************************************/
+
+/*!********************************************!*\
+  !*** ./node_modules/swiper/vue/context.js ***!
+  \********************************************/
+
+/*!********************************************!*\
+  !*** ./node_modules/swiper/vue/virtual.js ***!
+  \********************************************/
+
+/*!********************************************!*\
+  !*** ./resources/js/fakeDB/offcanvas.json ***!
+  \********************************************/
+
+/*!*********************************************!*\
+  !*** ./node_modules/swiper/shared/utils.js ***!
+  \*********************************************/
+
 /*!*********************************************!*\
   !*** ./resources/js/layouts/MainLayout.vue ***!
   \*********************************************/
 
 /*!**********************************************!*\
   !*** ./node_modules/axios/lib/core/Axios.js ***!
+  \**********************************************/
+
+/*!**********************************************!*\
+  !*** ./node_modules/swiper/core/defaults.js ***!
   \**********************************************/
 
 /*!**********************************************!*\
@@ -655,6 +1107,10 @@
   !*** ./node_modules/axios/lib/core/settle.js ***!
   \***********************************************/
 
+/*!***********************************************!*\
+  !*** ./node_modules/swiper/vue/swiper-vue.js ***!
+  \***********************************************/
+
 /*!************************************************!*\
   !*** ./node_modules/axios/lib/adapters/xhr.js ***!
   \************************************************/
@@ -663,12 +1119,64 @@
   !*** ./node_modules/axios/lib/helpers/bind.js ***!
   \************************************************/
 
+/*!************************************************!*\
+  !*** ./node_modules/swiper/core/loop/index.js ***!
+  \************************************************/
+
 /*!*************************************************!*\
   !*** ./node_modules/axios/lib/cancel/Cancel.js ***!
   \*************************************************/
 
+/*!*************************************************!*\
+  !*** ./node_modules/swiper/core/slide/index.js ***!
+  \*************************************************/
+
+/*!*************************************************!*\
+  !*** ./node_modules/swiper/vue/get-children.js ***!
+  \*************************************************/
+
+/*!*************************************************!*\
+  !*** ./node_modules/swiper/vue/swiper-slide.js ***!
+  \*************************************************/
+
 /*!**************************************************!*\
   !*** ./node_modules/axios/lib/helpers/spread.js ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./node_modules/swiper/core/events/index.js ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./node_modules/swiper/core/images/index.js ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./node_modules/swiper/core/loop/loopFix.js ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./node_modules/swiper/core/update/index.js ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./node_modules/swiper/modules/a11y/a11y.js ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./node_modules/swiper/modules/grid/grid.js ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./node_modules/swiper/modules/lazy/lazy.js ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./node_modules/swiper/modules/zoom/zoom.js ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./node_modules/swiper/shared/get-device.js ***!
   \**************************************************/
 
 /*!**************************************************!*\
@@ -677,6 +1185,10 @@
 
 /*!**************************************************!*\
   !*** ./resources/js/assets/css/google-icons.css ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./resources/js/components/ui/Countdown.vue ***!
   \**************************************************/
 
 /*!***************************************************!*\
@@ -691,6 +1203,38 @@
   !*** ./node_modules/axios/lib/helpers/cookies.js ***!
   \***************************************************/
 
+/*!***************************************************!*\
+  !*** ./node_modules/ssr-window/ssr-window.esm.js ***!
+  \***************************************************/
+
+/*!***************************************************!*\
+  !*** ./node_modules/swiper/core/classes/index.js ***!
+  \***************************************************/
+
+/*!***************************************************!*\
+  !*** ./node_modules/swiper/core/slide/slideTo.js ***!
+  \***************************************************/
+
+/*!***************************************************!*\
+  !*** ./node_modules/swiper/shared/effect-init.js ***!
+  \***************************************************/
+
+/*!***************************************************!*\
+  !*** ./node_modules/swiper/shared/get-browser.js ***!
+  \***************************************************/
+
+/*!***************************************************!*\
+  !*** ./node_modules/swiper/shared/get-support.js ***!
+  \***************************************************/
+
+/*!***************************************************!*\
+  !*** ./resources/js/components/menu/MenuItem.vue ***!
+  \***************************************************/
+
+/*!***************************************************!*\
+  !*** ./resources/js/components/ui/SearchForm.vue ***!
+  \***************************************************/
+
 /*!****************************************************!*\
   !*** ./node_modules/axios/lib/core/createError.js ***!
   \****************************************************/
@@ -701,6 +1245,14 @@
 
 /*!****************************************************!*\
   !*** ./node_modules/axios/lib/helpers/buildURL.js ***!
+  \****************************************************/
+
+/*!****************************************************!*\
+  !*** ./node_modules/swiper/core/events-emitter.js ***!
+  \****************************************************/
+
+/*!****************************************************!*\
+  !*** ./node_modules/swiper/core/events/onClick.js ***!
   \****************************************************/
 
 /*!****************************************************!*\
@@ -724,6 +1276,38 @@
   \*****************************************************/
 
 /*!*****************************************************!*\
+  !*** ./node_modules/swiper/core/events/onResize.js ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
+  !*** ./node_modules/swiper/core/events/onScroll.js ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
+  !*** ./node_modules/swiper/core/loop/loopCreate.js ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
+  !*** ./node_modules/swiper/core/slide/slideNext.js ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
+  !*** ./node_modules/swiper/core/slide/slidePrev.js ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
+  !*** ./node_modules/swiper/core/translate/index.js ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
+  !*** ./node_modules/swiper/shared/create-shadow.js ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
+  !*** ./node_modules/swiper/shared/effect-target.js ***!
+  \*****************************************************/
+
+/*!*****************************************************!*\
   !*** ./resources/js/components/global/Currency.vue ***!
   \*****************************************************/
 
@@ -741,6 +1325,26 @@
 
 /*!******************************************************!*\
   !*** ./node_modules/axios/lib/core/transformData.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ./node_modules/swiper/core/images/loadImage.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ./node_modules/swiper/core/loop/loopDestroy.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ./node_modules/swiper/core/slide/slideReset.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ./node_modules/swiper/core/transition/index.js ***!
+  \******************************************************/
+
+/*!******************************************************!*\
+  !*** ./node_modules/swiper/modules/thumbs/thumbs.js ***!
   \******************************************************/
 
 /*!******************************************************!*\
@@ -768,7 +1372,31 @@
   \*******************************************************/
 
 /*!*******************************************************!*\
+  !*** ./node_modules/swiper/core/breakpoints/index.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./node_modules/swiper/core/events/onTouchEnd.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./node_modules/swiper/core/grab-cursor/index.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./node_modules/swiper/core/slide/slideToLoop.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./node_modules/swiper/core/update/updateSize.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
   !*** ./node_modules/vue-select/dist/vue-select.es.js ***!
+  \*******************************************************/
+
+/*!*******************************************************!*\
+  !*** ./resources/js/components/menu/MenuDropdown.vue ***!
   \*******************************************************/
 
 /*!*******************************************************!*\
@@ -792,6 +1420,30 @@
   \********************************************************/
 
 /*!********************************************************!*\
+  !*** ./node_modules/swiper/components-shared/utils.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ./node_modules/swiper/core/classes/addClasses.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ./node_modules/swiper/core/events/onTouchMove.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ./node_modules/swiper/core/moduleExtendParams.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ./node_modules/swiper/modules/history/history.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
+  !*** ./node_modules/swiper/modules/virtual/virtual.js ***!
+  \********************************************************/
+
+/*!********************************************************!*\
   !*** ./resources/js/components/global/BaseIconSvg.vue ***!
   \********************************************************/
 
@@ -812,8 +1464,48 @@
   \*********************************************************/
 
 /*!*********************************************************!*\
+  !*** ./node_modules/swiper/core/events/onTouchStart.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./node_modules/swiper/core/update/updateSlides.js ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
+  !*** ./node_modules/v-lazy-image/dist/v-lazy-image.mjs ***!
+  \*********************************************************/
+
+/*!*********************************************************!*\
   !*** ./resources/js/components/global/SectionTitle.vue ***!
   \*********************************************************/
+
+/*!**********************************************************!*\
+  !*** ./node_modules/swiper/core/check-overflow/index.js ***!
+  \**********************************************************/
+
+/*!**********************************************************!*\
+  !*** ./node_modules/swiper/core/images/preloadImages.js ***!
+  \**********************************************************/
+
+/*!**********************************************************!*\
+  !*** ./node_modules/swiper/core/slide/slideToClosest.js ***!
+  \**********************************************************/
+
+/*!**********************************************************!*\
+  !*** ./node_modules/swiper/modules/autoplay/autoplay.js ***!
+  \**********************************************************/
+
+/*!**********************************************************!*\
+  !*** ./node_modules/swiper/modules/keyboard/keyboard.js ***!
+  \**********************************************************/
+
+/*!**********************************************************!*\
+  !*** ./node_modules/swiper/modules/parallax/parallax.js ***!
+  \**********************************************************/
+
+/*!**********************************************************!*\
+  !*** ./node_modules/swiper/shared/calc-looped-slides.js ***!
+  \**********************************************************/
 
 /*!**********************************************************!*\
   !*** ./resources/js/components/global/BaseFileInput.vue ***!
@@ -828,8 +1520,60 @@
   \***********************************************************/
 
 /*!***********************************************************!*\
+  !*** ./node_modules/swiper/core/classes/removeClasses.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./node_modules/swiper/core/modules/resize/resize.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./node_modules/swiper/core/translate/translateTo.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./node_modules/swiper/core/update/updateProgress.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./node_modules/swiper/modules/thumbs/thumbs.min.css ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./node_modules/swiper/shared/classes-to-selector.js ***!
+  \***********************************************************/
+
+/*!***********************************************************!*\
   !*** ./node_modules/vue-toast-notification/dist/index.js ***!
   \***********************************************************/
+
+/*!***********************************************************!*\
+  !*** ./resources/js/components/product/SingleProduct.vue ***!
+  \***********************************************************/
+
+/*!************************************************************!*\
+  !*** ./node_modules/swiper/core/translate/getTranslate.js ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ./node_modules/swiper/core/translate/maxTranslate.js ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ./node_modules/swiper/core/translate/minTranslate.js ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ./node_modules/swiper/core/translate/setTranslate.js ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ./node_modules/swiper/modules/free-mode/free-mode.js ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ./node_modules/swiper/modules/scrollbar/scrollbar.js ***!
+  \************************************************************/
 
 /*!************************************************************!*\
   !*** ./node_modules/vue-i18n/dist/vue-i18n.esm-bundler.js ***!
@@ -837,6 +1581,14 @@
 
 /*!************************************************************!*\
   !*** ./resources/js/App.vue?vue&type=template&id=f348271a ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ./resources/js/components/product/DetailsContent.vue ***!
+  \************************************************************/
+
+/*!************************************************************!*\
+  !*** ./resources/js/components/product/DetailsGallery.vue ***!
   \************************************************************/
 
 /*!*************************************************************!*\
@@ -847,13 +1599,117 @@
   !*** ./node_modules/@vue/shared/dist/shared.esm-bundler.js ***!
   \*************************************************************/
 
+/*!*************************************************************!*\
+  !*** ./node_modules/swiper/components-shared/get-params.js ***!
+  \*************************************************************/
+
+/*!*************************************************************!*\
+  !*** ./node_modules/swiper/core/update/updateAutoHeight.js ***!
+  \*************************************************************/
+
+/*!*************************************************************!*\
+  !*** ./resources/js/components/pageheader/HeaderMiddle.vue ***!
+  \*************************************************************/
+
+/*!**************************************************************!*\
+  !*** ./node_modules/swiper/components-shared/params-list.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ./node_modules/swiper/core/transition/setTransition.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ./node_modules/swiper/core/transition/transitionEnd.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ./node_modules/swiper/core/update/updateActiveIndex.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ./node_modules/swiper/modules/controller/controller.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ./node_modules/swiper/modules/mousewheel/mousewheel.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ./node_modules/swiper/modules/navigation/navigation.js ***!
+  \**************************************************************/
+
+/*!**************************************************************!*\
+  !*** ./node_modules/swiper/modules/pagination/pagination.js ***!
+  \**************************************************************/
+
 /*!***************************************************************!*\
   !*** ./node_modules/axios/lib/helpers/normalizeHeaderName.js ***!
   \***************************************************************/
 
 /*!***************************************************************!*\
+  !*** ./node_modules/swiper/components-shared/mount-swiper.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/swiper/core/breakpoints/getBreakpoint.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/swiper/core/breakpoints/setBreakpoint.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/swiper/core/grab-cursor/setGrabCursor.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/swiper/core/modules/observer/observer.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/swiper/core/slide/slideToClickedSlide.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/swiper/core/transition/transitionEmit.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/swiper/core/update/updateClickedSlide.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
+  !*** ./node_modules/swiper/core/update/updateSlidesOffset.js ***!
+  \***************************************************************/
+
+/*!***************************************************************!*\
   !*** ./node_modules/vuex-multi-tab-state/lib/index.modern.js ***!
   \***************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/swiper/components-shared/update-swiper.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/swiper/core/transition/transitionStart.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/swiper/core/update/updateSlidesClasses.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/swiper/modules/effect-cube/effect-cube.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/swiper/modules/effect-fade/effect-fade.js ***!
+  \****************************************************************/
+
+/*!****************************************************************!*\
+  !*** ./node_modules/swiper/modules/effect-flip/effect-flip.js ***!
+  \****************************************************************/
 
 /*!****************************************************************!*\
   !*** ./node_modules/vue-router/dist/vue-router.esm-bundler.js ***!
@@ -863,9 +1719,33 @@
   !*** ./node_modules/@intlify/shared/dist/shared.esm-bundler.js ***!
   \*****************************************************************/
 
+/*!*****************************************************************!*\
+  !*** ./node_modules/swiper/core/grab-cursor/unsetGrabCursor.js ***!
+  \*****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ./node_modules/swiper/core/update/updateSlidesProgress.js ***!
+  \*****************************************************************/
+
+/*!*****************************************************************!*\
+  !*** ./node_modules/swiper/modules/free-mode/free-mode.min.css ***!
+  \*****************************************************************/
+
+/*!******************************************************************!*\
+  !*** ./node_modules/swiper/modules/effect-cards/effect-cards.js ***!
+  \******************************************************************/
+
+/*!******************************************************************!*\
+  !*** ./node_modules/swiper/modules/manipulation/manipulation.js ***!
+  \******************************************************************/
+
 /*!******************************************************************!*\
   !*** ./node_modules/vue-toast-notification/dist/theme-sugar.css ***!
   \******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/swiper/modules/navigation/navigation.min.css ***!
+  \*******************************************************************/
 
 /*!********************************************************************!*\
   !*** ./node_modules/vue-social-sharing/dist/vue-social-sharing.js ***!
@@ -876,8 +1756,24 @@
   \*********************************************************************/
 
 /*!*********************************************************************!*\
+  !*** ./node_modules/swiper/components-shared/get-changed-params.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/swiper/shared/create-element-if-not-defined.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
+  !*** ./node_modules/swiper/shared/effect-virtual-transition-end.js ***!
+  \*********************************************************************/
+
+/*!*********************************************************************!*\
   !*** ./resources/js/layouts/MainLayout.vue?vue&type=script&lang=js ***!
   \*********************************************************************/
+
+/*!**********************************************************************!*\
+  !*** ./node_modules/swiper/modules/manipulation/methods/addSlide.js ***!
+  \**********************************************************************/
 
 /*!***********************************************************************!*\
   !*** ./node_modules/@intlify/core-base/dist/core-base.esm-bundler.js ***!
@@ -887,6 +1783,14 @@
   !*** ./node_modules/@vue/runtime-dom/dist/runtime-dom.esm-bundler.js ***!
   \***********************************************************************/
 
+/*!************************************************************************!*\
+  !*** ./node_modules/swiper/modules/effect-creative/effect-creative.js ***!
+  \************************************************************************/
+
+/*!************************************************************************!*\
+  !*** ./node_modules/swiper/modules/hash-navigation/hash-navigation.js ***!
+  \************************************************************************/
+
 /*!*************************************************************************!*\
   !*** ./node_modules/@vue/compiler-dom/dist/compiler-dom.esm-bundler.js ***!
   \*************************************************************************/
@@ -895,12 +1799,44 @@
   !*** ./node_modules/@vue/runtime-core/dist/runtime-core.esm-bundler.js ***!
   \*************************************************************************/
 
+/*!*************************************************************************!*\
+  !*** ./node_modules/swiper/components-shared/update-on-virtual-data.js ***!
+  \*************************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ./node_modules/swiper/modules/manipulation/methods/appendSlide.js ***!
+  \*************************************************************************/
+
+/*!*************************************************************************!*\
+  !*** ./node_modules/swiper/modules/manipulation/methods/removeSlide.js ***!
+  \*************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/swiper/modules/effect-coverflow/effect-coverflow.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./node_modules/swiper/modules/manipulation/methods/prependSlide.js ***!
+  \**************************************************************************/
+
+/*!**************************************************************************!*\
+  !*** ./resources/js/components/ui/Countdown.vue?vue&type=script&lang=js ***!
+  \**************************************************************************/
+
 /*!***************************************************************************!*\
   !*** ./node_modules/@intlify/devtools-if/dist/devtools-if.esm-bundler.js ***!
   \***************************************************************************/
 
 /*!***************************************************************************!*\
   !*** ./node_modules/@vue/compiler-core/dist/compiler-core.esm-bundler.js ***!
+  \***************************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ./resources/js/components/menu/MenuItem.vue?vue&type=script&lang=js ***!
+  \***************************************************************************/
+
+/*!***************************************************************************!*\
+  !*** ./resources/js/components/ui/SearchForm.vue?vue&type=script&lang=js ***!
   \***************************************************************************/
 
 /*!****************************************************************************!*\
@@ -913,6 +1849,10 @@
 
 /*!*****************************************************************************!*\
   !*** ./node_modules/@intlify/vue-devtools/dist/vue-devtools.esm-bundler.js ***!
+  \*****************************************************************************/
+
+/*!*****************************************************************************!*\
+  !*** ./node_modules/swiper/modules/manipulation/methods/removeAllSlides.js ***!
   \*****************************************************************************/
 
 /*!*****************************************************************************!*\
@@ -932,6 +1872,10 @@
   \******************************************************************************/
 
 /*!*******************************************************************************!*\
+  !*** ./resources/js/components/menu/MenuDropdown.vue?vue&type=script&lang=js ***!
+  \*******************************************************************************/
+
+/*!*******************************************************************************!*\
   !*** ./resources/js/components/skeleton/Skeleton.vue?vue&type=script&lang=js ***!
   \*******************************************************************************/
 
@@ -939,8 +1883,16 @@
   !*** ./resources/js/components/global/BaseIconSvg.vue?vue&type=script&lang=js ***!
   \********************************************************************************/
 
+/*!********************************************************************************!*\
+  !*** ./resources/js/components/ui/Countdown.vue?vue&type=template&id=51e03521 ***!
+  \********************************************************************************/
+
 /*!*********************************************************************************!*\
   !*** ./resources/js/components/global/SectionTitle.vue?vue&type=script&lang=js ***!
+  \*********************************************************************************/
+
+/*!*********************************************************************************!*\
+  !*** ./resources/js/components/menu/MenuItem.vue?vue&type=template&id=1101a2a7 ***!
   \*********************************************************************************/
 
 /*!**********************************************************************************!*\
@@ -959,8 +1911,28 @@
   !*** ./resources/js/components/global/NotFound.vue?vue&type=template&id=bcc9ff00 ***!
   \***********************************************************************************/
 
+/*!***********************************************************************************!*\
+  !*** ./resources/js/components/product/SingleProduct.vue?vue&type=script&lang=js ***!
+  \***********************************************************************************/
+
+/*!************************************************************************************!*\
+  !*** ./resources/js/components/product/DetailsContent.vue?vue&type=script&lang=js ***!
+  \************************************************************************************/
+
+/*!************************************************************************************!*\
+  !*** ./resources/js/components/product/DetailsGallery.vue?vue&type=script&lang=js ***!
+  \************************************************************************************/
+
 /*!*************************************************************************************!*\
   !*** ./node_modules/@intlify/message-compiler/dist/message-compiler.esm-bundler.js ***!
+  \*************************************************************************************/
+
+/*!*************************************************************************************!*\
+  !*** ./resources/js/components/menu/MenuDropdown.vue?vue&type=template&id=0f2f1ea5 ***!
+  \*************************************************************************************/
+
+/*!*************************************************************************************!*\
+  !*** ./resources/js/components/pageheader/HeaderMiddle.vue?vue&type=script&lang=js ***!
   \*************************************************************************************/
 
 /*!**************************************************************************************!*\
@@ -979,6 +1951,14 @@
   !*** ./resources/js/components/global/BaseFileInput.vue?vue&type=template&id=c731e2c8 ***!
   \****************************************************************************************/
 
+/*!*********************************************************************************************!*\
+  !*** ./resources/js/components/ui/SearchForm.vue?vue&type=template&id=48b04d4c&scoped=true ***!
+  \*********************************************************************************************/
+
+/*!***********************************************************************************************!*\
+  !*** ./resources/js/components/ui/Countdown.vue?vue&type=style&index=0&id=51e03521&lang=scss ***!
+  \***********************************************************************************************/
+
 /*!************************************************************************************************!*\
   !*** ./resources/js/components/ui/CompanyFooter.vue?vue&type=template&id=5bab03e8&scoped=true ***!
   \************************************************************************************************/
@@ -987,9 +1967,29 @@
   !*** ./resources/js/components/skeleton/Skeleton.vue?vue&type=template&id=382eb9b4&scoped=true ***!
   \*************************************************************************************************/
 
+/*!*****************************************************************************************************!*\
+  !*** ./resources/js/components/product/SingleProduct.vue?vue&type=template&id=630a158c&scoped=true ***!
+  \*****************************************************************************************************/
+
+/*!******************************************************************************************************!*\
+  !*** ./resources/js/components/product/DetailsContent.vue?vue&type=template&id=7aaf0cbc&scoped=true ***!
+  \******************************************************************************************************/
+
+/*!******************************************************************************************************!*\
+  !*** ./resources/js/components/product/DetailsGallery.vue?vue&type=template&id=59bea7fb&scoped=true ***!
+  \******************************************************************************************************/
+
 /*!******************************************************************************************************!*\
   !*** ./resources/js/layouts/MainLayout.vue?vue&type=style&index=0&id=5a6a1827&scoped=true&lang=scss ***!
   \******************************************************************************************************/
+
+/*!*******************************************************************************************************!*\
+  !*** ./resources/js/components/pageheader/HeaderMiddle.vue?vue&type=template&id=b9d0460c&scoped=true ***!
+  \*******************************************************************************************************/
+
+/*!***********************************************************************************************************!*\
+  !*** ./resources/js/components/ui/SearchForm.vue?vue&type=style&index=0&id=48b04d4c&scoped=true&lang=css ***!
+  \***********************************************************************************************************/
 
 /*!**************************************************************************************************************!*\
   !*** ./resources/js/components/ui/CompanyFooter.vue?vue&type=style&index=0&id=5bab03e8&scoped=true&lang=css ***!
@@ -998,6 +1998,26 @@
 /*!****************************************************************************************************************!*\
   !*** ./resources/js/components/skeleton/Skeleton.vue?vue&type=style&index=0&id=382eb9b4&lang=scss&scoped=true ***!
   \****************************************************************************************************************/
+
+/*!********************************************************************************************************************!*\
+  !*** ./resources/js/components/product/SingleProduct.vue?vue&type=style&index=0&id=630a158c&lang=scss&scoped=true ***!
+  \********************************************************************************************************************/
+
+/*!*********************************************************************************************************************!*\
+  !*** ./resources/js/components/product/DetailsContent.vue?vue&type=style&index=0&id=7aaf0cbc&lang=scss&scoped=true ***!
+  \*********************************************************************************************************************/
+
+/*!*********************************************************************************************************************!*\
+  !*** ./resources/js/components/product/DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true ***!
+  \*********************************************************************************************************************/
+
+/*!**********************************************************************************************************************!*\
+  !*** ./resources/js/components/pageheader/HeaderMiddle.vue?vue&type=style&index=0&id=b9d0460c&lang=scss&scoped=true ***!
+  \**********************************************************************************************************************/
+
+/*!****************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/swiper/swiper.min.css ***!
+  \****************************************************************************************************************************************************************************/
 
 /*!**********************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/App.vue?vue&type=script&lang=js ***!
@@ -1011,6 +2031,10 @@
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/bootstrap/dist/css/bootstrap.css ***!
   \***************************************************************************************************************************************************************************************/
 
+/*!*******************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/swiper/modules/thumbs/thumbs.min.css ***!
+  \*******************************************************************************************************************************************************************************************/
+
 /*!*********************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/@coreui/coreui/dist/css/coreui.min.css ***!
   \*********************************************************************************************************************************************************************************************/
@@ -1019,9 +2043,29 @@
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/layouts/MainLayout.vue?vue&type=script&lang=js ***!
   \*************************************************************************************************************************************************************************************************/
 
+/*!*************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/swiper/modules/free-mode/free-mode.min.css ***!
+  \*************************************************************************************************************************************************************************************************/
+
 /*!**************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/vue-toast-notification/dist/theme-sugar.css ***!
   \**************************************************************************************************************************************************************************************************/
+
+/*!***************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/swiper/modules/navigation/navigation.min.css ***!
+  \***************************************************************************************************************************************************************************************************/
+
+/*!******************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/Countdown.vue?vue&type=script&lang=js ***!
+  \******************************************************************************************************************************************************************************************************/
+
+/*!*******************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu/MenuItem.vue?vue&type=script&lang=js ***!
+  \*******************************************************************************************************************************************************************************************************/
+
+/*!*******************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/SearchForm.vue?vue&type=script&lang=js ***!
+  \*******************************************************************************************************************************************************************************************************/
 
 /*!********************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/TheLogo.vue?vue&type=script&lang=js ***!
@@ -1040,6 +2084,10 @@
   \**********************************************************************************************************************************************************************************************************/
 
 /*!***********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu/MenuDropdown.vue?vue&type=script&lang=js ***!
+  \***********************************************************************************************************************************************************************************************************/
+
+/*!***********************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/skeleton/Skeleton.vue?vue&type=script&lang=js ***!
   \***********************************************************************************************************************************************************************************************************/
 
@@ -1055,6 +2103,22 @@
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/BaseFileInput.vue?vue&type=script&lang=js ***!
   \**************************************************************************************************************************************************************************************************************/
 
+/*!***************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/SingleProduct.vue?vue&type=script&lang=js ***!
+  \***************************************************************************************************************************************************************************************************************/
+
+/*!****************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsContent.vue?vue&type=script&lang=js ***!
+  \****************************************************************************************************************************************************************************************************************/
+
+/*!****************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsGallery.vue?vue&type=script&lang=js ***!
+  \****************************************************************************************************************************************************************************************************************/
+
+/*!*****************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/pageheader/HeaderMiddle.vue?vue&type=script&lang=js ***!
+  \*****************************************************************************************************************************************************************************************************************/
+
 /*!*********************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./resources/js/assets/sass/app.scss ***!
   \*********************************************************************************************************************************************************************************************************************************************/
@@ -1062,6 +2126,14 @@
 /*!**************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/App.vue?vue&type=template&id=f348271a ***!
   \**************************************************************************************************************************************************************************************************************************************************************/
+
+/*!**********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/Countdown.vue?vue&type=template&id=51e03521 ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!***********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu/MenuItem.vue?vue&type=template&id=1101a2a7 ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/TheLogo.vue?vue&type=template&id=840f138a ***!
@@ -1074,6 +2146,10 @@
 /*!*************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/NotFound.vue?vue&type=template&id=bcc9ff00 ***!
   \*************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!***************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/menu/MenuDropdown.vue?vue&type=template&id=0f2f1ea5 ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!****************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/BaseIconSvg.vue?vue&type=template&id=b69a1dce ***!
@@ -1091,6 +2167,10 @@
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/global/BaseFileInput.vue?vue&type=template&id=c731e2c8 ***!
   \******************************************************************************************************************************************************************************************************************************************************************************************/
 
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/SearchForm.vue?vue&type=template&id=48b04d4c&scoped=true ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************/
+
 /*!**************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/CompanyFooter.vue?vue&type=template&id=5bab03e8&scoped=true ***!
   \**************************************************************************************************************************************************************************************************************************************************************************************************/
@@ -1099,13 +2179,41 @@
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/skeleton/Skeleton.vue?vue&type=template&id=382eb9b4&scoped=true ***!
   \***************************************************************************************************************************************************************************************************************************************************************************************************/
 
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/SingleProduct.vue?vue&type=template&id=630a158c&scoped=true ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsContent.vue?vue&type=template&id=7aaf0cbc&scoped=true ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsGallery.vue?vue&type=template&id=59bea7fb&scoped=true ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/pageheader/HeaderMiddle.vue?vue&type=template&id=b9d0460c&scoped=true ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/SearchForm.vue?vue&type=style&index=0&id=48b04d4c&scoped=true&lang=css ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
 /*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/CompanyFooter.vue?vue&type=style&index=0&id=5bab03e8&scoped=true&lang=css ***!
   \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/SearchForm.vue?vue&type=style&index=0&id=48b04d4c&scoped=true&lang=css ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
 /*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/CompanyFooter.vue?vue&type=style&index=0&id=5bab03e8&scoped=true&lang=css ***!
   \***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/Countdown.vue?vue&type=style&index=0&id=51e03521&lang=scss ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/layouts/MainLayout.vue?vue&type=style&index=0&id=5a6a1827&scoped=true&lang=scss ***!
@@ -1115,6 +2223,26 @@
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/skeleton/Skeleton.vue?vue&type=style&index=0&id=382eb9b4&lang=scss&scoped=true ***!
   \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/SingleProduct.vue?vue&type=style&index=0&id=630a158c&lang=scss&scoped=true ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsContent.vue?vue&type=style&index=0&id=7aaf0cbc&lang=scss&scoped=true ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/pageheader/HeaderMiddle.vue?vue&type=style&index=0&id=b9d0460c&lang=scss&scoped=true ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/Countdown.vue?vue&type=style&index=0&id=51e03521&lang=scss ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
 /*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/layouts/MainLayout.vue?vue&type=style&index=0&id=5a6a1827&scoped=true&lang=scss ***!
   \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
@@ -1122,6 +2250,22 @@
 /*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/skeleton/Skeleton.vue?vue&type=style&index=0&id=382eb9b4&lang=scss&scoped=true ***!
   \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/SingleProduct.vue?vue&type=style&index=0&id=630a158c&lang=scss&scoped=true ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsContent.vue?vue&type=style&index=0&id=7aaf0cbc&lang=scss&scoped=true ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/pageheader/HeaderMiddle.vue?vue&type=style&index=0&id=b9d0460c&lang=scss&scoped=true ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 
 /**
 * @vue/compiler-core v3.5.29

@@ -4,13 +4,10 @@
 
     <div class="page-container split-screen-product-layout">
 
-      <div
-        class="productDetails split-screen-product-scroll"
-        :class="{
-          'force-mobile-layout': forcedMobile,
-          'mobile-content-wrapper': forcedMobile,
-        }"
-      >
+      <div class="productDetails split-screen-product-scroll" :class="{
+        'force-mobile-layout': forcedMobile,
+        'mobile-content-wrapper': forcedMobile,
+      }">
         <!-- <page-header :items="bItems" /> -->
 
         <!-- Product details Hash Menu -->
@@ -574,7 +571,7 @@ export default {
     ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
 
     isSplitScreenDesktop() {
-      return this.isSplitScreen && !this.isMobile;
+      return this.isSplitScreen;
     },
 
     forcedMobile() {
@@ -989,6 +986,10 @@ export default {
   left: 0;
   width: 50%;
   z-index: 100;
-  background: transparent;
+  background: #fff;
+
+  @media (max-width: 769px) {
+    width: 100% !important;
+  }
 }
 </style>

@@ -77,7 +77,7 @@
         <div class="mb-3">
           <label class="option-label font-weight-bold text-capitalize">{{
             attr.title
-            }}</label>
+          }}</label>
 
           <!-- Option List -->
           <div class="checkbox-group d-flex flex-wrap">
@@ -175,7 +175,7 @@
     <!--End attachment-->
     <!--Action buttons-->
     <hr class="divider bg-secondary" />
-    <div class="product-details-action-area">
+    <div class="product-details-action-area" v-if="!showSplitProductFooter">
       <div class="button-group d-flex align-items-center flex-wrap gap-3">
         <!--Place order button-->
         <button type="button" class="btn btn_fill" :disabled="product.quantity < 1" @click.prevent="placeOrder">
@@ -205,7 +205,7 @@
             </div>
             <strong class="d-none d-md-inline-block ms-1">{{
               $t("Add to wishlist")
-              }}</strong>
+            }}</strong>
           </button>
           <!--End Add to wishlist button-->
           <!--Mobile add to compare button-->
@@ -227,7 +227,7 @@
 <script>
 const axios = require("axios").default;
 import Countdown from "../ui/Countdown.vue";
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import enums from "../../enums/enums";
 export default {
   emits: ["goto-section", "color-variant-images"],
@@ -305,6 +305,18 @@ export default {
         ? parseInt(this.product.max_item_on_purchase)
         : this.product.quantity;
     },
+
+    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+    isSplitScreenDesktop() {
+      return this.isSplitScreen;
+    },
+
+    showSplitProductFooter() {
+      return this.isSplitScreenDesktop;
+    },
+
+
   }),
   watch: {
     quantityValue() {

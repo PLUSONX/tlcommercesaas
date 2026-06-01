@@ -1,34 +1,36 @@
-/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MobileHeader.vue?vue&type=style&index=0&id=64cf81c7&scoped=true&lang=css */
+/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./CustomHeader.vue?vue&type=style&index=0&id=a450f454&scoped=true&lang=css */
 
 /*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */
 
-/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MobileHeader.vue?vue&type=script&lang=js */
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./CustomHeader.vue?vue&type=script&lang=js */
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./TheOffcanvas.vue?vue&type=script&lang=js */
 
-/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MobileHeader.vue?vue&type=template&id=64cf81c7&scoped=true */
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./CustomHeader.vue?vue&type=template&id=a450f454&scoped=true */
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./TheOffcanvas.vue?vue&type=template&id=32be5f2b */
 
-/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./MobileHeader.vue?vue&type=style&index=0&id=64cf81c7&scoped=true&lang=css */
+/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./CustomHeader.vue?vue&type=style&index=0&id=a450f454&scoped=true&lang=css */
 
 /*! ../../../../node_modules/css-loader/dist/runtime/api.js */
+
+/*! ./CustomHeader.vue?vue&type=script&lang=js */
+
+/*! ./CustomHeader.vue?vue&type=style&index=0&id=a450f454&scoped=true&lang=css */
+
+/*! ./CustomHeader.vue?vue&type=template&id=a450f454&scoped=true */
 
 /*! ./MenuDropdown.vue */
 
 /*! ./MenuItem.vue */
-
-/*! ./MobileHeader.vue?vue&type=script&lang=js */
-
-/*! ./MobileHeader.vue?vue&type=style&index=0&id=64cf81c7&scoped=true&lang=css */
-
-/*! ./MobileHeader.vue?vue&type=template&id=64cf81c7&scoped=true */
 
 /*! ./TheOffcanvas.vue?vue&type=script&lang=js */
 
 /*! ./TheOffcanvas.vue?vue&type=template&id=32be5f2b */
 
 /*! ./node_modules/vue-loader/dist/exportHelper.js */
+
+/*! @/components/global/TheLogo.vue */
 
 /*! @/components/menu/TheOffcanvas.vue */
 
@@ -45,7 +47,7 @@
   \*******************************************************/
 
 /*!*************************************************************!*\
-  !*** ./resources/js/components/pageheader/MobileHeader.vue ***!
+  !*** ./resources/js/components/pageheader/CustomHeader.vue ***!
   \*************************************************************/
 
 /*!*******************************************************************************!*\
@@ -57,15 +59,15 @@
   \*************************************************************************************/
 
 /*!*************************************************************************************!*\
-  !*** ./resources/js/components/pageheader/MobileHeader.vue?vue&type=script&lang=js ***!
+  !*** ./resources/js/components/pageheader/CustomHeader.vue?vue&type=script&lang=js ***!
   \*************************************************************************************/
 
 /*!*******************************************************************************************************!*\
-  !*** ./resources/js/components/pageheader/MobileHeader.vue?vue&type=template&id=64cf81c7&scoped=true ***!
+  !*** ./resources/js/components/pageheader/CustomHeader.vue?vue&type=template&id=a450f454&scoped=true ***!
   \*******************************************************************************************************/
 
 /*!*********************************************************************************************************************!*\
-  !*** ./resources/js/components/pageheader/MobileHeader.vue?vue&type=style&index=0&id=64cf81c7&scoped=true&lang=css ***!
+  !*** ./resources/js/components/pageheader/CustomHeader.vue?vue&type=style&index=0&id=a450f454&scoped=true&lang=css ***!
   \*********************************************************************************************************************/
 
 /*!***********************************************************************************************************************************************************************************************************!*\
@@ -73,7 +75,7 @@
   \***********************************************************************************************************************************************************************************************************/
 
 /*!*****************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/pageheader/MobileHeader.vue?vue&type=script&lang=js ***!
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/pageheader/CustomHeader.vue?vue&type=script&lang=js ***!
   \*****************************************************************************************************************************************************************************************************************/
 
 /*!***************************************************************************************************************************************************************************************************************************************************************************************!*\
@@ -81,13 +83,13 @@
   \***************************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!*********************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/pageheader/MobileHeader.vue?vue&type=template&id=64cf81c7&scoped=true ***!
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/pageheader/CustomHeader.vue?vue&type=template&id=a450f454&scoped=true ***!
   \*********************************************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/pageheader/MobileHeader.vue?vue&type=style&index=0&id=64cf81c7&scoped=true&lang=css ***!
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/pageheader/CustomHeader.vue?vue&type=style&index=0&id=a450f454&scoped=true&lang=css ***!
   \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/pageheader/MobileHeader.vue?vue&type=style&index=0&id=64cf81c7&scoped=true&lang=css ***!
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/pageheader/CustomHeader.vue?vue&type=style&index=0&id=a450f454&scoped=true&lang=css ***!
   \**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/

@@ -13,6 +13,7 @@
         </button>
         <!-- End Offcanvas Trigger -->
 
+        <teleport to="body">
         <div class="offcanvas-wrapper" :class="{ open: isOffcanvasOpened }">
             <div :class="this.headerStyle.custom_header==1?'offcanvas-panel custom-offcanvas-panel w-100 h-100 bg-white':'offcanvas-panel w-100 h-100 bg-white'">
                 <div :class="this.headerStyle.custom_header==1?'custom-offcanvas-header offcanvas-header position-relative':'offcanvas-header position-relative'">
@@ -88,6 +89,7 @@
                 </div>
             </div>
         </div>
+        </teleport>
     </div>
     <!-- End Offcanvas -->
 </template>

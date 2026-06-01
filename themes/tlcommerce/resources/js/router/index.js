@@ -40,6 +40,11 @@ const router = createRouter({
     //   redirect: { name: 'products' }
     // },
     {
+      path: "/store-info",
+      name: "storeInfo",
+      component: () => import(/* webpackChunkName: "StoreInfo" */ '../views/store-info/index.vue'),
+    },
+    {
       path: "/products",
       name: "products",
       component: () => import(/* webpackChunkName: "ProductPage" */ '../views/products/index.vue'),
@@ -271,6 +276,8 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const lang = localStorage.getItem("locale") || "en";
-  loadLanguageAsync(lang).then(() => next());
+  loadLanguageAsync(lang)
+    .then(() => next())
+    .catch(() => next());
 });
 export default router;
