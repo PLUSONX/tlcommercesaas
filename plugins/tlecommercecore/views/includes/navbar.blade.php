@@ -314,7 +314,7 @@
                     'plugin.tlcommercecore.shipping.locations.country.edit',
                     'plugin.tlcommercecore.shipping.locations.country.new',
                     'plugin.tlcommercecore.shipping.locations.country.list',
-                ]) ? 'active sub-menu-opened' : '' }}">
+                ]) ? 'sub-menu-opened' : '' }}">
                     <a class="pl-2" href="#">
                         <span class="link-title">{{ translate('Locations') }}</span>
                     </a>
@@ -434,15 +434,15 @@
        CHILD MENU ITEMS (depth 1)
        ============================================ */
 
-    /* Active child: orange background */
-    .sidebar .nav .sub-menu > li.active > a {
+    /* Active child: orange background (leaf items only, not nested parents) */
+    .sidebar .nav .sub-menu > li.active:not(:has(> .sub-menu)) > a {
         background-color: #ff5a1f !important;
         color: #ffffff !important;
         border-radius: 12px;
     }
 
     /* Active child icon: white */
-    .sidebar .nav .sub-menu > li.active > a svg {
+    .sidebar .nav .sub-menu > li.active:not(:has(> .sub-menu)) > a svg {
         stroke: #ffffff !important;
     }
 
@@ -478,6 +478,17 @@
         color: #ff5a1f !important;
     }
 
+    /* Nested parent open state: orange label when child route active */
+    .sidebar .sidebar-body .nav .sub-menu > li.sub-menu-opened:has(> .sub-menu) > a {
+        color: #ff5a1f !important;
+    }
+
+    /* Suppress global theme li:before bar on nested parents */
+    .sidebar .sidebar-body .nav .sub-menu > li:has(> .sub-menu).active:before,
+    .sidebar .sidebar-body .nav .sub-menu > li:has(> .sub-menu).sub-menu-opened:before {
+        background-color: transparent !important;
+    }
+
     /* Locations grandchild active: orange background */
     .sidebar .nav .sub-menu .sub-menu > li.active > a {
         background-color: #ff5a1f !important;
@@ -486,7 +497,7 @@
     }
 
     /* Locations grandchild hover: orange font only */
-    .sidebar .nav .sub-menu .sub-menu > li:not(.active) > a:hover {
+    .sidebar .sidebar-body .nav .sub-menu .sub-menu > li > a:hover {
         background-color: transparent !important;
         color: #ff5a1f !important;
         text-decoration: none;
