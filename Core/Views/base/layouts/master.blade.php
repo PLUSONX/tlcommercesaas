@@ -93,7 +93,7 @@
                             {{ translate('Your product creation quota is over.Please contact with admin.') }}
                         </div>
                     @endif
-                    <!-- @include('core::base.layouts.dark_light_switcher') -->
+                    @include('core::base.layouts.dark_light_switcher')
                     @yield('main_content')
                 </div>
             </div>
