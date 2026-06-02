@@ -333,7 +333,7 @@ $isCentralDomain = in_array($host, $centralDomains);
                             <button type="submit" class="btn btn-block btn-orange">{{ translate('Log In') }}</button>
                         </div>
 
-                        @if ($isCentralDomain)
+                        <!-- @if ($isCentralDomain)
                         <div class="d-flex align-items-center mt-3">
                             <button type="button"
                                 id="demoLoginBtn"
@@ -343,7 +343,7 @@ $isCentralDomain = in_array($host, $centralDomains);
                                 {{ translate('Try demo dashboard') }}
                             </button>
                         </div>
-                        @endif
+                        @endif -->
 
                         <div class="text-center" style="margin-top: 20px;">
                         
