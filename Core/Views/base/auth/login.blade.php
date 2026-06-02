@@ -32,7 +32,7 @@ $isCentralDomain = in_array($host, $centralDomains);
 
     .card {
         width: 450px !important; /* Forces the width to exactly 400px */
-        height: 500px !important;
+        min-height: 500px !important;
         flex: none !important;    /* Prevents Flexbox from shrinking/growing it */
     }
    
@@ -128,6 +128,77 @@ $isCentralDomain = in_array($host, $centralDomains);
     outline: none;                /* Optional: removes default browser glow */
     border: 1px solid black !important; /* Keeps your border consistent */
 }
+
+    .input-with-icon {
+        position: relative;
+    }
+
+    .password-toggle-btn {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        color: inherit;
+        display: flex;
+        align-items: center;
+    }
+
+    .password-toggle-btn svg {
+        width: 18px;
+        height: 18px;
+        opacity: 0.5;
+        transition: opacity 0.2s;
+    }
+
+    .password-toggle-btn:hover svg {
+        opacity: 1;
+    }
+
+    button.btn-orange,
+    a.btn-orange {
+        background: #ff5A1f !important;
+        border-color: #e64a10 !important;
+        color: #fff !important;
+        transition: background 0.2s ease;
+        box-shadow: none !important;
+        border-radius: 6px !important;
+    }
+
+    button.btn-orange:hover,
+    a.btn-orange:hover {
+        background: #ff7545 !important;
+        border-color: #e07b00 !important;
+        color: #fff !important;
+        box-shadow: none !important;
+    }
+
+    button.btn-orange:focus,
+    button.btn-orange:active,
+    button.btn-orange:active:focus {
+        background: #ff5A1F !important;
+        border-color: #e07b00 !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+
+    button.btn-demo-outline {
+        background: #fff !important;
+        border: 1px solid #ff5A1f !important;
+        color: #ff5A1f !important;
+        transition: background 0.2s ease, color 0.2s ease;
+        box-shadow: none !important;
+        border-radius: 6px !important;
+    }
+
+    button.btn-demo-outline:hover {
+        background: #fff5f0 !important;
+        color: #e64a10 !important;
+        border-color: #e64a10 !important;
+    }
 
 </style>
 @endsection
@@ -262,6 +333,18 @@ $isCentralDomain = in_array($host, $centralDomains);
                             <button type="submit" class="btn btn-block btn-orange">{{ translate('Log In') }}</button>
                         </div>
 
+                        @if ($isCentralDomain)
+                        <div class="d-flex align-items-center mt-3">
+                            <button type="button"
+                                id="demoLoginBtn"
+                                class="btn btn-block btn-demo-outline"
+                                data-email="support.platepilot@gmail.com"
+                                data-password="demo123">
+                                {{ translate('Try demo dashboard') }}
+                            </button>
+                        </div>
+                        @endif
+
                         <div class="text-center" style="margin-top: 20px;">
                         
                             <h5 class="mt-3" >{{ translate('If you are having trouble, please contact') }}</h5>
@@ -278,107 +361,41 @@ $isCentralDomain = in_array($host, $centralDomains);
 </div>
 @endsection
 
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-
-        // const demoToken = localStorage.setItem('token': 'f-z18W1YQ7qAtj7LORijw5:APA91bG0FQQS3GhU3bWqvl6bGOe2OGIhlt7ea2f0owcYj2EndlM7fnjCTwUDzgQ_7ePd3CLqhzP3B3uAlSVSFwKBGnX7wQELAgsU8CesRWcFQCbn6Sg4OyM');
-
-        const savedToken = localStorage.getItem('token');
-        
-        if (savedToken) {
-            document.getElementById('token').value = savedToken;
-        }
-    });
-
-  
-</script>
-
+@section('custom_scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        document.getElementById('togglePassword').addEventListener('click', function () {
-            const input = document.getElementById('password');
-            const eyeIcon = this.querySelector('.eye-icon');
-            const eyeOffIcon = this.querySelector('.eye-off-icon');
+        const savedToken = localStorage.getItem('token');
+        const tokenInput = document.getElementById('token');
+        if (savedToken && tokenInput) {
+            tokenInput.value = savedToken;
+        }
 
-            if (input.type === 'password') {
-                input.type = 'text';
-                eyeIcon.style.display = 'none';
-                eyeOffIcon.style.display = 'inline';
-            } else {
-                input.type = 'password';
-                eyeIcon.style.display = 'inline';
-                eyeOffIcon.style.display = 'none';
-            }
-        });
+        const togglePassword = document.getElementById('togglePassword');
+        if (togglePassword) {
+            togglePassword.addEventListener('click', function () {
+                const input = document.getElementById('password');
+                const eyeIcon = this.querySelector('.eye-icon');
+                const eyeOffIcon = this.querySelector('.eye-off-icon');
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    eyeIcon.style.display = 'none';
+                    eyeOffIcon.style.display = 'inline';
+                } else {
+                    input.type = 'password';
+                    eyeIcon.style.display = 'inline';
+                    eyeOffIcon.style.display = 'none';
+                }
+            });
+        }
+
+        const demoLoginBtn = document.getElementById('demoLoginBtn');
+        if (demoLoginBtn) {
+            demoLoginBtn.addEventListener('click', function () {
+                document.getElementById('email').value = this.dataset.email;
+                document.getElementById('password').value = this.dataset.password;
+            });
+        }
     });
 </script>
-
-
-
-<style>
-
-button.btn-orange,
-a.btn-orange {
-    background: #ff5A1f !important;
-    border-color: #e64a10 !important;
-    color: #fff !important;
-    transition: background 0.2s ease;
-    box-shadow: none !important;
-    border-radius: 6px !important;
-}
-
-button.btn-orange:hover,
-a.btn-orange:hover {
-    background: #ff7545 !important;
-    border-color: #e07b00 !important;
-    color: #fff !important;
-    box-shadow: none !important;
-
-}
-
-button.btn-orange:focus,
-button.btn-orange:active,
-button.btn-orange:active:focus {
-    background: #ff5A1f !important;
-    border-color: #e07b00 !important;
-    box-shadow: none !important;
-    outline: none !important;
-}
-
-.text_color:hover {
-    color: #fff !important;
-    text-decoration: underline; /* Optional: adds a line on hover for better UX */
-}
-
-
-.input-with-icon {
-    position: relative;
-}
-
-.password-toggle-btn {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    color: inherit;
-    display: flex;
-    align-items: center;
-}
-
-.password-toggle-btn svg {
-    width: 18px;
-    height: 18px;
-    opacity: 0.5;
-    transition: opacity 0.2s;
-}
-
-.password-toggle-btn:hover svg {
-    opacity: 1;
-}
-
-</style>
+@endsection
