@@ -58,6 +58,8 @@ export default {
 @import "../../assets/sass/00-abstracts/01-variables";
 
 /* split-screen layout */
+$category-split-icon-size: 72px;
+
 .category-card--split {
   padding: 0;
   margin: 0;
@@ -77,13 +79,13 @@ export default {
 
   img {
     border: 1px solid rgba(#707070, 0.3);
-    padding: 5px;
+    padding: 4px;
     border-radius: 50%;
     margin: 0 0 4px 0;
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    max-width: 40px;
+    width: $category-split-icon-size;
+    height: $category-split-icon-size;
+    min-width: $category-split-icon-size;
+    max-width: $category-split-icon-size;
     object-fit: cover;
     box-sizing: border-box;
   }
@@ -91,6 +93,15 @@ export default {
   span {
     font-size: 12px;
     font-weight: 500;
+  }
+
+  @media (max-width: 480px) {
+    img {
+      width: 56px;
+      height: 56px;
+      min-width: 56px;
+      max-width: 56px;
+    }
   }
 }
 
