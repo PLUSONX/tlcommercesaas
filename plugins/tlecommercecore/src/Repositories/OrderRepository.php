@@ -93,82 +93,29 @@ class OrderRepository
     public function orderCounter($shipping_type)
     {
         try {
+            $base = function () use ($shipping_type) {
+                return DB::table('tl_com_ordered_products')
+                    ->leftJoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
+                    ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
+                    ->groupBy('tl_com_ordered_products.order_id')
+                    ->where('tl_com_orders.shipping_type', $shipping_type)
+                    ->where(function ($q) {                                     // <-- fix
+                        $q->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
+                        ->orWhereNull('tl_com_ordered_products.seller_id');
+                    })
+                    ->select(DB::raw('GROUP_CONCAT(DISTINCT(tl_com_ordered_products.order_id)) as order_id'));
+            };
 
-            $data = [
-                DB::raw('GROUP_CONCAT(DISTINCT(tl_com_ordered_products.order_id)) as order_id'),
-            ];
-            $temp = [];
-            $temp['all'] = DB::table('tl_com_ordered_products')
-                ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
-                ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
-                ->groupBy('tl_com_ordered_products.order_id')
-                ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
-                ->where('tl_com_orders.shipping_type', $shipping_type)
-                ->select($data)->get()->count();
+            $temp['all']          = $base()->get()->count();
+            $temp['pending']      = $base()->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.pending'))->get()->count();
+            $temp['delivered']    = $base()->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.delivered'))->get()->count();
+            $temp['processing']   = $base()->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.processing'))->get()->count();
+            $temp['ready_to_ship']= $base()->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.ready_to_ship'))->get()->count();
+            $temp['shipped']      = $base()->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.shipped'))->get()->count();
+            $temp['cancelled']    = $base()->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.cancelled'))->get()->count();
+            $temp['paid']         = $base()->where('tl_com_ordered_products.payment_status',  config('tlecommercecore.order_payment_status.paid'))->get()->count();
+            $temp['unpaid']       = $base()->where('tl_com_ordered_products.payment_status',  config('tlecommercecore.order_payment_status.unpaid'))->get()->count();
 
-            $temp['pending'] = DB::table('tl_com_ordered_products')
-                ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
-                ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
-                ->groupBy('tl_com_ordered_products.order_id')
-                ->select($data)
-                ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
-                ->where('tl_com_orders.shipping_type', $shipping_type)->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.pending'))->get()->count();
-
-            $temp['delivered'] = DB::table('tl_com_ordered_products')
-                ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
-                ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
-                ->groupBy('tl_com_ordered_products.order_id')
-                ->select($data)
-                ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
-                ->where('tl_com_orders.shipping_type', $shipping_type)->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.delivered'))->get()->count();
-
-            $temp['processing'] = DB::table('tl_com_ordered_products')
-                ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
-                ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
-                ->groupBy('tl_com_ordered_products.order_id')
-                ->select($data)
-                ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
-                ->where('tl_com_orders.shipping_type', $shipping_type)->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.processing'))->get()->count();
-
-            $temp['ready_to_ship'] = DB::table('tl_com_ordered_products')
-                ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
-                ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
-                ->groupBy('tl_com_ordered_products.order_id')
-                ->select($data)
-                ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
-                ->where('tl_com_orders.shipping_type', $shipping_type)->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.ready_to_ship'))->get()->count();
-
-            $temp['shipped'] = DB::table('tl_com_ordered_products')
-                ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
-                ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
-                ->groupBy('tl_com_ordered_products.order_id')
-                ->select($data)
-                ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
-                ->where('tl_com_orders.shipping_type', $shipping_type)->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.shipped'))->get()->count();
-
-            $temp['cancelled'] = DB::table('tl_com_ordered_products')
-                ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
-                ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
-                ->groupBy('tl_com_ordered_products.order_id')
-                ->select($data)
-                ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
-                ->where('tl_com_orders.shipping_type', $shipping_type)->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.cancelled'))->get()->count();
-
-            $temp['paid'] = DB::table('tl_com_ordered_products')
-                ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
-                ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
-                ->groupBy('tl_com_ordered_products.order_id')
-                ->select($data)
-                ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
-                ->where('tl_com_orders.shipping_type', $shipping_type)->where('tl_com_ordered_products.payment_status', config('tlecommercecore.order_payment_status.paid'))->get()->count();
-
-            $temp['unpaid'] = DB::table('tl_com_ordered_products')
-                ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
-                ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
-                ->groupBy('tl_com_ordered_products.order_id')
-                ->select($data)
-                ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
-                ->where('tl_com_orders.shipping_type', $shipping_type)->where('tl_com_ordered_products.payment_status', config('tlecommercecore.order_payment_status.unpaid'))->get()->count();
             return $temp;
         } catch (\Exception $e) {
             return null;
@@ -176,6 +123,92 @@ class OrderRepository
             return null;
         }
     }
+    // public function orderCounter($shipping_type)
+    // {
+    //     try {
+
+    //         $data = [
+    //             DB::raw('GROUP_CONCAT(DISTINCT(tl_com_ordered_products.order_id)) as order_id'),
+    //         ];
+    //         $temp = [];
+    //         $temp['all'] = DB::table('tl_com_ordered_products')
+    //             ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
+    //             ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
+    //             ->groupBy('tl_com_ordered_products.order_id')
+    //             ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
+    //             ->where('tl_com_orders.shipping_type', $shipping_type)
+    //             ->select($data)->get()->count();
+
+    //         $temp['pending'] = DB::table('tl_com_ordered_products')
+    //             ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
+    //             ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
+    //             ->groupBy('tl_com_ordered_products.order_id')
+    //             ->select($data)
+    //             ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
+    //             ->where('tl_com_orders.shipping_type', $shipping_type)->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.pending'))->get()->count();
+
+    //         $temp['delivered'] = DB::table('tl_com_ordered_products')
+    //             ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
+    //             ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
+    //             ->groupBy('tl_com_ordered_products.order_id')
+    //             ->select($data)
+    //             ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
+    //             ->where('tl_com_orders.shipping_type', $shipping_type)->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.delivered'))->get()->count();
+
+    //         $temp['processing'] = DB::table('tl_com_ordered_products')
+    //             ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
+    //             ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
+    //             ->groupBy('tl_com_ordered_products.order_id')
+    //             ->select($data)
+    //             ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
+    //             ->where('tl_com_orders.shipping_type', $shipping_type)->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.processing'))->get()->count();
+
+    //         $temp['ready_to_ship'] = DB::table('tl_com_ordered_products')
+    //             ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
+    //             ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
+    //             ->groupBy('tl_com_ordered_products.order_id')
+    //             ->select($data)
+    //             ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
+    //             ->where('tl_com_orders.shipping_type', $shipping_type)->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.ready_to_ship'))->get()->count();
+
+    //         $temp['shipped'] = DB::table('tl_com_ordered_products')
+    //             ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
+    //             ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
+    //             ->groupBy('tl_com_ordered_products.order_id')
+    //             ->select($data)
+    //             ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
+    //             ->where('tl_com_orders.shipping_type', $shipping_type)->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.shipped'))->get()->count();
+
+    //         $temp['cancelled'] = DB::table('tl_com_ordered_products')
+    //             ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
+    //             ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
+    //             ->groupBy('tl_com_ordered_products.order_id')
+    //             ->select($data)
+    //             ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
+    //             ->where('tl_com_orders.shipping_type', $shipping_type)->where('tl_com_ordered_products.delivery_status', config('tlecommercecore.order_delivery_status.cancelled'))->get()->count();
+
+    //         $temp['paid'] = DB::table('tl_com_ordered_products')
+    //             ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
+    //             ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
+    //             ->groupBy('tl_com_ordered_products.order_id')
+    //             ->select($data)
+    //             ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
+    //             ->where('tl_com_orders.shipping_type', $shipping_type)->where('tl_com_ordered_products.payment_status', config('tlecommercecore.order_payment_status.paid'))->get()->count();
+
+    //         $temp['unpaid'] = DB::table('tl_com_ordered_products')
+    //             ->leftjoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
+    //             ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
+    //             ->groupBy('tl_com_ordered_products.order_id')
+    //             ->select($data)
+    //             ->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
+    //             ->where('tl_com_orders.shipping_type', $shipping_type)->where('tl_com_ordered_products.payment_status', config('tlecommercecore.order_payment_status.unpaid'))->get()->count();
+    //         return $temp;
+    //     } catch (\Exception $e) {
+    //         return null;
+    //     } catch (\Error $e) {
+    //         return null;
+    //     }
+    // }
     /**
      * Will return seller order counter
      *
