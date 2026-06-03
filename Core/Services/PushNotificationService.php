@@ -16,21 +16,21 @@ class PushNotificationService
      */
     public function sendToUser(int $userId, string $title, string $body, array $data = []): void
     {
-        // \Log::info('sendToUser method called !!!!');
+        \Log::info('sendToUser method called !!!!');
         // dd($userId);
         // Get all active device tokens for this user
         $deviceTokens = DeviceToken::forUser($userId)
          ->active()
             ->get();
 
-        // \Log::info('Device Token data', [
-        //         'deviceTokens' => json_encode($deviceTokens),
-        // ]);
+        \Log::info('Device Token data', [
+                'deviceTokens' => json_encode($deviceTokens),
+        ]);
 
         // dd($deviceTokens);
 
         if ($deviceTokens->isEmpty()) {
-            // Log::info("No device tokens found for user {$userId}");
+            Log::info("No device tokens found for user {$userId}");
             return;
         }
 
@@ -41,7 +41,7 @@ class PushNotificationService
         
                 $this->sendToToken($deviceToken->token, $title, $body, $data);
 
-                // \Log::info('notification Successfully Sent to firebase!!!!');
+                \Log::info('notification Successfully Sent to firebase!!!!');
 
 
                 $deviceToken->markAsUsed();
