@@ -1,5 +1,5 @@
 <template>
-  <template v-if="isSplitScreen && !isMobile">
+  <template v-if="isSplitScreen">
     <!-- Categories — split-screen layout -->
     <section class="category-section category-section--split home-page-section">
       <div class="px-3 px-sm-0">
