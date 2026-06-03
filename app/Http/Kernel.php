@@ -73,7 +73,7 @@ class Kernel extends HttpKernel
         ],
 
         'tenant' => [
-            \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
+            \App\Http\Middleware\InitializeTenancyByDomainCustomized::class,
             \Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains::class,
             \App\Http\Middleware\EnsureTenantUserAuth::class,
             \App\Http\Middleware\ShareFacebookWithViews::class,
