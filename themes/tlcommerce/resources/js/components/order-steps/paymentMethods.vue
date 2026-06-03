@@ -18,7 +18,7 @@
       <div class="col-12">
         <label class="font-weight-bold fz-12 mb-2">{{
           $t("Payment method")
-          }}</label>
+        }}</label>
         <ul class="list-unstyled form-selector-list mb-3">
           <li class="single-form-selector" v-for="(payment, index) in paymentMethods" :key="index">
             <span class="custom-radio-btn">
@@ -259,6 +259,7 @@ export default {
     },
   },
   mounted() {
+    console.log("Current Host: ", this.currentHost);
     this.getPaymentMethods();
     if (this.isCustomerLogin) {
       this.getCustomerWalletSummary();
