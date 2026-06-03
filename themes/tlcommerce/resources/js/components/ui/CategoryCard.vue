@@ -80,26 +80,17 @@ export default {
     padding: 5px;
     border-radius: 50%;
     margin: 0 0 4px 0;
-    width: 85px;
-    height: 85px;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    max-width: 40px;
     object-fit: cover;
+    box-sizing: border-box;
   }
 
   span {
     font-size: 12px;
     font-weight: 500;
-  }
-
-  @media (max-width: 480px) {
-    img {
-      width: 40px;
-      height: 40px;
-      margin-bottom: 4px;
-    }
-
-    span {
-      font-size: 12px;
-    }
   }
 }
 
