@@ -2,8 +2,10 @@
 
 namespace Plugin\TlcommerceCore\Repositories;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Query\Builder;
+use Plugin\TlcommerceCore\Models\OrderHasProducts;
 use Plugin\TlcommerceCore\Models\Product;
 use Plugin\TlcommerceCore\Models\ProductSeo;
 use Plugin\TlcommerceCore\Models\ProductTags;
@@ -501,10 +503,14 @@ class ProductRepository
      * Will delete a product
      * 
      * @param Int $id
-     * @return bool
+     * @return bool|string true when deleted, 'has_orders' when blocked, false on failure
      */
     public function deleteProduct($id)
     {
+        if (OrderHasProducts::where('product_id', $id)->exists()) {
+            return 'has_orders';
+        }
+
         try {
             DB::beginTransaction();
             $product = Product::findOrFail($id);
@@ -528,9 +534,11 @@ class ProductRepository
             return true;
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Product delete failed: ' . $e->getMessage(), ['id' => $id]);
             return false;
-        } catch (\Error) {
+        } catch (\Error $e) {
             DB::rollBack();
+            \Log::error('Product delete failed: ' . $e->getMessage(), ['id' => $id]);
             return false;
         }
     }

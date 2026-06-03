@@ -312,13 +312,17 @@ class ProductController extends Controller
     public function deleteProduct(Request $request)
     {
         $res = $this->product_repository->deleteProduct($request->id);
-        if ($res == true) {
+        if ($res === true) {
             toastNotification('success', 'Product deleted successfully', 'Success');
-            return redirect()->route('plugin.tlcommercecore.product.list');
-        } else {
-            toastNotification('error', 'This product can not be deleted', 'Warning');
+            return redirect()->back();
+            // return redirect()->route('plugin.tlcommercecore.product.list');
+        }
+        if ($res === 'has_orders') {
+            toastNotification('error', translate('This product cannot be deleted because it has been ordered. Unpublish it instead.'), 'Warning');
             return redirect()->back();
         }
+        toastNotification('error', 'This product can not be deleted', 'Warning');
+        return redirect()->back();
     }
     /**
      * Will applied bulk products

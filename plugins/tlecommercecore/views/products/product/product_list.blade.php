@@ -151,7 +151,7 @@
                         
                         </div>
 
-                        
+                    </form>
 
                             <!--End filter area-->
                             
@@ -585,7 +585,7 @@
                         <input type="hidden" id="delete-product-id" name="id">
                         <button type="button" class="btn long mt-2 btn-danger"
                             data-dismiss="modal">{{ translate('cancel') }}</button>
-                        <button type="submit" class="btn long mt-2">{{ translate('Delete') }}</button>
+                        <button type="submit" class="btn long btn-orange mt-2">{{ translate('Delete') }}</button>
                     </form>
                 </div>
             </div>
@@ -704,6 +704,7 @@
                 e.preventDefault();
                 let $this = $(this);
                 let id = $this.data('product');
+                console.log("productId: ", id);
                 $("#delete-product-id").val(id);
                 $('#delete-modal').modal('show');
             });
