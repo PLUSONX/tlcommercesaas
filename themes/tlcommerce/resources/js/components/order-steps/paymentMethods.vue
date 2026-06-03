@@ -238,18 +238,26 @@ export default {
       },
     };
   },
-  computed: mapState({
-    customerToken: (state) => state.customerToken,
-    isActivePickupPoint: (state) => state.isActivePickupPoint,
-    isActiveHomeDelivery: (state) => state.isActiveHomeDelivery,
-    pickupPoint: (state) => state.pickupPoint,
-    pickupPointId: (state) =>
-      state.pickupPoint != null ? state.pickupPoint.id : null,
-    city: (state) =>
-      state.shippingDetails != null && state.shippingDetails.city != null
-        ? state.shippingDetails.city.id
-        : null,
-  }),
+  computed: {
+    ...mapState({
+      customerToken: (state) => state.customerToken,
+      isActivePickupPoint: (state) => state.isActivePickupPoint,
+      isActiveHomeDelivery: (state) => state.isActiveHomeDelivery,
+      pickupPoint: (state) => state.pickupPoint,
+      pickupPointId: (state) =>
+        state.pickupPoint != null ? state.pickupPoint.id : null,
+      city: (state) =>
+        state.shippingDetails != null && state.shippingDetails.city != null
+          ? state.shippingDetails.city.id
+          : null,
+    }),
+    currentHost() {
+      return window.location.hostname.replace(/^www\./, "");
+    },
+    isCraftedFlamesDemoStore() {
+      return this.currentHost === "craftedflameskw.com";
+    },
+  },
   mounted() {
     this.getPaymentMethods();
     if (this.isCustomerLogin) {
@@ -328,6 +336,11 @@ export default {
      */
     createOrder() {
       this.orderCreating = true;
+      if (this.isCraftedFlamesDemoStore) {
+        this.$toast.error(this.$t("Checkout is unavailable in demo mode"));
+        this.orderCreating = false;
+        return null;
+      }
       if (this.selected_payment_method == null && !this.pay_wallet) {
         this.$toast.error(this.$t("Please select a payment option"));
         this.orderCreating = false;
