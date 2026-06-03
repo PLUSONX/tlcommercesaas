@@ -472,8 +472,15 @@ class OrderRepository
 
 
 
-            if ($order_type != null && $order_type == "inhouse") {
-                $query = $query->where('tl_users.user_type', config('tlecommercecore.user_type.admin'));
+            // if ($order_type != null && $order_type == "inhouse") {
+            //     $query = $query->where('tl_users.user_type', config('tlecommercecore.user_type.admin'));
+            // }
+
+            if ($order_type == "inhouse") {
+                $query->where(function($q) {
+                    $q->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
+                    ->orWhereNull('tl_com_ordered_products.seller_id'); // NULL seller = inhouse
+                });
             }
 
             if ($order_type != null && $order_type == "seller") {
