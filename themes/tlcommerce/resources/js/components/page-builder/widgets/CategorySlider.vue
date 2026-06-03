@@ -12,7 +12,7 @@
           :autoplay="false"
           :pagination="splitScreenSwiperPagination"
           :slides-per-view="'auto'"
-          :space-between="16"
+          :space-between="splitCategoryGap"
           class="category-slider category-full-width theme-slider-dots category-slider--split"
           :breakpoints="splitScreenSwiperBreakpoints"
         >
@@ -20,7 +20,7 @@
             <category-card :cat="cat" />
           </swiper-slide>
         </swiper>
-        <div class="row" v-else>
+        <div class="row" :class="{ 'justify-content-center': splitScreenFewCategories }" v-else>
           <div v-for="(cat, index) in properties.categories" :key="`category-${index}`"
             class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2">
             <category-card :cat="cat" />
@@ -103,12 +103,21 @@ export default {
       return { clickable: true };
     },
 
+    splitCategoryGap() {
+      return 8;
+    },
+
+    splitScreenFewCategories() {
+      return this.splitScreenCategoryCount <= 4;
+    },
+
     splitScreenSwiperBreakpoints() {
+      const gap = this.splitCategoryGap;
       return {
-        "0": { slidesPerView: "auto", spaceBetween: 16 },
-        "768": { slidesPerView: "auto", spaceBetween: 16 },
-        "1024": { slidesPerView: "auto", spaceBetween: 16 },
-        "1440": { slidesPerView: "auto", spaceBetween: 16 },
+        "0": { slidesPerView: "auto", spaceBetween: gap },
+        "768": { slidesPerView: "auto", spaceBetween: gap },
+        "1024": { slidesPerView: "auto", spaceBetween: gap },
+        "1440": { slidesPerView: "auto", spaceBetween: gap },
       };
     },
   },
@@ -120,10 +129,14 @@ export default {
 .category-section--split {
   background-color: transparent !important;
   background-image: none !important;
-  --category-split-gap: 16px;
+  --category-split-gap: 8px;
 }
 
-.category-section--split :deep(.category-slider.swiper-watch-overflow .swiper-wrapper) {
+.category-section--split :deep(.category-slider--split .swiper-wrapper) {
+  justify-content: center;
+}
+
+.category-section--split :deep(.category-slider--split:not(.swiper-locked) .swiper-wrapper) {
   justify-content: flex-start;
 }
 
@@ -144,7 +157,7 @@ export default {
   width: max-content !important;
   min-width: 0 !important;
   padding: 0 !important;
-  margin: 0 var(--category-split-gap) 0 0 !important;
+  margin: 0 !important;
   background: transparent !important;
   background-color: transparent !important;
   box-shadow: none !important;

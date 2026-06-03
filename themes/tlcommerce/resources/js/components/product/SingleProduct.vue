@@ -49,7 +49,7 @@
         class="row product-title-price-row justify-content-between align-items-baseline d-flex flex-column flex-sm-row">
         <div class="col pe-0 product-title-col">
           <h4 class="product-title">
-            <router-link :to="`/products/${item.slug}`">
+            <router-link :to="`/products/${item.slug}`" :title="item.name">
               {{ item.name }}
             </router-link>
           </h4>
@@ -347,7 +347,7 @@
 
       <!-- Title -->
       <h4 class="product-title">
-        <router-link :to="`/products/${item.slug}`">
+        <router-link :to="`/products/${item.slug}`" :title="item.name">
           {{ item.name }}
         </router-link>
       </h4>
@@ -848,34 +848,42 @@ export default {
   .product-title {
     -webkit-box-orient: vertical;
     display: -webkit-box;
+    -webkit-line-clamp: 1;
     font-size: 14px;
     font-weight: 500;
-    height: 40px;
-    line-height: 1.4;
-    margin: 8px 0;
+    line-height: 1.35;
+    margin: 8px 0 4px;
     overflow: hidden;
+    text-overflow: ellipsis;
     text-transform: uppercase;
+    word-break: break-word;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    @media (max-width: 767px) {
+      font-size: 12px;
+      line-height: 1.3;
+      margin: 0;
+    }
 
     @media (max-width: 479px) {
-      -webkit-line-clamp: 3;
-      display: -webkit-box;
-      height: auto;
-      max-height: none;
-      min-height: 2.8em;
       font-size: 12px;
-      line-height: 1.35;
-      margin: 0 0 6px;
       padding: 0;
-      word-break: break-word;
-      overflow: hidden;
     }
   }
 
   .product-title-price-row {
+    @media (max-width: 767px) {
+      margin-bottom: 0;
+    }
+
     @media (max-width: 479px) {
       flex-direction: column !important;
       align-items: stretch !important;
-      margin-bottom: 4px;
+      margin-bottom: 0;
       margin-left: 5px !important;
 
       .product-title-col,
@@ -906,6 +914,17 @@ export default {
       padding-left: 15% !important;
     }
 
+    @media (max-width: 767px) {
+      .product-title {
+        margin-bottom: 0;
+      }
+
+      .product-price {
+        margin-top: 0;
+        line-height: 1.15;
+      }
+    }
+
     @media (max-width: 479px) {
       padding: 12px 8px 14px;
       min-height: auto;
@@ -927,6 +946,22 @@ export default {
         display: none !important;
       }
     }
+
+    .product-title {
+      -webkit-line-clamp: unset;
+      display: block;
+      overflow: visible;
+      max-height: none;
+      white-space: normal;
+      position: relative;
+      z-index: 3;
+      background-color: inherit;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-radius: 4px;
+      padding: 2px 4px;
+      margin-left: -4px;
+      margin-right: -4px;
+    }
   }
 
   &.style--eight {
@@ -935,7 +970,17 @@ export default {
 
     .product-title {
       font-weight: 500;
-      margin: 8px 0 8px;
+      margin: 6px 0 2px;
+
+      @media (max-width: 767px) {
+        margin: 0;
+      }
+    }
+
+    .product-summary .product-price {
+      @media (max-width: 767px) {
+        margin-top: 0;
+      }
     }
 
     .product-price {

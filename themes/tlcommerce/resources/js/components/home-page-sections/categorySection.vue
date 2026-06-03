@@ -192,7 +192,7 @@ export default {
     },
 
     splitCategoryGap() {
-      return 16;
+      return 8;
     },
 
     swiperBreakpoints() {
@@ -213,15 +213,20 @@ export default {
 .category-section--split {
   background-color: transparent !important;
   background-image: none !important;
-  --category-split-gap: 16px;
+  --category-split-gap: 8px;
 }
 
 .category-section--split :deep(.category-slider .swiper-wrapper) {
   align-items: center;
 }
 
-/* Keep categories left-aligned when they do not fill the track */
-.category-section--split :deep(.category-slider.swiper-watch-overflow .swiper-wrapper) {
+/* Center when all slides fit (Swiper adds .swiper-locked) */
+.category-section--split :deep(.category-slider--split .swiper-wrapper) {
+  justify-content: center;
+}
+
+/* Scrollable track: left-align for natural overflow scroll */
+.category-section--split :deep(.category-slider--split:not(.swiper-locked) .swiper-wrapper) {
   justify-content: flex-start;
 }
 
@@ -242,7 +247,7 @@ export default {
   width: max-content !important;
   min-width: 0 !important;
   padding: 0 !important;
-  margin: 0 var(--category-split-gap) 0 0 !important;
+  margin: 0 !important;
   background: transparent !important;
   background-color: transparent !important;
   box-shadow: none !important;

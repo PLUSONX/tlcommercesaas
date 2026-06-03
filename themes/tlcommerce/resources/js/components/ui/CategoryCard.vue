@@ -60,7 +60,7 @@ export default {
 /* split-screen layout */
 .category-card--split {
   padding: 0;
-  margin: 0 16px 0 0;
+  margin: 0;
   background: transparent !important;
   background-color: transparent !important;
   box-shadow: none !important;
