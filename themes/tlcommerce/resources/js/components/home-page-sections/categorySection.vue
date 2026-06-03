@@ -15,6 +15,7 @@
           :modules="modules"
           :loop="splitScreenSwiperLoop"
           :centeredSlides="false"
+          :centerInsufficientSlides="splitScreenCenterSlides"
           :watch-overflow="true"
           :autoplay="false"
           :pagination="splitScreenSwiperPagination"
@@ -22,6 +23,7 @@
           :space-between="splitCategoryGap"
           class="category-slider category-full-width theme-slider-dots category-slider--split"
           :breakpoints="swiperBreakpoints"
+          @swiper="onSplitCategorySwiper"
         >
           <swiper-slide
             v-for="(cat, index) in categoryList"
@@ -117,6 +119,12 @@ export default {
       default: () => ({}),
     },
   },
+  data() {
+    return {
+      splitCategorySwiper: null,
+      splitCategoryResizeTimeout: null,
+    };
+  },
   computed: {
     categoryList() {
       return this.properties?.categories?.data ?? [];
@@ -184,6 +192,10 @@ export default {
       return this.splitScreenCategoryCount > 8;
     },
 
+    splitScreenCenterSlides() {
+      return !this.splitScreenSwiperLoop;
+    },
+
     splitScreenSwiperPagination() {
       if (this.splitScreenCategoryCount <= 4) {
         return false;
@@ -205,6 +217,34 @@ export default {
       };
     },
   },
+  mounted() {
+    window.addEventListener("resize", this.handleSplitCategoryResize);
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.handleSplitCategoryResize);
+    if (this.splitCategoryResizeTimeout) {
+      clearTimeout(this.splitCategoryResizeTimeout);
+    }
+  },
+  methods: {
+    onSplitCategorySwiper(swiper) {
+      this.splitCategorySwiper = swiper;
+      this.$nextTick(() => this.updateSplitCategorySwiper());
+    },
+    handleSplitCategoryResize() {
+      if (this.splitCategoryResizeTimeout) {
+        clearTimeout(this.splitCategoryResizeTimeout);
+      }
+      this.splitCategoryResizeTimeout = setTimeout(() => {
+        this.updateSplitCategorySwiper();
+      }, 100);
+    },
+    updateSplitCategorySwiper() {
+      if (this.splitScreenCenterSlides && this.splitCategorySwiper) {
+        this.splitCategorySwiper.update();
+      }
+    },
+  },
 };
 </script>
 
@@ -218,16 +258,6 @@ export default {
 
 .category-section--split :deep(.category-slider .swiper-wrapper) {
   align-items: center;
-}
-
-/* Center when all slides fit (Swiper adds .swiper-locked) */
-.category-section--split :deep(.category-slider--split .swiper-wrapper) {
-  justify-content: center;
-}
-
-/* Scrollable track: left-align for natural overflow scroll */
-.category-section--split :deep(.category-slider--split:not(.swiper-locked) .swiper-wrapper) {
-  justify-content: flex-start;
 }
 
 .category-section--split :deep(.category-slider--split .swiper-slide) {
