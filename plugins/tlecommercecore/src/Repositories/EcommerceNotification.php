@@ -623,10 +623,10 @@ class EcommerceNotification
 
             }
 
-            \Log::info('outside email section');
+            // \Log::info('outside email section');
 
-            if (SettingsRepository::getEcommerceSetting('admin_new_order_email_notification') == config('settings.general_status.active')) 
-            {
+            // if (SettingsRepository::getEcommerceSetting('admin_new_order_email_notification') == config('settings.general_status.active')) 
+            // {
 
                 \Log::info('inside email section');
 
@@ -648,7 +648,7 @@ class EcommerceNotification
                 ];
 
                 SendTenantMailJob::dispatch($admin_emails, $mail_data, getTenantMailConfig());
-            }
+            // }
 
            
         
