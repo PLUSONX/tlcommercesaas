@@ -622,10 +622,18 @@ class EcommerceNotification
                 }
 
             }
+
+            \Log::info('outside email section');
+
             if (SettingsRepository::getEcommerceSetting('admin_new_order_email_notification') == config('settings.general_status.active')) 
             {
+
+                \Log::info('inside email section');
+
                 $admin_emails = User::where('user_type', config('tlecommercecore.user_type.admin'))->where('status', config('settings.general_status.active'))->pluck('email');
                 
+                Log::info("admins emails", ['admins' => json_encode($admin_emails)]);
+
                 $mail_data = [
                     'template_id' => 15,
                     'keywords' => getEmailTemplateVariables(15, true),
