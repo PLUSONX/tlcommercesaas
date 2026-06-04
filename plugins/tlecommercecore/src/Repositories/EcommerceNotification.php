@@ -644,7 +644,7 @@ class EcommerceNotification
                     '_phone_' => $phone,
                     '_comment_' => $comment,
                     '_satisfaction_rating_' => $satisfaction_rating,
-                    '_mail_title_'      => 'New Feedback Placed!',
+                    '_mail_title_' => $message,
                 ];
 
                 SendTenantMailJob::dispatch($admin_emails, $mail_data, getTenantMailConfig());
