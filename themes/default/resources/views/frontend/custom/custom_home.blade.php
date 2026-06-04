@@ -29,10 +29,7 @@
     display: none;
   }
 
-  .contact-form-card {
-    max-width: 90%;
-  }
-  
+
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -738,7 +735,7 @@ button{cursor:pointer;font-family:inherit;border:none}
    PRICING
 ══════════════════════════════════════ */
 #pricing{padding:120px 0;background:var(--surface2);border-top:1px solid var(--line)}
-.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:64px;align-items:start}
+.pricing-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:64px;align-items:start;max-width:820px;margin-left:auto;margin-right:auto}
 .price-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--rxl);padding:34px 28px;position:relative;transition:all .25s}
 .price-card:hover{box-shadow:var(--sh3);transform:translateY(-2px)}
 .price-card.featured{background:var(--ink);border-color:var(--ink);transform:scale(1.03)}
@@ -799,20 +796,21 @@ button{cursor:pointer;font-family:inherit;border:none}
    CONTACT
 ══════════════════════════════════════ */
 #contact{padding:120px 0}
-.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;width:100%}
+.contact-form-col{width:100%;min-width:0}
 .contact-info{display:flex;flex-direction:column;gap:22px;margin-top:32px}
 .contact-info-item{display:flex;align-items:flex-start;gap:13px}
 .ci-icon{width:38px;height:38px;border-radius:10px;background:var(--o-glow);color:var(--o);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .ci-icon svg{width:17px;height:17px}
 .ci-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px}
-.ci-value{font-family:'Bricolage Grotesque',sans-serif;font-size:14.5px;font-weight:600;color:var(--ink)}
-.contact-form-card{background:var(--surface);border:1px solid var(--line2);border-radius:var(--rxl);padding:36px;box-shadow:var(--sh2)}
+.ci-value{font-family:'Bricolage Grotesque',sans-serif;font-size:14.5px;font-weight:600;color:var(--ink);word-break:break-word;overflow-wrap:anywhere}
+.contact-form-card{background:var(--surface);border:1px solid var(--line2);border-radius:var(--rxl);padding:36px;box-shadow:var(--sh2);box-sizing:border-box}
 .form-title{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:24px}
 .form-body{display:flex;flex-direction:column;gap:14px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.form-group{display:flex;flex-direction:column;gap:5px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;min-width:0}
+.form-group{display:flex;flex-direction:column;gap:5px;min-width:0}
 .form-label{font-size:12.5px;font-weight:600;color:var(--ink3)}
-.form-input,.form-textarea,.form-select{padding:11px 13px;border:1.5px solid var(--line2);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--surface);outline:none;transition:border-color .15s,box-shadow .15s;resize:vertical}
+.form-input,.form-textarea,.form-select{width:100%;max-width:100%;box-sizing:border-box;padding:11px 13px;border:1.5px solid var(--line2);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--surface);outline:none;transition:border-color .15s,box-shadow .15s;resize:vertical}
 .form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--o);box-shadow:0 0 0 3px rgba(255,122,0,.12)}
 .form-textarea{min-height:90px}
 
@@ -856,6 +854,13 @@ footer{background:var(--ink2);padding:72px 0 36px}
   /* .features-sticky-wrap{grid-template-columns:1fr} */
   .feat-preview-panel{display:none}
   .sol-grid,.showcase-grid,.contact-grid,.pricing-grid,.testi-grid,.why-grid{grid-template-columns:1fr}
+  #contact{overflow-x:hidden}
+  #contact .container{padding-left:24px;padding-right:24px}
+  #contact .contact-grid{gap:48px;justify-items:stretch}
+  #contact .contact-grid > *{min-width:0;width:100%}
+  #contact .contact-form-col{display:flex;justify-content:center;align-items:stretch;margin:0 auto;max-width:100%}
+  #contact .contact-form-card{width:100%;max-width:100%;margin:0}
+  #contact .form-row{grid-template-columns:1fr}
   .price-card.featured{transform:none}
   .how-steps::after{display:none}
   .how-steps{grid-template-columns:1fr}
@@ -868,6 +873,8 @@ footer{background:var(--ink2);padding:72px 0 36px}
   .hero-dash-wrap{display:none}
   .footer-grid{grid-template-columns:1fr}
   .templates-scroll{grid-template-columns:1fr 1fr}
+  #contact .container{padding-left:16px;padding-right:16px}
+  #contact .contact-form-card{padding:24px 18px}
 }
 </style>
 </head>
@@ -2001,67 +2008,46 @@ footer{background:var(--ink2);padding:72px 0 36px}
   <div class="container">
     <div class="content-gap fade-up" style="text-align:center">
       <span class="eyebrow"><span class="eyebrow-dot"></span>Pricing</span>
-      <h2 class="heading-lg" style="margin-top:16px;margin-bottom:16px">Flat monthly pricing.<br/>0% commission.</h2>
-      <p class="subtext" style="margin:0 auto">No hidden fees. No per-order cuts. No long-term contracts. Just one predictable rate that grows with you.</p>
+      <h2 class="heading-lg" style="margin-top:16px;margin-bottom:16px">Simple yearly pricing.<br/>0% commission.</h2>
+      <p class="subtext" style="margin:0 auto">No hidden fees. No per-order cuts. Choose the plan that fits your operation — from a single store to multi-brand groups.</p>
     </div>
     <div class="pricing-grid">
-      <div class="price-card fade-up">
-        <div class="price-tier-name">Starter</div>
-        <div class="price-tagline">For getting your business online</div>
-        <!-- <div class="price-amount"><span class="price-dollar">$</span>49<span class="price-period">/mo</span></div> -->
+      <div class="price-card featured fade-up">
+        <div class="price-rec-badge">Recommended</div>
+        <div class="price-tier-name">Plate Pilot Store</div>
+        <div class="price-tagline">One store — everything you need to sell direct</div>
         <div class="price-amount">
           250
           <span class="price-dollar">KD</span>
-          <span class="price-period">/yr</span></div>
+          <span class="price-period">/ store / yr</span>
+        </div>
         <div class="price-divider"></div>
         <ul class="price-features-list">
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>www.yourdomain.com</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Reports & Analytics</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Multiple Delivery Partners</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Payment Gateway Options</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Dedicated Support</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Advanced Product Management</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Multiple Layouts</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Auto Receive & Dispatch</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Marketing & Smart Promotions</li>
-        </ul>
-        <a href="#contact" class="btn btn-outline-full btn-full">Contact Sales</a>
-      </div>
-      <div class="price-card featured fade-up d1">
-        <div class="price-rec-badge">Recommended</div>
-        <div class="price-tier-name">Growth</div>
-        <div class="price-tagline">Scale your sales, marketing, and performance</div>
-        <div class="price-amount">
-         450
-          <span class="price-dollar">
-            KD
-          </span>
-         <span class="price-period">/yr</span></div>
-        <div class="price-divider"></div>
-        <ul class="price-features-list">
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Modifiers</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Cross Selling</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Popup Banners</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Inventory Management</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Loyalty Points & Wallets</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Extra Product Fields</li>
-          <li style="display: none;"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Customer Can Upload Files</li>
-          <li style="display: none;"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>White Label</li>
+          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>1 store</li>
+          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Unlimited users, products, categories & orders</li>
+          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Unlimited branches</li>
+          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Customer accounts</li>
+          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Online payments</li>
+          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Delivery & pickup</li>
+          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>WhatsApp integration</li>
+          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Analytics dashboard</li>
         </ul>
         <a href="#contact" class="btn btn-white btn-full">Contact Sales</a>
       </div>
-      <div class="price-card fade-up d2">
-        <div class="price-tier-name">Enterprise</div>
-        <div class="price-tagline">Advanced multi-branch ops, SSO, and custom API</div>
+      <div class="price-card fade-up d1">
+        <div class="price-tier-name">Plate Pilot Business</div>
+        <div class="price-tagline">Multiple stores & enterprise needs</div>
+        <!-- <div class="price-tagline">Multiple stores, multi-brand groups & enterprise needs</div> -->
         <div class="price-amount" style="font-size:36px;align-items:center;padding-top:8px">Custom</div>
+        <p style="font-size:13px;color:var(--muted);margin:0 0 4px;line-height:1.5">Contact our sales team for a tailored quotation.</p>
         <div class="price-divider"></div>
         <ul class="price-features-list">
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Unlimited branches</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Everything in Growth</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Custom API access</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>SSO & advanced security</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>White-label option</li>
-          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Dedicated account manager</li>
+          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Multiple stores</li>
+          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Everything in Plate Pilot Store</li>
+          <!-- <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Multi-brand management</li> -->
+          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Custom integrations</li>
+          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>API access</li>
+          <li><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Dedicated manager</li>
         </ul>
         <a href="#contact" class="btn btn-primary btn-full">Contact Sales</a>
       </div>
@@ -2157,7 +2143,7 @@ footer{background:var(--ink2);padding:72px 0 36px}
           </div>
         </div>
       </div>
-      <div class="fade-up d2">
+      <div class="fade-up d2 contact-form-col">
         <div class="contact-form-card">
             <div class="form-title">Request an audience</div>
             <div class="form-body">
