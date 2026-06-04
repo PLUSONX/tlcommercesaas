@@ -7,11 +7,17 @@
 
                 <div class="col-auto">
                     @auth
+                        @php
+                            $storeName = $logo_details['system_name'] ?? getGeneralSetting('system_name');
+                            $storeDomain = clean_domain(request()->getHost());
+                        @endphp
                         <div class="user-info d-none d-sm-block" style="margin-left: 60px;"> 
                             <h4 class="user-name mb-0" style="font-size: 18px; font-weight: 600;">{{ auth()->user()->name }}</h4>
 
-                            <a href="/" target="_blank" class="d-flex align-items-center mt-1 text-decoration-none" style="gap: 5px; color: #6c757d; font-size: 14px;">
-                                <span>{{ 'Visit store' }}</span>
+                            <a href="{{ url('/') }}" target="_blank" title="{{ translate('Visit store') }}" class="d-flex align-items-center mt-1 text-decoration-none" style="gap: 5px; color: #6c757d; font-size: 14px;">
+                                <span>
+                                        {{ $storeDomain }}
+                                </span>
                                 <x-lucide-arrow-up-right style="width: 14px; height: 14px; color: #ff8c00;" />
                             </a>
                         </div>
