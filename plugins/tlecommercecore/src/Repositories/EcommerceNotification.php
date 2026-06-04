@@ -641,9 +641,9 @@ class EcommerceNotification
                     '_site_link_'       => url('/'),
                     'subject' => 'New Feedback Placed!',
                     '_customer_name_' => $name,
-                    'phone' => $phone,
-                    'comment' => $comment,
-                    'satisfaction_rating' => $satisfaction_rating,
+                    '_phone_' => $phone,
+                    '_comment_' => $comment,
+                    '_satisfaction_rating_' => $satisfaction_rating,
                     '_mail_title_'      => 'New Feedback Placed!',
                 ];
 
