@@ -11,43 +11,26 @@
     <template v-else-if="isSplitScreen">
       <div class="split-screen-container" :style="containerStyle">
         <div class="split-screen-content" :class="[contentSideClass, 'force-mobile-view']" :style="contentStyle">
-          <div
-            class="split-screen-header-sticky"
-            :class="{ 'split-screen-header-sticky--compact': isSplitScreen && isMobile }"
-          >
+          <div class="split-screen-header-sticky"
+            :class="{ 'split-screen-header-sticky--compact': isSplitScreen && isMobile }">
             <div class="split-screen-search-inline-host"></div>
-            <custom-header
-              :key="$route.fullPath"
-              :site-properties="data.site_properties"
-              :mode="mode"
-              :header-logo-style="headerLogoStyle"
-              :cart-item="cartItem"
-              :header-style="headerStyle"
-              :header-menu-style="headerMenuStyle"
-            />
+            <custom-header :key="$route.fullPath" :site-properties="data.site_properties" :mode="mode"
+              :header-logo-style="headerLogoStyle" :cart-item="cartItem" :header-style="headerStyle"
+              :header-menu-style="headerMenuStyle" />
           </div>
 
           <div ref="splitContentScroll" class="content-split-nudge">
             <router-view v-slot="{ Component, route }">
-              <component
-                v-if="showRouteOutlet && Component"
-                :is="Component"
-                :key="`${route.name}-${route.fullPath}-${outletKey}`"
-              />
+              <component v-if="showRouteOutlet && Component" :is="Component"
+                :key="`${route.name}-${route.fullPath}-${outletKey}`" />
             </router-view>
           </div>
 
         </div>
 
         <div class="split-screen-feature" :class="featureSideClass" :style="featureStyle">
-          <BannerFeature
-            v-if="isSplitScreen && !isMobile"
-            :settings="splitScreenSettings"
-            :imagePath="featureImagePath"
-            :cart-item="cartItem"
-            :header-style="headerStyle"
-            :header-menu-style="headerMenuStyle"
-          />
+          <BannerFeature v-if="isSplitScreen && !isMobile" :settings="splitScreenSettings" :imagePath="featureImagePath"
+            :cart-item="cartItem" :header-style="headerStyle" :header-menu-style="headerMenuStyle" />
 
 
           <!--End Cookie Consent-->
@@ -133,11 +116,8 @@
 
         <div class="main_content light-bg">
           <router-view v-slot="{ Component, route }">
-            <component
-              v-if="showRouteOutlet && Component"
-              :is="Component"
-              :key="`${route.name}-${route.fullPath}-${outletKey}`"
-            />
+            <component v-if="showRouteOutlet && Component" :is="Component"
+              :key="`${route.name}-${route.fullPath}-${outletKey}`" />
           </router-view>
         </div>
 
@@ -428,7 +408,7 @@ export default {
      */
     function getMegacategories() {
 
-      console.log("getMegacategories method called!!!")
+      // console.log("getMegacategories method called!!!")
 
       const headers = {
         "Content-Type": "application/json",
@@ -442,7 +422,7 @@ export default {
         .then((response) => {
           if (response.data.success) {
 
-            console.log("category in mainlayout.vue: ", response);
+            // console.log("category in mainlayout.vue: ", response);
 
             data.megaCategories = response.data.data;
           }
