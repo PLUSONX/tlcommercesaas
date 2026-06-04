@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Crypt;
 use Plugin\TlcommerceCore\Models\Orders;
 use Plugin\TlcommerceCore\Models\Customers;
 use Plugin\TlcommerceCore\Models\CustomerAddress;
+use Plugin\TlcommerceCore\Models\CustomerFeedback;
 use Core\Http\Mail\CustomerResetEmail;
 use Plugin\TlcommerceCore\Models\CustomerWishlist;
 use Core\Http\Mail\CustomerForgotPassword;
@@ -212,6 +213,36 @@ class CustomerRepository
             ->whereMonth("created_at", "=", $start_date)
             ->sum('total_payable_amount');
     }
+
+    /**
+     * Store customer feedback
+     *
+     * @param object $request
+     * @return mixed
+     */
+    public function customerFeedback($request)
+    {
+        try {
+            $feedback = new CustomerFeedback;
+            $feedback->name = $request['name'];
+            $feedback->phone = $request['phone'];
+            $feedback->satisfaction_rating = $request['satisfaction_rating'];
+            $feedback->comment = $request['comment'];
+            $feedback->save();
+
+            EcommerceNotification::sendNewFeedbackNotification($feedback);
+            
+            return $feedback;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return NULL;
+        } catch (\Error $e) {
+            DB::rollBack();
+            return NULL;
+        }
+    }
+
+
     /**
      * Store customer information
      *

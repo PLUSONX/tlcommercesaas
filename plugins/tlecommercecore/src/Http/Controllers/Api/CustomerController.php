@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 use Plugin\TlcommerceCore\Models\Customers;
 use Plugin\TlcommerceCore\Repositories\OrderRepository;
 use Plugin\TlcommerceCore\Http\Requests\CustomerRequest;
+use Plugin\TlcommerceCore\Http\Requests\CustomerFeedbackRequest;
 use Plugin\TlcommerceCore\Http\Resources\OrderCollection;
 use Plugin\TlcommerceCore\Repositories\CustomerRepository;
 use Plugin\TlcommerceCore\Http\Requests\CustomerLoginRequest;
@@ -137,6 +138,32 @@ class CustomerController extends Controller
             );
         }
     }
+
+     /**
+     * Will complete customer registration 
+     * 
+     * @param CustomerRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function customerFeedback(CustomerFeedbackRequest $request)
+    {
+        $feedback = $this->customer_repository->customerFeedback($request);
+        
+        if ($feedback != NULL) {
+            return response()->json(
+                [
+                    'success' => true,
+                ]
+            );
+        } else {
+            return response()->json(
+                [
+                    'success' => false
+                ]
+            );
+        }
+    }
+
     /**
      * Will complete customer registration 
      * 

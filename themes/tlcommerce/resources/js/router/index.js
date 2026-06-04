@@ -45,6 +45,11 @@ const router = createRouter({
       component: () => import(/* webpackChunkName: "StoreInfo" */ '../views/store-info/index.vue'),
     },
     {
+      path: "/feedback",
+      name: "customerFeedback",
+      component: () => import(/* webpackChunkName: "CustomerFeedback" */ '../views/feedback/index.vue'),
+    },
+    {
       path: "/products",
       name: "products",
       component: () => import(/* webpackChunkName: "ProductPage" */ '../views/products/index.vue'),

@@ -563,6 +563,95 @@ class EcommerceNotification
         
     }
 
+
+    /**
+     * Will send new Feedback notification
+     */
+
+    public static function sendNewFeedbackNotification($feedback)
+    {
+        \Log::info('sendNewFeedbackNotification method called!!!');
+
+        try {
+            //Send notification to admin
+            $name =  $feedback->name;
+            $phone =  $feedback->phone;
+            $satisfaction_rating =  $feedback->satisfaction_rating;
+            $comment =  $feedback->comment;
+            $link = '#';
+            $message =  "New Feedback has been placed.";
+            
+            $data = [
+                'name' => $name,
+                'phone' => $phone,
+                'comment' => $comment,
+                'satisfaction_rating' => $satisfaction_rating,
+                'message' => $message,
+                'link' => $link
+            ];
+            $admins = User::where('user_type', config('tlecommercecore.user_type.admin'))->where('status', config('settings.general_status.active'))->get();
+            if ($admins != null) {
+                    \Log::info('Admin is not null!!!');
+
+                    // \Log::info('Admins Data:', [
+                    //     'count' => count($admins),
+                    //     'class' => get_class($admins),
+                    //     'emails' => $admins->pluck('email')->toArray()
+                    // ]);
+                    // \Log::info('Payload Data:', $data);
+
+                    $notification = new CustomerOrderCreateNotification($data);
+                    
+                    \Log::info('after notification variable!!!');
+
+                try {
+                        
+                    \Log::info('About to send notification');
+
+                    Notification::send($admins, $notification);
+
+                    \Log::info('Notification send completed');
+
+                } catch (\Throwable $e) {
+
+                    \Log::error("Notification system crashed!", [
+                        'message' => $e->getMessage(),
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine()
+                    ]);
+                }
+
+            }
+            if (SettingsRepository::getEcommerceSetting('admin_new_order_email_notification') == config('settings.general_status.active')) 
+            {
+                $admin_emails = User::where('user_type', config('tlecommercecore.user_type.admin'))->where('status', config('settings.general_status.active'))->pluck('email');
+                
+                $mail_data = [
+                    'template_id' => 15,
+                    'keywords' => getEmailTemplateVariables(15, true),
+                    '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
+                    '_site_link_'       => url('/'),
+                    'subject' => 'New Feedback Placed!',
+                    '_customer_name_' => $name,
+                    'phone' => $phone,
+                    'comment' => $comment,
+                    'satisfaction_rating' => $satisfaction_rating,
+                    '_mail_title_'      => 'New Feedback Placed!',
+                ];
+
+                SendTenantMailJob::dispatch($admin_emails, $mail_data, getTenantMailConfig());
+            }
+
+           
+        
+        }
+        catch (\Exception $e) {
+            \Log::error("Global Notification Method Error: " . $e->getMessage());
+    }
+
+        
+    }
+
     // public static function sendNewOrderNotification($order)
     // {
     //     \Log::info('sendNewOrderNotification method called!!!');
