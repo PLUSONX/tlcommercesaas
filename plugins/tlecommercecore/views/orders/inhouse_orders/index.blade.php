@@ -332,9 +332,9 @@
         </div>
 
          <div class="col-12">
-            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
-                <div class="table-responsive">
-                    <table id="conditionTable" class="hoverable text-nowrap" style="table-layout: fixed; width: 100%;">
+            <div class="card mb-30 inhouse-orders-card" style="border-radius: 12px !important;">
+                <div class="table-responsive inhouse-orders-table-wrap">
+                    <table id="conditionTable" class="hoverable text-nowrap inhouse-orders-table">
                         <thead>
                             <tr>
                                 <!-- <th>
@@ -1002,6 +1002,37 @@
 
 
 <style>
+
+.inhouse-orders-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.inhouse-orders-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+@media (max-width: 767.98px) {
+    .inhouse-orders-table-wrap {
+        overflow-x: auto;
+    }
+
+    .inhouse-orders-table {
+        table-layout: auto;
+        min-width: 960px;
+        width: max-content;
+    }
+
+    .inhouse-orders-card {
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+    }
+
+    .inhouse-orders-table td .w-50 {
+        min-width: 36px;
+    }
+}
 
 button.btn-orange,
 a.btn-orange {
