@@ -89,63 +89,41 @@ class ThemeOptionController extends Controller
 
 
     /**
-     ** Layout Settings Page
+     * Layout Settings Page
      * @return View
      */
-    // public function layoutSettings()
-    // {
-    //     try {
-    //         return view('theme/tlcommerce::backend.layout-settings.layout_settings');
-    //     } catch (\Exception $e) {
-    //         toastNotification('error', translate('Layout Settings Page Failed'));
-    //         return redirect()->back();
-    //     }
-    // }
+    public function layoutSettings()
+    {
+        try {
+            $data = $this->layoutRepo->getLayOutSettings();
 
+            return view('theme/tlcommerce::backend.layout-settings.layout_settings', $data);
+        } catch (\Exception $e) {
+            Log::error("Layout page Failed: {$e->getMessage()}");
+
+            toastNotification('error', translate('Layout Settings Page Failed'));
+            return redirect()->back();
+        }
+    }
 
     /**
- * Layout Settings Page
- * @return View
- */
-public function layoutSettings()
-{
-    try {
-        //  \Log::info('layoutSettings method called !!!!');
+     * Activate Layout Data
+     * @return array
+     */
+    public function getActiveLayout()
+    {
+        try {
+            $layout = $this->layoutRepo->getActiveLayout();
 
-         $data = $this->layoutRepo->getLayOutSettings();
-       
-        return view('theme/tlcommerce::backend.layout-settings.layout_settings', $data);
-
-    } catch (\Exception $e) {
-        Log::error("Layout page Failed: {$e->getMessage()}");
-
-        toastNotification('error', translate('Layout Settings Page Failed'));
-        return redirect()->back();
+            return response()->json([
+                'layout' => $layout
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Layout Get Error: {$e->getMessage()}");
+            toastNotification('error', translate('Layout Get Error'));
+            return redirect()->back();
+        }
     }
-}
-
-
- /**
- * Activate Layout Data
- * @return array
- */
-public function getActiveLayout()
-{
-    try {
-        // \Log::info('getActiveLayout method called !!!!');
-
-        $layout = $this->layoutRepo->getActiveLayout();
-       
-        return response()->json([
-                    'layout' => $layout
-                ]);
-
-    } catch (\Exception $e) {
-        Log::error("Layout Get Error: {$e->getMessage()}");
-        toastNotification('error', translate('Layout Get Error'));
-        return redirect()->back();
-    }
-}
 
     /**
      * Update Layout Settings

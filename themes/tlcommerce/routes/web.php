@@ -156,8 +156,6 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
 
     // Layout Settings
     Route::middleware(['can:Manage Layout Settings'])->group(function () {
-        // Route::get('/layout-settings', [ThemeOptionController::class, 'layoutSettings'])->name('theme.tlcommerce.layoutSettings');
-
         Route::get('/get-active-layout', [ThemeOptionController::class, 'getActiveLayout'])->name('theme.tlcommerce.getActiveLayout');
         Route::get('/layout-settings', [ThemeOptionController::class, 'layoutSettings'])->name('theme.tlcommerce.layoutSettings');
         Route::post('/layout-settings', [ThemeOptionController::class, 'updateLayoutSettings'])->name('theme.tlcommerce.updateLayoutSettings');

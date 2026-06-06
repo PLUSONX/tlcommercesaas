@@ -13,22 +13,41 @@ class LayoutSettingsRepository {
      * * @return array
     */
     public function getLayOutSettings() {
-
-        // \Log::info('getLayOutSettings repository method called !!!!');
-
         $layouts = DB::table('tl_store_layouts')->get();
         $activeLayout = DB::table('tl_store_layouts')->where('is_active', 1)->first();
 
-        // \Log::info('layout settings data', [
-        //         'layouts' => json_encode($layouts),
-        //         'activeLayout' => json_encode($activeLayout),
-        // ]);
+        if (!$activeLayout) {
+            $activeLayout = $layouts->firstWhere('name', 'standard') ?? $layouts->first();
+        }
+
+        $splitScreenLayout = $layouts->firstWhere('name', 'split_screen');
+        $splitScreenSettings = $splitScreenLayout
+            ? $this->getSplitScreenProperties($splitScreenLayout->id)
+            : null;
 
         return [
             'layouts' => $layouts,
-            'activeLayout' => $activeLayout
+            'activeLayout' => $activeLayout,
+            'splitScreenSettings' => $splitScreenSettings,
         ];
+    }
 
+    /**
+     * Get split screen layout properties for admin editing
+     * @param int $layoutId
+     * @return object|null
+     */
+    public function getSplitScreenProperties($layoutId)
+    {
+        return DB::table('tl_store_layouts_split_screen_properties as props')
+            ->leftJoin('tl_uploaded_files as files', 'props.feature_image', '=', 'files.id')
+            ->where('props.layout_id', $layoutId)
+            ->select(
+                'props.*',
+                'files.path as feature_image_path',
+                'files.name as feature_image_name'
+            )
+            ->first();
     }
 
     /**
@@ -45,22 +64,8 @@ class LayoutSettingsRepository {
             return response()->json(['layout' => null]);
         }
 
-        // If it's a split-screen layout (id: 4)
-        if ($layout->id == 4) {
-
-            $splitScreenSettings = DB::table('tl_store_layouts_split_screen_properties as props')
-                ->leftJoin('tl_uploaded_files as files', 'props.feature_image', '=', 'files.id')
-                ->where('props.layout_id', $layout->id)
-                ->select(
-                    'props.*',
-                    'files.path as feature_image_path',
-                    'files.name as feature_image_name'
-                )
-                ->first();
-
-            // \Log::info('splitScreenSettings data!!!', [
-            //     'splitScreenSettings' => $splitScreenSettings,
-            // ]);
+        if ($layout->name === 'split_screen') {
+            $splitScreenSettings = $this->getSplitScreenProperties($layout->id);
 
             return [
                 'id' => $layout->id,
@@ -69,17 +74,6 @@ class LayoutSettingsRepository {
                 'settings' => json_decode($layout->settings, true),
                 'split_screen' => $splitScreenSettings
             ];
-            // $splitScreenSettings = DB::table('tl_store_layouts_split_screen_properties')
-            //     ->where('layout_id', $layout->id)
-            //     ->first();
-
-            // return [
-            //     'id' => $layout->id,
-            //     'name' => $layout->name,
-            //     'type' => 'split_screen',
-            //     'settings' => json_decode($layout->settings, true),
-            //     'split_screen' => $splitScreenSettings
-            // ];
         }
 
         return [
