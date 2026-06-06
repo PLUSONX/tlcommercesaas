@@ -47,7 +47,7 @@
     </div>
     <div class="row g-0 mobile-gap-10" v-else>
 
-      <div v-for="product in paginatedItems" :key="product.id" class="col-6 compact-card p-2 pb-0">
+      <div v-for="product in paginatedItems" :key="product.id" class="col-6 compact-card">
         <single-product :item="product" styleEight />
       </div>
     </div>
@@ -127,16 +127,16 @@ export default {
       },
       productSkeletons: [
         {
-          height: "370px",
+          height: "400px",
         },
         {
-          height: "370px",
+          height: "400px",
         },
         {
-          height: "370px",
+          height: "400px",
         },
         {
-          height: "370px",
+          height: "400px",
         },
       ],
     };
@@ -305,16 +305,26 @@ export default {
   }
 }
 
+.compact-card {
+  padding: 6px 6px 0;
+}
+
 .compact-card :deep(.single-product-item) {
   width: 100% !important;
   box-sizing: border-box !important;
 }
 
 .compact-card :deep(img) {
-  width: 60% !important;
+  width: 75% !important;
   height: auto !important;
   display: block;
   margin: 0 auto;
+}
+
+.compact-card :deep(.product-summary) {
+  @media (min-width: 480px) and (max-width: 501px) {
+    padding-left: 12% !important;
+  }
 }
 
 @media (max-width: 500px) {
@@ -324,8 +334,7 @@ export default {
   }
 
   .mobile-gap-10 .compact-card {
-    padding: 1px !important;
-    /* padding-bottom: 2px !important; */
+    padding: 3px 2px 0 !important;
   }
 
   .mobile-gap-10 .compact-card :deep(.single-product-item) {
