@@ -315,7 +315,7 @@ export default {
 }
 
 .compact-card :deep(img) {
-  width: 75% !important;
+  width: 80% !important;
   height: auto !important;
   display: block;
   margin: 0 auto;
