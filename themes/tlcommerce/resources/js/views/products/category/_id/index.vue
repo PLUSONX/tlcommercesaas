@@ -73,7 +73,7 @@
                 <div class="ant-tag" v-if="brand_filter.id">
                   <span class="ant-tag-text">{{
                     brand_filter.name
-                  }}</span>
+                    }}</span>
                   <span class="material-icons" @click.prevent="removeTag('brand')">close</span>
                 </div>
 
@@ -91,7 +91,7 @@
 
                 <span class="clear-all" @click.prevent="removeAllTag">{{
                   $t("CLEAR ALL")
-                }}</span>
+                  }}</span>
               </div>
             </div>
             <!--End filter items-->
@@ -371,10 +371,20 @@ export default {
 }
 
 .compact-card :deep(img) {
-  width: 80% !important;
+  width: 100% !important;
   height: auto !important;
   display: block;
   margin: 0 auto;
+
+  @media (max-width: 510px) {
+    width: 95% !important;
+  }
+}
+
+.compact-card :deep(.product-summary) {
+  @media (min-width: 480px) and (max-width: 501px) {
+    padding-left: 12% !important;
+  }
 }
 
 @media (max-width: 500px) {
@@ -399,11 +409,11 @@ export default {
     margin-bottom: 0 !important;
   }
 
-  .compact-card :deep(.product-summary) {
+  /* .compact-card :deep(.product-summary) {
     min-height: unset !important;
     padding-left: 2px !important;
     padding-right: 2px !important;
-  }
+  } */
 
 
 }

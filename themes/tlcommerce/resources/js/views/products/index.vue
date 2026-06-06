@@ -315,10 +315,14 @@ export default {
 }
 
 .compact-card :deep(img) {
-  width: 80% !important;
+  width: 100% !important;
   height: auto !important;
   display: block;
   margin: 0 auto;
+
+  @media (max-width: 510px) {
+    width: 95% !important;
+  }
 }
 
 .compact-card :deep(.product-summary) {
