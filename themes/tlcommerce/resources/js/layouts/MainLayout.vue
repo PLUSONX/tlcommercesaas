@@ -543,6 +543,7 @@ export default {
       'splitScreenSettings',
       'contentPosition',
       'featureImagePath',
+      'splitRatio',
       'isMobile',
     ]),
 
@@ -556,9 +557,15 @@ export default {
 
     containerStyle() {
       if (!this.isSplitScreen || this.isMobile) return {};
+
+      const { content, feature } = this.splitRatio;
+      const columns = this.contentPosition === 'left'
+        ? `${content}fr ${feature}fr`
+        : `${feature}fr ${content}fr`;
+
       return {
         display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
+        gridTemplateColumns: columns,
         minHeight: '100vh'
       };
     },

@@ -1,5 +1,8 @@
 const axios = require("axios").default;
 
+/** Split-screen desktop column ratio — hardcoded; DB split_ratio is reference only. */
+const SPLIT_SCREEN_RATIO = { content: 40, feature: 60 };
+
 export default {
     namespaced: true,
 
@@ -71,6 +74,10 @@ export default {
         featureType: (state) => {
             return state.activeLayout?.split_screen?.feature_type || 'banner';
         },
+
+        splitRatio: () => ({ ...SPLIT_SCREEN_RATIO }),
+
+        contentColumnPercent: () => SPLIT_SCREEN_RATIO.content,
 
         isMobile: (state) => state.isMobileView
     }

@@ -430,6 +430,7 @@
       v-if="isSplitScreen && productData"
       class="custom-footer"
       :item="productData"
+      :style="splitContentFooterStyle"
     />
   </div>
 </template>
@@ -557,7 +558,12 @@ export default {
       site_config: (state) => state.siteSettings,
     }),
 
-    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+    ...mapGetters('layout', [
+      'isSplitScreen',
+      'isMobile',
+      'contentColumnPercent',
+      'contentPosition',
+    ]),
 
     isSplitScreenDesktop() {
       return this.isSplitScreen;
@@ -569,6 +575,21 @@ export default {
 
     showSplitProductFooter() {
       return this.isSplitScreenDesktop;
+    },
+
+    splitContentFooterStyle() {
+      if (!this.isSplitScreen || this.isMobile) return {};
+
+      const style = { width: `${this.contentColumnPercent}%` };
+
+      if (this.contentPosition === 'right') {
+        style.right = '0';
+        style.left = 'auto';
+      } else {
+        style.left = '0';
+      }
+
+      return style;
     },
 
     productData() {
@@ -1045,13 +1066,13 @@ export default {
 .custom-footer {
   position: fixed;
   bottom: 0;
-  left: 0;
-  width: 50%;
   z-index: 100;
   background: #fff;
 
   @media (max-width: 769px) {
     width: 100% !important;
+    left: 0 !important;
+    right: auto !important;
   }
 }
 </style>

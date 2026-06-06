@@ -1090,10 +1090,19 @@ export default {
   line-height: 0.5;
   white-space: nowrap;
 
+  @media (max-width: 1250px) and (min-width: 920px) {
+    font-size: 0.60rem;
+  }
+
+  @media (max-width: 919px) and (min-width: 768px) {
+    font-size: 0.45rem;
+  }
+
+  /*
   @media (max-width: 995px) and (min-width: 768px) {
     font-size: 0.55rem;
   }
-
+*/
 
 }
 
