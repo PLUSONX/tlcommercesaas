@@ -356,13 +356,15 @@ export default {
   padding: 6px 6px 0;
 }
 
-.compact-card :deep(> .single-product-item) {
-  overflow: visible;
-}
+@media (max-width: 768px) {
+  .compact-card :deep(> .single-product-item) {
+    overflow: visible;
+  }
 
-.compact-card :deep(.single-product-item > .position-relative) {
-  overflow: hidden;
-  border-radius: 12px 12px 0 0;
+  .compact-card :deep(.single-product-item > .position-relative) {
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+  }
 }
 
 .compact-card :deep(.single-product-item) {

@@ -1087,8 +1087,10 @@ export default {
   padding: 1em 1em;
   font-size: 14px;
   font-weight: 600;
-  line-height: 0.5;
+  line-height: 1.2;
   white-space: nowrap;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 
   @media (max-width: 1250px) and (min-width: 920px) {
     font-size: 0.60rem;
@@ -1116,14 +1118,16 @@ export default {
 @media (max-width: 500px) {
 
   .button-group {
-    width: 80% !important;
-    gap: 0.2em;
-    // padding-right: 8px !important;
+    width: 100% !important;
+    gap: 0.35em;
+    flex-wrap: wrap;
   }
 
   .btn-xs {
     font-size: 12px !important;
-    padding: 0.8em 0.8em;
+    padding: 0.65em 0.5em;
+    white-space: normal;
+    min-width: 0;
   }
 
   .row.flex-column {

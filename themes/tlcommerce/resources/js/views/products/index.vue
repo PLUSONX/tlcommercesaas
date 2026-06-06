@@ -291,10 +291,9 @@ export default {
 
 .col-6 :deep(> div) {
   border-radius: 12px;
-  overflow: hidden;
 }
 
-@media (max-width: 479px) {
+@media (max-width: 768px) {
   .compact-card :deep(> .single-product-item) {
     overflow: visible;
   }
