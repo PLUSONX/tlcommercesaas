@@ -26,6 +26,9 @@
             </router-view>
           </div>
 
+          <gdpr v-if="isSplitScreen && isMobile && gdpr_properties != null && gdpr_properties.gdpr_status == 1"
+            class="split-screen-gdpr" :properties="gdpr_properties"></gdpr>
+
         </div>
 
         <div class="split-screen-feature" :class="featureSideClass" :style="featureStyle">
@@ -217,8 +220,9 @@
 
     </template>
 
-    <!--Cookie Consent-->
-    <gdpr v-if="gdpr_properties != null && gdpr_properties.gdpr_status == 1" :properties="gdpr_properties"></gdpr>
+    <!--Cookie Consent (default layout + split-screen desktop)-->
+    <gdpr v-if="gdpr_properties != null && gdpr_properties.gdpr_status == 1 && !(isSplitScreen && isMobile)"
+      :properties="gdpr_properties"></gdpr>
   </div>
 </template>
 
@@ -749,14 +753,10 @@ export default {
     this.initLayout();
     window.addEventListener('resize', this.handleResize);
     this.initResizeObserver();
-
-
-
-
+    this.updateSplitScreenMobileScrollLock();
   },
 
   beforeUnmount() {
-    // NEW: Clean up listeners
     window.removeEventListener('resize', this.handleResize);
 
     if (this.resizeObserver) {
@@ -766,6 +766,8 @@ export default {
     if (this.resizeTimeout) {
       clearTimeout(this.resizeTimeout);
     }
+
+    document.documentElement.classList.remove('split-screen-mobile-locked');
   },
 
   methods: {
@@ -803,6 +805,11 @@ export default {
         });
         this.resizeObserver.observe(document.body);
       }
+    },
+
+    updateSplitScreenMobileScrollLock() {
+      const shouldLock = this.isSplitScreen && this.isMobile;
+      document.documentElement.classList.toggle('split-screen-mobile-locked', shouldLock);
     },
 
     translateLanguage(val) {
@@ -1175,6 +1182,14 @@ export default {
   },
 
   watch: {
+    isSplitScreen() {
+      this.updateSplitScreenMobileScrollLock();
+    },
+
+    isMobile() {
+      this.updateSplitScreenMobileScrollLock();
+    },
+
     $route(to, from) {
       if (from?.name === "product" && to.name === "home" && this.showRouteOutlet) {
         this.outletKey += 1;
@@ -1270,6 +1285,10 @@ export default {
   overflow-x: hidden;
 }
 
+.split-screen-header-sticky {
+  flex-shrink: 0;
+}
+
 .split-screen-search-inline-host {
   max-height: 0;
   overflow: hidden;
@@ -1309,19 +1328,23 @@ export default {
 //   // margin-top: 50px;
 // }
 
-/* Mobile: Force default layout */
+/* Mobile split-screen: fixed app shell, single inner scroll pane */
 @media (max-width: 768px) {
   .layout-split-screen {
     display: block !important;
-    height: auto;
-    overflow: visible;
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
   }
 
   .split-screen-container {
     display: block !important;
     grid-template-columns: none !important;
-    height: auto;
-    overflow: visible;
+    height: 100%;
+    overflow: hidden;
   }
 
   .split-screen-content {
@@ -1329,8 +1352,8 @@ export default {
     flex-direction: column !important;
     width: 100% !important;
     order: initial !important;
-    height: 100vh !important;
-    max-height: 100vh !important;
+    height: 100% !important;
+    max-height: 100% !important;
     overflow: hidden !important;
   }
 
@@ -1349,8 +1372,20 @@ export default {
   .content-split-nudge {
     flex: 1 1 auto;
     min-height: 0;
+    width: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    background-color: inherit;
+  }
+
+  .split-screen-gdpr {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
   }
 }
 
@@ -1431,5 +1466,14 @@ export default {
   left: 0;
   width: 100%;
   z-index: 100;
+}
+</style>
+
+<style lang="scss">
+html.split-screen-mobile-locked,
+html.split-screen-mobile-locked body {
+  overflow: hidden;
+  height: 100%;
+  overscroll-behavior: none;
 }
 </style>
