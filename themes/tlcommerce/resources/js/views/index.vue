@@ -45,7 +45,7 @@
         <!-- <section class="product-banner product-banner-overflow-auto mt-30 mb-30" v-if="dataAvailable"> -->
         <!-- <div class="mt-50"> -->
         <div :class="mtClass">
-            <section class="product-banner product-banner-overflow-auto" v-if="dataAvailable && !isSplitScreen">
+            <section class="product-banner product-banner-overflow-auto" v-if="dataAvailable && showHomeBanners">
 
 
                 <div v-if="sliderLoading">
@@ -240,6 +240,10 @@ export default {
         }),
 
         ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+        showHomeBanners() {
+            return !this.isSplitScreen || this.isMobile;
+        },
 
         forcedMobile() {
             if (this.isSplitScreen && !this.isMobile) {
