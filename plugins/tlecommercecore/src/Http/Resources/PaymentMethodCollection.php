@@ -14,7 +14,7 @@ class PaymentMethodCollection extends ResourceCollection
                 return [
                     'id'          => (int) $data->id,
                     'name'        => $data->name,
-                    'logo'     => $this->getLogo($data->id),
+                    'logo'     => $this->getLogo($data),
                     'instruction'     => $this->getInstruction($data->id),
                     'additional' => $this->extra_setting($data->id)
                 ];
@@ -40,8 +40,13 @@ class PaymentMethodCollection extends ResourceCollection
         ];
     }
 
-    public function getLogo($id)
+    public function getLogo($data)
     {
+        if (!empty($data->logo)) {
+            return getFilePath($data->logo, false);
+        }
+
+        $id = $data->id;
         $logo = NULL;
         if ($id == config('tlecommercecore.payment_methods.cod')) {
             $logo = PaymentMethodRepository::configKeyValue($id, 'cod_logo');

@@ -2,6 +2,7 @@
 
 namespace Plugin\TlcommerceCore\Repositories;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Plugin\TlcommerceCore\Models\PaymentMethods;
@@ -78,6 +79,13 @@ class PaymentMethodRepository
     public function updatePaymentMethodCredential(Request $request)
     {
         try {
+
+        // Log::info('updatePaymentMethodCredential method called!!!');
+
+        // Log::info('request data', [
+        //             'request' => $request->all(),
+        //         ]);
+
             DB::beginTransaction();
             if ($request->has('payment_id')) {
                 $data = $request->toArray();
@@ -87,6 +95,21 @@ class PaymentMethodRepository
                         $config = PaymentMethodConfig::firstOrCreate(['payment_method_id' => $request['payment_id'], 'key_name' => $input_field]);
                         $config->key_value = xss_clean($request[$input_field]);
                         $config->save();
+
+                        // Log::info('outside logo section called!!!');
+
+                        if (str_ends_with($input_field, '_logo') && $request[$input_field] != null) {
+
+                            // Log::info('inside logo section called!!!');
+
+                            $method = PaymentMethods::findOrFail($request['payment_id']);
+
+                            // Log::info('method data', [
+                            //     'method' => $method,
+                            // ]);
+                            $method->logo = xss_clean($request[$input_field]);
+                            $method->save();
+                        }
                     }
                 }
                 //update sandbox

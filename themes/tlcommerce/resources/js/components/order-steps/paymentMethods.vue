@@ -25,10 +25,13 @@
               <label>
                 <input type="radio" :value="payment" class="shipping-method" name="payment-method"
                   v-model="selected_payment_method" @click="takeBankDetails" @input="!pay_wallet" />
-                <span class="label-title" v-if="payment.logo">
-                  <img :src="payment.logo" :alt="payment.name" />
-                </span>
-                <span class="label-title" v-else>
+                <span class="label-title">
+                  <img
+                    v-if="payment.logo"
+                    class="payment-method-logo"
+                    :src="cleanImage(payment.logo)"
+                    :alt="payment.name"
+                  />
                   {{ payment.name }}
                 </span>
               </label>
@@ -266,6 +269,11 @@ export default {
     }
   },
   methods: {
+    cleanImage(img) {
+      if (!img) return '';
+      console.log("img: ", img.replace(/^\/public/, ''));
+      return img.replace(/^\/public/, '');
+    },
     /**
      * Get active Payment methods
      *
@@ -280,6 +288,7 @@ export default {
         .then((response) => {
           if (response.data.success) {
             this.paymentMethods = response.data.data;
+            console.log("Payment Methods: ", this.paymentMethods);
             this.loading = false;
           } else {
             this.paymentMethods = [];
@@ -619,3 +628,19 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped>
+.payment-method-logo {
+  display: block;
+  max-height: 30px;
+  max-width: 80px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.form-selector-list .label-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+</style>
