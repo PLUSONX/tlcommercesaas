@@ -1,8 +1,8 @@
 <template>
 
   <div :class="headerClasses" @scroll="scrollHandler" ref="fooHeader">
-    <!-- <div class="custom-container2"> -->
-    <div class="row align-items-center">
+    <div class="custom-container2">
+      <div class="row align-items-center">
 
       <div class="col-lg-3 col-md-4">
         <div class="logo-wrapper d-flex align-items-center">
@@ -16,8 +16,11 @@
               </h2>
             </template>
             <template v-else>
-              <the-logo :header-logo-style="headerLogoStyle" :logo="siteProperties.logo"
-                :title="siteProperties.site_name" />
+              <the-logo v-if="siteProperties.logo" :header-logo-style="headerLogoStyle"
+                :logo="siteProperties.logo" :title="siteProperties.site_name" />
+              <h2 class="site-title" v-else>
+                <a href="/">{{ siteProperties.site_name }}</a>
+              </h2>
             </template>
           </template>
 
@@ -30,16 +33,22 @@
               </h2>
             </template>
             <template v-else>
-              <the-logo :header-logo-style="headerLogoStyle" :logo="siteProperties.sticky_logo"
-                :title="siteProperties.site_name" />
+              <div v-if="siteProperties.sticky_logo">
+                <the-logo :header-logo-style="headerLogoStyle" :logo="siteProperties.sticky_logo"
+                  :title="siteProperties.site_name" />
+              </div>
+              <div v-else>
+                <h2 class="site-title">
+                  <a href="/">{{ siteProperties.site_name }}</a>
+                </h2>
+              </div>
             </template>
           </template>
 
         </div>
       </div>
 
-      <div class="col-lg-6 col-md-5">
-        <!-- <div class="col-lg-6 position-relative"> -->
+      <div class="col-lg-6 col-md-5 position-relative">
         <!-- Search Form -->
         <search-form @search-suggestions="getSearchProducts" rounded style-two />
         <!-- End Search Form -->
@@ -151,8 +160,8 @@
         </ul>
         <!-- End Header Buttons -->
       </div>
+      </div>
     </div>
-    <!-- </div> -->
   </div>
 
   <!-- End Header Top -->
@@ -540,19 +549,21 @@ export default {
 
 <style lang="scss" scoped>
 .logo-wrapper {
-  height: 60px;
-  /* Set this to your desired logo height */
+  height: 45px;
+  max-width: 100%;
   overflow: hidden;
   display: flex;
   align-items: center;
 }
 
-/* Ensure the component inside doesn't override the height */
-.logo-wrapper :deep(img),
-.logo-wrapper :deep(.site-logo) {
+.logo-wrapper :deep(.logo),
+.logo-wrapper :deep(.logo img),
+.logo-wrapper :deep(img) {
   max-height: 100%;
+  max-width: 100%;
   width: auto;
   display: block;
+  object-fit: contain;
 }
 
 .search-suggestion {
