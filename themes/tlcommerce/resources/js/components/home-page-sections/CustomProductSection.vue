@@ -2,12 +2,12 @@
   <template v-if="isSplitScreen && !isMobile">
     <section
       v-if="productList.length"
-      class="collection-section collection-section--split home-page-section force-mobile-layout mobile-content-wrapper"
+      class="pt-15 pb-15 collection-section collection-section--split home-page-section force-mobile-layout mobile-content-wrapper"
       :style="splitScreenStyleObject"
     >
-      <div class="px-3">
+      <div class="custom-container2">
         <div class="row align-items-center">
-          <div class="col-12">
+          <div class="col-md-6">
             <section-title
               class="mb-30 section-title"
               :title="
@@ -20,7 +20,7 @@
               :titleColor="sectionProps?.title_color"
             />
           </div>
-          <div class="col-12" v-if="sectionProps?.content == 'category'">
+          <div class="col-md-6 text-md-end" v-if="sectionProps?.content == 'category'">
             <router-link
               v-if="sectionBlock?.category_info != null"
               class="btn btn-sm rounded-0 mb-30 section_btn"
@@ -37,13 +37,19 @@
         </div>
         <swiper
           v-if="productList.length"
-          :slidesPerView="2"
+          :slidesPerView="6"
           :modules="modules"
-          :spaceBetween="8"
-          :autoplay="false"
-          :loop="splitScreenSwiperLoop"
-          :pagination="splitScreenSwiperPagination"
-          class="product-grid-slider product-grid-slider--split theme-slider-dots"
+          :spaceBetween="1"
+          :autoplay="{
+            delay: 4000,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+          }"
+          :loop="true"
+          :pagination="{
+            clickable: true,
+          }"
+          class="product-grid-slider theme-slider-dots"
           :breakpoints="splitScreenSwiperBreakpoints"
         >
           <swiper-slide v-for="(item, index) in productList" :key="`slide-${index}`">
@@ -231,20 +237,12 @@ export default {
       };
     },
 
-    splitScreenSwiperLoop() {
-      return this.productList.length > 4;
-    },
-
-    splitScreenSwiperPagination() {
-      if (this.productList.length <= 2) {
-        return false;
-      }
-      return { clickable: true };
-    },
-
     splitScreenSwiperBreakpoints() {
       return {
-        "0": { slidesPerView: 2, spaceBetween: 8 },
+        "0": { slidesPerView: 2 },
+        "480": { slidesPerView: 2 },
+        "768": { slidesPerView: 2 },
+        "1024": { slidesPerView: 2 },
       };
     },
   },
@@ -282,34 +280,5 @@ export default {
 .force-mobile-layout .row > [class*="col-"] {
   flex: 0 0 100% !important;
   max-width: 100% !important;
-}
-
-.force-mobile-layout .product-content .image,
-.force-mobile-layout .product-content .product-img {
-  min-width: 0 !important;
-  max-width: 100px;
-}
-
-.force-mobile-layout .cart-image-review {
-  max-width: 100% !important;
-  height: auto !important;
-  flex-shrink: 1 !important;
-}
-
-.force-mobile-layout .d-none.d-lg-block,
-.force-mobile-layout .d-lg-block {
-  display: none !important;
-}
-
-.force-mobile-layout .d-block.d-lg-none,
-.force-mobile-layout .d-lg-none {
-  display: block !important;
-}
-
-.force-mobile-layout .d-block.d-lg-none.col-12 {
-  width: 100% !important;
-  display: flex !important;
-  flex-wrap: wrap !important;
-  justify-content: space-between !important;
 }
 </style>
