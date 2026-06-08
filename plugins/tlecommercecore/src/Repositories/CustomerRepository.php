@@ -12,6 +12,7 @@ use Plugin\TlcommerceCore\Models\Orders;
 use Plugin\TlcommerceCore\Models\Customers;
 use Plugin\TlcommerceCore\Models\CustomerAddress;
 use Plugin\TlcommerceCore\Models\CustomerFeedback;
+use Plugin\TlcommerceCore\Models\CustomerReview;
 use Core\Http\Mail\CustomerResetEmail;
 use Plugin\TlcommerceCore\Models\CustomerWishlist;
 use Core\Http\Mail\CustomerForgotPassword;
@@ -239,6 +240,82 @@ class CustomerRepository
         } catch (\Error $e) {
             DB::rollBack();
             return NULL;
+        }
+    }
+
+
+    /**
+     * Store customer order review
+     *
+     * @param object $request
+     * @param int $customer_id
+     * @return mixed
+     */
+    public function customerReview($request, $customer_id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $order = Orders::where('id', $request['order_id'])
+                ->where('customer_id', $customer_id)
+                ->first();
+
+            if ($order == null) {
+                DB::rollBack();
+                return null;
+            }
+
+            if ($order->payment_status != config('tlecommercecore.order_payment_status.paid')
+                || $order->delivery_status != config('tlecommercecore.order_delivery_status.delivered')) {
+                DB::rollBack();
+                return null;
+            }
+
+            $existingReview = CustomerReview::where('customer_id', $customer_id)
+                ->where('order_id', $request['order_id'])
+                ->whereNull('product_id')
+                ->first();
+
+            if ($existingReview != null) {
+                DB::rollBack();
+                return null;
+            }
+
+            $review_images = [];
+            if ($request->has('review_images')) {
+                $images = $request->file('review_images');
+                foreach ($images as $image) {
+                    $image = saveFileInStorage($image, false);
+                    array_push($review_images, $image);
+                }
+            }
+
+            if (sizeof($review_images) > 0) {
+                $review_images = json_encode($review_images);
+            } else {
+                $review_images = null;
+            }
+
+            $review = new CustomerReview;
+            $review->customer_id = $customer_id;
+            $review->order_id = $request['order_id'];
+            $review->review = $request['review'];
+            $review->rating = $request['rating'];
+            $review->images = $review_images;
+            $review->status = config('settings.general_status.active');
+            $review->save();
+
+            EcommerceNotification::sendNewReviewNotification($review, $order);
+
+            DB::commit();
+
+            return $review;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return null;
+        } catch (\Error $e) {
+            DB::rollBack();
+            return null;
         }
     }
 

@@ -660,6 +660,71 @@ class EcommerceNotification
         
     }
 
+    /**
+     * Will send new order review notification
+     */
+    public static function sendNewReviewNotification($review, $order)
+    {
+        try {
+            $customer = $review->customer;
+            $name = $customer != null ? $customer->name : '';
+            $phone = $customer != null ? $customer->phone : '';
+            $rating = $review->rating;
+            $comment = $review->review;
+            $order_code = $order->order_code;
+            $link = '#';
+            $message = "New order review has been placed for order " . $order_code;
+
+            $data = [
+                'name' => $name,
+                'phone' => $phone,
+                'comment' => $comment,
+                'satisfaction_rating' => $rating,
+                'message' => $message,
+                'link' => $link,
+            ];
+
+            $admins = User::where('user_type', config('tlecommercecore.user_type.admin'))
+                ->where('status', config('settings.general_status.active'))
+                ->get();
+
+            if ($admins != null) {
+                $notification = new CustomerOrderCreateNotification($data);
+
+                try {
+                    Notification::send($admins, $notification);
+                } catch (\Throwable $e) {
+                    \Log::error("Review notification system crashed!", [
+                        'message' => $e->getMessage(),
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine(),
+                    ]);
+                }
+            }
+
+            $admin_emails = User::where('user_type', config('tlecommercecore.user_type.admin'))
+                ->where('status', config('settings.general_status.active'))
+                ->pluck('email');
+
+            $mail_data = [
+                'template_id' => 16,
+                'keywords' => getEmailTemplateVariables(16, true),
+                '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
+                '_site_link_'       => url('/'),
+                'subject' => 'New Order Review Placed!',
+                '_customer_name_' => $name,
+                '_phone_' => $phone,
+                '_comment_' => $comment,
+                '_satisfaction_rating_' => $rating,
+                '_mail_title_' => $message,
+            ];
+
+            SendTenantMailJob::dispatch($admin_emails, $mail_data, getTenantMailConfig());
+        } catch (\Exception $e) {
+            \Log::error("Global Review Notification Method Error: " . $e->getMessage());
+        }
+    }
+
     // public static function sendNewOrderNotification($order)
     // {
     //     \Log::info('sendNewOrderNotification method called!!!');

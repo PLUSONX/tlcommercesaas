@@ -96,6 +96,16 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
      * /api/v1/ecommerce-core/customer
      */
     Route::group(['prefix' => 'customer', 'middleware' => 'auth:jwt-customer'], function () {
+
+        /**
+         * Customer information
+         * 
+         * /api/v1/ecommerce-core/customer
+         * 
+        */
+        Route::post('submit-customer-review', [CustomerController::class, 'submitCustomerReview']);
+
+
         /**
          * Customer information
          * 

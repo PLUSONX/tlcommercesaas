@@ -5,11 +5,13 @@ namespace Plugin\TlcommerceCore\Http\Controllers\Api;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Plugin\TlcommerceCore\Models\Customers;
 use Plugin\TlcommerceCore\Repositories\OrderRepository;
 use Plugin\TlcommerceCore\Http\Requests\CustomerRequest;
 use Plugin\TlcommerceCore\Http\Requests\CustomerFeedbackRequest;
+use Plugin\TlcommerceCore\Http\Requests\CustomerReviewRequest;
 use Plugin\TlcommerceCore\Http\Resources\OrderCollection;
 use Plugin\TlcommerceCore\Repositories\CustomerRepository;
 use Plugin\TlcommerceCore\Http\Requests\CustomerLoginRequest;
@@ -140,7 +142,7 @@ class CustomerController extends Controller
     }
 
      /**
-     * Will complete customer registration 
+     * Will submit customer feedback 
      * 
      * @param CustomerRequest $request
      * @return \Illuminate\Http\JsonResponse
@@ -162,6 +164,59 @@ class CustomerController extends Controller
                 ]
             );
         }
+    }
+
+    /**
+     * Will submit customer review
+     *
+     * @param CustomerReviewRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function submitCustomerReview(CustomerReviewRequest $request)
+    {
+        if ($request['review_images'] != null) {
+            $imageRules = array(
+                'review_images' => 'nullable|image|mimes:jpg,jpeg,png|max:2000'
+            );
+            foreach ($request['review_images'] as $image) {
+                $image = array('review_images' => $image);
+                $imageValidator = Validator::make($image, $imageRules);
+                if ($imageValidator->fails()) {
+                    return response()->json(['errors' => $imageValidator->errors()], 422);
+                }
+            }
+        }
+
+        $review = $this->customer_repository->customerReview(
+            $request,
+            auth('jwt-customer')->user()->id
+        );
+
+        if ($review != null) {
+            return response()->json(
+                [
+                    'success' => true,
+                ]
+            );
+        } else {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => translate('Unable to submit review', session()->get('api_locale')),
+                ]
+            );
+        }
+    }
+
+    /**
+     * Will submit customer reivew 
+     * 
+     * @param CustomerReviewRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function customerReview(CustomerReviewRequest $request)
+    {
+        return $this->submitCustomerReview($request);
     }
 
     /**
