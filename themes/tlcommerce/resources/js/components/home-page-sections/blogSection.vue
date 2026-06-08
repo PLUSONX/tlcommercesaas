@@ -12,7 +12,7 @@
             <section-title
               class="mb-30"
               :title="section_title"
-              :titleColor="properties.title_color"
+              :titleColor="sectionStyleProps.title_color"
             />
           </div>
           <div class="col-12">
@@ -20,11 +20,7 @@
               class="btn btn-sm rounded-0 mb-30 blog-section-btn"
               to="/blog"
             >
-              {{
-                properties.btn_title != null
-                  ? properties.btn_title
-                  : $t("View All")
-              }}
+              {{ viewAllLabel }}
             </router-link>
           </div>
         </div>
@@ -55,7 +51,7 @@
             <section-title
               class="mb-30"
               :title="section_title"
-              :titleColor="properties.title_color"
+              :titleColor="sectionStyleProps.title_color"
             />
           </div>
           <div class="col-md-6 text-md-end">
@@ -63,11 +59,7 @@
               class="btn btn-sm rounded-0 mb-30 blog-section-btn"
               to="/blog"
             >
-              {{
-                properties.btn_title != null
-                  ? properties.btn_title
-                  : $t("View All")
-              }}
+              {{ viewAllLabel }}
             </router-link>
           </div>
         </div>
@@ -89,7 +81,7 @@
 import { defineAsyncComponent } from "vue";
 const BlogCard = defineAsyncComponent(() => import("../ui/BlogCard.vue"));
 import axios from "axios";
-import { normalizeSectionProps } from "@/utils/sectionProps";
+import { normalizeSectionProps, sectionViewAllLabel } from "@/utils/sectionProps";
 import { mapGetters } from "vuex";
 export default {
   name: "BlogSection",
@@ -109,6 +101,10 @@ export default {
   computed: {
     sectionStyleProps() {
       return normalizeSectionProps(this.properties);
+    },
+
+    viewAllLabel() {
+      return sectionViewAllLabel(this.properties, this.$t);
     },
 
     cssVars() {
@@ -197,15 +193,17 @@ export default {
 </script>
 <style scoped>
 .blog-section-btn {
-  color: var(--button-color);
-  background-color: var(--button-background-color);
-  border: var(--button-border);
-  border-color: var(--button-border-color);
+  color: var(--button-color, #fff);
+  background-color: var(--button-background-color, var(--c1, #e62d04));
+  border: var(--button-border, 0);
+  border-color: var(--button-border-color, transparent);
+  min-height: 32px;
+  min-width: 80px;
 }
 .blog-section-btn:hover {
-  color: var(--button-hover-color);
-  background-color: var(--button-hover-bg-color);
-  border-color: var(--button-hover-border-color);
+  color: var(--button-hover-color, #fff);
+  background-color: var(--button-hover-bg-color, var(--c1, #e62d04));
+  border-color: var(--button-hover-border-color, transparent);
 }
 .blog-section {
   background-image: var(--section-background-image);

@@ -27,11 +27,7 @@
               :style="splitScreenStyleObject"
               :to="`/products/category/${sectionBlock.category_info.slug}`"
             >
-              {{
-                sectionProps.btn_title != null
-                  ? sectionProps.btn_title
-                  : $t("View All")
-              }}
+              {{ viewAllLabel }}
             </router-link>
           </div>
         </div>
@@ -88,11 +84,7 @@
               :style="styleObject"
               :to="`/products/category/${sectionBlock.category_info.slug}`"
             >
-              {{
-                sectionProps.btn_title != null
-                  ? sectionProps.btn_title
-                  : $t("View All")
-              }}
+              {{ viewAllLabel }}
             </router-link>
           </div>
         </div>
@@ -139,6 +131,7 @@ import { defineAsyncComponent } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Autoplay, Pagination } from "swiper";
 import { mapGetters } from "vuex";
+import { sectionViewAllLabel } from "@/utils/sectionProps";
 
 const SingleProduct = defineAsyncComponent(() =>
   import("../product/SingleProduct.vue")
@@ -183,6 +176,10 @@ export default {
         return this.properties[0] || {};
       }
       return this.properties || {};
+    },
+
+    viewAllLabel() {
+      return sectionViewAllLabel(this.properties, this.$t);
     },
 
     styleObject() {
@@ -250,16 +247,18 @@ export default {
 </script>
 <style scoped>
 .section_btn {
-  color: var(--button-color);
-  background-color: var(--button-background-color);
-  border: var(--button-border);
-  border-color: var(--button-border-color);
+  color: var(--button-color, #fff);
+  background-color: var(--button-background-color, var(--c1, #e62d04));
+  border: var(--button-border, 0);
+  border-color: var(--button-border-color, transparent);
+  min-height: 32px;
+  min-width: 80px;
 }
 
 .section_btn:hover {
-  color: var(--button-hover-color);
-  background-color: var(--button-hover-bg-color);
-  border-color: var(--button-hover-border-color);
+  color: var(--button-hover-color, #fff);
+  background-color: var(--button-hover-bg-color, var(--c1, #e62d04));
+  border-color: var(--button-hover-border-color, transparent);
 }
 
 .collection-section {

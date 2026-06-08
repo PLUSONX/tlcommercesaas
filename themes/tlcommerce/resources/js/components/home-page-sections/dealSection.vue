@@ -10,14 +10,14 @@
             <section-title
               class="section-title"
               :title="dealDetails.title"
-              :titleColor="properties.title_color"
+              :titleColor="sectionStyleProps.title_color"
             />
           </div>
           <div class="col-md-6">
             <countdown
               class="justify-content-md-end"
               :deadline="dealDetails.deadline"
-              :titleColor="properties.title_color"
+              :titleColor="sectionStyleProps.title_color"
             />
           </div>
         </div>
@@ -48,9 +48,7 @@
             :style="splitScreenStyleObject"
             :to="`/deals/${dealDetails.permalink}`"
           >
-            {{
-              properties.btn_title != null ? properties.btn_title : $t("View All")
-            }}
+            {{ viewAllLabel }}
           </router-link>
         </div>
       </div>
@@ -65,14 +63,14 @@
             <section-title
               class="section-title"
               :title="dealDetails.title"
-              :titleColor="properties.title_color"
+              :titleColor="sectionStyleProps.title_color"
             />
           </div>
           <div class="col-md-6">
             <countdown
               class="justify-content-md-end"
               :deadline="dealDetails.deadline"
-              :titleColor="properties.title_color"
+              :titleColor="sectionStyleProps.title_color"
             />
           </div>
         </div>
@@ -113,9 +111,7 @@
             :style="styleObject"
             :to="`/deals/${dealDetails.permalink}`"
           >
-            {{
-              properties.btn_title != null ? properties.btn_title : $t("View All")
-            }}
+            {{ viewAllLabel }}
           </router-link>
         </div>
       </div>
@@ -133,7 +129,7 @@ const Countdown = defineAsyncComponent(() => import("../ui/Countdown.vue"));
 import sectionPreloader from "./sectionPreloader.vue";
 const axios = require("axios").default;
 import { mapGetters } from "vuex";
-import { normalizeSectionProps } from "@/utils/sectionProps";
+import { normalizeSectionProps, sectionViewAllLabel } from "@/utils/sectionProps";
 export default {
   name: "DealSection",
   components: {
@@ -169,6 +165,10 @@ export default {
   computed: {
     sectionStyleProps() {
       return normalizeSectionProps(this.properties);
+    },
+
+    viewAllLabel() {
+      return sectionViewAllLabel(this.properties, this.$t);
     },
 
     styleObject() {
@@ -254,16 +254,18 @@ export default {
 </script>
 <style scoped>
 .section_btn {
-  color: var(--button-color);
-  background-color: var(--button-background-color);
-  border: var(--button-border);
-  border-color: var(--button-border-color);
+  color: var(--button-color, #fff);
+  background-color: var(--button-background-color, var(--c1, #e62d04));
+  border: var(--button-border, 0);
+  border-color: var(--button-border-color, transparent);
+  min-height: 32px;
+  min-width: 80px;
 }
 
 .section_btn:hover {
-  color: var(--button-hover-color);
-  background-color: var(--button-hover-bg-color);
-  border-color: var(--button-hover-border-color);
+  color: var(--button-hover-color, #fff);
+  background-color: var(--button-hover-bg-color, var(--c1, #e62d04));
+  border-color: var(--button-hover-border-color, transparent);
 }
 
 .deals-section {

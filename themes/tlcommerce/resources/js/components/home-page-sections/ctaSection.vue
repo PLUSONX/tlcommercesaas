@@ -25,11 +25,11 @@
                 {{ $t(sectionStyleProps.featured_title) }}
               </p>
               <router-link
-                v-if="sectionStyleProps.btn_title && sectionStyleProps.product_details?.permalink"
+                v-if="sectionStyleProps.product_details?.permalink"
                 :to="`/products/${sectionStyleProps.product_details.permalink}`"
                 class="text-white btn-underline section_btn"
               >
-                {{ sectionStyleProps.btn_title }}
+                {{ viewAllLabel }}
               </router-link>
             </div>
           </div>
@@ -64,11 +64,11 @@
                 {{ $t(sectionStyleProps.featured_title) }}
               </p>
               <router-link
-                v-if="sectionStyleProps.btn_title && sectionStyleProps.product_details?.permalink"
+                v-if="sectionStyleProps.product_details?.permalink"
                 :to="`/products/${sectionStyleProps.product_details.permalink}`"
                 class="text-white btn-underline section_btn"
               >
-                {{ sectionStyleProps.btn_title }}
+                {{ viewAllLabel }}
               </router-link>
             </div>
           </div>
@@ -79,7 +79,7 @@
 </template>
 <script>
 import { defineAsyncComponent } from "vue";
-import { normalizeSectionProps } from "@/utils/sectionProps";
+import { normalizeSectionProps, sectionViewAllLabel } from "@/utils/sectionProps";
 import { mapGetters } from "vuex";
 const VideoCard = defineAsyncComponent(() => import("../ui/VideoCard.vue"));
 export default {
@@ -100,6 +100,10 @@ export default {
   computed: {
     sectionStyleProps() {
       return normalizeSectionProps(this.properties);
+    },
+
+    viewAllLabel() {
+      return sectionViewAllLabel(this.properties, this.$t);
     },
 
     styleObject() {
@@ -173,16 +177,18 @@ export default {
 }
 
 .section_btn {
-  color: var(--button-color) !important;
-  background-color: var(--button-background-color) !important;
-  border: var(--button-border) !important;
-  border-color: var(--button-border-color) !important;
+  color: var(--button-color, #fff) !important;
+  background-color: var(--button-background-color, var(--c1, #e62d04)) !important;
+  border: var(--button-border, 0) !important;
+  border-color: var(--button-border-color, transparent) !important;
+  min-height: 32px;
+  min-width: 80px;
 }
 
 .section_btn:hover {
-  color: var(--button-hover-color);
-  background-color: var(--button-hover-bg-color);
-  border-color: var(--button-hover-border-color);
+  color: var(--button-hover-color, #fff);
+  background-color: var(--button-hover-bg-color, var(--c1, #e62d04));
+  border-color: var(--button-hover-border-color, transparent);
 }
 
 .cta-section {

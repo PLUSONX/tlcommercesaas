@@ -10,8 +10,8 @@
           <div class="col-12">
             <section-title
               class="mb-30 section-title"
-              :title="properties.title"
-              :titleColor="properties.title_color"
+              :title="sectionStyleProps.title"
+              :titleColor="sectionStyleProps.title_color"
             />
           </div>
           <div class="col-12">
@@ -20,11 +20,7 @@
               :style="splitScreenStyleObject"
               to="/all-shops"
             >
-              {{
-                properties.btn_title != null
-                  ? properties.btn_title
-                  : $t("View All")
-              }}
+              {{ viewAllLabel }}
             </router-link>
           </div>
         </div>
@@ -43,7 +39,7 @@
             <single-shop
               :shop="shop"
               hasBanner
-              v-if="properties.banner_option == 'with_banner'"
+              v-if="sectionStyleProps.banner_option == 'with_banner'"
             ></single-shop>
             <single-shop :shop="shop" v-else></single-shop>
           </swiper-slide>
@@ -61,8 +57,8 @@
           <div class="col-md-6">
             <section-title
               class="mb-30 section-title"
-              :title="properties.title"
-              :titleColor="properties.title_color"
+              :title="sectionStyleProps.title"
+              :titleColor="sectionStyleProps.title_color"
             />
           </div>
           <div class="col-md-6 text-md-end">
@@ -71,11 +67,7 @@
               :style="styleObject"
               to="/all-shops"
             >
-              {{
-                properties.btn_title != null
-                  ? properties.btn_title
-                  : $t("View All")
-              }}
+              {{ viewAllLabel }}
             </router-link>
           </div>
         </div>
@@ -113,7 +105,7 @@
             <single-shop
               :shop="shop"
               hasBanner
-              v-if="properties.banner_option == 'with_banner'"
+              v-if="sectionStyleProps.banner_option == 'with_banner'"
             ></single-shop>
             <single-shop :shop="shop" v-else></single-shop>
           </swiper-slide>
@@ -129,7 +121,7 @@ import { Autoplay, Pagination } from "swiper";
 import SingleShop from "@/components/shop/SingleShop.vue";
 import sectionPreloader from "./sectionPreloader.vue";
 const axios = require("axios").default;
-import { normalizeSectionProps } from "@/utils/sectionProps";
+import { normalizeSectionProps, sectionViewAllLabel } from "@/utils/sectionProps";
 import { mapGetters } from "vuex";
 
 export default {
@@ -186,6 +178,10 @@ export default {
   computed: {
     sectionStyleProps() {
       return normalizeSectionProps(this.properties);
+    },
+
+    viewAllLabel() {
+      return sectionViewAllLabel(this.properties, this.$t);
     },
 
     styleObject() {
@@ -258,15 +254,17 @@ export default {
 </script>
 <style scoped>
 .section_btn {
-  color: var(--button-color);
-  background-color: var(--button-background-color);
-  border: var(--button-border);
-  border-color: var(--button-border-color);
+  color: var(--button-color, #fff);
+  background-color: var(--button-background-color, var(--c1, #e62d04));
+  border: var(--button-border, 0);
+  border-color: var(--button-border-color, transparent);
+  min-height: 32px;
+  min-width: 80px;
 }
 .section_btn:hover {
-  color: var(--button-hover-color);
-  background-color: var(--button-hover-bg-color);
-  border-color: var(--button-hover-border-color);
+  color: var(--button-hover-color, #fff);
+  background-color: var(--button-hover-bg-color, var(--c1, #e62d04));
+  border-color: var(--button-hover-border-color, transparent);
 }
 .top-seller-section {
   background-image: var(--section-background-image);

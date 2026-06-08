@@ -20,6 +20,8 @@
 
 /*! ./node_modules/vue-loader/dist/exportHelper.js */
 
+/*! @/utils/sectionProps */
+
 /*! swiper */
 
 /*! swiper/vue */
@@ -27,6 +29,10 @@
 /*! vue */
 
 /*! vuex */
+
+/*!********************************************!*\
+  !*** ./resources/js/utils/sectionProps.js ***!
+  \********************************************/
 
 /*!*****************************************************************************!*\
   !*** ./resources/js/components/home-page-sections/CustomProductSection.vue ***!
