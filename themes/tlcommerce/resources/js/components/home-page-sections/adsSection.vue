@@ -1,12 +1,15 @@
 <template>
   <template v-if="isSplitScreen && !isMobile">
     <!-- Ad Section — split-screen -->
-    <section class="mb-15 mt-15 ads-section ads-section--split home-page-section" :style="splitScreenCssVars">
-      <div class="px-3">
+    <section
+      class="mb-15 mt-15 ads-section ads-section--split home-page-section force-mobile-layout mobile-content-wrapper"
+      :style="splitScreenCssVars"
+    >
+      <div class="custom-container2">
         <div class="row">
-          <div v-for="(ad, index) in cleanAds" :key="`ad-${index}`" class="col-12">
-            <a :href="ad.url" target="_blank" class="d-block mb-15 ads-section--split__link">
-              <v-lazy-image class="w-100" :src="ad.image" :alt="index" />
+          <div v-for="(ad, index) in cleanAds" :key="`ad-${index}`" :class="`col-lg-${ad.column}`">
+            <a :href="ad.url" target="_blank" class="d-block mb-30 mh-294">
+              <v-lazy-image class="w-100 lmh-294" :src="ad.image" :alt="index" />
             </a>
           </div>
         </div>
@@ -126,9 +129,9 @@ export default {
   background-image: none !important;
 }
 
-.ads-section--split__link {
-  max-height: 150px;
-  overflow: hidden;
+.force-mobile-layout .row > [class*="col-"] {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
 }
 
 .mh-294 {
