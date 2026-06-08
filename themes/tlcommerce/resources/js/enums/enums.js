@@ -17,6 +17,10 @@ const enums = {
         'CANCELLED': 4,
         'READY_TO_SHIP': 6,
     },
+    order_payment_status: {
+        'PAID': 1,
+        'UNPAID': 2,
+    },
     order_return_status: {
         'NOT_AVAILABLE': 1,
         'AVAILABLE': 2,

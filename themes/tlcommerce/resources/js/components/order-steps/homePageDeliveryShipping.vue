@@ -34,7 +34,7 @@
                     </div>
                     <div v-if="selectedCity" class="arrival-time">
                         <div v-if="tenant === 'Raneem'">
-                            <strong>15 {{ $t('days') }}</strong>
+                            <strong>12-24 {{ $t('Hours') }}</strong>
                         </div>
 
                         <div v-if="['kfc', 'tryguardi', 'TryGuardi', 'Guardi'].includes(tenant)">

@@ -1,53 +1,96 @@
 <template>
-  <!-- Blog -->
-  <section
-    :style="cssVars"
-    class="pb-15 pt-15 blog-section home-page-section"
-    v-if="success"
-  >
-    <div class="custom-container2">
-      <div class="row align-items-center">
-        <div class="col-md-6">
-          <section-title
-            class="mb-30"
-            :title="section_title"
-            :titleColor="properties.title_color"
-          />
+  <template v-if="isSplitScreen && !isMobile">
+    <!-- Blog — split-screen -->
+    <section
+      :style="splitScreenCssVars"
+      class="pb-15 pt-15 blog-section blog-section--split home-page-section force-mobile-layout mobile-content-wrapper"
+      v-if="success"
+    >
+      <div class="px-3">
+        <div class="row align-items-center">
+          <div class="col-12">
+            <section-title
+              class="mb-30"
+              :title="section_title"
+              :titleColor="properties.title_color"
+            />
+          </div>
+          <div class="col-12">
+            <router-link
+              class="btn btn-sm rounded-0 mb-30 blog-section-btn"
+              to="/blog"
+            >
+              {{
+                properties.btn_title != null
+                  ? properties.btn_title
+                  : $t("View All")
+              }}
+            </router-link>
+          </div>
         </div>
-        <div class="col-md-6 text-md-end">
-          <router-link
-            class="btn btn-sm rounded-0 mb-30 blog-section-btn"
-            to="/blog"
-          >
-            {{
-              properties.btn_title != null
-                ? properties.btn_title
-                : $t("View All")
-            }}
-          </router-link>
-        </div>
-      </div>
 
-      <div class="row">
-        <div
-          class="col-lg-3 col-6"
-          v-for="(blog, index) in blogs"
-          :key="`blog-${index}`"
-        >
-          <!-- Blog Card -->
-          <blog-card :blog="blog" class="mb-30" />
-          <!-- End Blog Card -->
+        <div class="row">
+          <div
+            class="col-6"
+            v-for="(blog, index) in blogs"
+            :key="`blog-${index}`"
+          >
+            <blog-card :blog="blog" class="mb-30" />
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-  <!-- End Blog -->
+    </section>
+  </template>
+
+  <template v-else>
+    <!-- Blog -->
+    <section
+      :style="cssVars"
+      class="pb-15 pt-15 blog-section home-page-section"
+      v-if="success"
+    >
+      <div class="custom-container2">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <section-title
+              class="mb-30"
+              :title="section_title"
+              :titleColor="properties.title_color"
+            />
+          </div>
+          <div class="col-md-6 text-md-end">
+            <router-link
+              class="btn btn-sm rounded-0 mb-30 blog-section-btn"
+              to="/blog"
+            >
+              {{
+                properties.btn_title != null
+                  ? properties.btn_title
+                  : $t("View All")
+              }}
+            </router-link>
+          </div>
+        </div>
+
+        <div class="row">
+          <div
+            class="col-lg-3 col-6"
+            v-for="(blog, index) in blogs"
+            :key="`blog-${index}`"
+          >
+            <blog-card :blog="blog" class="mb-30" />
+          </div>
+        </div>
+      </div>
+    </section>
+  </template>
 </template>
 <script>
 import { defineAsyncComponent } from "vue";
 const BlogCard = defineAsyncComponent(() => import("../ui/BlogCard.vue"));
 import axios from "axios";
 import { normalizeSectionProps } from "@/utils/sectionProps";
+import { mapGetters } from "vuex";
 export default {
   name: "BlogSection",
   components: {
@@ -71,7 +114,6 @@ export default {
     cssVars() {
       const p = this.sectionStyleProps;
       return {
-        //Section
         "--section-background-color": p.bg_color,
         "--section-background-image": `url(${p.bg_image})`,
         "--section-background-image-position": p.background_position,
@@ -97,7 +139,6 @@ export default {
           p.margin_left +
           "px"
         }`,
-        //Button
         "--button-color": p.btn_color,
         "--button-background-color": p.btn_bg_color,
         "--button-border":
@@ -106,6 +147,16 @@ export default {
         "--button-hover-border-color": p.btn_border_hover_color,
         "--button-hover-bg-color": p.btn_bg_hover_color,
         "--button-hover-color": p.btn_hover_color,
+      };
+    },
+
+    ...mapGetters("layout", ["isSplitScreen", "isMobile"]),
+
+    splitScreenCssVars() {
+      return {
+        ...this.cssVars,
+        "--section-background-color": "transparent",
+        "--section-background-image": "none",
       };
     },
   },
@@ -121,9 +172,6 @@ export default {
     this.getSectionBlogs();
   },
   methods: {
-    /**
-     * Blogs
-     */
     getSectionBlogs() {
       const p = this.sectionStyleProps;
       axios
@@ -167,5 +215,30 @@ export default {
   background-position: var(--section-background-image-position);
   background-size: var(--section-background-image-size);
   background-repeat: var(--section-background-image-repeat);
+}
+
+.blog-section--split {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+.force-mobile-layout .row > [class*="col-"] {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+.blog-section--split .row:last-child > [class*="col-"] {
+  flex: 0 0 50% !important;
+  max-width: 50% !important;
+}
+
+.force-mobile-layout .d-none.d-lg-block,
+.force-mobile-layout .d-lg-block {
+  display: none !important;
+}
+
+.force-mobile-layout .d-block.d-lg-none,
+.force-mobile-layout .d-lg-none {
+  display: block !important;
 }
 </style>

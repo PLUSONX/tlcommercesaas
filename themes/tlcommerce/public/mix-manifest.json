@@ -25,6 +25,7 @@
     "/js/CustomerDashboard.js": "/js/CustomerDashboard.js",
     "/js/CustomerPurchaseHistory.js": "/js/CustomerPurchaseHistory.js",
     "/js/CustomerOrderDetails.js": "/js/CustomerOrderDetails.js",
+    "/js/CustomerOrderReview.js": "/js/CustomerOrderReview.js",
     "/js/GuestOrderDetails.js": "/js/GuestOrderDetails.js",
     "/js/CustomerAddress.js": "/js/CustomerAddress.js",
     "/js/CustomerWishlist.js": "/js/CustomerWishlist.js",

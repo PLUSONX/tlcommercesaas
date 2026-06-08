@@ -1,44 +1,86 @@
 <template>
-  <section class="cta-section home-page-section" :style="styleObject">
-    <div class="custom-container2">
-      <div class="row align-items-center">
-        <div v-if="sectionStyleProps.video_url" class="col-lg-4 d-flex justify-content-center">
-          <video-card :src="sectionStyleProps.video_url" :btn-border-color="sectionStyleProps.play_btn_border_color"
-            :btn-icon-color="sectionStyleProps.play_btn_color" />
-        </div>
-        <div v-if="sectionStyleProps.cta_image" class="col-lg-4">
-          <!-- CTA Image -->
-          <div class="cta-image position-relative text-center my-50 my-lg-0">
-            <img :src="cleanImage" alt="" />
+  <template v-if="isSplitScreen && !isMobile">
+    <section class="cta-section cta-section--split home-page-section" :style="splitScreenStyleObject">
+      <div class="px-3">
+        <div class="row align-items-center">
+          <div v-if="sectionStyleProps.video_url" class="col-12 d-flex justify-content-center mb-30">
+            <video-card
+              :src="sectionStyleProps.video_url"
+              :btn-border-color="sectionStyleProps.play_btn_border_color"
+              :btn-icon-color="sectionStyleProps.play_btn_color"
+            />
           </div>
-          <!-- End CTA Image -->
-        </div>
-        <div class="col-lg-4">
-          <!-- CTA Content -->
-          <div class="cta-content position-relative text-white text-center text-lg-start">
-            <span class="d-inline-block section_title" v-if="sectionStyleProps.meta_title">
-              {{ sectionStyleProps.meta_title }}
-            </span>
-            <h2 class="text-white section_title">{{ sectionStyleProps.title }}</h2>
-            <p class="mb-3 section_title" v-if="sectionStyleProps.featured_title">
-              {{ $t(sectionStyleProps.featured_title) }}
-            </p>
-            <router-link
-              v-if="sectionStyleProps.btn_title && sectionStyleProps.product_details?.permalink"
-              :to="`/products/${sectionStyleProps.product_details.permalink}`"
-              class="text-white btn-underline section_btn">
-              {{ sectionStyleProps.btn_title }}
-            </router-link>
+          <div v-if="sectionStyleProps.cta_image" class="col-12 mb-30">
+            <div class="cta-image position-relative text-center">
+              <img :src="cleanImage" alt="" />
+            </div>
           </div>
-          <!-- End CTA Content -->
+          <div class="col-12">
+            <div class="cta-content position-relative text-white text-center">
+              <span class="d-inline-block section_title" v-if="sectionStyleProps.meta_title">
+                {{ sectionStyleProps.meta_title }}
+              </span>
+              <h2 class="text-white section_title">{{ sectionStyleProps.title }}</h2>
+              <p class="mb-3 section_title" v-if="sectionStyleProps.featured_title">
+                {{ $t(sectionStyleProps.featured_title) }}
+              </p>
+              <router-link
+                v-if="sectionStyleProps.btn_title && sectionStyleProps.product_details?.permalink"
+                :to="`/products/${sectionStyleProps.product_details.permalink}`"
+                class="text-white btn-underline section_btn"
+              >
+                {{ sectionStyleProps.btn_title }}
+              </router-link>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </template>
+
+  <template v-else>
+    <section class="cta-section home-page-section" :style="styleObject">
+      <div class="custom-container2">
+        <div class="row align-items-center">
+          <div v-if="sectionStyleProps.video_url" class="col-lg-4 d-flex justify-content-center">
+            <video-card
+              :src="sectionStyleProps.video_url"
+              :btn-border-color="sectionStyleProps.play_btn_border_color"
+              :btn-icon-color="sectionStyleProps.play_btn_color"
+            />
+          </div>
+          <div v-if="sectionStyleProps.cta_image" class="col-lg-4">
+            <div class="cta-image position-relative text-center my-50 my-lg-0">
+              <img :src="cleanImage" alt="" />
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="cta-content position-relative text-white text-center text-lg-start">
+              <span class="d-inline-block section_title" v-if="sectionStyleProps.meta_title">
+                {{ sectionStyleProps.meta_title }}
+              </span>
+              <h2 class="text-white section_title">{{ sectionStyleProps.title }}</h2>
+              <p class="mb-3 section_title" v-if="sectionStyleProps.featured_title">
+                {{ $t(sectionStyleProps.featured_title) }}
+              </p>
+              <router-link
+                v-if="sectionStyleProps.btn_title && sectionStyleProps.product_details?.permalink"
+                :to="`/products/${sectionStyleProps.product_details.permalink}`"
+                class="text-white btn-underline section_btn"
+              >
+                {{ sectionStyleProps.btn_title }}
+              </router-link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </template>
 </template>
 <script>
 import { defineAsyncComponent } from "vue";
 import { normalizeSectionProps } from "@/utils/sectionProps";
+import { mapGetters } from "vuex";
 const VideoCard = defineAsyncComponent(() => import("../ui/VideoCard.vue"));
 export default {
   name: "ctaSection",
@@ -63,7 +105,6 @@ export default {
     styleObject() {
       const p = this.sectionStyleProps;
       return {
-        //Section
         "--section-background-color": p.bg_color,
         "--section-background-image": `url(${this.cleanBgImage})`,
         "--section-background-image-position": p.background_position,
@@ -87,9 +128,7 @@ export default {
           p.margin_left +
           "px"
           }`,
-        //Title
         "--title-color": p.title_color,
-        //Button
         "--button-color": p.btn_color,
         "--button-background-color": p.btn_bg_color,
         "--button-border":
@@ -98,6 +137,16 @@ export default {
         "--button-hover-border-color": p.btn_border_hover_color,
         "--button-hover-bg-color": p.btn_bg_hover_color,
         "--button-hover-color": p.btn_hover_color,
+      };
+    },
+
+    ...mapGetters("layout", ["isSplitScreen", "isMobile"]),
+
+    splitScreenStyleObject() {
+      return {
+        ...this.styleObject,
+        "--section-background-color": "transparent",
+        "--section-background-image": "none",
       };
     },
 
@@ -146,6 +195,39 @@ export default {
   background-repeat: var(--section-background-image-repeat);
 }
 
+.cta-section--split {
+  background-color: transparent !important;
+  background-image: none !important;
+  padding: 30px 0 !important;
+
+  &::before {
+    display: none !important;
+  }
+
+  .cta-content {
+    span,
+    p {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    h2 {
+      font-size: 24px;
+      line-height: 1.2;
+      margin: 6px 0;
+    }
+  }
+
+  .btn-underline {
+    font-size: 18px;
+  }
+
+  .cta-image img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
 .cta {
   &-section {
     padding: 134px 0;
@@ -168,7 +250,6 @@ export default {
   }
 
   &-content {
-
     span,
     p {
       font-size: 18px;

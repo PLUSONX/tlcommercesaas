@@ -1,80 +1,138 @@
 <template>
-  <section
-    v-if="productList.length"
-    class="collection-section home-page-section"
-    :style="styleObject"
-  >
-    <div class="custom-container2">
-      <div class="row align-items-center">
-        <div class="col-md-6">
-          <section-title
-            class="mb-30 section-title"
-            :title="
-              sectionBlock?.category_info != null
-                ? sectionBlock.category_info.name
-                : sectionProps?.title
-                  ? $t(sectionProps.title)
-                  : ''
-            "
-            :titleColor="sectionProps?.title_color"
-          />
+  <template v-if="isSplitScreen && !isMobile">
+    <section
+      v-if="productList.length"
+      class="collection-section collection-section--split home-page-section force-mobile-layout mobile-content-wrapper"
+      :style="splitScreenStyleObject"
+    >
+      <div class="px-3">
+        <div class="row align-items-center">
+          <div class="col-12">
+            <section-title
+              class="mb-30 section-title"
+              :title="
+                sectionBlock?.category_info != null
+                  ? sectionBlock.category_info.name
+                  : sectionProps?.title
+                    ? $t(sectionProps.title)
+                    : ''
+              "
+              :titleColor="sectionProps?.title_color"
+            />
+          </div>
+          <div class="col-12" v-if="sectionProps?.content == 'category'">
+            <router-link
+              v-if="sectionBlock?.category_info != null"
+              class="btn btn-sm rounded-0 mb-30 section_btn"
+              :style="splitScreenStyleObject"
+              :to="`/products/category/${sectionBlock.category_info.slug}`"
+            >
+              {{
+                sectionProps.btn_title != null
+                  ? sectionProps.btn_title
+                  : $t("View All")
+              }}
+            </router-link>
+          </div>
         </div>
-        <div class="col-md-6 text-md-end" v-if="sectionProps?.content == 'category'">
-          <router-link
-            v-if="sectionBlock?.category_info != null"
-            class="btn btn-sm rounded-0 mb-30 section_btn"
-            :style="styleObject"
-            :to="`/products/category/${sectionBlock.category_info.slug}`"
-          >
-            {{
-              sectionProps.btn_title != null
-                ? sectionProps.btn_title
-                : $t("View All")
-            }}
-          </router-link>
-        </div>
+        <swiper
+          v-if="productList.length"
+          :slidesPerView="2"
+          :modules="modules"
+          :spaceBetween="8"
+          :autoplay="false"
+          :loop="splitScreenSwiperLoop"
+          :pagination="splitScreenSwiperPagination"
+          class="product-grid-slider product-grid-slider--split theme-slider-dots"
+          :breakpoints="splitScreenSwiperBreakpoints"
+        >
+          <swiper-slide v-for="(item, index) in productList" :key="`slide-${index}`">
+            <single-product :item="item" />
+          </swiper-slide>
+        </swiper>
       </div>
-      <swiper
-        v-if="productList.length"
-        :slidesPerView="6"
-        :modules="modules"
-        :spaceBetween="1"
-        :autoplay="{
-          delay: 4000,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: true,
-        }"
-        :loop="true"
-        :pagination="{
-          clickable: true,
-        }"
-        class="product-grid-slider theme-slider-dots"
-        :breakpoints="{
-          '0': {
-            slidesPerView: 2,
-          },
-          '480': {
-            slidesPerView: 2,
-          },
-          '768': {
-            slidesPerView: 3,
-          },
-          '1024': {
-            slidesPerView: 6,
-          },
-        }"
-      >
-        <swiper-slide v-for="(item, index) in productList" :key="`slide-${index}`">
-          <single-product :item="item" />
-        </swiper-slide>
-      </swiper>
-    </div>
-  </section>
+    </section>
+  </template>
+
+  <template v-else>
+    <section
+      v-if="productList.length"
+      class="collection-section home-page-section"
+      :style="styleObject"
+    >
+      <div class="custom-container2">
+        <div class="row align-items-center">
+          <div class="col-md-6">
+            <section-title
+              class="mb-30 section-title"
+              :title="
+                sectionBlock?.category_info != null
+                  ? sectionBlock.category_info.name
+                  : sectionProps?.title
+                    ? $t(sectionProps.title)
+                    : ''
+              "
+              :titleColor="sectionProps?.title_color"
+            />
+          </div>
+          <div class="col-md-6 text-md-end" v-if="sectionProps?.content == 'category'">
+            <router-link
+              v-if="sectionBlock?.category_info != null"
+              class="btn btn-sm rounded-0 mb-30 section_btn"
+              :style="styleObject"
+              :to="`/products/category/${sectionBlock.category_info.slug}`"
+            >
+              {{
+                sectionProps.btn_title != null
+                  ? sectionProps.btn_title
+                  : $t("View All")
+              }}
+            </router-link>
+          </div>
+        </div>
+        <swiper
+          v-if="productList.length"
+          :slidesPerView="6"
+          :modules="modules"
+          :spaceBetween="1"
+          :autoplay="{
+            delay: 4000,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+          }"
+          :loop="true"
+          :pagination="{
+            clickable: true,
+          }"
+          class="product-grid-slider theme-slider-dots"
+          :breakpoints="{
+            '0': {
+              slidesPerView: 2,
+            },
+            '480': {
+              slidesPerView: 2,
+            },
+            '768': {
+              slidesPerView: 3,
+            },
+            '1024': {
+              slidesPerView: 6,
+            },
+          }"
+        >
+          <swiper-slide v-for="(item, index) in productList" :key="`slide-${index}`">
+            <single-product :item="item" />
+          </swiper-slide>
+        </swiper>
+      </div>
+    </section>
+  </template>
 </template>
 <script>
 import { defineAsyncComponent } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Autoplay, Pagination } from "swiper";
+import { mapGetters } from "vuex";
 
 const SingleProduct = defineAsyncComponent(() =>
   import("../product/SingleProduct.vue")
@@ -162,6 +220,33 @@ export default {
         "--button-hover-color": props.btn_hover_color,
       };
     },
+
+    ...mapGetters("layout", ["isSplitScreen", "isMobile"]),
+
+    splitScreenStyleObject() {
+      return {
+        ...this.styleObject,
+        "--section-background-color": "transparent",
+        "--section-background-image": "none",
+      };
+    },
+
+    splitScreenSwiperLoop() {
+      return this.productList.length > 4;
+    },
+
+    splitScreenSwiperPagination() {
+      if (this.productList.length <= 2) {
+        return false;
+      }
+      return { clickable: true };
+    },
+
+    splitScreenSwiperBreakpoints() {
+      return {
+        "0": { slidesPerView: 2, spaceBetween: 8 },
+      };
+    },
   },
 };
 </script>
@@ -187,5 +272,44 @@ export default {
   background-position: var(--section-background-image-position);
   background-size: var(--section-background-image-size);
   background-repeat: var(--section-background-image-repeat);
+}
+
+.collection-section--split {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+.force-mobile-layout .row > [class*="col-"] {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+.force-mobile-layout .product-content .image,
+.force-mobile-layout .product-content .product-img {
+  min-width: 0 !important;
+  max-width: 100px;
+}
+
+.force-mobile-layout .cart-image-review {
+  max-width: 100% !important;
+  height: auto !important;
+  flex-shrink: 1 !important;
+}
+
+.force-mobile-layout .d-none.d-lg-block,
+.force-mobile-layout .d-lg-block {
+  display: none !important;
+}
+
+.force-mobile-layout .d-block.d-lg-none,
+.force-mobile-layout .d-lg-none {
+  display: block !important;
+}
+
+.force-mobile-layout .d-block.d-lg-none.col-12 {
+  width: 100% !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
 }
 </style>

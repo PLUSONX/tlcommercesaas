@@ -1,21 +1,38 @@
 <template>
-  <!-- Ad Section -->
-  <section class="mb-15 mt-15 ads-section home-page-section" :style="cssVars">
-    <div class="custom-container2">
-      <div class="row">
-        <div v-for="(ad, index) in cleanAds" :key="`ad-${index}`" :class="`col-lg-${ad.column}`">
-          <a :href="ad.url" target="_blank" class="d-block mb-30 mh-294">
-            <v-lazy-image class="w-100 lmh-294" :src="ad.image" :alt="index" />
-          </a>
+  <template v-if="isSplitScreen && !isMobile">
+    <!-- Ad Section — split-screen -->
+    <section class="mb-15 mt-15 ads-section ads-section--split home-page-section" :style="splitScreenCssVars">
+      <div class="px-3">
+        <div class="row">
+          <div v-for="(ad, index) in cleanAds" :key="`ad-${index}`" class="col-12">
+            <a :href="ad.url" target="_blank" class="d-block mb-15 ads-section--split__link">
+              <v-lazy-image class="w-100" :src="ad.image" :alt="index" />
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-  <!-- End Ad Section -->
+    </section>
+  </template>
+
+  <template v-else>
+    <!-- Ad Section -->
+    <section class="mb-15 mt-15 ads-section home-page-section" :style="cssVars">
+      <div class="custom-container2">
+        <div class="row">
+          <div v-for="(ad, index) in cleanAds" :key="`ad-${index}`" :class="`col-lg-${ad.column}`">
+            <a :href="ad.url" target="_blank" class="d-block mb-30 mh-294">
+              <v-lazy-image class="w-100 lmh-294" :src="ad.image" :alt="index" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </template>
 </template>
 <script>
 import VLazyImage from "v-lazy-image";
 import { normalizeSectionProps } from "@/utils/sectionProps";
+import { mapGetters } from "vuex";
 export default {
   name: "AdsSection",
   components: {
@@ -39,7 +56,6 @@ export default {
     cssVars() {
       const p = this.sectionStyleProps;
       return {
-        //Section
         "--section-background-color": p.bg_color,
         "--section-background-image": `url(${p.bg_image})`,
         "--section-background-image-position": p.background_position,
@@ -63,7 +79,6 @@ export default {
           p.margin_left +
           "px"
           }`,
-        //Button
         "--button-color": p.btn_color,
         "--button-background-color": p.btn_bg_color,
         "--button-border":
@@ -72,6 +87,16 @@ export default {
         "--button-hover-border-color": p.btn_border_hover_color,
         "--button-hover-bg-color": p.btn_bg_hover_color,
         "--button-hover-color": p.btn_hover_color,
+      };
+    },
+
+    ...mapGetters("layout", ["isSplitScreen", "isMobile"]),
+
+    splitScreenCssVars() {
+      return {
+        ...this.cssVars,
+        "--section-background-color": "transparent",
+        "--section-background-image": "none",
       };
     },
 
@@ -94,6 +119,16 @@ export default {
   background-position: var(--section-background-image-position);
   background-size: var(--section-background-image-size);
   background-repeat: var(--section-background-image-repeat);
+}
+
+.ads-section--split {
+  background-color: transparent !important;
+  background-image: none !important;
+}
+
+.ads-section--split__link {
+  max-height: 150px;
+  overflow: hidden;
 }
 
 .mh-294 {

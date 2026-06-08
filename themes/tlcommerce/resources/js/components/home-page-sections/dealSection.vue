@@ -1,84 +1,121 @@
-<!-- <template>
-  <section class="pt-15 pb-15 deals-section home-page-section" :style="styleObject" :class="{
-    'force-mobile-layout': forcedMobile,
-    'mobile-content-wrapper': forcedMobile
-  }">
-    <div class="custom-container2" v-if="success && !dataLoading">
-      <div class="row align-items-center my-3">
-        <div class="col-md-6 mb-2 mb-md-0">
-          <section-title class="section-title" :title="dealDetails.title" :titleColor="properties.title_color" />
-        </div>
-        <div class="col-md-6">
-          <countdown class="justify-content-md-end" :deadline="dealDetails.deadline"
-            :titleColor="properties.title_color" />
-        </div>
-      </div>
-  
-      <swiper v-if="dealProducts.length" :slidesPerView="6" :modules="modules" :spaceBetween="1" :autoplay="{
-        delay: 2500,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      }" :loop="true" :pagination="{
-        clickable: true,
-      }" class="product-grid-slider theme-slider-dots" :breakpoints="swiperBreakpoints">
-        <swiper-slide v-for="(item, index) in dealProducts" :key="`slide-${index}`">
-          <single-product :item="item" />
-        </swiper-slide>
-      </swiper>
-      <div class="col-md-12 text-center mt-20">
-        <router-link class="btn btn-sm rounded-0 mb-30 section_btn" :style="styleObject"
-          :to="`/deals/${dealDetails.permalink}`">
-          {{
-            properties.btn_title != null ? properties.btn_title : $t("View All")
-          }}
-        </router-link>
-      </div>
-    </div>
-  </section>
-</template> -->
 <template>
-  <section class="pt-15 pb-15 deals-section home-page-section" :style="styleObject">
-    <div class="custom-container2" v-if="success && !dataLoading">
-      <div class="row align-items-center my-3">
-        <div class="col-md-6 mb-2 mb-md-0">
-          <section-title class="section-title" :title="dealDetails.title" :titleColor="properties.title_color" />
+  <template v-if="isSplitScreen && !isMobile">
+    <section
+      class="pt-15 pb-15 deals-section deals-section--split home-page-section force-mobile-layout mobile-content-wrapper"
+      :style="splitScreenStyleObject"
+    >
+      <div class="px-3" v-if="success && !dataLoading">
+        <div class="row align-items-center my-3">
+          <div class="col-12 mb-2">
+            <section-title
+              class="section-title"
+              :title="dealDetails.title"
+              :titleColor="properties.title_color"
+            />
+          </div>
+          <div class="col-12">
+            <countdown
+              class="justify-content-md-end"
+              :deadline="dealDetails.deadline"
+              :titleColor="properties.title_color"
+            />
+          </div>
         </div>
-        <div class="col-md-6">
-          <countdown class="justify-content-md-end" :deadline="dealDetails.deadline"
-            :titleColor="properties.title_color" />
+
+        <swiper
+          v-if="dealProducts.length"
+          :slidesPerView="2"
+          :modules="modules"
+          :spaceBetween="8"
+          :autoplay="false"
+          :loop="splitScreenSwiperLoop"
+          :pagination="splitScreenSwiperPagination"
+          class="product-grid-slider product-grid-slider--split theme-slider-dots"
+          :breakpoints="splitScreenSwiperBreakpoints"
+        >
+          <swiper-slide v-for="(item, index) in dealProducts" :key="`slide-${index}`">
+            <single-product :item="item" />
+          </swiper-slide>
+        </swiper>
+        <div class="col-12 text-center mt-20">
+          <router-link
+            class="btn btn-sm rounded-0 mb-30 section_btn"
+            :style="splitScreenStyleObject"
+            :to="`/deals/${dealDetails.permalink}`"
+          >
+            {{
+              properties.btn_title != null ? properties.btn_title : $t("View All")
+            }}
+          </router-link>
         </div>
       </div>
-      <swiper v-if="dealProducts.length" :slidesPerView="6" :modules="modules" :spaceBetween="1" :autoplay="{
-        delay: 2500,
-        disableOnInteraction: false,
-        pauseOnMouseEnter: true,
-      }" :loop="true" :pagination="{
-          clickable: true,
-        }" class="product-grid-slider theme-slider-dots" :breakpoints="{
-          '0': {
-            slidesPerView: 2,
-          },
-          '768': {
-            slidesPerView: 3,
-          },
-          '1024': {
-            slidesPerView: 6,
-          },
-        }">
-        <swiper-slide v-for="(item, index) in dealProducts" :key="`slide-${index}`">
-          <single-product :item="item" />
-        </swiper-slide>
-      </swiper>
-      <div class="col-md-12 text-center mt-20">
-        <router-link class="btn btn-sm rounded-0 mb-30 section_btn" :style="styleObject"
-          :to="`/deals/${dealDetails.permalink}`">
-          {{
-            properties.btn_title != null ? properties.btn_title : $t("View All")
-          }}
-        </router-link>
+    </section>
+  </template>
+
+  <template v-else>
+    <section class="pt-15 pb-15 deals-section home-page-section" :style="styleObject">
+      <div class="custom-container2" v-if="success && !dataLoading">
+        <div class="row align-items-center my-3">
+          <div class="col-md-6 mb-2 mb-md-0">
+            <section-title
+              class="section-title"
+              :title="dealDetails.title"
+              :titleColor="properties.title_color"
+            />
+          </div>
+          <div class="col-md-6">
+            <countdown
+              class="justify-content-md-end"
+              :deadline="dealDetails.deadline"
+              :titleColor="properties.title_color"
+            />
+          </div>
+        </div>
+        <swiper
+          v-if="dealProducts.length"
+          :slidesPerView="6"
+          :modules="modules"
+          :spaceBetween="1"
+          :autoplay="{
+            delay: 2500,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+          }"
+          :loop="true"
+          :pagination="{
+            clickable: true,
+          }"
+          class="product-grid-slider theme-slider-dots"
+          :breakpoints="{
+            '0': {
+              slidesPerView: 2,
+            },
+            '768': {
+              slidesPerView: 3,
+            },
+            '1024': {
+              slidesPerView: 6,
+            },
+          }"
+        >
+          <swiper-slide v-for="(item, index) in dealProducts" :key="`slide-${index}`">
+            <single-product :item="item" />
+          </swiper-slide>
+        </swiper>
+        <div class="col-md-12 text-center mt-20">
+          <router-link
+            class="btn btn-sm rounded-0 mb-30 section_btn"
+            :style="styleObject"
+            :to="`/deals/${dealDetails.permalink}`"
+          >
+            {{
+              properties.btn_title != null ? properties.btn_title : $t("View All")
+            }}
+          </router-link>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </template>
 </template>
 <script>
 import { defineAsyncComponent } from "vue";
@@ -90,7 +127,7 @@ const SingleProduct = defineAsyncComponent(() =>
 const Countdown = defineAsyncComponent(() => import("../ui/Countdown.vue"));
 import sectionPreloader from "./sectionPreloader.vue";
 const axios = require("axios").default;
-import { mapState, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 import { normalizeSectionProps } from "@/utils/sectionProps";
 export default {
   name: "DealSection",
@@ -132,7 +169,6 @@ export default {
     styleObject() {
       const p = this.sectionStyleProps;
       return {
-        //Section
         "--section-background-color": p.bg_color,
         "--section-background-image": `url(${p.bg_image})`,
         "--section-background-image-position": p.background_position,
@@ -156,7 +192,6 @@ export default {
           p.margin_left +
           "px"
           }`,
-        //Button
         "--button-color": p.btn_color,
         "--button-background-color": p.btn_bg_color,
         "--button-border":
@@ -168,25 +203,30 @@ export default {
       };
     },
 
-    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+    ...mapGetters("layout", ["isSplitScreen", "isMobile"]),
 
-    forcedMobile() {
-      if (this.isSplitScreen && !this.isMobile) {
-        return true;
-      }
-      return this.isMobile;
+    splitScreenStyleObject() {
+      return {
+        ...this.styleObject,
+        "--section-background-color": "transparent",
+        "--section-background-image": "none",
+      };
     },
 
-    swiperBreakpoints() {
-      if (this.forcedMobile) {
-        return {
-          '0': { slidesPerView: 2 },
-        };
+    splitScreenSwiperLoop() {
+      return this.dealProducts.length > 4;
+    },
+
+    splitScreenSwiperPagination() {
+      if (this.dealProducts.length <= 2) {
+        return false;
       }
+      return { clickable: true };
+    },
+
+    splitScreenSwiperBreakpoints() {
       return {
-        '0': { slidesPerView: 2 },
-        '768': { slidesPerView: 3 },
-        '1024': { slidesPerView: 6 },
+        "0": { slidesPerView: 2, spaceBetween: 8 },
       };
     },
   },
@@ -194,9 +234,6 @@ export default {
     this.getDealDetails();
   },
   methods: {
-    /**
-     * Deals Details
-     */
     getDealDetails() {
       axios
         .post("/api/theme/tlcommerce/v1/deal-details", {
@@ -242,9 +279,12 @@ export default {
   background-repeat: var(--section-background-image-repeat);
 }
 
+.deals-section--split {
+  background-color: transparent !important;
+  background-image: none !important;
+}
 
-
-.force-mobile-layout .row>[class*="col-"] {
+.force-mobile-layout .row > [class*="col-"] {
   flex: 0 0 100% !important;
   max-width: 100% !important;
 }
@@ -254,8 +294,6 @@ export default {
   min-width: 0 !important;
   max-width: 100px;
 }
-
-
 
 .force-mobile-layout .cart-image-review {
   max-width: 100% !important;
@@ -272,7 +310,6 @@ export default {
 .force-mobile-layout .d-lg-none {
   display: block !important;
 }
-
 
 .force-mobile-layout .d-block.d-lg-none.col-12 {
   width: 100% !important;

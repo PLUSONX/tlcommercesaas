@@ -335,6 +335,8 @@
 
 /*! ../views/dashboard/order-details/index.vue */
 
+/*! ../views/dashboard/order-review/index.vue */
+
 /*! ../views/dashboard/purchase-history/index.vue */
 
 /*! ../views/dashboard/refund-details/index.vue */
@@ -882,6 +884,8 @@
 /*! import() | CustomerOrderDetails */
 
 /*! import() | CustomerOrderRefundList */
+
+/*! import() | CustomerOrderReview */
 
 /*! import() | CustomerPasswordReset */
 

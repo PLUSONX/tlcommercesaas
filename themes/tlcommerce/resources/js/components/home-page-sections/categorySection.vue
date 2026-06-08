@@ -1,5 +1,5 @@
 <template>
-  <template v-if="isSplitScreen">
+  <template v-if="isSplitScreen && !isMobile">
     <!-- Categories -->
     <section
       class="pt-5 pb-5 category-section category-section--split home-page-section"

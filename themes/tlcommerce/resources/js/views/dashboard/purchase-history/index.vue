@@ -66,10 +66,13 @@
                             <CDropdownItem @click="$router.push(`/dashboard/order-details/${tdata.id}`)">
                               {{ $t("Details") }}
                             </CDropdownItem>
-                            <!-- <CDropdownItem>
-                              <router-link :to="`/dashboard/order-details/${tdata.id}`">{{ $t("Details")
-                                }}</router-link>
-                            </CDropdownItem> -->
+                            <CDropdownItem
+                              v-if="reviewsEnabled"
+                              :disabled="!canReviewOrder(tdata)"
+                              @click="goToReview(tdata)"
+                            >
+                              {{ $t("Review") }}
+                            </CDropdownItem>
                           </CDropdownMenu>
                         </CDropdown>
                       </CTableDataCell>
@@ -113,6 +116,7 @@ import ShowingPerPage from "@/components/ui/ShowingPerPage.vue";
 import Dashboard from "@/views/dashboard.vue";
 import Pagination from "v-pagination-3";
 import axios from "axios";
+import enums from "@/enums/enums";
 import { mapState, mapGetters } from "vuex";
 import {
   CTable,
@@ -146,6 +150,7 @@ export default {
   },
   data() {
     return {
+      enums: enums,
       pageTitle: "Purchase History",
       loading: false,
       bItems: [
@@ -202,9 +207,14 @@ export default {
   computed: {
     ...mapState({
       customerToken: (state) => state.customerToken,
+      siteSettings: (state) => state.siteSettings,
     }),
 
     ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+    reviewsEnabled() {
+      return this.siteSettings?.enable_product_reviews == this.enums.status.ACTIVE;
+    },
 
     forcedMobile() {
       if (this.isSplitScreen && !this.isMobile) {
@@ -221,6 +231,15 @@ export default {
     this.getCustomerOrders();
   },
   methods: {
+    canReviewOrder(order) {
+      return order.can_review === true && !order.has_review;
+    },
+    goToReview(order) {
+      if (!this.canReviewOrder(order)) {
+        return;
+      }
+      this.$router.push(`/dashboard/order-review/${order.id}`);
+    },
     /**
      * Get order list of a customer
      */
