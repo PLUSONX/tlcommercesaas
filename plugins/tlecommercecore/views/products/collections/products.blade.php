@@ -4,7 +4,8 @@
 @endsection
 @section('custom_css')
     @include('core::base.includes.data_table.css')
-    <link rel="stylesheet" href="{{ asset('/public/backend/assets/plugins/select2/select2.min.css') }}">
+    <!-- <link rel="stylesheet" href="{{ asset('/public/backend/assets/plugins/select2/select2.min.css') }}"> -->
+    <link rel="stylesheet" href="{{ asset('backend/assets/plugins/select2/select2.min.css') }}">
     <style>
         .product-title {
             white-space: initial;
@@ -173,7 +174,8 @@
 @endsection
 @section('custom_scripts')
     @include('core::base.includes.data_table.script')
-    <script src="{{ asset('/public/backend/assets/plugins/select2/select2.min.js') }}"></script>
+    <!-- <script src="{{ asset('/public/backend/assets/plugins/select2/select2.min.js') }}"></script> -->
+    <script src="{{ asset('backend/assets/plugins/select2/select2.min.js') }}"></script>
     <script>
         (function($) {
             "use strict";
