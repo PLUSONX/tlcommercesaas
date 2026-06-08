@@ -162,8 +162,6 @@
 
 /*! @/components/product/SingleProduct.vue */
 
-/*! @/components/ui/CompanyFooter.vue */
-
 /*! @/components/ui/ProductBanner.vue */
 
 /*! @/components/ui/RangeSlider.vue */

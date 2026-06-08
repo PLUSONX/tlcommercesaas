@@ -26,6 +26,8 @@
             </router-view>
           </div>
 
+          <company-footer v-if="isSplitScreen" class="split-screen-company-footer" />
+
           <gdpr v-if="isSplitScreen && isMobile && gdpr_properties != null && gdpr_properties.gdpr_status == 1"
             class="split-screen-gdpr" :properties="gdpr_properties"></gdpr>
 
@@ -579,13 +581,9 @@ export default {
     },
 
     contentStyle() {
-      const style = {
+      return {
         backgroundColor: '#ffffff',
       };
-      if (this.isSplitScreen && !this.isMobile) {
-        style.overflowY = 'auto';
-      }
-      return style;
     },
 
     featureStyle() {
@@ -1272,11 +1270,13 @@ export default {
   width: 100%;
   align-items: stretch;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 
 .layout-split-screen {
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 
@@ -1287,9 +1287,21 @@ export default {
   padding: 0 !important;
   margin: 0 !important;
   height: 100vh;
+  height: 100dvh;
   max-height: 100vh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+.content-split-nudge {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  background-color: inherit;
 }
 
 .split-screen-header-sticky {
@@ -1467,10 +1479,8 @@ export default {
   display: block !important;
 }
 
-.company-footer {
-  // position: fixed;
-  bottom: 0;
-  left: 0;
+.split-screen-company-footer {
+  flex-shrink: 0;
   width: 100%;
   z-index: 100;
 }

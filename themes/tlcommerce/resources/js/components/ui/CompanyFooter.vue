@@ -31,6 +31,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     padding: 10px 24px;
     font-size: 12px;
     color: white;
