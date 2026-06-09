@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div :class="mtClass">
     <div class="light-bg" v-if="pageLoading">
       <skeleton style="height: 100vh;" class="w-100 pt-20"></skeleton>
       <!-- <skeleton height="100vh" class="w-100 pt-20"></skeleton> -->
@@ -10,7 +10,11 @@
     <builder-section :page="page" :sections="page_section" :widgets="page_builder_widgets" @section-loaded="loaded"
       v-if="active_pagebuilder && page.page_type == 'builder'" />
 
-    <div class="pt-30 pt-lg-60 pb-60 light-bg" v-else>
+    <div class="pt-30 pt-lg-60 pb-60 light-bg" v-else :class="{
+      'force-mobile-layout': forcedMobile,
+      'mobile-content-wrapper': forcedMobile,
+      'page-details--split': isSplitScreen && !isMobile,
+    }">
       <div class="custom-container2">
         <div class="row">
           <div class="col-lg-12">
@@ -19,7 +23,7 @@
               <!-- Page Header -->
               <header class="entry-header mb-40" v-if="page.page_image != null">
                 <div class="entry-thumbnail">
-                  <img :src="page.page_image" :alt="page.title" />
+                  <img :src="cleanImage(page.page_image)" :alt="page.title" />
                 </div>
               </header>
               <!-- End Page Header -->
@@ -37,6 +41,7 @@
 
 <script>
 import { defineAsyncComponent } from "vue";
+import { mapGetters } from "vuex";
 
 const PageHeader = defineAsyncComponent(() =>
   import("@/components/pageheader/PageHeader.vue")
@@ -52,6 +57,24 @@ export default {
   components: {
     PageHeader,
     BuilderSection,
+  },
+
+  computed: {
+    ...mapGetters("layout", ["isSplitScreen", "isMobile"]),
+
+    forcedMobile() {
+      if (this.isSplitScreen && !this.isMobile) {
+        return true;
+      }
+      return this.isMobile;
+    },
+
+    mtClass() {
+      if (this.isSplitScreen) {
+        return "mt-50";
+      }
+      return "mt-1";
+    },
   },
 
   data() {
@@ -76,6 +99,10 @@ export default {
 
   },
   methods: {
+    cleanImage(img) {
+      if (!img) return '';
+      return img.replace(/^\/public/, '');
+    },
     /**
      * Get page details
      */
@@ -131,3 +158,25 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.force-mobile-layout .row > [class*="col-"] {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+.page-details--split {
+  padding-top: 30px !important;
+  padding-bottom: 30px !important;
+}
+
+.page-details--split .entry-thumbnail img {
+  max-width: 100%;
+  height: auto;
+}
+
+.page-details--split .entry-content :deep(img) {
+  max-width: 100%;
+  height: auto;
+}
+</style>

@@ -116,52 +116,54 @@
             <!--End Blog module-->
 
             <!--Page Module-->
-            <!-- @canany(['Show Page', 'Create Page'])
-                <li
+            @canany(['Show Page', 'Create Page'])
+                <li style="padding-left: 0 !important;"
                     class="{{ Request::routeIs(['core.page', 'core.page.add', 'core.page.edit']) ? 'active sub-menu-opened' : '' }}">
                     <a href="#">
-                        <i class="icofont-page"></i>
+                        <!-- <i class="icofont-page"></i> -->
+                        <x-lucide-panels-top-left style="width: 20px; height: 20px; margin-left: 8px;" />
                         <span class="link-title">{{ translate('Pages') }}</span>
                     </a>
                     <ul class="nav sub-menu">
                         @can('Show Page')
                             <li class="{{ Request::routeIs(['core.page', 'core.page.edit']) ? 'active ' : '' }}">
-                                <a href="{{ route('core.page') }}">{{ translate('All Pages') }}</a>
+                                <a class="pl-2" href="{{ route('core.page') }}">{{ translate('All Pages') }}</a>
                             </li>
                         @endcan
                         @can('Create Page')
                             <li class="{{ Request::routeIs('core.page.add') ? 'active ' : '' }}">
-                                <a href="{{ route('core.page.add') }}">{{ translate('Add New Page') }}</a>
+                                <a class="pl-2" href="{{ route('core.page.add') }}">{{ translate('Add New Page') }}</a>
                             </li>
                         @endcan
                     </ul>
                 </li>
-            @endcanany -->
+            @endcanany
             <!--End Blog module-->
             <!-- Blog & Page -->
 
             <!--Appearances Modules-->
-            <!-- @if (auth()->user()->can('Manage Themes') || auth()->user()->can('Manage Menus'))
-                <li
+            @if (auth()->user()->can('Manage Themes') || auth()->user()->can('Manage Menus'))
+                <li style="padding-left: 0 !important;"
                     class="{{ Request::routeIs(['core.themes.index', 'core.manage.menus']) ? 'active sub-menu-opened' : '' }}">
                     <a href="#">
-                        <i class="icofont-brand-designfloat"></i>
+                        <!-- <i class="icofont-brand-designfloat"></i> -->
+                         <x-lucide-view style="width: 20px; height: 20px; margin-left: 8px;" />
                         <span class="link-title">{{ translate('Appearances') }}</span>
                     </a>
                     <ul class="nav sub-menu">
                         @if (auth()->user()->can('Manage Themes'))
                             <li class="{{ Request::routeIs(['core.themes.index']) ? 'active ' : '' }}">
-                                <a href="{{ route('core.themes.index') }}">{{ translate('Themes') }}</a>
+                                <a class="pl-2" href="{{ route('core.themes.index') }}">{{ translate('Themes') }}</a>
                             </li>
                         @endif 
                         @if (auth()->user()->can('Manage Menus'))
                             <li class="{{ Request::routeIs(['core.manage.menus']) ? 'active ' : '' }}">
-                                <a href="{{ route('core.manage.menus') }}">{{ translate('Menus') }}</a>
+                                <a class="pl-2" href="{{ route('core.manage.menus') }}">{{ translate('Menus') }}</a>
                             </li>
                         @endif
                     </ul>
                 </li>
-            @endif -->
+            @endif
             <!--End Appearances Modules-->
 
             <!--Theme otions-->

@@ -23,78 +23,183 @@
     {{ translate('Menu') }}
 @endsection
 @section('custom_css')
-    <!-- <link href="{{ asset('/public/backend/assets/plugins/jquery-ui/jquery-ui.min.css') }}" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="{{ asset('/public/backend/assets/plugins/select2/select2.min.css') }}"> -->
-
     <link href="{{ asset('backend/assets/plugins/jquery-ui/jquery-ui.min.css') }}" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="{{ asset('backend/assets/plugins/select2/select2.min.css') }}">
+    <style>
+        .menu-management-frame {
+            gap: 24px;
+        }
+
+        .menu-structure.card,
+        .add-menu-item.card {
+            height: fit-content;
+        }
+
+        button.btn-orange,
+        a.btn-orange {
+            background: #ff5A1f !important;
+            border-color: #e64a10 !important;
+            color: #fff !important;
+            transition: background 0.2s ease;
+            border-radius: 6px !important;
+            box-shadow: none !important;
+        }
+
+        button.btn-orange:hover,
+        a.btn-orange:hover {
+            background: #ff7545 !important;
+            border-color: #e07b00 !important;
+            color: #fff !important;
+            box-shadow: none !important;
+        }
+
+        button.btn-orange:focus,
+        button.btn-orange:active,
+        button.btn-orange:active:focus {
+            background: #ff7545 !important;
+            border-color: #e07b00 !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        a.btn-link:not(.text-danger),
+        button.btn-link:not(.text-danger),
+        .menu-locations-table .locations-row-links a {
+            background: linear-gradient(90deg, #ff8c00, #ff4500);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: #ff5A1f;
+            text-decoration: none;
+            border: none;
+            box-shadow: none !important;
+        }
+
+        a.btn-link:not(.text-danger):hover,
+        button.btn-link:not(.text-danger):hover,
+        .menu-locations-table .locations-row-links a:hover {
+            background: linear-gradient(90deg, #ff4500, #ff8c00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: #ff5A1f;
+            text-decoration: underline;
+        }
+
+        button.submit-add-to-menu,
+        input.submit-add-to-menu {
+            background: #ff5A1f !important;
+            border: 1px solid #e64a10 !important;
+            color: #fff !important;
+            border-radius: 6px !important;
+            box-shadow: none !important;
+            transition: background 0.2s ease;
+            cursor: pointer;
+        }
+
+        button.submit-add-to-menu:hover,
+        input.submit-add-to-menu:hover {
+            background: #ff7545 !important;
+            border-color: #e07b00 !important;
+            color: #fff !important;
+        }
+
+        button.submit-add-to-menu:focus,
+        button.submit-add-to-menu:active,
+        input.submit-add-to-menu:focus,
+        input.submit-add-to-menu:active {
+            background: #ff7545 !important;
+            border-color: #e07b00 !important;
+            color: #fff !important;
+            outline: none !important;
+        }
+    </style>
+@endsection
 
 @section('main_content')
-    <div class="border-bottom2 pb-3 mb-4">
-        <h4><i class="icofont-navigation-menu"></i> {{ translate('Menus') }}</h4>
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-transparent mb-20">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-10">
+                        <h4 style="font-size: 30px;">{{ translate('Menus') }}</h4>
+                        <button type="button" class="btn long btn-orange" onclick="showMenuCreationForm()">
+                            {{ translate('Create Menu') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <ul class="nav nav-tabs pl-20" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active" id="edit_menus-tab" data-toggle="tab" href="#edit_menus" role="tab"
-                aria-controls="edit_menus" aria-selected="true">{{ translate('Edit Menus') }}</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="manage_location-tab" data-toggle="tab" href="#manage_location" role="tab"
-                aria-controls="manage_location" aria-selected="false">{{ translate('Manage Locations') }}</a>
-        </li>
-    </ul>
-    <div class="tab-content">
-        <div class="tab-pane fade show active" id="edit_menus" role="tabpanel" aria-labelledby="edit_menus-tab">
-            <!-- Select menu to edit -->
-            <div class="align-items-center justify-content-between bg-white d-flex flex-wrap ml-0 p-4 ">
-                <div class="d-flex align-items-center menu-sm-colunm">
-                    <label class="menu-name-label text-nowrap mr-30 ml-10"
-                        for="menu-name">{{ translate('Select a menu to edit:') }}</label>
-                    <select class="form-control w-100" id="menu_group" onchange="getMenuStructure()">
-                        @foreach ($menu_groups as $menu)
-                            <option value="{{ $menu->id }}" class="text-uppercase" id="menu_option_{{ $menu->id }}"
-                                {{ $selected_menu_group == $menu->id ? 'selected' : '' }}>{{ $menu->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    </span><span class="select2-selection__arrow" role="presentation"><b
-                            role="presentation"></b></span></span></span><span class="dropdown-wrapper"
-                        aria-hidden="true"></span></span>
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
+                <div class="card-header bg-white border-bottom2 py-3">
+                    <ul class="nav nav-tabs border-0 pl-0" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="edit_menus-tab" data-toggle="tab" href="#edit_menus"
+                                role="tab" aria-controls="edit_menus"
+                                aria-selected="true">{{ translate('Edit Menus') }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="manage_location-tab" data-toggle="tab" href="#manage_location"
+                                role="tab" aria-controls="manage_location"
+                                aria-selected="false">{{ translate('Manage Locations') }}</a>
+                        </li>
+                    </ul>
                 </div>
-                <div>
-                    <button class="btn sm" onclick="showMenuCreationForm()"> {{ translate('Create Menu ') }}</button>
-                </div>
-            </div>
 
-            <div class="align-items-center justify-content-between bg-white d-flex flex-wrap p-4">
-                <div class="d-flex align-items-center menu-sm-colunm">
-                    <label class="lang-name-label text-nowrap mr-30 ml-10"
-                        for="lang-name">{{ translate('Translate Menu Into:') }}</label>
-                    <select class="form-control w-100" id="language" onchange="getMenuStructure()">
-                        @foreach ($languages as $lang)
-                            <option value="{{ $lang->id }}" class="text-uppercase" id="lang_{{ $lang->id }}">
-                                {{ $lang->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    </span><span class="select2-selection__arrow" role="presentation"><b
-                            role="presentation"></b></span></span></span><span class="dropdown-wrapper"
-                        aria-hidden="true"></span></span>
-                </div>
-            </div>
-            <!-- /Select menu to edit -->
-            <div class="p-4 bg-white">
-                <p class="alert alert-info">You are editing
-                    <strong>"{{ getLanguageNameByCode(getDefaultLang()) }}"</strong> version
-                </p>
-            </div>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="edit_menus" role="tabpanel"
+                        aria-labelledby="edit_menus-tab">
+                        <div class="card-body border-bottom2 px-4 py-3 filter-area">
+                            <div class="row align-items-end">
+                                <div class="col-md-5 mb-3 mb-md-0">
+                                    <label class="font-16 bold black d-block mb-2"
+                                        for="menu_group">{{ translate('Select a menu to edit') }}</label>
+                                    <select class="theme-input-style w-100" id="menu_group" onchange="getMenuStructure()">
+                                        @foreach ($menu_groups as $menu)
+                                            <option value="{{ $menu->id }}" class="text-uppercase"
+                                                id="menu_option_{{ $menu->id }}"
+                                                {{ $selected_menu_group == $menu->id ? 'selected' : '' }}>
+                                                {{ $menu->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-5 mb-3 mb-md-0" id="language-col">
+                                    <label class="font-16 bold black d-block mb-2"
+                                        for="language">{{ translate('Translate Menu Into') }}</label>
+                                    <select class="theme-input-style w-100" id="language" onchange="getMenuStructure()">
+                                        @foreach ($languages as $lang)
+                                            <option value="{{ $lang->id }}" class="text-uppercase"
+                                                id="lang_{{ $lang->id }}">
+                                                {{ $lang->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
 
-            <!-- menu itemes-->
-            <div class="menu-management-frame">
-                <div class="add-menu-item {{ sizeof($menu_groups) > 0 ? '' : 'area-disabled' }}" id="accordion-container">
-                    <form action="#" class="nav-menu-meta">
-                        <div class="card accordion">
+                        <!-- <div class="px-4 pt-3">
+                            <p class="alert alert-info mb-0">You are editing
+                                <strong>"{{ getLanguageNameByCode(getDefaultLang()) }}"</strong> version
+                            </p>
+                        </div> -->
+
+                        <div class="card-body pt-4">
+                            <div class="menu-management-frame">
+                                <div class="add-menu-item card mb-0 {{ sizeof($menu_groups) > 0 ? '' : 'area-disabled' }}"
+                                    id="accordion-container"
+                                    style="border-radius: 12px !important; overflow: hidden !important;">
+                                    <div class="card-header bg-white border-bottom2 py-3">
+                                        <h4 class="mb-0">{{ translate('Add Menu Items') }}</h4>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <form action="#" class="nav-menu-meta">
+                                            <div class="card accordion border-0">
                             <!-- Custom menu-->
                             <div data-accordion-tab="toggle">
                                 <div class="accordion-title d-flex gap-10 align-items-center justify-content-between">
@@ -494,140 +599,119 @@
                                     @include($template)
                                 @endif
                             @endfor
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Add new menu -->
-                <div class="menu-structure border-left2 card" id="create_menu_group">
-                    <!-- New menu input -->
-                    <div class="card-header">
-                        <div class="d-flex gap-15 align-items-center mxw-550 ml-0">
-                            <label class="menu-name-label text-nowrap"
-                                for="editable_menu_group">{{ translate('Menu Name') }}</label>
-                            <input name="menu_group_name" id="menu_group_name" type="text" class="theme-input-style"
-                                value="" required>
-                            <div class="invalid-input" id="create_menu_name_error"></div>
-                        </div>
-                    </div>
-                    <!-- /New menu input -->
-
-                    <!-- Menu settings on create-->
-                    <div class="card-body">
-                        <div class="horizontal-form mb-30">
-                            <div class="instruction mb-3">
-                                <p>{{ translate('Give your menu a name, then click Save Menu.') }}</p>
-                            </div>
-                            <hr>
-
-                            <h4 class="mb-3">{{ translate('Menu Settings') }}</h4>
-
-                            <div class="form-group d-sm-flex mb-4">
-                                <label class="font-14 bold">{{ translate('Display Locations') }}</label>
-                                <div class="">
-                                    @for ($i = 0; $i < sizeof($all_menu_positions); $i++)
-                                        @php
-                                            $menu_group = getMenuGroupOnThisPosition($all_menu_positions[$i]->id);
-                                        @endphp
-                                        <div class="d-flex align-items-center mb-3">
-                                            <label class="custom-checkbox position-relative mr-2 mr-md-4">
-                                                <input type="checkbox" id="check_{{ $all_menu_positions[$i]->id }}"
-                                                    name="position[]" value="{{ $all_menu_positions[$i]->id }}">
-                                                <span class="checkmark"></span>
-                                            </label>
-                                            <label for="check_{{ $all_menu_positions[$i]->id }}">
-                                                {{ $all_menu_positions[$i]->position }}
-                                                {{ $menu_group != null ? '(' . translate('Currently set to : ') . $menu_group->name . '.' . ')' : '' }}
-                                            </label>
-                                        </div>
-                                    @endfor
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
+
+                                <!-- Add new menu -->
+                <div class="menu-structure card mb-0" id="create_menu_group"
+                    style="border-radius: 12px !important; overflow: hidden !important;">
+                    <div class="card-header bg-white border-bottom2 py-3">
+                        <h4 class="mb-0">{{ translate('Create New Menu') }}</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row mb-20">
+                            <div class="col-md-12">
+                                <label class="font-14 bold black d-block mb-2"
+                                    for="menu_group_name">{{ translate('Menu Name') }}</label>
+                                <input name="menu_group_name" id="menu_group_name" type="text" class="theme-input-style w-100"
+                                    value="" required>
+                                <div class="invalid-input" id="create_menu_name_error"></div>
                             </div>
                         </div>
-                    </div>
-                    <!-- /Menu settings on create-->
 
-                    <!-- Save button-->
-                    <div class="card-footer">
-                        <div class="d-flex gap-15 align-items-rigt mxw-550 ml-0 float-right">
-                            <button class="btn sm" onclick="saveMenuGroup()">{{ translate('Save Menu') }}</button>
-                        </div>
+                        <p class="text-muted mb-3">{{ translate('Give your menu a name, then click Save Menu.') }}</p>
+
+                        <h4 class="mb-3">{{ translate('Menu Settings') }}</h4>
+                        <label class="font-14 bold black d-block mb-3">{{ translate('Display Locations') }}</label>
+                        @for ($i = 0; $i < sizeof($all_menu_positions); $i++)
+                            @php
+                                $menu_group = getMenuGroupOnThisPosition($all_menu_positions[$i]->id);
+                            @endphp
+                            <div class="d-flex align-items-center mb-3">
+                                <label class="custom-checkbox position-relative mr-2 mr-md-4">
+                                    <input type="checkbox" id="check_{{ $all_menu_positions[$i]->id }}"
+                                        name="position[]" value="{{ $all_menu_positions[$i]->id }}">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label for="check_{{ $all_menu_positions[$i]->id }}">
+                                    {{ $all_menu_positions[$i]->position }}
+                                    {{ $menu_group != null ? '(' . translate('Currently set to : ') . $menu_group->name . ')' : '' }}
+                                </label>
+                            </div>
+                        @endfor
                     </div>
-                    <!-- /Save button-->
+                    <div class="card-footer bg-white border-top2 d-flex justify-content-end">
+                        <button type="button" class="btn long btn-orange"
+                            onclick="saveMenuGroup()">{{ translate('Save Menu') }}</button>
+                    </div>
                 </div>
                 <!-- /Add new menu -->
 
                 <!-- Update Menu-->
-                <div class="menu-structure border-left2 card" id="edit_menu_group">
-                    <div class="card-header">
-                        <div class="d-flex gap-15 align-items-center mxw-550 ml-0">
-                            <label class="menu-name-label my-auto text-nowrap"
-                                for="editable_menu_group">{{ translate('Menu Name') }}</label>
-                            <input name="menu_group" id="editable_menu_group" type="text" class="theme-input-style"
-                                value="">
-                            <div class="invalid-input" id="edit_menu_name_error"></div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="instruction mb-3">
-                            <p>{{ translate('Drag the items into the order you prefer. Click the arrow on the right of the item to reveal additional configuration options.') }}
-                            </p>
-                        </div>
-                        <div class="post-body-content">
-                            <ul id="tree"></ul>
-                        </div>
-                        <hr>
-                        <div class="horizontal-form mb-30">
-                            <h4 class="mb-3">{{ translate('Menu Settings') }}</h4>
-
-                            <div class="form-group d-sm-flex mb-4">
-                                <label class="font-14 bold">{{ translate('Display Locations') }}</label>
-                                <div class="">
-                                    @for ($i = 0; $i < sizeof($all_menu_positions); $i++)
-                                        @php
-                                            $menu_group = getMenuGroupOnThisPosition($all_menu_positions[$i]->id);
-                                        @endphp
-                                        <div class="d-flex align-items-center mb-3">
-                                            <label class="custom-checkbox position-relative mr-2 mr-md-4">
-                                                <input type="checkbox" id="check_e_{{ $all_menu_positions[$i]->id }}"
-                                                    name="edit_position[]" value="{{ $all_menu_positions[$i]->id }}">
-                                                <span class="checkmark"></span>
-                                            </label>
-                                            <label for="check_{{ $all_menu_positions[$i]->id }}">
-                                                {{ $all_menu_positions[$i]->position }}
-                                                {{ $menu_group != null ? ' (Currently set to:' . $menu_group->name . ')' : '' }}
-                                            </label>
-                                        </div>
-                                    @endfor
-                                </div>
+                <div class="menu-structure card mb-0" id="edit_menu_group"
+                    style="border-radius: 12px !important; overflow: hidden !important;">
+                    <div class="card-header bg-white border-bottom2 py-3">
+                        <div class="form-row align-items-center mb-0">
+                            <div class="col-md-12">
+                                <label class="font-14 bold black d-block mb-2"
+                                    for="editable_menu_group">{{ translate('Menu Name') }}</label>
+                                <input name="menu_group" id="editable_menu_group" type="text"
+                                    class="theme-input-style w-100" value="">
+                                <div class="invalid-input" id="edit_menu_name_error"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer bg-light">
-                        <div class="d-flex gap-15 align-items-rigt mxw-550 ml-0 float-left">
-                            <button class="btn-link text-danger"
-                                onclick="deleteMenuGroup()">{{ translate('Delete Menu') }}</button>
+                    <div class="card-body">
+                        <p class="text-muted mb-3">
+                            {{ translate('Drag the items into the order you prefer. Click the arrow on the right of the item to reveal additional configuration options.') }}
+                        </p>
+                        <div class="post-body-content mb-4">
+                            <ul id="tree"></ul>
                         </div>
-                        <div class="d-flex gap-15 align-items-rigt mxw-550 ml-0 float-right">
-                            <button class="btn sm" onclick="updateGroupMenu()">{{ translate('Update Menu') }}</button>
-                        </div>
+                        <hr>
+                        <h4 class="mb-3">{{ translate('Menu Settings') }}</h4>
+                        <label class="font-14 bold black d-block mb-3">{{ translate('Display Locations') }}</label>
+                        @for ($i = 0; $i < sizeof($all_menu_positions); $i++)
+                            @php
+                                $menu_group = getMenuGroupOnThisPosition($all_menu_positions[$i]->id);
+                            @endphp
+                            <div class="d-flex align-items-center mb-3">
+                                <label class="custom-checkbox position-relative mr-2 mr-md-4">
+                                    <input type="checkbox" id="check_e_{{ $all_menu_positions[$i]->id }}"
+                                        name="edit_position[]" value="{{ $all_menu_positions[$i]->id }}">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label for="check_e_{{ $all_menu_positions[$i]->id }}">
+                                    {{ $all_menu_positions[$i]->position }}
+                                    {{ $menu_group != null ? ' (' . translate('Currently set to') . ': ' . $menu_group->name . ')' : '' }}
+                                </label>
+                            </div>
+                        @endfor
+                    </div>
+                    <div class="card-footer bg-white border-top2 d-flex justify-content-between align-items-center flex-wrap gap-10">
+                        <button type="button" class="btn-link text-danger"
+                            onclick="deleteMenuGroup()">{{ translate('Delete Menu') }}</button>
+                        <button type="button" class="btn long btn-orange"
+                            onclick="updateGroupMenu()">{{ translate('Update Menu') }}</button>
                     </div>
                 </div>
-                <!-- /Update Menu-->
+                                <!-- /Update Menu-->
 
-            </div>
-            <!-- menu itemes-->
-        </div>
+                            </div>
+                        </div>
+                    </div>
 
-        <div class="tab-pane fade" id="manage_location" role="tabpanel" aria-labelledby="manage_location-tab">
-            <div class="card">
-                <div class="card-body">
-                    <p>{{ translate('Your theme supports') }} {{ sizeof($all_menu_positions) }}
-                        {{ translate('menus. Select which menu appears in each location.') }}
-                    </p>
-                    <form action="#">
-                        <div class="table-responsive">
-                            <table class="menu-locations-table" id="menu-locations-table">
+                    <div class="tab-pane fade" id="manage_location" role="tabpanel"
+                        aria-labelledby="manage_location-tab">
+                        <div class="card-body">
+                            <p class="mb-4">{{ translate('Your theme supports') }} {{ sizeof($all_menu_positions) }}
+                                {{ translate('menus. Select which menu appears in each location.') }}
+                            </p>
+                            <form action="#">
+                                <div class="table-responsive">
+                                    <table class="menu-locations-table table table-hover" id="menu-locations-table">
                                 <thead>
                                     <tr>
                                         <th class="manage-column column-locations">{{ translate('Theme Location') }}</th>
@@ -646,10 +730,9 @@
                                                         class="semi-bold black">{{ $all_menu_positions[$i]->position }}</label>
                                                 </td>
                                                 <td class="menu-location-menus">
-                                                    <select class="theme-input-style"
+                                                    <select class="theme-input-style w-100"
                                                         id="location_{{ $all_menu_positions[$i]->id }}"
                                                         onchange="hideEditButton('{{ $menu_group->id }}','{{ $all_menu_positions[$i]->id }}')">
-                                                        </option>
                                                         @foreach ($menu_groups as $menu)
                                                             <option value="{{ $menu->id }}" class="text-uppercase"
                                                                 {{ $menu_group->id == $menu->id ? 'selected' : '' }}>
@@ -675,15 +758,17 @@
                                             @endif
                                         </tr>
                                     @endfor
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </div>
+                            </form>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
-        @include('core::base.media.partial.media_modal')
     </div>
+    @include('core::base.media.partial.media_modal')
 @endsection
 @section('custom_scripts')
     <!-- <script src="{{ asset('/public/backend/assets/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
@@ -957,7 +1042,7 @@
                 let lang_name = $('#language :selected').text().trim();
                 $('.alert > strong').text('"' + lang_name + '"');
 
-                showElement(['#edit_menu_group', '#language'])
+                showElement(['#edit_menu_group', '#language-col'])
                 hideElement(['#create_menu_group'])
                 $('#accordion-container').removeClass('area-disabled')
 
@@ -1037,7 +1122,7 @@
             }
 
             $('#accordion-container').addClass('area-disabled')
-            $('#language').hide()
+            $('#language-col').hide()
         }
 
         /*
