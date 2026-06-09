@@ -9,3 +9,13 @@ export function sectionViewAllLabel(properties, t) {
   const trimmed = typeof title === "string" ? title.trim() : title;
   return trimmed || t("View All");
 }
+
+export function cleanMediaPath(path) {
+  if (!path) return "";
+  return path.replace(/^\/public/, "");
+}
+
+export function sectionBgImageUrl(path) {
+  const cleaned = cleanMediaPath(path);
+  return cleaned ? `url(${cleaned})` : "none";
+}

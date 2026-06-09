@@ -96,6 +96,7 @@ import CategoryCard from "../ui/CategoryCard.vue";
 
 import { Autoplay, Pagination } from "swiper";
 import { mapGetters } from "vuex";
+import { sectionBgImageUrl } from "@/utils/sectionProps";
 
 export default {
   name: "CategorySection",
@@ -139,7 +140,7 @@ export default {
       return {
         //Section
         "--section-background-color": props.bg_color,
-        "--section-bg-image": `url(${props.bg_image})`,
+        "--section-bg-image": sectionBgImageUrl(props.bg_image),
         "--section-background-image-position": props.background_position,
         "--section-background-image-size": props.background_size,
         "--section-background-image-repeat": props.background_repeat,

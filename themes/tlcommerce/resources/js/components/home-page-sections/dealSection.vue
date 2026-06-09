@@ -126,7 +126,7 @@ const Countdown = defineAsyncComponent(() => import("../ui/Countdown.vue"));
 import sectionPreloader from "./sectionPreloader.vue";
 const axios = require("axios").default;
 import { mapGetters } from "vuex";
-import { normalizeSectionProps, sectionViewAllLabel } from "@/utils/sectionProps";
+import { normalizeSectionProps, sectionBgImageUrl, sectionViewAllLabel } from "@/utils/sectionProps";
 export default {
   name: "DealSection",
   components: {
@@ -183,7 +183,7 @@ export default {
       const p = this.sectionStyleProps;
       return {
         "--section-background-color": p.bg_color,
-        "--section-background-image": `url(${p.bg_image})`,
+        "--section-background-image": sectionBgImageUrl(p.bg_image),
         "--section-background-image-position": p.background_position,
         "--section-background-image-size": p.background_size,
         "--section-background-image-repeat": p.background_repeat,

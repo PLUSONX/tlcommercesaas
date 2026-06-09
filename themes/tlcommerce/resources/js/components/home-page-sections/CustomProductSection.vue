@@ -131,7 +131,7 @@ import { defineAsyncComponent } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Autoplay, Pagination } from "swiper";
 import { mapGetters } from "vuex";
-import { sectionViewAllLabel } from "@/utils/sectionProps";
+import { sectionBgImageUrl, sectionViewAllLabel } from "@/utils/sectionProps";
 
 const SingleProduct = defineAsyncComponent(() =>
   import("../product/SingleProduct.vue")
@@ -184,12 +184,9 @@ export default {
 
     styleObject() {
       const props = this.sectionProps;
-      const bgImage = props.bg_image;
       return {
         "--section-background-color": props.bg_color,
-        "--section-background-image": `url(${
-          bgImage?.startsWith("/public") ? bgImage.slice(7) : bgImage
-        })`,
+        "--section-background-image": sectionBgImageUrl(props.bg_image),
         "--section-background-image-position": props.background_position,
         "--section-background-image-size": props.background_size,
         "--section-background-image-repeat": props.background_repeat,

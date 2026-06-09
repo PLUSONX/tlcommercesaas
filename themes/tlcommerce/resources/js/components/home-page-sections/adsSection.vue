@@ -34,7 +34,7 @@
 </template>
 <script>
 import VLazyImage from "v-lazy-image";
-import { normalizeSectionProps } from "@/utils/sectionProps";
+import { cleanMediaPath, normalizeSectionProps, sectionBgImageUrl } from "@/utils/sectionProps";
 import { mapGetters } from "vuex";
 export default {
   name: "AdsSection",
@@ -60,7 +60,7 @@ export default {
       const p = this.sectionStyleProps;
       return {
         "--section-background-color": p.bg_color,
-        "--section-background-image": `url(${p.bg_image})`,
+        "--section-background-image": sectionBgImageUrl(p.bg_image),
         "--section-background-image-position": p.background_position,
         "--section-background-image-size": p.background_size,
         "--section-background-image-repeat": p.background_repeat,
@@ -107,7 +107,7 @@ export default {
       const p = this.sectionStyleProps;
       return (p.ads ?? []).map(ad => ({
         ...ad,
-        image: ad.image?.startsWith('/public') ? ad.image.slice(7) : ad.image,
+        image: cleanMediaPath(ad.image),
       }));
     },
   },
