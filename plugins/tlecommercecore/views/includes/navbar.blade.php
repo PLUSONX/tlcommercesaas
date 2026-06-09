@@ -117,6 +117,15 @@
                         href="{{ route('plugin.tlcommercecore.product.reviews.list') }}">{{ translate('Product Reviews') }}</a>
                 </li>
             @endif
+
+            @if (auth()->user()->can('Manage Product collections'))
+                 <li
+                     class="{{ Request::routeIs(['plugin.tlcommercecore.product.collection.list']) ? 'active ' : '' }}">
+                     <a class="pl-2"
+                         href="{{ route('plugin.tlcommercecore.product.collection.list') }}">{{ translate('Product collections') }}</a>
+                 </li>
+             @endif
+
             @if (auth()->user()->can('Manage Product conditions'))
                 <li class="{{ Request::routeIs(['plugin.tlcommercecore.product.conditions.edit', 'plugin.tlcommercecore.product.conditions.new', 'plugin.tlcommercecore.product.conditions.list']) ? 'active' : '' }}">
                     <a class="pl-2"
