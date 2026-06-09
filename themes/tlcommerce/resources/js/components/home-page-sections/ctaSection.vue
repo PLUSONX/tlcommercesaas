@@ -4,11 +4,8 @@
       <div class="px-3">
         <div class="row align-items-center">
           <div v-if="sectionStyleProps.video_url" class="col-12 d-flex justify-content-center mb-30">
-            <video-card
-              :src="sectionStyleProps.video_url"
-              :btn-border-color="sectionStyleProps.play_btn_border_color"
-              :btn-icon-color="sectionStyleProps.play_btn_color"
-            />
+            <video-card :src="sectionStyleProps.video_url" :btn-border-color="sectionStyleProps.play_btn_border_color"
+              :btn-icon-color="sectionStyleProps.play_btn_color" />
           </div>
           <div v-if="sectionStyleProps.cta_image" class="col-12 mb-30">
             <div class="cta-image position-relative text-center">
@@ -24,11 +21,9 @@
               <p class="mb-3 section_title" v-if="sectionStyleProps.featured_title">
                 {{ $t(sectionStyleProps.featured_title) }}
               </p>
-              <router-link
-                v-if="sectionStyleProps.product_details?.permalink"
+              <router-link v-if="sectionStyleProps.product_details?.permalink"
                 :to="`/products/${sectionStyleProps.product_details.permalink}`"
-                class="text-white btn-underline section_btn"
-              >
+                class="text-white btn-underline section_btn">
                 {{ viewAllLabel }}
               </router-link>
             </div>
@@ -43,11 +38,8 @@
       <div class="custom-container2">
         <div class="row align-items-center">
           <div v-if="sectionStyleProps.video_url" class="col-lg-4 d-flex justify-content-center">
-            <video-card
-              :src="sectionStyleProps.video_url"
-              :btn-border-color="sectionStyleProps.play_btn_border_color"
-              :btn-icon-color="sectionStyleProps.play_btn_color"
-            />
+            <video-card :src="sectionStyleProps.video_url" :btn-border-color="sectionStyleProps.play_btn_border_color"
+              :btn-icon-color="sectionStyleProps.play_btn_color" />
           </div>
           <div v-if="sectionStyleProps.cta_image" class="col-lg-4">
             <div class="cta-image position-relative text-center my-50 my-lg-0">
@@ -63,11 +55,9 @@
               <p class="mb-3 section_title" v-if="sectionStyleProps.featured_title">
                 {{ $t(sectionStyleProps.featured_title) }}
               </p>
-              <router-link
-                v-if="sectionStyleProps.product_details?.permalink"
+              <router-link v-if="sectionStyleProps.product_details?.permalink"
                 :to="`/products/${sectionStyleProps.product_details.permalink}`"
-                class="text-white btn-underline section_btn"
-              >
+                class="text-white btn-underline section_btn">
                 {{ viewAllLabel }}
               </router-link>
             </div>
@@ -211,6 +201,7 @@ export default {
   }
 
   .cta-content {
+
     span,
     p {
       font-size: 14px;
@@ -256,6 +247,7 @@ export default {
   }
 
   &-content {
+
     span,
     p {
       font-size: 18px;

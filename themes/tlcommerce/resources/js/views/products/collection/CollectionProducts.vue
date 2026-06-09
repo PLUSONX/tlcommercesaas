@@ -6,7 +6,7 @@
         <template v-if="collectionDetails != null">
           <div class="flash-deals-banner p-0" v-if="collectionDetails.image != null">
             <div class="text-center">
-              <img :src="collectionDetails.image" :alt="collectionDetails.name" />
+              <img :src="cleanImage(collectionDetails.image)" :alt="collectionDetails.name" />
             </div>
           </div>
           <div class="flash-deals-countdown mb-60">
@@ -133,6 +133,10 @@ export default {
     // console.log("In Collection Products Vue");
   },
   methods: {
+    cleanImage(img) {
+      if (!img) return '';
+      return img.replace(/^\/public/, '');
+    },
     /**
      * Will get collection details
      */
