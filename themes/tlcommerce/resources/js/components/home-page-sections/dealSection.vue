@@ -1,10 +1,11 @@
 <template>
   <template v-if="isSplitScreen && !isMobile">
     <section
+      v-if="dealReady"
       class="pt-15 pb-15 deals-section deals-section--split home-page-section force-mobile-layout mobile-content-wrapper"
       :style="splitScreenStyleObject"
     >
-      <div class="custom-container2" v-if="success && !dataLoading">
+      <div class="px-3">
         <div class="row align-items-center my-3">
           <div class="col-md-6 mb-2 mb-md-0">
             <section-title
@@ -23,19 +24,14 @@
         </div>
         <swiper
           v-if="dealProducts.length"
-          :slidesPerView="6"
+          :key="`deal-swiper-split-${content}-${dealProducts.length}`"
+          :slidesPerView="2"
           :modules="modules"
-          :spaceBetween="1"
-          :autoplay="{
-            delay: 2500,
-            disableOnInteraction: false,
-            pauseOnMouseEnter: true,
-          }"
+          :spaceBetween="8"
+          :autoplay="dealAutoplay"
           :loop="true"
-          :pagination="{
-            clickable: true,
-          }"
-          class="product-grid-slider theme-slider-dots"
+          :pagination="pagination"
+          class="product-grid-slider product-grid-slider--split theme-slider-dots"
           :breakpoints="splitScreenSwiperBreakpoints"
         >
           <swiper-slide v-for="(item, index) in dealProducts" :key="`slide-${index}`">
@@ -53,11 +49,16 @@
         </div>
       </div>
     </section>
+    <section-preloader v-if="dataLoading"></section-preloader>
   </template>
 
   <template v-else>
-    <section class="pt-15 pb-15 deals-section home-page-section" :style="styleObject">
-      <div class="custom-container2" v-if="success && !dataLoading">
+    <section
+      v-if="dealReady"
+      class="pt-15 pb-15 deals-section home-page-section"
+      :style="styleObject"
+    >
+      <div class="custom-container2">
         <div class="row align-items-center my-3">
           <div class="col-md-6 mb-2 mb-md-0">
             <section-title
@@ -76,28 +77,23 @@
         </div>
         <swiper
           v-if="dealProducts.length"
-          :slidesPerView="6"
+          :key="`deal-swiper-${content}-${dealProducts.length}`"
+          :slidesPerView="sliderItems.desktop"
           :modules="modules"
           :spaceBetween="1"
-          :autoplay="{
-            delay: 2500,
-            disableOnInteraction: false,
-            pauseOnMouseEnter: true,
-          }"
+          :autoplay="dealAutoplay"
           :loop="true"
-          :pagination="{
-            clickable: true,
-          }"
+          :pagination="pagination"
           class="product-grid-slider theme-slider-dots"
           :breakpoints="{
             '0': {
-              slidesPerView: 2,
+              slidesPerView: sliderItems.mobile,
             },
             '768': {
-              slidesPerView: 3,
+              slidesPerView: sliderItems.tab,
             },
             '1024': {
-              slidesPerView: 6,
+              slidesPerView: sliderItems.desktop,
             },
           }"
         >
@@ -116,6 +112,7 @@
         </div>
       </div>
     </section>
+    <section-preloader v-if="dataLoading"></section-preloader>
   </template>
 </template>
 <script>
@@ -158,8 +155,19 @@ export default {
     return {
       dealDetails: {},
       dealProducts: [],
-      success: false,
+      dealReady: false,
       dataLoading: true,
+      pagination: { clickable: true },
+      dealAutoplay: {
+        delay: 2500,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true,
+      },
+      sliderItems: {
+        mobile: 2,
+        tab: 3,
+        desktop: 6,
+      },
     };
   },
   computed: {
@@ -220,10 +228,7 @@ export default {
 
     splitScreenSwiperBreakpoints() {
       return {
-        "0": { slidesPerView: 2 },
-        "480": { slidesPerView: 2 },
-        "768": { slidesPerView: 2 },
-        "1024": { slidesPerView: 2 },
+        "0": { slidesPerView: 2, spaceBetween: 8 },
       };
     },
   },
@@ -240,12 +245,12 @@ export default {
           if (response.data.success) {
             this.dealDetails = response.data.dealsDetails;
             this.dealProducts = response.data?.products?.data ?? [];
-            this.success = true;
+            this.dealReady = true;
             this.dataLoading = false;
           }
         })
         .catch((error) => {
-          this.success = false;
+          this.dealReady = false;
           this.dataLoading = false;
         });
     },
@@ -286,5 +291,34 @@ export default {
 .force-mobile-layout .row > [class*="col-"] {
   flex: 0 0 100% !important;
   max-width: 100% !important;
+}
+
+.force-mobile-layout .product-content .image,
+.force-mobile-layout .product-content .product-img {
+  min-width: 0 !important;
+  max-width: 100px;
+}
+
+.force-mobile-layout .cart-image-review {
+  max-width: 100% !important;
+  height: auto !important;
+  flex-shrink: 1 !important;
+}
+
+.force-mobile-layout .d-none.d-lg-block,
+.force-mobile-layout .d-lg-block {
+  display: none !important;
+}
+
+.force-mobile-layout .d-block.d-lg-none,
+.force-mobile-layout .d-lg-none {
+  display: block !important;
+}
+
+.force-mobile-layout .d-block.d-lg-none.col-12 {
+  width: 100% !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
 }
 </style>

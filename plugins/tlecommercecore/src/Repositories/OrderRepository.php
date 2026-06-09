@@ -2174,12 +2174,16 @@ class OrderRepository
      */
     public function changeOrderItemStatus($item_id, $order_id, $status, $status_type = 'delivery_status')
     {
+        \Log::info(' changeOrderItemStatus method called!!!');
         try {
             DB::beginTransaction();
 
             $item = OrderHasProducts::where('order_id', $order_id)->where('id', $item_id)->first();
             if ($item != null) {
                 if ($status_type == 'delivery_status') {
+
+                    \Log::info(' inside delivery_status!!!');
+
                     //Change order table
                     $order = Orders::where('id', $order_id)->first();
                     $order->delivery_status = $status;
@@ -2189,12 +2193,18 @@ class OrderRepository
                     $item->delivery_status = $status;
                     $item->save();
 
+                    \Log::info('After saving item!!!');
+
+
                     $delivery_change_message = null;
                     if ($status == config('tlecommercecore.order_delivery_status.cancelled')) {
                         $delivery_change_message = 'Your package has been cancelled';
                     }
                     if ($delivery_change_message != null) {
                         $this->insertOrderTrackingData($order_id, $item_id, $delivery_change_message);
+
+                        \Log::info('Before sending notification!!!');
+
                         //Send notification
                         if (auth('jwt-customer')->user() != null) {
                             //Send notification to admin when customer cancel order item
@@ -2203,16 +2213,21 @@ class OrderRepository
                             //Send notification to customer
                             $btn_title = "Track Your Order";
                             $mail_title = "Item has been removed from your order";
-                            EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $delivery_change_message, $btn_title, $mail_title);
+                            $customer_id = $order->customer_id;
+                            $guest_customer_id = $order->guest_customer_id;
+                            EcommerceNotification::sendOrderStatusNotification($order->id, $customer_id, $guest_customer_id, $delivery_change_message, $btn_title, $mail_title);
+                            // EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $delivery_change_message, $btn_title, $mail_title);
                         }
 
+                        \Log::info('after sending notification!!!');
+
                         //Send notification to seller when admin
-                        if ($item->seller_id != null && auth()->user()->user_type == null && isActivePluging('multivendor')) {
-                            if (auth('jwt-customer')->user() == null) {
-                                $seller_message = "Order status updated. Order code " . $order->order_code;
-                                EcommerceNotification::sendOrderItemUpdateStatusNotificationToSeller($order->id, $item->seller_id, $seller_message);
-                            }
-                        }
+                        // if ($item->seller_id != null && auth()->user()->user_type == null && isActivePluging('multivendor')) {
+                        //     if (auth('jwt-customer')->user() == null) {
+                        //         $seller_message = "Order status updated. Order code " . $order->order_code;
+                        //         EcommerceNotification::sendOrderItemUpdateStatusNotificationToSeller($order->id, $item->seller_id, $seller_message);
+                        //     }
+                        // }
                     }
                 }
             } else {
