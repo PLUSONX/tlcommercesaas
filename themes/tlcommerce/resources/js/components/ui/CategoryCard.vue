@@ -106,7 +106,7 @@ $category-split-icon-size: 72px;
 }
 
 /* default layout */
-.layout__two .category-card {
+.category-card:not(.category-card--split) {
   padding: 20px;
   background-color: #f7f8fa;
   display: flex;

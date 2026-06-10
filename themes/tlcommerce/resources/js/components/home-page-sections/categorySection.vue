@@ -1,5 +1,5 @@
 <template>
-  <template v-if="isSplitScreen && !isMobile">
+  <template v-if="isSplitScreen">
     <!-- Categories -->
     <section
       class="pt-5 pb-5 category-section category-section--split home-page-section"
@@ -271,6 +271,8 @@ export default {
   box-shadow: none !important;
   opacity: 1 !important;
   padding: 0 !important;
+  display: flex;
+  justify-content: center;
 }
 
 .category-section--split :deep(.category-card),
