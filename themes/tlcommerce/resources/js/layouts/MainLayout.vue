@@ -26,8 +26,6 @@
             </router-view>
           </div>
 
-          <company-footer v-if="isSplitScreen" class="split-screen-company-footer" />
-
           <gdpr v-if="isSplitScreen && isMobile && gdpr_properties != null && gdpr_properties.gdpr_status == 1"
             class="split-screen-gdpr" :properties="gdpr_properties"></gdpr>
 
@@ -320,7 +318,6 @@ import {
   CModalTitle,
   CModalBody,
 } from "@coreui/vue";
-import CompanyFooter from "../components/ui/CompanyFooter.vue";
 
 export default {
   name: "MainLayout",
@@ -351,7 +348,6 @@ export default {
     Preloader,
     BannerFeature,
     CustomHeader,
-    CompanyFooter
   },
   setup() {
     const data = reactive({
@@ -1480,12 +1476,6 @@ export default {
 .forced-mobile-context :deep(.show-on-mobile) {
   /* Only show it if it's meant to be visible on mobile */
   display: block !important;
-}
-
-.split-screen-company-footer {
-  flex-shrink: 0;
-  width: 100%;
-  z-index: 100;
 }
 </style>
 
