@@ -135,7 +135,16 @@ export default {
 }
 
 .mh-294 {
+  height: 294px;
   max-height: 294px;
   overflow: hidden;
+}
+
+.mh-294 :deep(.lmh-294),
+.mh-294 :deep(.v-lazy-image) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 </style>
