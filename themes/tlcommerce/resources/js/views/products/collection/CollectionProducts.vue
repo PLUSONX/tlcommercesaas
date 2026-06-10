@@ -1,62 +1,115 @@
 <template>
-  <div class="">
-    <!-- <page-header :items="bItems" /> -->
-    <div class="pb-60 light-bg">
-      <template v-if="!loadingDetails">
-        <template v-if="collectionDetails != null">
-          <div class="flash-deals-banner p-0" v-if="collectionDetails.image != null">
-            <div class="text-center">
-              <img :src="cleanImage(collectionDetails.image)" :alt="collectionDetails.name" />
-            </div>
-          </div>
-          <div class="flash-deals-countdown mb-60">
-            <div class="custom-container2 py-2">
-              <div class="row align-items-center">
-                <div class="col-md-5">
-                  <h3 class="mb-md-0">
-                    {{ collectionDetails.name }}
-                  </h3>
-                </div>
-                <div class="col-md-7"></div>
-              </div>
-            </div>
-          </div>
-        </template>
-      </template>
-      <template v-if="loadingDetails">
-        <skeleton class="w-100 mb-20" height="250px"></skeleton>
-      </template>
+  <template v-if="isSplitScreen">
+    <div :class="mtClass">
 
-      <div class="custom-container2" v-if="!loadingProducts">
-        <div class="row mobile-gap-10">
-          <div v-for="product in paginatedItems" :key="product.id" class="col-lg-2 col-md-3 col-6">
-            <single-product :item="product" styleEight />
+      <div class="custom-container2">
+
+        <div class="card mb-3">
+
+          <div class="col-lg-12">
+            <div class="section-header d-flex justify-content-between align-items-center">
+
+              <div class="header-title">
+                <h3 class="product_header mb-0" v-if="!loadingDetails">
+                  {{ collectionDetails?.name }}
+                </h3>
+                <h3 class="product_header mb-0" v-if="loadingDetails">
+                  <skeleton :border-radius="5" :width="150" :height="30"></skeleton>
+                </h3>
+              </div>
+
+              <div class="header-count">
+                <div v-if="loadingDetails">
+                  <p class="mb-0">
+                    <skeleton :border-radius="5" :width="50" :height="10"></skeleton>
+                  </p>
+                </div>
+                <div v-if="!loadingDetails">
+                  <p class="mb-0" v-if="totalItems > 0">
+                    {{ totalItems }} {{ $t("items found") }}
+                  </p>
+                  <p class="mb-0" v-else>{{ $t("No item found") }}</p>
+                </div>
+              </div>
+
+            </div>
           </div>
+
         </div>
-        <div class="row align-items-center mt-10" v-if="!loadingProducts">
-          <div class="col-md-6">
-            <!-- Showing Per Page -->
-            <ShowingPerPage class="text-center text-md-start" :items-per-page="perPage" :total-items="totalItems"
-              :current-page="currentPage" />
-            <!-- Showing Per Page -->
-          </div>
-          <div class="col-md-6 d-flex justify-content-center justify-content-md-end mt-3 mt-md-0">
-            <!-- Pagination -->
-            <pagination :options="paginationOptions" v-model="currentPage" :records="totalItems" :per-page="perPage"
-              @paginate="getProducts" />
-            <!-- End Pagination -->
-          </div>
+
+      </div>
+      <div class="row g-0 mobile-gap-10" v-if="loadingProducts">
+
+        <div class="col-6" v-for="(item, index) in productSkeletons" :key="index">
+          <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
         </div>
       </div>
-      <div class="custom-container2" v-if="loadingProducts">
-        <div class="row mobile-gap-10">
-          <div class="col-lg-2 col-md-3 col-6" v-for="(item, index) in productSkeletons" :key="index">
-            <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
+      <div class="row g-0 mobile-gap-10" v-else>
+
+        <div v-for="product in paginatedItems" :key="product.id" class="col-6 compact-card">
+          <single-product :item="product" styleEight />
+        </div>
+      </div>
+
+    </div>
+  </template>
+
+  <template v-else>
+    <div class="">
+      <!-- <page-header :items="bItems" /> -->
+      <div class="pb-60 light-bg">
+        <template v-if="!loadingDetails">
+          <template v-if="collectionDetails != null">
+            <div class="flash-deals-banner p-0" v-if="collectionDetails.image != null">
+              <div class="text-center">
+                <img :src="cleanImage(collectionDetails.image)" :alt="collectionDetails.name" />
+              </div>
+            </div>
+            <div class="flash-deals-countdown mb-60">
+              <div class="custom-container2 py-2">
+                <div class="row align-items-center">
+                  <div class="col-md-5">
+                    <h3 class="mb-md-0">
+                      {{ collectionDetails.name }}
+                    </h3>
+                  </div>
+                  <div class="col-md-7"></div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </template>
+        <template v-if="loadingDetails">
+          <skeleton class="w-100 mb-20" height="250px"></skeleton>
+        </template>
+
+        <div class="custom-container2" v-if="!loadingProducts">
+          <div class="row mobile-gap-10">
+            <div v-for="product in paginatedItems" :key="product.id" class="col-lg-2 col-md-3 col-6">
+              <single-product :item="product" styleEight />
+            </div>
+          </div>
+          <div class="row align-items-center mt-10" v-if="!loadingProducts">
+            <div class="col-md-6">
+              <ShowingPerPage class="text-center text-md-start" :items-per-page="perPage" :total-items="totalItems"
+                :current-page="currentPage" />
+            </div>
+            <div class="col-md-6 d-flex justify-content-center justify-content-md-end mt-3 mt-md-0">
+              <pagination :options="paginationOptions" v-model="currentPage" :records="totalItems" :per-page="perPage"
+                @paginate="getProducts" />
+            </div>
+          </div>
+        </div>
+        <div class="custom-container2" v-if="loadingProducts">
+          <div class="row mobile-gap-10">
+            <div class="col-lg-2 col-md-3 col-6" v-for="(item, index) in productSkeletons" :key="index">
+              <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </template>
 </template>
 
 <script>
@@ -65,6 +118,8 @@ import SingleProduct from "@/components/product/SingleProduct.vue";
 import ShowingPerPage from "@/components/ui/ShowingPerPage.vue";
 import Pagination from "v-pagination-3";
 import axios from "axios";
+import { mapGetters } from "vuex";
+
 export default {
   name: "CollectionProducts",
   components: {
@@ -126,20 +181,25 @@ export default {
       ],
     };
   },
+  computed: {
+    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+
+    mtClass() {
+      if (this.isSplitScreen && !this.isMobile) {
+        return 'mt-50';
+      }
+      return 'mt-1';
+    },
+  },
   mounted() {
     this.getCollectionDetails();
     this.getProducts();
-
-    // console.log("In Collection Products Vue");
   },
   methods: {
     cleanImage(img) {
       if (!img) return '';
       return img.replace(/^\/public/, '');
     },
-    /**
-     * Will get collection details
-     */
     getCollectionDetails() {
       window.scrollTo(0, 0);
       axios
@@ -156,9 +216,6 @@ export default {
           this.loadingDetails = false;
         });
     },
-    /**
-     * Will get products
-     */
     getProducts() {
       window.scrollTo(0, 0);
       axios
@@ -181,3 +238,72 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.card {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.col-6 :deep(> div) {
+  border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+  .compact-card :deep(> .single-product-item) {
+    overflow: visible;
+  }
+
+  .compact-card :deep(.single-product-item > .position-relative) {
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+  }
+}
+
+.compact-card {
+  padding: 6px 6px 0;
+}
+
+.compact-card :deep(.single-product-item) {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.compact-card :deep(img) {
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 0 auto;
+
+  @media (max-width: 510px) {
+    width: 95% !important;
+  }
+}
+
+.compact-card :deep(.product-summary) {
+  @media (min-width: 480px) and (max-width: 501px) {
+    padding-left: 12% !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .mobile-gap-10 {
+    --bs-gutter-x: 0rem !important;
+    --bs-gutter-y: 0rem !important;
+  }
+
+  .mobile-gap-10 .compact-card {
+    padding: 3px 2px 0 !important;
+  }
+
+  .mobile-gap-10 .compact-card :deep(.single-product-item) {
+    box-shadow: none !important;
+    border-radius: 6px !important;
+    margin-bottom: 0 !important;
+  }
+}
+</style>
