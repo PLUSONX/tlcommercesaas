@@ -6,12 +6,12 @@
     </button>
     <!-- End Search Toggle -->
 
-    <teleport :to="teleportTarget" :disabled="!overlayTeleport || !searchFormActive">
-      <form v-if="mobileStyle && (!overlayTeleport || searchFormActive)"
+    <teleport :to="teleportTarget" :disabled="teleportDisabled">
+      <form v-if="showMobileOverlayForm"
         class="search-form mobile-search-form w-100 d-flex align-items-center"
         :class="[
           { active: searchFormActive },
-          overlayTeleport ? 'mobile-search-form--split-inline' : 'position-absolute',
+          mobileOverlayFormClass,
         ]"
         action="#">
         <button type="button"
@@ -91,6 +91,10 @@ export default {
       type: String,
       default: "",
     },
+    fixedOverlay: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -113,8 +117,47 @@ export default {
   },
   computed: {
     ...mapGetters('layout', ['isMobile']),
+
+    usesBodyFixedOverlay() {
+      return this.mobileStyle && this.fixedOverlay;
+    },
+
+    usesHostTeleport() {
+      return this.mobileStyle && !!this.overlayTeleport;
+    },
+
+    teleportDisabled() {
+      if (this.usesBodyFixedOverlay || this.usesHostTeleport) {
+        return !this.searchFormActive;
+      }
+      return true;
+    },
+
     teleportTarget() {
+      if (this.usesBodyFixedOverlay) {
+        return "body";
+      }
       return this.overlayTeleport || "body";
+    },
+
+    showMobileOverlayForm() {
+      if (!this.mobileStyle) {
+        return false;
+      }
+      if (this.usesBodyFixedOverlay || this.usesHostTeleport) {
+        return this.searchFormActive;
+      }
+      return true;
+    },
+
+    mobileOverlayFormClass() {
+      if (this.usesBodyFixedOverlay) {
+        return "mobile-search-form--fixed";
+      }
+      if (this.usesHostTeleport) {
+        return "mobile-search-form--split-inline";
+      }
+      return "position-absolute";
     },
   },
   beforeUnmount() {
@@ -193,15 +236,26 @@ export default {
   position: relative;
 }
 
-:deep(.mobile-search-form:not(.mobile-search-form--split-inline):not(.active)) {
+:deep(.mobile-search-form--fixed),
+:deep(.mobile-search-form:not(.mobile-search-form--split-inline):not(.mobile-search-form--fixed)) {
   transform: translate3d(0, -100%, 0);
   pointer-events: none;
   visibility: hidden;
 }
 
-:deep(.mobile-search-form:not(.mobile-search-form--split-inline).active) {
+:deep(.mobile-search-form--fixed.active),
+:deep(.mobile-search-form:not(.mobile-search-form--split-inline):not(.mobile-search-form--fixed).active) {
   transform: translate3d(0, 0, 0);
   visibility: visible;
+}
+
+:deep(.mobile-search-form--fixed) {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: 100%;
+  z-index: 10001;
 }
 
 :deep(.mobile-search-form--split-inline:not(.active)) {

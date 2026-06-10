@@ -111,7 +111,7 @@
             d-flex
             align-items-center
             justify-content-end
-            position-relative
+            position-static
             mobile-header-actions
           ">
           <!-- Offcanvas -->
@@ -121,7 +121,7 @@
 
           <!-- Search Form -->
           <!-- <search-form style-two mobile-style class="mr-20" /> -->
-          <search-form style-two mobile-style class="mr-20" />
+          <search-form style-two mobile-style fixed-overlay class="mr-20" />
           <!-- End Search Form -->
 
           <!-- Cart Button -->
@@ -149,7 +149,7 @@ import offcanvas from "@/fakeDB/offcanvas.json";
 import SearchForm from "@/components/ui/SearchForm.vue";
 import TheOffcanvas from "@/components/menu/TheOffcanvas.vue";
 import LanguageCurrencySwitcher from "./LanguageCurrencySwitcher.vue";
-import { mapState, mapGetters } from "vuex";
+import { mapState } from "vuex";
 export default {
   name: "MobileHeader",
   components: {
@@ -222,20 +222,7 @@ export default {
       customerInfo: (state) => state.customerInfo,
     }),
 
-    ...mapGetters('layout', [
-      'isSplitScreen',
-      'isMobile'
-    ]),
-
     headerClasses() {
-      // console.log("isSplitScreen: ", this.isSplitScreen);
-      // console.log("isMobile: ", this.isMobile);
-      // 1. The "Force" condition: both are true
-      if (this.isSplitScreen && !this.isMobile) {
-        return 'c1-bg custom-mobile-header mobile_header__two d-lg-none force-show sticky';
-      }
-
-      // 2. The default/fallback logic (your original ternary)
       return this.headerStyle.custom_header == 1
         ? 'c1-bg custom-mobile-header mobile_header__two d-lg-none'
         : 'mobile_header__two d-lg-none c1-bg';
@@ -249,11 +236,6 @@ export default {
   },
   methods: {
     scrollHandler() {
-
-      if (this.isSplitScreen && !this.isMobile) {
-        return;
-      }
-
       const mobileHeader = this.$refs.mobileHeader;
       if (window.pageYOffset > 100) {
         this.isSticky = true;
