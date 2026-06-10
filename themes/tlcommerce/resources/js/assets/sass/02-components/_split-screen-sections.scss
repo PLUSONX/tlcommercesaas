@@ -1,11 +1,12 @@
 /* Dynamic home section buttons */
 .home-page-section {
+
   .section_btn,
   .blog-section-btn {
     border-radius: 6px;
   }
 
-  .section-header-row > .text-md-end {
+  .section-header-row>.text-md-end {
     padding: 0.25rem;
   }
 }
@@ -13,18 +14,18 @@
 /* Split-screen home sections: force-mobile-layout column behavior */
 
 /* Product/content rows stack full-width in the narrow split column */
-.force-mobile-layout .row:not(.section-header-row):not(.section-content-row) > [class*="col-"] {
+.force-mobile-layout .row:not(.section-header-row):not(.section-content-row)>[class*="col-"] {
   flex: 0 0 100% !important;
   max-width: 100% !important;
 }
 
 /* Header row: title + action stay side-by-side */
-.force-mobile-layout .section-header-row > [class*="col-"] {
+.force-mobile-layout .section-header-row>[class*="col-"] {
   flex: 0 0 50% !important;
   max-width: 50% !important;
 }
 
-.force-mobile-layout .section-header-row > .text-md-end {
+.force-mobile-layout .section-header-row>.text-md-end {
   text-align: right !important;
 }
 
@@ -42,13 +43,13 @@
     }
 
     .digit {
-      font-size: 11px;
+      font-size: 13px;
       margin-bottom: 1px;
       line-height: 1;
     }
 
     .text {
-      font-size: 7px;
+      font-size: 9px;
       line-height: 1;
     }
   }
@@ -64,20 +65,20 @@
 }
 
 /* Blog / 2-col content grids inside split sections */
-.force-mobile-layout .section-content-row > [class*="col-"] {
+.force-mobile-layout .section-content-row>[class*="col-"] {
   flex: 0 0 50% !important;
   max-width: 50% !important;
 }
 
 /* Default layout: keep title + action on one line on mobile */
 @media (max-width: 767.98px) {
-  .home-page-section .section-header-row > [class*="col-"] {
+  .home-page-section .section-header-row>[class*="col-"] {
     flex: 0 0 50% !important;
     max-width: 50% !important;
   }
 
-  .home-page-section .section-header-row > .text-md-end,
-  .home-page-section .section-header-row > [class*="col-"]:last-child {
+  .home-page-section .section-header-row>.text-md-end,
+  .home-page-section .section-header-row>[class*="col-"]:last-child {
     text-align: right !important;
   }
 
