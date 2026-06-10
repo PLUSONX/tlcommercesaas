@@ -2563,6 +2563,8 @@ if (!function_exists('fix_image_urls')) {
         } else {
             $content = preg_replace('/(src|href)="' . preg_quote($baseUrl, '/') . '\//', '$1="/', $content);
         }
+        $content = preg_replace('/(src|href)="\/public\//', '$1="/', $content);
+        $content = preg_replace('/(src|href)="' . preg_quote($baseUrl, '/') . '\/public\//', '$1="' . $baseUrl . '/', $content);
         return $content;
     }
 }

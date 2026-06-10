@@ -357,6 +357,7 @@ class BlogController extends Controller
         $file_id = saveFileInStorage($file);
 
         $path = getFilePath($file_id, false);
+        $path = preg_replace('#^/public#', '', $path);
 
         return response()->json(['url' => $path]);
       }

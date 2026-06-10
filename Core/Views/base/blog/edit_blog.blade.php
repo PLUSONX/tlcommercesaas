@@ -863,35 +863,15 @@
                 }
 
                 // SUMMERNOTE INIT
-                $('#blog_content').summernote({
-                    tabsize: 2,
+                $('#blog_content').summernote(getSummernoteContentEditorOptions({
                     height: 400,
-                    codeviewIframeFilter: false,
-                    codeviewFilter: true,
-                    codeviewFilterRegex: /<\/*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|ilayer|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|t(?:itle|extarea)|xml)[^>]*>|on\w+\s*=\s*"[^"]*"|on\w+\s*=\s*'[^']*'|on\w+\s*=\s*[^\s>]+/gi,
-                    toolbar: [
-                        ["style", ["style"]],
-                        ["font", ["bold", "underline", "clear"]],
-                        ["color", ["color"]],
-                        ["para", ["ul", "ol", "paragraph"]],
-                        ["table", ["table"]],
-                        ["insert", ["link", "picture", "video"]],
-                        ["view", ["fullscreen", "codeview", "help"]],
-                    ],
                     placeholder: 'Blog Content',
                     callbacks: {
                         onImageUpload: function(images, editor, welEditable) {
                             sendFile(images[0], editor, welEditable);
-                        },
-                        onChangeCodeview: function(contents, $editable) {
-                            let code = $(this).summernote('code')
-                            code = code.replace(
-                                /<\/*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|ilayer|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|t(?:itle|extarea)|xml)[^>]*>|on\w+\s*=\s*"[^"]*"|on\w+\s*=\s*'[^']*'|on\w+\s*=\s*[^\s>]+/gi,
-                                '')
-                            $(this).val(code)
                         }
                     }
-                });
+                }));
 
                 // selectplugin in language list
                 selectPlugin('#language');
@@ -1087,7 +1067,8 @@
                 success: function(data) {
 
                     if (data.url) {
-                        var image = $('<img>').attr('src', data.url);
+                        const url = data.url.replace(/^\/public/, '');
+                        var image = $('<img>').attr('src', url);
                         $('#blog_content').summernote("insertNode", image[0]);
                     } else {
                         toastr.error(data.error, "Error!");

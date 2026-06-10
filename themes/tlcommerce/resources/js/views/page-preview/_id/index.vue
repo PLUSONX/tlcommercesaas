@@ -19,7 +19,7 @@
               <!-- Page Header -->
               <header class="entry-header mb-40" v-if="page.page_image != null">
                 <div class="entry-thumbnail">
-                  <img :src="page.page_image" :alt="page.title" />
+                  <img :src="cleanImage(page.page_image)" :alt="page.title" />
                 </div>
               </header>
               <!-- End Page Header -->
@@ -80,6 +80,14 @@ export default {
   },
 
   methods: {
+    cleanImage(img) {
+      if (!img) return '';
+      return img.replace(/^\/public/, '');
+    },
+    cleanContentImages(content) {
+      if (!content) return '';
+      return content.replace(/(src|href)="\/public\//g, '$1="/');
+    },
     /**
      * Get page details
      */
@@ -97,6 +105,9 @@ export default {
         .then((response) => {
           if (response.data.success) {
             this.page = response.data.page;
+            if (this.page.content) {
+              this.page.content = this.cleanContentImages(this.page.content);
+            }
             this.page_section = response.data.page_sections ?? {};
             this.active_pagebuilder = response.data.active_pagebuilder;
             this.page_builder_widgets =

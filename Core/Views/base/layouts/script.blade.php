@@ -11,6 +11,7 @@
 <script src="{{ asset('backend/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
 <script src="{{ asset('backend/assets/plugins/moment/moment.min.js') }}"></script>
 <script src="{{ asset('backend/assets/plugins/dropzone/dropzone.min.js') }}"></script>
+@include('core::base.includes.summernote_video_helper')
 <!-- ======= BEGIN GLOBAL MANDATORY SCRIPTS ======= -->
 
 <!-- ======= Dom Purify ======= -->

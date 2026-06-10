@@ -121,7 +121,7 @@
 
           <!-- Search Form -->
           <!-- <search-form style-two mobile-style class="mr-20" /> -->
-          <search-form style-two mobile-style fixed-overlay class="mr-20" />
+          <search-form style-two mobile-style :fixed-overlay="true" class="mr-20" />
           <!-- End Search Form -->
 
           <!-- Cart Button -->

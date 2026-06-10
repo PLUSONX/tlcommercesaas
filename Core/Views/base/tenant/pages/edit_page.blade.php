@@ -6,10 +6,10 @@
 
 @section('custom_css')
     <!-- Select2 -->
-    <link rel="stylesheet" href="{{ asset('/public/backend/assets/plugins/select2/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/assets/plugins/select2/select2.min.css') }}">
     <!--  End select2  -->
     <!--Editor-->
-    <link href="{{ asset('/public/backend/assets/plugins/summernote/summernote-lite.css') }}" rel="stylesheet" />
+    <link href="{{ asset('backend/assets/plugins/summernote/summernote-lite.css') }}" rel="stylesheet" />
     <!--End editor-->
 
     <style>
@@ -73,7 +73,7 @@
         <div class="row">
             <div class="col-md-8">
                 {{-- Languages --}}
-                <div class="row">
+                <!-- <div class="row">
                     <div class="col-12 mb-3">
                         <p class="alert alert-info">You are editing <strong>"{{ getLanguageNameByCode($lang) }}"</strong>
                             version</p>
@@ -92,7 +92,7 @@
                             @endforeach
                         </ul>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="card mb-30">
                     <div class="card-body">
@@ -382,10 +382,10 @@
 
 @section('custom_scripts')
     <!--Select2-->
-    <script src="{{ asset('/public/backend/assets/plugins/select2/select2.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/plugins/select2/select2.min.js') }}"></script>
     <!--End Select2-->
     <!--Editor-->
-    <script src="{{ asset('/public/backend/assets/plugins/summernote/summernote-lite.js') }}"></script>
+    <script src="{{ asset('backend/assets/plugins/summernote/summernote-lite.js') }}"></script>
     <!--End Editor-->
     <script>
         (function($) {
@@ -414,35 +414,14 @@
                 });
 
                 // SUMMERNOTE INIT
-                $('#page_content').summernote({
-                    tabsize: 2,
-                    height: 200,
-                    codeviewIframeFilter: false,
-                    codeviewFilter: true,
-                    codeviewFilterRegex: /<\/*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|ilayer|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|t(?:itle|extarea)|xml)[^>]*>|on\w+\s*=\s*"[^"]*"|on\w+\s*=\s*'[^']*'|on\w+\s*=\s*[^\s>]+/gi,
-                    toolbar: [
-                        ["style", ["style"]],
-                        ["font", ["bold", "underline", "clear"]],
-                        ["color", ["color"]],
-                        ["para", ["ul", "ol", "paragraph"]],
-                        ["table", ["table"]],
-                        ["insert", ["link", "picture", "video"]],
-                        ["view", ["fullscreen", "codeview", "help"]],
-                    ],
+                $('#page_content').summernote(getSummernoteContentEditorOptions({
                     placeholder: 'page Content',
                     callbacks: {
                         onImageUpload: function(images, editor, welEditable) {
                             sendFile(images[0], editor, welEditable);
-                        },
-                        onChangeCodeview: function(contents, $editable) {
-                            let code = $(this).summernote('code')
-                            code = code.replace(
-                                /<\/*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|ilayer|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|t(?:itle|extarea)|xml)[^>]*>|on\w+\s*=\s*"[^"]*"|on\w+\s*=\s*'[^']*'|on\w+\s*=\s*[^\s>]+/gi,
-                                '')
-                            $(this).val(code)
                         }
                     }
-                });
+                }));
 
                 // select plugin add
                 $('#page_parent').select2({
@@ -616,7 +595,8 @@
                 processData: false,
                 success: function(data) {
                     if (data.url) {
-                        var image = $('<img>').attr('src', data.url);
+                        const url = data.url.replace(/^\/public/, '');
+                        var image = $('<img>').attr('src', url);
                         $('#page_content').summernote("insertNode", image[0]);
                     } else {
                         toastr.error(data.error, "Error!");

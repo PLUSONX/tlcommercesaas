@@ -283,6 +283,7 @@ class PageController extends Controller
                 $file = $request->file('image');
                 $file_id = saveFileInStorage($file);
                 $path = getFilePath($file_id);
+                $path = preg_replace('#^/public#', '', $path);
                 return response()->json(['url' => $path]);
             }
         }

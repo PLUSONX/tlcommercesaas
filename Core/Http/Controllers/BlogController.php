@@ -335,6 +335,7 @@ class BlogController extends Controller
                 $image = 'blog_content_image' . time() . rand() . '.' . $extension;
                 $file->move('public/uploaded/blog/content/', $image);
                 $path = asset('/public/uploaded/blog/content/' . $image);
+                $path = preg_replace('#/public#', '', $path);
                 return response()->json(['url' => $path]);
             }
         }

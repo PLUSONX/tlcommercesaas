@@ -855,12 +855,8 @@
                 theme: "classic",
             });
 
-            $('#copyright_text').summernote({
-                tabsize: 2,
-                height: 200,
-                codeviewIframeFilter: false,
-                codeviewFilter: true,
-                codeviewFilterRegex: /<\/*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|ilayer|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|t(?:itle|extarea)|xml)[^>]*>|on\w+\s*=\s*"[^"]*"|on\w+\s*=\s*'[^']*'|on\w+\s*=\s*[^\s>]+/gi,
+            $('#copyright_text').summernote(getSummernoteContentEditorOptions({
+                placeholder: 'Copyright text',
                 toolbar: [
                     ["style", ["style"]],
                     ["font", ["bold", "underline", "clear"]],
@@ -868,19 +864,9 @@
                     ["para", ["ul", "ol", "paragraph"]],
                     ["table", ["table"]],
                     ["insert", ["link", "video"]],
-                    ["view", ["fullscreen", "codeview","help"]],
-                ],
-                placeholder: 'Copyright text',
-                callbacks: {
-                    onChangeCodeview: function(contents, $editable) {
-                        let code = $(this).summernote('code')
-                        code = code.replace(
-                            /<\/*(?:applet|b(?:ase|gsound|link)|embed|frame(?:set)?|ilayer|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|t(?:itle|extarea)|xml)[^>]*>|on\w+\s*=\s*"[^"]*"|on\w+\s*=\s*'[^']*'|on\w+\s*=\s*[^\s>]+/gi,
-                            '')
-                        $(this).val(code)
-                    }
-                }
-            });
+                    ["view", ["fullscreen", "codeview", "help"]],
+                ]
+            }));
         })
     })(jQuery);
 </script>
