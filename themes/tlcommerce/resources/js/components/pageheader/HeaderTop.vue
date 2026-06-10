@@ -6,100 +6,6 @@
         <div class="col-lg-6 col-md-6 col-sm-4 col-4">
           <div class="header-info-wrap">
             <ul class="list-unstyled header-info">
-              <li>
-                <div
-                  class="langcurrency-wrap"
-                  ref="dropdownMenu"
-                  v-if="!dataLoading"
-                >
-                  <div
-                    class="langcurrency"
-                    @click.prevent="
-                      showLanguageCurrency = !showLanguageCurrency
-                    "
-                  >
-                    <div>
-                      <span class="text-uppercase custom-menu">{{
-                        $i18n.locale
-                      }}</span>
-                      <span v-if="selected_currency" class="custom-menu">{{
-                        selected_currency.code
-                      }}</span>
-                    </div>
-                    <span class="material-icons ms-1">expand_more</span>
-                  </div>
-                  <div
-                    class="langcurrency-dropdown"
-                    v-if="showLanguageCurrency"
-                  >
-                    <ul class="list-unstyled">
-                      <li>
-                        <span>{{ $t("Language") }}</span>
-                        <select
-                          class="theme-input-style"
-                          v-model="selected_lang"
-                        >
-                          <option
-                            v-for="(lang, index) in languages"
-                            :key="index"
-                            :value="lang.code"
-                          >
-                            {{ lang.title }}
-                          </option>
-                        </select>
-                      </li>
-                      <li>
-                        <span>{{ $t("Currency") }}</span>
-                        <select
-                          class="theme-input-style"
-                          v-model="selected_currency"
-                        >
-                          <option
-                            v-for="(currency, index) in currencies"
-                            :key="index"
-                            :value="currency"
-                          >
-                            {{ currency.code }}
-                          </option>
-                        </select>
-                      </li>
-                      <li class="w-100">
-                        <button
-                          type="button"
-                          class="btn btn_fill w-100 justify-content-center custom-lang-switch-btn"
-                          @click.prevent="setCurrencyLanguage"
-                        >
-                          {{ $t("Save Changes") }}
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div
-                  class="langcurrency-wrap"
-                  ref="dropdownMenu"
-                  v-if="dataLoading"
-                >
-                  <div class="langcurrency">
-                    <div>
-                      <span class="mb-1">
-                        <skeleton
-                          height="8px"
-                          width="30px"
-                          border-radius="10px"
-                        ></skeleton>
-                      </span>
-                      <span>
-                        <skeleton
-                          height="8px"
-                          width="30px"
-                          border-radius="10px"
-                        ></skeleton>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </li>
               <!-- Menu -->
               <template v-if="dataLoading">
                 <li class="desktop">
@@ -292,49 +198,6 @@
                 </li>
               </template>
               <!--End Bell icon-->
-              <!--My Account-->
-              <li ref="dropdownMenu2" v-if="!dataLoading">
-                <span
-                  class="my-account-btn custom-menu"
-                  @click.prevent="showMyAccount = !showMyAccount"
-                >
-                  {{ $t("My Account") }}
-                  <span class="material-icons ms-1">expand_more</span>
-                </span>
-                <div class="my-account-dropdown" v-if="showMyAccount">
-                  <ul class="list-unstyled" v-if="isCustomerLogin">
-                    <li>
-                      <router-link to="/dashboard" class="custom-menu">{{
-                        $t("Dashboard")
-                      }}</router-link>
-                    </li>
-                    <li>
-                      <router-link
-                        to="#"
-                        @click.prevent="customerLogout()"
-                        class="custom-menu"
-                      >
-                        {{ $t("Logout") }}
-                      </router-link>
-                    </li>
-                  </ul>
-                  <ul class="list-unstyled" v-else>
-                    <li>
-                      <router-link to="/login" class="custom-menu">{{
-                        $t("Login")
-                      }}</router-link>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-              <li v-if="dataLoading">
-                <skeleton
-                  width="70px"
-                  height="13px"
-                  border-radius="10px"
-                ></skeleton>
-              </li>
-              <!--End My Account-->
             </ul>
           </div>
         </div>
@@ -354,22 +217,7 @@ export default {
     MenuItem,
     MenuDropdown,
   },
-  emits: ["change-language-currency-country", "logout-customer"],
   props: {
-    currencies: {
-      type: Array,
-      required: false,
-      default: () => {
-        return [];
-      },
-    },
-    languages: {
-      type: Array,
-      required: false,
-      default: () => {
-        return [];
-      },
-    },
     leftMenuItems: {
       type: Array,
       required: false,
@@ -399,11 +247,7 @@ export default {
   },
   data() {
     return {
-      selected_lang: localStorage.getItem("locale") || "en",
-      selected_currency: JSON.parse(localStorage.getItem("currency")),
-      showMyAccount: false,
       showNotification: false,
-      showLanguageCurrency: false,
     };
   },
   computed: mapState({
@@ -483,44 +327,19 @@ export default {
         .catch((error) => {});
     },
     /**
-     * Change currency , Language and country
-     */
-    setCurrencyLanguage() {
-      this.$emit(
-        "change-language-currency",
-        this.selected_lang,
-        this.selected_currency
-      );
-    },
-    /**
      * Will close dropdown area
      *
      * @param {*} e
      */
     close(e) {
-      let el = this.$refs.dropdownMenu;
-      let el2 = this.$refs.dropdownMenu2;
       let el3 = this.$refs.notificationDropdownMenu;
       let target = e.target;
 
-      if (el !== target && !el?.contains(target)) {
-        this.showLanguageCurrency = false;
-      }
-      if (el2 !== target && !el2?.contains(target)) {
-        this.showMyAccount = false;
-      }
       if (this.isCustomerLogin) {
         if (el3 !== target && !el3?.contains(target)) {
           this.showNotification = false;
         }
       }
-    },
-    /**
-     * Will logout customer
-     *
-     */
-    customerLogout() {
-      this.$emit("logout-customer");
     },
   },
 };

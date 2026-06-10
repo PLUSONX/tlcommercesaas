@@ -14,6 +14,8 @@
 
 /*! ../../../../node_modules/css-loader/dist/runtime/api.js */
 
+/*! ./LanguageCurrencySwitcher.vue */
+
 /*! ./MenuDropdown.vue */
 
 /*! ./MenuItem.vue */
@@ -39,6 +41,10 @@
 /*! vue */
 
 /*! vuex */
+
+/*!********************************************!*\
+  !*** ./resources/js/fakeDB/offcanvas.json ***!
+  \********************************************/
 
 /*!*******************************************************!*\
   !*** ./resources/js/components/menu/TheOffcanvas.vue ***!

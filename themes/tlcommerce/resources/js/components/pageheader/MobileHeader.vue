@@ -111,7 +111,8 @@
             d-flex
             align-items-center
             justify-content-end
-            position-static
+            position-relative
+            mobile-header-actions
           ">
           <!-- Offcanvas -->
           <the-offcanvas :user-info="customerInfo" :menu-items="offcanvas.menuItems"
@@ -124,7 +125,9 @@
           <!-- End Search Form -->
 
           <!-- Cart Button -->
-          <router-link to="/cart" class="btn-circle custom-icon-btn">
+          <language-currency-switcher class="mr-20 langcurrency-mobile" :currencies="currencies" :languages="languages"
+            :data-loading="dataLoading" :use-fixed-dropdown="true" @change-language-currency="setCurrencyLanguage" />
+          <router-link to="/cart" class="btn-circle custom-icon-btn" style="margin-left: 5px;">
             <base-icon-svg name="cart" class="material-icons" :width="18" :height="15" />
             <span class="
                 count
@@ -145,13 +148,16 @@
 import offcanvas from "@/fakeDB/offcanvas.json";
 import SearchForm from "@/components/ui/SearchForm.vue";
 import TheOffcanvas from "@/components/menu/TheOffcanvas.vue";
+import LanguageCurrencySwitcher from "./LanguageCurrencySwitcher.vue";
 import { mapState, mapGetters } from "vuex";
 export default {
   name: "MobileHeader",
   components: {
     SearchForm,
     TheOffcanvas,
+    LanguageCurrencySwitcher,
   },
+  emits: ["change-language-currency"],
   props: {
     siteProperties: {
       type: Object,
@@ -165,6 +171,21 @@ export default {
       type: Number,
       required: false,
       default: 0,
+    },
+    currencies: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    languages: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    dataLoading: {
+      type: Boolean,
+      required: true,
+      default: false,
     },
     headerStyle: {
       type: Object,
@@ -242,6 +263,10 @@ export default {
         mobileHeader?.classList.remove("sticky", "fadeInDowns");
       }
     },
+
+    setCurrencyLanguage(lang, currency) {
+      this.$emit("change-language-currency", lang, currency);
+    },
   },
 };
 </script>
@@ -274,5 +299,13 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.mobile-header-actions {
+  overflow: visible;
+}
+
+header {
+  overflow: visible;
 }
 </style>

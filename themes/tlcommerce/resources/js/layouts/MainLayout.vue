@@ -102,12 +102,14 @@
         "></top-bar-banner>
         <!-- Header -->
         <header class="header__two love-sticky">
-          <header-top :data-loading="MenuItemsLoading" :currencies="data.currencies" :languages="data.languages"
-            :right-menu-items="rightMenuItems" :left-menu-items="leftMenuItems" :header-menu-style="headerMenuStyle"
-            @change-language-currency="setCurrencyLanguage" @logout-customer="logoutCustomer"></header-top>
+          <header-top :data-loading="MenuItemsLoading"
+            :right-menu-items="rightMenuItems" :left-menu-items="leftMenuItems" :header-menu-style="headerMenuStyle"></header-top>
           <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
             :wishlist-item="wishlistItem" :compare-item="compareItem" :header-logo-style="headerLogoStyle"
             :header-menu-style="headerMenuStyle" :data-loading="MenuItemsLoading"
+            :currencies="data.currencies" :languages="data.languages"
+            @change-language-currency="setCurrencyLanguage"
+            @logout-customer="logoutCustomer"
             class="d-none d-lg-block"></header-middle>
           <header-bottom :data-loading="MenuItemsLoading" :mega-categories="data.megaCategories"
             :menu-items="headerBottomMenu" :header-style="headerStyle" :header-menu-style="headerMenuStyle"
@@ -116,7 +118,8 @@
 
         <mobile-header :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
           :header-style="headerStyle" :header-menu-style="headerMenuStyle"
-          :header-logo-style="headerLogoStyle"></mobile-header>
+          :header-logo-style="headerLogoStyle" :currencies="data.currencies" :languages="data.languages"
+          :data-loading="MenuItemsLoading" @change-language-currency="setCurrencyLanguage"></mobile-header>
         <!-- End Header -->
 
         <div class="main_content light-bg">
