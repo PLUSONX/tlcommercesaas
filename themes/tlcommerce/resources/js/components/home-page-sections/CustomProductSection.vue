@@ -63,7 +63,7 @@
       :style="styleObject"
     >
       <div class="custom-container2">
-        <div class="row align-items-center">
+        <div class="row align-items-center section-header-row">
           <div class="col-md-6">
             <section-title
               class="mb-30 section-title"

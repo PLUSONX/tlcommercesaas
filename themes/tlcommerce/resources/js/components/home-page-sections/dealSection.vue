@@ -59,15 +59,15 @@
       :style="styleObject"
     >
       <div class="custom-container2">
-        <div class="row align-items-center my-3">
-          <div class="col-md-6 mb-2 mb-md-0">
+        <div class="row align-items-center my-3 section-header-row">
+          <div class="col-md-6">
             <section-title
               class="section-title"
               :title="dealDetails.title"
               :titleColor="sectionStyleProps.title_color"
             />
           </div>
-          <div class="col-md-6">
+          <div class="col-md-6 text-md-end">
             <countdown
               class="justify-content-md-end"
               :deadline="dealDetails.deadline"

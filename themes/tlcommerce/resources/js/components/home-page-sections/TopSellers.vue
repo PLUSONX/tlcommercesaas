@@ -53,7 +53,7 @@
     <!-- Top Sellers -->
     <section class="top-seller-section home-page-section" :style="styleObject">
       <div class="custom-container2" v-if="!dataLoading">
-        <div class="row align-items-center">
+        <div class="row align-items-center section-header-row">
           <div class="col-md-6">
             <section-title
               class="mb-30 section-title"

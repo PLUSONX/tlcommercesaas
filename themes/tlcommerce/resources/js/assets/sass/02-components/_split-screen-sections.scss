@@ -21,3 +21,25 @@
   flex: 0 0 50% !important;
   max-width: 50% !important;
 }
+
+/* Default layout: keep title + action on one line on mobile */
+@media (max-width: 767.98px) {
+  .home-page-section .section-header-row > [class*="col-"] {
+    flex: 0 0 50% !important;
+    max-width: 50% !important;
+  }
+
+  .home-page-section .section-header-row > .text-md-end,
+  .home-page-section .section-header-row > [class*="col-"]:last-child {
+    text-align: right !important;
+  }
+
+  .home-page-section .section-header-row .countdown {
+    justify-content: flex-end !important;
+  }
+
+  .home-page-section .section-header-row .section-title,
+  .home-page-section .section-header-row .section_btn {
+    margin-bottom: 0 !important;
+  }
+}
