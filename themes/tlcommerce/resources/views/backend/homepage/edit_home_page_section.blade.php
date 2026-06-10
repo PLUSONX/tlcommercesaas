@@ -65,6 +65,10 @@
                                         <!-- <img src="{{ asset('/public/themes/tlcommerce/assets/img/category_slide.png') }}"> -->
                                     </div>
                                     <div
+                                        class="section_layout {{ getHomePageSectionProperties($section_details->id, 'layout') == 'custom_category_slider' ? 'custom_category_slider' : 'd-none' }}">
+                                        <img src="{{ asset('themes/tlcommerce/assets/img/category_slider.png') }}">
+                                    </div>
+                                    <div
                                         class="section_layout {{ getHomePageSectionProperties($section_details->id, 'layout') == 'flashdeal' ? 'flashdeal' : 'd-none' }}">
                                         <img src="{{ asset('themes/tlcommerce/assets/img/flash_deal.png') }}">
                                         <!-- <img src="{{ asset('/public/themes/tlcommerce/assets/img/deals.png') }}"> -->
@@ -148,6 +152,15 @@
                                 @if (getHomePageSectionProperties($section_details->id, 'layout') == 'category_slider')
                                     @include(
                                         'theme/tlcommerce::backend.homepage.sections.category_slider.category_slider_option_edit',
+                                        [
+                                            'details' => $section_details,
+                                        ]
+                                    )
+                                @endif
+
+                                @if (getHomePageSectionProperties($section_details->id, 'layout') == 'custom_category_slider')
+                                    @include(
+                                        'theme/tlcommerce::backend.homepage.sections.custom_category_slider.custom_category_slider_option_edit',
                                         [
                                             'details' => $section_details,
                                         ]

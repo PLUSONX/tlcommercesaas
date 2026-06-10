@@ -33,6 +33,7 @@
                                     @endif
                                     <option value="featured_product">{{ translate('Featured Product') }}</option>
                                     <option value="category_slider">{{ translate('Category Slider') }}</option>
+                                    <option value="custom_category_slider">{{ translate('Custom Category Slider') }}</option>
                                     <option value="product_collection">{{ translate('Product Collection') }}</option>
                                     <option value="custom_product_section">
                                         {{ translate('Custom Product Section') }}
@@ -49,6 +50,9 @@
                                 <div class="section_layout d-none category_slider">
                                     <img src="{{ asset('themes/tlcommerce/assets/img/category_slider.png') }}">
                                     <!-- <img src="{{ asset('/public/themes/tlcommerce/assets/img/category_slide.png') }}"> -->
+                                </div>
+                                <div class="section_layout d-none custom_category_slider">
+                                    <img src="{{ asset('themes/tlcommerce/assets/img/category_slider.png') }}">
                                 </div>
                                 <div class="section_layout d-none flashdeal">
                                     <img src="{{ asset('themes/tlcommerce/assets/img/flash_deal.png') }}">

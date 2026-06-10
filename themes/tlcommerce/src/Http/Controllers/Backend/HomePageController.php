@@ -158,6 +158,11 @@ class HomePageController extends Controller
         if ($request['layout'] == 'category_slider') {
             return view('theme/tlcommerce::backend.homepage.sections.category_slider.category_slider_options');
         }
+
+        //Custom Category Slider Section Properties
+        if ($request['layout'] == 'custom_category_slider') {
+            return view('theme/tlcommerce::backend.homepage.sections.custom_category_slider.custom_category_slider_options');
+        }
         //Custom Product Collection Section Properties
         if ($request['layout'] == 'custom_product_section') {
             return view('theme/tlcommerce::backend.homepage.sections.custom_collection.custom_product_section_options');

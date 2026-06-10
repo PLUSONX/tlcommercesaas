@@ -107,6 +107,10 @@
             <category-section v-if="section.layout === 'category_slider'" :content="section.content"
                 :properties="section.properties"></category-section>
 
+            <custom-category-slider-section v-if="section.layout === 'custom_category_slider'"
+                :content="section.content" :properties="section.properties">
+            </custom-category-slider-section>
+
             <ads-section v-if="section.layout === 'ads'" :content="section.content"
                 :properties="section.properties"></ads-section>
 
@@ -156,6 +160,10 @@ const CategorySection = defineAsyncComponent(() =>
     import("@/components/home-page-sections/categorySection.vue")
 );
 
+const CustomCategorySliderSection = defineAsyncComponent(() =>
+    import("@/components/home-page-sections/customCategorySliderSection.vue")
+);
+
 const adsSection = defineAsyncComponent(() =>
     import("@/components/home-page-sections/adsSection.vue")
 );
@@ -192,6 +200,7 @@ export default {
         DealSection,
         collectionSection,
         CategorySection,
+        CustomCategorySliderSection,
         adsSection,
         ctaSection,
         blogSection,

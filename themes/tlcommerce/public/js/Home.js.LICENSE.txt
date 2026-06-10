@@ -152,6 +152,8 @@
 
 /*! @/components/home-page-sections/ctaSection.vue */
 
+/*! @/components/home-page-sections/customCategorySliderSection.vue */
+
 /*! @/components/home-page-sections/dealSection.vue */
 
 /*! @/components/order-steps/homePageDeliveryShipping.vue */

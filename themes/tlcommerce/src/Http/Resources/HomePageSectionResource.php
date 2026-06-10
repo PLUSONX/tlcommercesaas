@@ -71,6 +71,11 @@ class HomePageSectionResource extends ResourceCollection
                     ];
                 }
 
+                //Custom category slider
+                if ($item->key_name == 'layout' && $item->key_value == 'custom_category_slider') {
+                    return $this->customCategorySliderContent();
+                }
+
                 // \Log::info('custom_product_section: before if statement!!!');
 
                 //Custom product sections
@@ -105,6 +110,19 @@ class HomePageSectionResource extends ResourceCollection
             return $carry;
         });
         return $newArr;
+    }
+
+    public function customCategorySliderContent()
+    {
+        $categories = ProductCategory::with(['category_translations'])
+            ->where('parent', NULL)
+            ->where('status', config('settings.general_status.active'))
+            ->orderBy('id', 'ASC')
+            ->get();
+
+        return [
+            'categories' => new TopCategoryCollection($categories),
+        ];
     }
 
     public function AdsSectionContent($item)

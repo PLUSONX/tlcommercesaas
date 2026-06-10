@@ -102,7 +102,7 @@
         "></top-bar-banner>
         <!-- Header -->
         <header class="header__two love-sticky">
-          <header-top :data-loading="MenuItemsLoading"
+          <header-top class="d-none d-lg-block" :data-loading="MenuItemsLoading"
             :right-menu-items="rightMenuItems" :left-menu-items="leftMenuItems" :header-menu-style="headerMenuStyle"></header-top>
           <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
             :wishlist-item="wishlistItem" :compare-item="compareItem" :header-logo-style="headerLogoStyle"
