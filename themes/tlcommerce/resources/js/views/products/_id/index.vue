@@ -1,7 +1,7 @@
 <template>
   <div
     class="product-page-root"
-    :class="{ 'has-product-footer': isSplitScreen && productData }"
+    :class="{ 'has-product-footer': showProductStickyFooter }"
   >
     <div v-if="isSplitScreen && !isMobile" class="page-container split-screen-product-layout">
       <div class="productDetails split-screen-product-scroll" :class="{
@@ -427,7 +427,7 @@
     </div>
 
     <custom-footer
-      v-if="isSplitScreen && productData"
+      v-if="showProductStickyFooter"
       class="custom-footer"
       :item="productData"
       :style="splitContentFooterStyle"
@@ -573,8 +573,8 @@ export default {
       return this.isSplitScreenDesktop;
     },
 
-    showSplitProductFooter() {
-      return this.isSplitScreenDesktop;
+    showProductStickyFooter() {
+      return !!this.productData && (this.isSplitScreen || this.isMobile);
     },
 
     splitContentFooterStyle() {

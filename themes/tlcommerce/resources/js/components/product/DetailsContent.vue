@@ -313,7 +313,7 @@ export default {
     },
 
     showSplitProductFooter() {
-      return this.isSplitScreenDesktop;
+      return this.isSplitScreen || this.isMobile;
     },
 
 
