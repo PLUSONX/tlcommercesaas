@@ -52,6 +52,8 @@
       </div>
     </div>
 
+    <company-footer v-if="isSplitScreen" class="split-screen-company-footer" />
+
   </div>
 </template>
 
@@ -66,6 +68,7 @@ import WidgetPrice from "@/components/widget/WidgetPrice.vue";
 import BrandCollapseBox from "../../components/product/BrandCollapseBox.vue";
 import SortingOption from "../../components/product/SortingOption.vue";
 import Pagination from "v-pagination-3";
+import CompanyFooter from "@/components/ui/CompanyFooter.vue";
 const axios = require("axios").default;
 import { mapState, mapGetters } from "vuex";
 export default {
@@ -81,6 +84,7 @@ export default {
     Pagination,
     BrandCollapseBox,
     SortingOption,
+    CompanyFooter,
   },
   props: {
     disableMargin: {
@@ -345,6 +349,11 @@ export default {
     border-radius: 6px !important;
     margin-bottom: 0 !important;
   }
+}
+
+.split-screen-company-footer {
+  flex-shrink: 0;
+  width: 100%;
 }
 </style>
 
