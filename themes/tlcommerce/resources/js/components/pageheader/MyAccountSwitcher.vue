@@ -23,7 +23,7 @@
           <router-link to="/login" class="custom-menu" @click="showMyAccount = false">
             {{ $t("Login") }}
           </router-link>
-          <router-link to="/registration" class="custom-menu" @click="showMyAccount = false">
+          <router-link to="/register" class="custom-menu" @click="showMyAccount = false">
             {{ $t("Registration") }}
           </router-link>
         </li>
