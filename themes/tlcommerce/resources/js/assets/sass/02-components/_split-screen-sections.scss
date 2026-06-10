@@ -16,6 +16,41 @@
   text-align: right !important;
 }
 
+/* Compact countdown so title + timer stay on one line in narrow headers */
+.force-mobile-layout .section-header-row .countdown {
+  justify-content: flex-end !important;
+  flex-wrap: nowrap !important;
+
+  li {
+    flex-shrink: 0;
+
+    &:not(:last-child) {
+      margin-right: 4px;
+      padding-right: 4px;
+    }
+
+    .digit {
+      font-size: 11px;
+      margin-bottom: 1px;
+      line-height: 1;
+    }
+
+    .text {
+      font-size: 7px;
+      line-height: 1;
+    }
+  }
+}
+
+.force-mobile-layout .section-header-row .section-title h2 {
+  font-size: 16px;
+  line-height: 1.2;
+  margin-bottom: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Blog / 2-col content grids inside split sections */
 .force-mobile-layout .section-content-row > [class*="col-"] {
   flex: 0 0 50% !important;
@@ -36,6 +71,36 @@
 
   .home-page-section .section-header-row .countdown {
     justify-content: flex-end !important;
+    flex-wrap: nowrap !important;
+
+    li {
+      flex-shrink: 0;
+
+      &:not(:last-child) {
+        margin-right: 4px;
+        padding-right: 4px;
+      }
+
+      .digit {
+        font-size: 11px;
+        margin-bottom: 1px;
+        line-height: 1;
+      }
+
+      .text {
+        font-size: 7px;
+        line-height: 1;
+      }
+    }
+  }
+
+  .home-page-section .section-header-row .section-title h2 {
+    font-size: 16px;
+    line-height: 1.2;
+    margin-bottom: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .home-page-section .section-header-row .section-title,
