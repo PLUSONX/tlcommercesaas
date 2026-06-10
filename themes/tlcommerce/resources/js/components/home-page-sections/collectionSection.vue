@@ -1,51 +1,30 @@
 <template>
   <template v-if="isSplitScreen && !isMobile">
-    <section
-      v-if="collectionReady"
+    <section v-if="collectionReady"
       class="pt-15 pb-15 collection-section collection-section--split home-page-section force-mobile-layout mobile-content-wrapper"
-      :style="splitScreenStyleObject"
-    >
+      :style="splitScreenStyleObject">
       <div class="custom-container2">
         <div class="row align-items-center section-header-row">
           <div class="col-md-6">
-            <section-title
-              class="mb-30 section-title"
-              :title="collectionDetails.name"
-              :titleColor="sectionStyleProps.title_color"
-            />
+            <section-title class="mb-30 section-title" :title="collectionDetails.name"
+              :titleColor="sectionStyleProps.title_color" />
           </div>
           <div class="col-md-6 text-md-end">
-            <router-link
-              class="btn btn-sm rounded-0 mb-30 section_btn"
-              :style="splitScreenStyleObject"
-              :to="`/collection/${collectionDetails.id}?collection=${collectionDetails.permalink}`"
-            >
+            <router-link class="btn btn-sm mb-30 section_btn" :style="splitScreenStyleObject"
+              :to="`/collection/${collectionDetails.id}?collection=${collectionDetails.permalink}`">
               {{ viewAllLabel }}
             </router-link>
           </div>
         </div>
 
-        <swiper
-          v-if="collectionProducts.length"
-          :slidesPerView="6"
-          :modules="modules"
-          :spaceBetween="1"
-          :autoplay="{
-            delay: 4000,
-            disableOnInteraction: false,
-            pauseOnMouseEnter: true,
-          }"
-          :loop="true"
-          :pagination="{
+        <swiper v-if="collectionProducts.length" :slidesPerView="6" :modules="modules" :spaceBetween="1" :autoplay="{
+          delay: 4000,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true,
+        }" :loop="true" :pagination="{
             clickable: true,
-          }"
-          class="product-grid-slider theme-slider-dots"
-          :breakpoints="splitScreenSwiperBreakpoints"
-        >
-          <swiper-slide
-            v-for="(item, index) in collectionProducts"
-            :key="`slide-${index}`"
-          >
+          }" class="product-grid-slider theme-slider-dots" :breakpoints="splitScreenSwiperBreakpoints">
+          <swiper-slide v-for="(item, index) in collectionProducts" :key="`slide-${index}`">
             <single-product :item="item" />
           </swiper-slide>
         </swiper>
@@ -59,39 +38,24 @@
       <div class="custom-container2">
         <div class="row align-items-center section-header-row">
           <div class="col-md-6">
-            <section-title
-              class="mb-30 section-title"
-              :title="collectionDetails.name"
-              :titleColor="sectionStyleProps.title_color"
-            />
+            <section-title class="mb-30 section-title" :title="collectionDetails.name"
+              :titleColor="sectionStyleProps.title_color" />
           </div>
           <div class="col-md-6 text-md-end">
-            <router-link
-              class="btn btn-sm rounded-0 mb-30 section_btn"
-              :style="styleObject"
-              :to="`/collection/${collectionDetails.id}?collection=${collectionDetails.permalink}`"
-            >
+            <router-link class="btn btn-sm mb-30 section_btn" :style="styleObject"
+              :to="`/collection/${collectionDetails.id}?collection=${collectionDetails.permalink}`">
               {{ viewAllLabel }}
             </router-link>
           </div>
         </div>
 
-        <swiper
-          v-if="collectionProducts.length"
-          :slidesPerView="6"
-          :modules="modules"
-          :spaceBetween="1"
-          :autoplay="{
-            delay: 4000,
-            disableOnInteraction: false,
-            pauseOnMouseEnter: true,
-          }"
-          :loop="true"
-          :pagination="{
+        <swiper v-if="collectionProducts.length" :slidesPerView="6" :modules="modules" :spaceBetween="1" :autoplay="{
+          delay: 4000,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true,
+        }" :loop="true" :pagination="{
             clickable: true,
-          }"
-          class="product-grid-slider theme-slider-dots"
-          :breakpoints="{
+          }" class="product-grid-slider theme-slider-dots" :breakpoints="{
             '0': {
               slidesPerView: 2,
             },
@@ -104,12 +68,8 @@
             '1024': {
               slidesPerView: 6,
             },
-          }"
-        >
-          <swiper-slide
-            v-for="(item, index) in collectionProducts"
-            :key="`slide-${index}`"
-          >
+          }">
+          <swiper-slide v-for="(item, index) in collectionProducts" :key="`slide-${index}`">
             <single-product :item="item" />
           </swiper-slide>
         </swiper>
@@ -176,8 +136,7 @@ export default {
         "--section-background-image-position": p.background_position,
         "--section-background-image-size": p.background_size,
         "--section-background-image-repeat": p.background_repeat,
-        "--section-padding": `${
-          p.padding_top +
+        "--section-padding": `${p.padding_top +
           "px " +
           p.padding_right +
           "px " +
@@ -185,9 +144,8 @@ export default {
           "px " +
           p.padding_left +
           "px"
-        }`,
-        "--section-margin": `${
-          p.margin_top +
+          }`,
+        "--section-margin": `${p.margin_top +
           "px " +
           p.margin_right +
           "px " +
@@ -195,7 +153,7 @@ export default {
           "px " +
           p.margin_left +
           "px"
-        }`,
+          }`,
         "--button-color": p.btn_color,
         "--button-background-color": p.btn_bg_color,
         "--button-border":
@@ -243,7 +201,7 @@ export default {
             this.collectionReady = true;
           }
         })
-        .catch((error) => {});
+        .catch((error) => { });
     },
   },
 };
@@ -257,11 +215,13 @@ export default {
   min-height: 32px;
   min-width: 80px;
 }
+
 .section_btn:hover {
   color: var(--button-hover-color, #fff);
   background-color: var(--button-hover-bg-color, var(--c1, #e62d04));
   border-color: var(--button-hover-border-color, transparent);
 }
+
 .collection-section {
   background-image: var(--section-background-image);
   background-color: var(--section-background-color);

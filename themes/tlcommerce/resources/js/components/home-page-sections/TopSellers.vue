@@ -16,7 +16,7 @@
           </div>
           <div class="col-md-6 text-md-end">
             <router-link
-              class="btn btn-sm rounded-0 mb-30 section_btn"
+              class="btn btn-sm mb-30 section_btn"
               :style="splitScreenStyleObject"
               to="/all-shops"
             >
@@ -63,7 +63,7 @@
           </div>
           <div class="col-md-6 text-md-end">
             <router-link
-              class="btn btn-sm rounded-0 mb-30 section_btn"
+              class="btn btn-sm mb-30 section_btn"
               :style="styleObject"
               to="/all-shops"
             >

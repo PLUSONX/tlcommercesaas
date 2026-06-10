@@ -17,7 +17,7 @@
           </div>
           <div class="col-md-6 text-md-end">
             <router-link
-              class="btn btn-sm rounded-0 mb-30 blog-section-btn"
+              class="btn btn-sm mb-30 blog-section-btn"
               to="/blog"
             >
               {{ viewAllLabel }}
@@ -56,7 +56,7 @@
           </div>
           <div class="col-md-6 text-md-end">
             <router-link
-              class="btn btn-sm rounded-0 mb-30 blog-section-btn"
+              class="btn btn-sm mb-30 blog-section-btn"
               to="/blog"
             >
               {{ viewAllLabel }}

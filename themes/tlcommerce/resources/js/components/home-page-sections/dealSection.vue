@@ -40,7 +40,7 @@
         </swiper>
         <div class="col-md-12 text-center mt-20">
           <router-link
-            class="btn btn-sm rounded-0 mb-30 section_btn"
+            class="btn btn-sm mb-30 section_btn"
             :style="splitScreenStyleObject"
             :to="`/deals/${dealDetails.permalink}`"
           >
@@ -103,7 +103,7 @@
         </swiper>
         <div class="col-md-12 text-center mt-20">
           <router-link
-            class="btn btn-sm rounded-0 mb-30 section_btn"
+            class="btn btn-sm mb-30 section_btn"
             :style="styleObject"
             :to="`/deals/${dealDetails.permalink}`"
           >

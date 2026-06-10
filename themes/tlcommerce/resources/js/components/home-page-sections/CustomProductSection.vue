@@ -23,7 +23,7 @@
           <div class="col-md-6 text-md-end" v-if="sectionProps?.content == 'category'">
             <router-link
               v-if="sectionBlock?.category_info != null"
-              class="btn btn-sm rounded-0 mb-30 section_btn"
+              class="btn btn-sm mb-30 section_btn"
               :style="splitScreenStyleObject"
               :to="`/products/category/${sectionBlock.category_info.slug}`"
             >
@@ -80,7 +80,7 @@
           <div class="col-md-6 text-md-end" v-if="sectionProps?.content == 'category'">
             <router-link
               v-if="sectionBlock?.category_info != null"
-              class="btn btn-sm rounded-0 mb-30 section_btn"
+              class="btn btn-sm mb-30 section_btn"
               :style="styleObject"
               :to="`/products/category/${sectionBlock.category_info.slug}`"
             >

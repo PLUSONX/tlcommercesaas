@@ -1,3 +1,15 @@
+/* Dynamic home section buttons */
+.home-page-section {
+  .section_btn,
+  .blog-section-btn {
+    border-radius: 6px;
+  }
+
+  .section-header-row > .text-md-end {
+    padding: 0.25rem;
+  }
+}
+
 /* Split-screen home sections: force-mobile-layout column behavior */
 
 /* Product/content rows stack full-width in the narrow split column */
