@@ -1,0 +1,23 @@
+/* Split-screen home sections: force-mobile-layout column behavior */
+
+/* Product/content rows stack full-width in the narrow split column */
+.force-mobile-layout .row:not(.section-header-row):not(.section-content-row) > [class*="col-"] {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+/* Header row: title + action stay side-by-side */
+.force-mobile-layout .section-header-row > [class*="col-"] {
+  flex: 0 0 50% !important;
+  max-width: 50% !important;
+}
+
+.force-mobile-layout .section-header-row > .text-md-end {
+  text-align: right !important;
+}
+
+/* Blog / 2-col content grids inside split sections */
+.force-mobile-layout .section-content-row > [class*="col-"] {
+  flex: 0 0 50% !important;
+  max-width: 50% !important;
+}

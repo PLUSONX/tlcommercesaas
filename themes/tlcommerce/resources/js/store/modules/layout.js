@@ -1,7 +1,7 @@
 const axios = require("axios").default;
 
 /** Split-screen desktop column ratio — hardcoded; DB split_ratio is reference only. */
-const SPLIT_SCREEN_RATIO = { content: 40, feature: 60 };
+const SPLIT_SCREEN_RATIO = { content: 45, feature: 55 };
 
 export default {
     namespaced: true,

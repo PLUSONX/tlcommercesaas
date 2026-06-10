@@ -5,8 +5,8 @@
       class="pt-15 pb-15 deals-section deals-section--split home-page-section force-mobile-layout mobile-content-wrapper"
       :style="splitScreenStyleObject"
     >
-      <div class="px-3">
-        <div class="row align-items-center my-3">
+      <div class="custom-container2">
+        <div class="row align-items-center my-3 section-header-row">
           <div class="col-md-6 mb-2 mb-md-0">
             <section-title
               class="section-title"
@@ -14,7 +14,7 @@
               :titleColor="sectionStyleProps.title_color"
             />
           </div>
-          <div class="col-md-6">
+          <div class="col-md-6 text-md-end">
             <countdown
               class="justify-content-md-end"
               :deadline="dealDetails.deadline"
@@ -286,11 +286,6 @@ export default {
 .deals-section--split {
   background-color: transparent !important;
   background-image: none !important;
-}
-
-.force-mobile-layout .row > [class*="col-"] {
-  flex: 0 0 100% !important;
-  max-width: 100% !important;
 }
 
 .force-mobile-layout .product-content .image,

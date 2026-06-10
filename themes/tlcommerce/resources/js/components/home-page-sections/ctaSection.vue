@@ -1,10 +1,15 @@
 <template>
   <template v-if="isSplitScreen && !isMobile">
-    <section class="cta-section cta-section--split home-page-section" :style="splitScreenStyleObject">
+    <section
+      class="cta-section cta-section--split home-page-section"
+      :class="{ 'cta-section--has-video': sectionStyleProps.video_url }"
+      :style="splitScreenStyleObject"
+    >
       <div class="px-3">
         <div class="row align-items-center">
           <div v-if="sectionStyleProps.video_url" class="col-12 d-flex justify-content-center mb-30">
-            <video-card :src="sectionStyleProps.video_url" :btn-border-color="sectionStyleProps.play_btn_border_color"
+            <video-card :src="sectionStyleProps.video_url"
+              :btn-border-color="sectionStyleProps.play_btn_border_color"
               :btn-icon-color="sectionStyleProps.play_btn_color" />
           </div>
           <div v-if="sectionStyleProps.cta_image" class="col-12 mb-30">
@@ -38,7 +43,8 @@
       <div class="custom-container2">
         <div class="row align-items-center">
           <div v-if="sectionStyleProps.video_url" class="col-lg-4 d-flex justify-content-center">
-            <video-card :src="sectionStyleProps.video_url" :btn-border-color="sectionStyleProps.play_btn_border_color"
+            <video-card :src="sectionStyleProps.video_url"
+              :btn-border-color="sectionStyleProps.play_btn_border_color"
               :btn-icon-color="sectionStyleProps.play_btn_color" />
           </div>
           <div v-if="sectionStyleProps.cta_image" class="col-lg-4">
@@ -140,7 +146,6 @@ export default {
       return {
         ...this.styleObject,
         "--section-background-color": "transparent",
-        "--section-background-image": "none",
       };
     },
 
@@ -185,8 +190,16 @@ export default {
 
 .cta-section--split {
   background-color: transparent !important;
-  background-image: none !important;
   padding: 30px 0 !important;
+
+  &:not(.cta-section--has-video) {
+    background-image: none !important;
+  }
+
+  &.cta-section--has-video {
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
 
   &::before {
     display: none !important;

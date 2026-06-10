@@ -129,11 +129,6 @@ export default {
   background-image: none !important;
 }
 
-.force-mobile-layout .row > [class*="col-"] {
-  flex: 0 0 100% !important;
-  max-width: 100% !important;
-}
-
 .mh-294 {
   height: 294px;
   max-height: 294px;

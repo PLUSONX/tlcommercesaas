@@ -1,7 +1,11 @@
 <template>
     <template v-if="isSplitScreen && !isMobile">
         <!-- Featured Product — split-screen layout -->
-        <section class="cta-section cta-section--split home-page-section">
+        <section
+            class="cta-section cta-section--split home-page-section"
+            :class="{ 'cta-section--has-video': properties.video_url }"
+            :style="splitScreenStyleObject"
+        >
             <div class="px-3">
                 <div class="row align-items-center">
                     <div v-if="properties.video_url" class="col-12 d-flex justify-content-center mb-30">
@@ -41,7 +45,8 @@
         <section class="cta-section home-page-section container" :style="styleObject">
             <div class="row align-items-center">
                 <div v-if="properties.video_url" class="col-lg-4 d-flex justify-content-center">
-                    <video-card :src="properties.video_url" :btn-border-color="properties.play_button_border_color_c_"
+                    <video-card :src="properties.video_url"
+                        :btn-border-color="properties.play_button_border_color_c_"
                         :btn-icon-color="properties.play_button_color_c_" />
                 </div>
                 <div v-if="properties.cta_image" class="col-lg-4">
@@ -160,6 +165,13 @@ export default {
 
             return styles;
         },
+
+        splitScreenStyleObject() {
+            return {
+                ...this.styleObject,
+                "--section-background-color": "transparent",
+            };
+        },
     },
 };
 </script>
@@ -197,8 +209,16 @@ export default {
 /* Split-screen layout */
 .cta-section--split {
     background-color: transparent !important;
-    background-image: none !important;
     padding: 30px 0 !important;
+
+    &:not(.cta-section--has-video) {
+        background-image: none !important;
+    }
+
+    &.cta-section--has-video {
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
 
     &::before {
         display: none !important;

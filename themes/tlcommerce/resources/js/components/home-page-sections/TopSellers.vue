@@ -5,16 +5,16 @@
       class="top-seller-section top-seller-section--split home-page-section force-mobile-layout mobile-content-wrapper"
       :style="splitScreenStyleObject"
     >
-      <div class="px-3" v-if="!dataLoading">
-        <div class="row align-items-center">
-          <div class="col-12">
+      <div class="custom-container2" v-if="!dataLoading">
+        <div class="row align-items-center section-header-row">
+          <div class="col-md-6">
             <section-title
               class="mb-30 section-title"
               :title="sectionStyleProps.title"
               :titleColor="sectionStyleProps.title_color"
             />
           </div>
-          <div class="col-12">
+          <div class="col-md-6 text-md-end">
             <router-link
               class="btn btn-sm rounded-0 mb-30 section_btn"
               :style="splitScreenStyleObject"
@@ -279,11 +279,6 @@ export default {
 .top-seller-section--split {
   background-color: transparent !important;
   background-image: none !important;
-}
-
-.force-mobile-layout .row > [class*="col-"] {
-  flex: 0 0 100% !important;
-  max-width: 100% !important;
 }
 
 .force-mobile-layout .product-content .image,

@@ -1,6 +1,6 @@
 <template>
-  <!-- Split-screen desktop layout -->
-  <template v-if="isSplitScreen && !isMobile">
+  <!-- Split-screen layout (desktop + mobile) -->
+  <template v-if="isSplitScreen">
   <!--Product Page style-->
   <div v-if="styleEight" class="single-product-item single-product--split d-inline-block style--eight">
     <div class="position-relative overflow-hidden">

@@ -6,7 +6,7 @@
       :style="splitScreenStyleObject"
     >
       <div class="custom-container2">
-        <div class="row align-items-center">
+        <div class="row align-items-center section-header-row">
           <div class="col-md-6">
             <section-title
               class="mb-30 section-title"
@@ -275,10 +275,5 @@ export default {
 .collection-section--split {
   background-color: transparent !important;
   background-image: none !important;
-}
-
-.force-mobile-layout .row > [class*="col-"] {
-  flex: 0 0 100% !important;
-  max-width: 100% !important;
 }
 </style>

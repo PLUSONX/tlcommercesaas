@@ -291,11 +291,6 @@ export default {
   margin-right: 0 !important;
 }
 
-.force-mobile-layout .row > [class*="col-"] {
-  flex: 0 0 100% !important;
-  max-width: 100% !important;
-}
-
 .force-mobile-layout .product-content .image,
 .force-mobile-layout .product-content .product-img {
   min-width: 0 !important;
