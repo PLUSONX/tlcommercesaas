@@ -1566,22 +1566,20 @@ export default {
     }
   }
 
-  &:hover {
-    .product-title {
-      -webkit-line-clamp: unset;
-      display: block;
-      overflow: visible;
-      max-height: none;
-      white-space: normal;
-      position: relative;
-      z-index: 3;
-      background-color: inherit;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      border-radius: 4px;
-      padding: 2px 4px;
-      margin-left: -4px;
-      margin-right: -4px;
-    }
+  .product-title:hover {
+    -webkit-line-clamp: unset;
+    display: block;
+    overflow: visible;
+    max-height: none;
+    white-space: normal;
+    position: relative;
+    z-index: 3;
+    background-color: inherit;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin-left: -4px;
+    margin-right: -4px;
   }
 
   &.style--eight {
