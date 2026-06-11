@@ -85,7 +85,7 @@
 
         <div class="custom-container2" v-if="!loadingProducts">
           <div class="row mobile-gap-10">
-            <div v-for="product in paginatedItems" :key="product.id" class="col-lg-2 col-md-3 col-6">
+            <div v-for="product in paginatedItems" :key="product.id" class="col-lg-3 col-md-4 col-6">
               <single-product :item="product" styleEight />
             </div>
           </div>
@@ -102,7 +102,7 @@
         </div>
         <div class="custom-container2" v-if="loadingProducts">
           <div class="row mobile-gap-10">
-            <div class="col-lg-2 col-md-3 col-6" v-for="(item, index) in productSkeletons" :key="index">
+            <div class="col-lg-3 col-md-4 col-6" v-for="(item, index) in productSkeletons" :key="index">
               <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
             </div>
           </div>
@@ -266,6 +266,27 @@ export default {
 
 .compact-card {
   padding: 6px 6px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.light-bg .row.mobile-gap-10 > [class*="col-"] {
+  display: flex;
+  flex-direction: column;
+}
+
+.light-bg .row.mobile-gap-10 :deep(.single-product-item.style--eight) {
+  width: 100% !important;
+  margin-bottom: 0 !important;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.light-bg .row.mobile-gap-10 :deep(.product-summary) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .compact-card :deep(.single-product-item) {

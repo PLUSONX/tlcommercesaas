@@ -402,7 +402,7 @@
   <!--Product Page style-->
   <div
     v-if="styleEight"
-    class="single-product-item d-inline-block mb-4 style--eight"
+    class="single-product-item d-inline-block style--eight w-100"
   >
     <div class="position-relative overflow-hidden">
       <router-link :to="`/products/${item.slug}`" class="d-block">
@@ -462,29 +462,48 @@
         </div>
       </div>
 
-      <h4 class="product-title">
-        <router-link :to="`/products/${item.slug}`">
-          {{ item.name }}
-        </router-link>
-      </h4>
+      <div
+        class="row product-title-price-row justify-content-between align-items-baseline d-flex flex-column flex-sm-row">
+        <div class="col pe-0 product-title-col">
+          <h4 class="product-title">
+            <router-link :to="`/products/${item.slug}`" :title="item.name">
+              {{ item.name }}
+            </router-link>
+          </h4>
+        </div>
 
-      <span class="product-price d-flex flex-wrap c1">
-        <the-currency
-          :amount="item.price"
-          tag="span"
-          v-if="item.base_price > item.price"
-        ></the-currency>
-        <the-currency
-          :amount="item.base_price"
-          tag="span"
-          v-else
-        ></the-currency>
-        <the-currency
-          :amount="item.base_price"
-          tag="del"
-          v-if="!widgetSlider && item.base_price > item.price"
-        ></the-currency>
-      </span>
+        <div class="col-auto text-start text-sm-end flex-shrink-0 product-price-col">
+          <span class="product-price d-flex flex-wrap c1">
+            <the-currency
+              :amount="item.price"
+              tag="span"
+              v-if="item.base_price > item.price"
+            ></the-currency>
+            <the-currency
+              :amount="item.base_price"
+              tag="span"
+              v-else
+            ></the-currency>
+            <the-currency
+              :amount="item.base_price"
+              tag="del"
+              v-if="!widgetSlider && item.base_price > item.price"
+            ></the-currency>
+          </span>
+        </div>
+      </div>
+
+      <div class="button-group d-flex align-items-center justify-content-between">
+        <button type="button" class="btn btn_fill btn-xs rounded" :disabled="item.quantity < 1"
+          @click.prevent="placeOrder">
+          {{ $t("Place Order") }}
+        </button>
+
+        <button type="button" :disabled="item.quantity < 1" class="btn btn_borderd btn-xs rounded"
+          @click.prevent="addToCart">
+          {{ $t("Add To Cart") }}
+        </button>
+      </div>
     </div>
 
     <teleport to="body">
@@ -1597,7 +1616,36 @@ export default {
   min-width: 60px;
 }
 
-/* Split-screen only: Place Order / Add To Cart buttons */
+/* Place Order / Add To Cart buttons — default styleEight listings */
+.style--eight {
+  .button-group {
+    width: 100%;
+    gap: 0.5em;
+  }
+
+  .btn-xs {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    padding: 0.75em 0.5em;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  @media (max-width: 768px) {
+    .btn-xs {
+      font-size: 12px !important;
+    }
+  }
+}
+
+/* Split-screen compact button scaling */
 .single-product--split {
   .button-group {
     width: 100%;
