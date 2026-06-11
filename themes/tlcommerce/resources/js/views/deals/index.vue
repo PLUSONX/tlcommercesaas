@@ -1,75 +1,128 @@
 <template>
-  <!-- <div class=""> -->
-  <div :class="mtClass">
-    <!-- <page-header :items="bItems" /> -->
-    <div class="pb-60 light-bg" :class="{
-      'force-mobile-layout': forcedMobile,
-      'mobile-content-wrapper': forcedMobile
-    }">
-      <template v-if="!loadingDetails">
-        <template v-if="dealsInfo != null">
-          <div class="flash-deals-banner p-0" :style="{ background: dealsInfo.background_color }"
-            v-if="dealsInfo.banner">
-            <div class="text-center">
-              <img :src="cleanImage(dealsInfo.banner)" :alt="dealsInfo.title" />
-              <!-- <img :src="dealsInfo.banner" :alt="dealsInfo.title" /> -->
+  <template v-if="isSplitScreen">
+    <div :class="mtClass">
+
+      <div class="custom-container2">
+
+        <div class="card mb-3">
+
+          <div class="col-lg-12">
+            <div class="section-header d-flex justify-content-between align-items-center">
+
+              <div class="header-title">
+                <h3 class="product_header mb-0" v-if="!loadingDetails" :style="{ color: dealsInfo.text_color }">
+                  {{ dealsInfo?.title }}
+                </h3>
+                <h3 class="product_header mb-0" v-if="loadingDetails">
+                  <skeleton :border-radius="5" :width="150" :height="30"></skeleton>
+                </h3>
+              </div>
+
+              <div class="header-count">
+                <div v-if="loadingDetails">
+                  <p class="mb-0">
+                    <skeleton :border-radius="5" :width="50" :height="10"></skeleton>
+                  </p>
+                </div>
+                <div v-if="!loadingDetails">
+                  <p class="mb-0" v-if="totalItems > 0">
+                    {{ totalItems }} {{ $t("items found") }}
+                  </p>
+                  <p class="mb-0" v-else>{{ $t("No item found") }}</p>
+                </div>
+              </div>
+
             </div>
           </div>
-          <div class="flash-deals-countdown mb-60">
-            <div class="custom-container2 py-2">
-              <div class="row align-items-center">
-                <div class="col-md-5">
-                  <h3 class="mb-md-0" :style="{ color: dealsInfo.text_color }">
-                    {{ dealsInfo.title }}
-                  </h3>
-                </div>
-                <div class="col-md-7">
-                  <countdown class="justify-content-md-end" :deadline="dealsInfo.deadline" />
+
+        </div>
+
+      </div>
+
+      <div class="custom-container2 mb-3">
+        <div v-if="loadingDetails">
+          <skeleton class="w-100" height="40px"></skeleton>
+        </div>
+        <div v-else-if="dealsInfo?.deadline" class="d-flex justify-content-end">
+          <countdown class="justify-content-md-end" :deadline="dealsInfo.deadline" />
+        </div>
+      </div>
+
+      <div class="row g-0 mobile-gap-10" v-if="loadingProducts">
+
+        <div class="col-6" v-for="(item, index) in productSkeletons" :key="index">
+          <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
+        </div>
+      </div>
+      <div class="row g-0 mobile-gap-10" v-else>
+
+        <div v-for="product in paginatedItems" :key="product.id" class="col-6 compact-card">
+          <single-product :item="product" styleEight />
+        </div>
+      </div>
+
+    </div>
+  </template>
+
+  <template v-else>
+    <div class="">
+      <div class="pb-60 light-bg">
+        <template v-if="!loadingDetails">
+          <template v-if="dealsInfo != null">
+            <div class="flash-deals-banner p-0" :style="{ background: dealsInfo.background_color }"
+              v-if="dealsInfo.banner">
+              <div class="text-center">
+                <img :src="cleanImage(dealsInfo.banner)" :alt="dealsInfo.title" />
+              </div>
+            </div>
+            <div class="flash-deals-countdown mb-60">
+              <div class="custom-container2 py-2">
+                <div class="row align-items-center">
+                  <div class="col-md-5">
+                    <h3 class="mb-md-0" :style="{ color: dealsInfo.text_color }">
+                      {{ dealsInfo.title }}
+                    </h3>
+                  </div>
+                  <div class="col-md-7">
+                    <countdown class="justify-content-md-end" :deadline="dealsInfo.deadline" />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </template>
         </template>
-      </template>
-      <template v-if="loadingDetails">
-        <skeleton class="w-100 mb-20" height="200px"></skeleton>
-      </template>
-      <div class="custom-container2" v-if="!loadingProducts">
-        <div class="row mobile-gap-10">
-          <!-- <div
-            v-for="product in paginatedItems"
-            :key="product.id"
-            class="col-lg-2 col-md-3 col-6"
-          > -->
-          <div v-for="product in paginatedItems" :key="product.id" class="col-6">
-            <single-product :item="product" styleEight />
-          </div>
-        </div>
+        <template v-if="loadingDetails">
+          <skeleton class="w-100 mb-20" height="200px"></skeleton>
+        </template>
 
-        <div class="row align-items-center mt-10">
-          <div class="col-md-6">
-            <!-- Showing Per Page -->
-            <ShowingPerPage class="text-center text-md-start" :items-per-page="perPage" :total-items="totalItems"
-              :current-page="currentPage" />
-            <!-- Showing Per Page -->
+        <div class="custom-container2" v-if="!loadingProducts">
+          <div class="row mobile-gap-10">
+            <div v-for="product in paginatedItems" :key="product.id" class="col-lg-3 col-md-4 col-6">
+              <single-product :item="product" styleEight />
+            </div>
           </div>
-          <div class="col-md-6 d-flex justify-content-center justify-content-md-end mt-3 mt-md-0">
-            <!-- Pagination -->
-            <pagination v-if="totalItems > 0" :options="paginationOptions" v-model="currentPage" :records="totalItems"
-              :per-page="perPage" @paginate="getProducts" />
-            <!-- End Pagination -->
+
+          <div class="row align-items-center mt-10" v-if="!loadingProducts">
+            <div class="col-md-6">
+              <ShowingPerPage class="text-center text-md-start" :items-per-page="perPage" :total-items="totalItems"
+                :current-page="currentPage" />
+            </div>
+            <div class="col-md-6 d-flex justify-content-center justify-content-md-end mt-3 mt-md-0">
+              <pagination v-if="totalItems > 0" :options="paginationOptions" v-model="currentPage" :records="totalItems"
+                :per-page="perPage" @paginate="getProducts" />
+            </div>
           </div>
         </div>
-      </div>
-      <div class="custom-container2" v-if="loadingProducts">
-        <div class="row mobile-gap-10">
-          <div class="col-lg-2 col-md-3 col-6" v-for="(item, index) in productSkeletons" :key="index">
-            <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
+        <div class="custom-container2" v-if="loadingProducts">
+          <div class="row mobile-gap-10">
+            <div class="col-lg-3 col-md-4 col-6" v-for="(item, index) in productSkeletons" :key="index">
+              <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </template>
 </template>
 
 <script>
@@ -79,7 +132,7 @@ import ShowingPerPage from "@/components/ui/ShowingPerPage.vue";
 import Countdown from "@/components/ui/Countdown.vue";
 import Pagination from "v-pagination-3";
 const axios = require("axios").default;
-import { mapState, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 export default {
   name: "DealProducts",
   components: {
@@ -142,26 +195,14 @@ export default {
   },
 
   computed: {
-
     ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
 
-    forcedMobile() {
-      if (this.isSplitScreen && !this.isMobile) {
-        return true;
-      }
-      return this.isMobile;
-    },
-
     mtClass() {
-
-      if (this.isSplitScreen) {
+      if (this.isSplitScreen && !this.isMobile) {
         return 'mt-50';
       }
-      else {
-        return 'mt-1';
-      }
-    }
-
+      return 'mt-1';
+    },
   },
   mounted() {
     this.getDealsInfo();
@@ -172,7 +213,6 @@ export default {
     cleanImage(img) {
       if (!img) return '';
 
-      // Only remove '/public' prefix, keep the leading '/'
       return img.replace(/^\/public/, '');
     },
 
@@ -224,42 +264,92 @@ export default {
 };
 </script>
 
-
 <style scoped>
-.force-mobile-layout .row>[class*="col-"] {
-  flex: 0 0 100% !important;
-  max-width: 100% !important;
-}
-
-.force-mobile-layout .product-content .image,
-.force-mobile-layout .product-content .product-img {
-  min-width: 0 !important;
-  max-width: 100px;
-}
-
-
-
-.force-mobile-layout .cart-image-review {
-  max-width: 100% !important;
-  height: auto !important;
-  flex-shrink: 1 !important;
-}
-
-.force-mobile-layout .d-none.d-lg-block,
-.force-mobile-layout .d-lg-block {
-  display: none !important;
-}
-
-.force-mobile-layout .d-block.d-lg-none,
-.force-mobile-layout .d-lg-none {
-  display: block !important;
-}
-
-
-.force-mobile-layout .d-block.d-lg-none.col-12 {
+.card {
   width: 100% !important;
-  display: flex !important;
-  flex-wrap: wrap !important;
-  justify-content: space-between !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.col-6 :deep(> div) {
+  border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+  .compact-card :deep(> .single-product-item) {
+    overflow: visible;
+  }
+
+  .compact-card :deep(.single-product-item > .position-relative) {
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+  }
+}
+
+.compact-card {
+  padding: 6px 6px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.light-bg .row.mobile-gap-10 > [class*="col-"] {
+  display: flex;
+  flex-direction: column;
+}
+
+.light-bg .row.mobile-gap-10 :deep(.single-product-item.style--eight) {
+  width: 100% !important;
+  margin-bottom: 0 !important;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.light-bg .row.mobile-gap-10 :deep(.product-summary) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.compact-card :deep(.single-product-item) {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.compact-card :deep(img) {
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 0 auto;
+
+  @media (max-width: 510px) {
+    width: 95% !important;
+  }
+}
+
+.compact-card :deep(.product-summary) {
+  @media (min-width: 480px) and (max-width: 501px) {
+    padding-left: 12% !important;
+  }
+}
+
+@media (max-width: 500px) {
+  .mobile-gap-10 {
+    --bs-gutter-x: 0rem !important;
+    --bs-gutter-y: 0rem !important;
+  }
+
+  .mobile-gap-10 .compact-card {
+    padding: 3px 2px 0 !important;
+  }
+
+  .mobile-gap-10 .compact-card :deep(.single-product-item) {
+    box-shadow: none !important;
+    border-radius: 6px !important;
+    margin-bottom: 0 !important;
+  }
 }
 </style>
