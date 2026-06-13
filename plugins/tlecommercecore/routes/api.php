@@ -43,6 +43,7 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
     Route::post('related-products', [ProductController::class, 'relatedProducts']);
     Route::post('top-selling-products', [ProductController::class, 'topSellingProducts']);
     Route::post('get-product-reviews', [ProductController::class, 'productReviews']);
+    Route::post('storefront-customer-reviews', [ProductController::class, 'storefrontCustomerReviews']);
     Route::get('brands', [ProductController::class, 'brands']);
     Route::get('categories', [ProductController::class, 'categories']);
     Route::get('parent-categories', [ProductController::class, 'parentCategories']);

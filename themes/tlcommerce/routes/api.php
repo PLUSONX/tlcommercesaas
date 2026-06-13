@@ -49,6 +49,7 @@ Route::group(['prefix' => 'theme/tlcommerce/v1'], function () {
     Route::get('/get-preloader-style', [ThemeOptionController::class, 'getPreloaderStyle']);
     Route::get('/get-theme-color', [ThemeOptionController::class, 'getThemeColor']);
     Route::get('/get-theme-style', [ThemeOptionController::class, 'getThemeStyle']);
+    Route::post('/get-social-links', [ThemeOptionController::class, 'getSocialLinks']);
     Route::get('/get-theme-color', [ThemeOptionController::class, 'getPresentColor']);
     Route::get('/get-blog-theme-style', [ThemeOptionController::class, 'getBlogThemeStyle']);
     Route::get('/get-active-layout', [ThemeController::class, 'getActiveLayout']);

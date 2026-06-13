@@ -1,4 +1,6 @@
 <template>
+
+
   <div class="store-info p-1">
     <p class="store-info__label font-weight-bold fz-14 mb-2">
       {{ $t("Help us improve") }}
@@ -9,11 +11,36 @@
       </router-link>
     </div>
   </div>
+
+  <div class="store-info p-1">
+    <p class="store-info__label font-weight-bold fz-14 mb-2">
+      {{ $t("Customer Reviews") }}
+    </p>
+    <div class="store-info-card">
+      <customer-review class="store-info-card__reviews" />
+    </div>
+  </div>
+
+  <div class="store-info p-1">
+    <p class="store-info__label font-weight-bold fz-14 mb-2">
+      {{ $t("Connect With Us") }}
+    </p>
+    <div class="store-info-card">
+      <social-connect />
+    </div>
+  </div>
 </template>
 
 <script>
+import CustomerReview from "@/components/pageheader/CustomerReview.vue";
+import SocialConnect from "@/components/pageheader/SocialConnect.vue";
+
 export default {
   name: "StoreInfo",
+  components: {
+    CustomerReview,
+    SocialConnect,
+  },
 };
 </script>
 
@@ -30,8 +57,14 @@ export default {
   min-height: 120px;
   padding: 16px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 12px;
+}
+
+.store-info-card__reviews {
+  width: 100%;
 }
 
 .store-info-card__feedback-btn {

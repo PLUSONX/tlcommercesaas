@@ -207,6 +207,40 @@ class ThemeOptionController extends Controller
     }
 
     /**
+     * Will return filtered social links for storefront
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSocialLinks()
+    {
+        try {
+            $theme = getActiveTheme();
+            $social = getThemeOption('social', $theme->id);
+            $raw = json_decode($social['social_field'] ?? '[]', true) ?: [];
+
+            $links = collect($raw)
+                ->filter(function ($item) {
+                    $url = trim($item['social_icon_url'] ?? '');
+                    $icon = trim($item['social_icon'] ?? '');
+                    return $url !== '' && $url !== '#' && $icon !== '';
+                })
+                ->sortBy(fn ($item) => $item['order'] ?? 0)
+                ->values()
+                ->all();
+
+            return response()->json([
+                'success' => true,
+                'data' => $links,
+                'socialStyle' => $social,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+            ]);
+        }
+    }
+
+    /**
      * Get blog theme style
      */
     public function getBlogThemeStyle()

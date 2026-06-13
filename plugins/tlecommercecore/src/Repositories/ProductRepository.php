@@ -238,6 +238,22 @@ class ProductRepository
     }
 
     /**
+     * Will return active 5-star reviews for storefront display
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function storefrontFiveStarReviews()
+    {
+        \Log::info('storefrontFiveStarReviews method called');
+    
+        return ProductReview::with('customer')
+            ->where('status', config('settings.general_status.active'))
+            ->where('rating', 5)
+            ->orderBy('id', 'DESC')
+            ->get();
+    }
+
+    /**
      * Will return all reviews
      * 
      * @param Object $request
@@ -260,10 +276,17 @@ class ProductRepository
                 'tl_com_products.id as product_id'
             ];
 
+            // $query = ProductReview::query()
+            //     ->join('tl_com_customers', 'tl_com_customers.id', '=', 'tl_com_product_reviews.customer_id')
+            //     ->join('tl_com_products', 'tl_com_products.id', '=', 'tl_com_product_reviews.product_id')
+            //     ->join('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_product_reviews.order_id')
+            //     ->orderBy('tl_com_product_reviews.id', 'DESC')
+            //     ->select($data);
+
             $query = ProductReview::query()
-                ->join('tl_com_customers', 'tl_com_customers.id', '=', 'tl_com_product_reviews.customer_id')
-                ->join('tl_com_products', 'tl_com_products.id', '=', 'tl_com_product_reviews.product_id')
-                ->join('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_product_reviews.order_id')
+                ->leftjoin('tl_com_customers', 'tl_com_customers.id', '=', 'tl_com_product_reviews.customer_id')
+                ->leftjoin('tl_com_products', 'tl_com_products.id', '=', 'tl_com_product_reviews.product_id')
+                ->leftjoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_product_reviews.order_id')
                 ->orderBy('tl_com_product_reviews.id', 'DESC')
                 ->select($data);
 
@@ -320,12 +343,11 @@ class ProductRepository
             ];
 
             $query = ProductReview::query()
-                ->join('tl_com_customers', 'tl_com_customers.id', '=', 'tl_com_product_reviews.customer_id')
-                ->join('tl_com_products', 'tl_com_products.id', '=', 'tl_com_product_reviews.product_id')
-                ->join('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_product_reviews.order_id')
+                ->leftjoin('tl_com_customers', 'tl_com_customers.id', '=', 'tl_com_product_reviews.customer_id')
+                ->leftjoin('tl_com_products', 'tl_com_products.id', '=', 'tl_com_product_reviews.product_id')
+                ->leftjoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_product_reviews.order_id')
                 ->orderBy('tl_com_product_reviews.id', 'DESC')
                 ->select($data);
-
 
             $reviews = $query->where('tl_com_customers.id', $customer_id)->get();
             return $reviews;

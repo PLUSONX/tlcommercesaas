@@ -73,11 +73,19 @@
                                                 {{ $key + 1 }}
                                             </td>
                                             <td>
-                                                <a href="{{ route('plugin.multivendor.seller.dashboard.products.edit', ['id' => $review->product_id, 'lang' => getDefaultLang()]) }}"
-                                                    target="_blank">
-                                                    {{ $review->product_name }}
-                                                </a>
-
+                                                @if ($review->product_id)
+                                                    <a href="{{ route('plugin.multivendor.seller.dashboard.products.edit', ['id' => $review->product_id, 'lang' => getDefaultLang()]) }}"
+                                                        target="_blank">
+                                                        {{ $review->product_name }}
+                                                    </a>
+                                                @elseif ($review->order_id)
+                                                    <a href="{{ route('plugin.multivendor.seller.dashboard.order.details', ['id' => $review->order_id]) }}"
+                                                        target="_blank">
+                                                        {{ translate('Order review') }}
+                                                    </a>
+                                                @else
+                                                    {{ translate('Order review') }}
+                                                @endif
                                             </td>
                                             <td>
                                                 {{ $review->customer_name }}

@@ -254,9 +254,6 @@ class CustomerRepository
     public function customerReview($request, $customer_id)
     {
         try {
-
-            \Log::info('customerReview method called!!!!');
-
             DB::beginTransaction();
 
             $order = Orders::where('id', $request['order_id'])
@@ -299,8 +296,6 @@ class CustomerRepository
                 $review_images = null;
             }
 
-            \Log::info('before saving customer!!!!');
-
             $review = new CustomerReview;
             $review->customer_id = $customer_id;
             $review->order_id = $request['order_id'];
@@ -311,14 +306,8 @@ class CustomerRepository
             $review->save();
             
             DB::commit();
-            
-            \Log::info('after saving customer!!!!');
-            
+
             EcommerceNotification::sendNewReviewNotification($review, $order);
-
-            \Log::info('after sending email!!!!');
-
-
 
             return $review;
         } catch (\Exception $e) {

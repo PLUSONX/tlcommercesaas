@@ -16,6 +16,7 @@ use Plugin\TlcommerceCore\Models\ProductCategory;
 use Plugin\TlcommerceCore\Models\VariantProductPrice;
 use Plugin\TlcommerceCore\Http\Resources\BrandCollection;
 use Plugin\TlcommerceCore\Repositories\ProductRepository;
+use Plugin\TlcommerceCore\Repositories\SettingsRepository;
 use Plugin\TlcommerceCore\Http\Resources\ProductCollection;
 use Plugin\TlcommerceCore\Models\ProductColorVariantImages;
 use Plugin\TlcommerceCore\Http\Resources\CategoryCollection;
@@ -483,6 +484,22 @@ class ProductController extends Controller
     public function productReviews(Request $request)
     {
         return new ProductReviewCollection($this->product_repository->productReviews($request, $request['product_id']));
+    }
+    /**
+     * Will return active 5-star customer reviews for storefront
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function storefrontCustomerReviews()
+    {
+        \Log::info('storefrontCustomerReviews method called');
+
+        if (SettingsRepository::getEcommerceSetting('enable_product_reviews') != config('settings.general_status.active')) {
+            \Log::info('storefrontCustomerReviews skipped: product reviews disabled');
+            return new ProductReviewCollection(collect());
+        }
+
+        return new ProductReviewCollection($this->product_repository->storefrontFiveStarReviews());
     }
     /**
      * Will return product brands

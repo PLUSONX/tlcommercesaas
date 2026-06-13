@@ -57,3 +57,5 @@ Merge rules:
 - Do not modify `layout.js` store unless explicitly asked
 - Do not modify `MainLayout.vue` unless explicitly asked
 - Plugin PHP lives under `plugins/<name>/src/` with Blade in `views/`
+
+- never remove debug logs and commented code

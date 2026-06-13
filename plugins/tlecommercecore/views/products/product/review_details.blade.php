@@ -3,7 +3,18 @@
         <tbody>
             <tr>
                 <td>{{ translate('Product') }}</td>
-                <td>{{ $details->product->translation('name', getLocale()) }}</td>
+                <td>
+                    @if ($details->product_id && $details->product)
+                        {{ $details->product->translation('name', getLocale()) }}
+                    @elseif ($details->order_id && $details->order)
+                        <a href="{{ route('plugin.tlcommercecore.orders.details', ['id' => $details->order_id]) }}"
+                            target="_blank">
+                            {{ translate('Order review') }} ({{ $details->order->order_code }})
+                        </a>
+                    @else
+                        {{ translate('Order review') }}
+                    @endif
+                </td>
             </tr>
             <tr>
                 <td>{{ translate('Customer') }}</td>
