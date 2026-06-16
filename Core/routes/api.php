@@ -23,8 +23,14 @@ Route::group(['prefix' => 'v1'], function () {
 });
 
 Route::group(['prefix' => 'webhooks'], function () {
-    Route::post('/order-update', [CarrierController::class, 'updateShippingCourierOrders']);
+    if (!isCentralDomain() && class_exists(\Plugin\Carrier\Http\Controllers\CarrierController::class)) {
+        Route::post('/order-update', [\Plugin\Carrier\Http\Controllers\CarrierController::class, 'updateShippingCourierOrders']);
+    }
 });
+
+// Route::group(['prefix' => 'webhooks'], function () {
+//     Route::post('/order-update', [CarrierController::class, 'updateShippingCourierOrders']);
+// });
 
 Route::post('/device-tokens', [DeviceTokenController::class, 'store']);
 
