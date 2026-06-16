@@ -56,9 +56,15 @@ class RouteServiceProvider extends ServiceProvider
                         ->prefix(getSaasPrefix())
                         ->group(base_path('plugins/saas/routes/user.php'));
 
-                    Route::middleware(['web', 'tenant'])
-                        ->prefix('payment')
-                        ->group(base_path('plugins/tlecommercecore/routes/web.php'));
+                    if (!isCentralDomain()) {
+                        Route::middleware(['web', 'tenant'])
+                            ->prefix('payment')
+                            ->group(base_path('plugins/tlecommercecore/routes/web.php'));
+                    }
+
+                    // Route::middleware(['web', 'tenant'])
+                    //     ->prefix('payment')
+                    //     ->group(base_path('plugins/tlecommercecore/routes/web.php'));
 
                     //  Route::middleware($middlewares['web'])
                     //     ->prefix(getAdminPrefix())
