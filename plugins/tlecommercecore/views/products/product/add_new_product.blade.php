@@ -311,7 +311,8 @@
                             <label class="font-14 bold black ">{{ translate('Unit Price') }} </label>
                         </div>
                         <div class="col-md-12">
-                            <input type="number" name="unit_price" class="theme-input-style" placeholder="0.00"
+                            <input type="text" name="unit_price" class="theme-input-style"
+                                placeholder="{{ translate('Type here') }}"
                                 value="{{ old('unit_price') }}">
                             @if ($errors->has('unit_price'))
                                 <div class="invalid-input">{{ $errors->first('unit_price') }}</div>
