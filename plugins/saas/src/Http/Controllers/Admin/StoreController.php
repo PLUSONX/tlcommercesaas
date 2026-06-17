@@ -221,18 +221,32 @@ class StoreController extends Controller
 
             toastNotification('success', translate('Tenant database creation successfully!'));
             return back();
-        } catch (Exception $ex) {
+        } 
+        catch (Exception $ex) {
             $error = [
                 'message' => 'Error occurred during manually creating database',
                 'data' => request()->all(),
-                'error' => $ex
+                'error' => $ex->getMessage(),
+                'trace' => $ex->getTraceAsString()
             ];
-            // Log::channel('tenant_database')->info(json_encode($error));
+            
+            Log::error(json_encode($error));
 
-            // throw $ex;
             toastNotification('error', translate('Tenant database creation unsuccessful!'));
             return back();
         }
+        // catch (Exception $ex) {
+        //     $error = [
+        //         'message' => 'Error occurred during manually creating database',
+        //         'data' => request()->all(),
+        //         'error' => $ex
+        //     ];
+        //     // Log::channel('tenant_database')->info(json_encode($error));
+
+        //     // throw $ex;
+        //     toastNotification('error', translate('Tenant database creation unsuccessful!'));
+        //     return back();
+        // }
     }
 
     /**
