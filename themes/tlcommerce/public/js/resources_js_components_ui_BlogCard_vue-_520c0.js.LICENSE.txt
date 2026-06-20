@@ -18,6 +18,8 @@
 
 /*! ./node_modules/vue-loader/dist/exportHelper.js */
 
+/*! @/utils/sectionProps */
+
 /*! v-lazy-image */
 
 /*! vue */
@@ -25,10 +27,6 @@
 /*!*************************************************!*\
   !*** ./resources/js/components/ui/BlogCard.vue ***!
   \*************************************************/
-
-/*!*********************************************************!*\
-  !*** ./node_modules/v-lazy-image/dist/v-lazy-image.mjs ***!
-  \*********************************************************/
 
 /*!*************************************************************************!*\
   !*** ./resources/js/components/ui/BlogCard.vue?vue&type=script&lang=js ***!

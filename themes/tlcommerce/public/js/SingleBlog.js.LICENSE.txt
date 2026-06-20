@@ -148,6 +148,8 @@
 
 /*! @/components/pageheader/PageHeader.vue */
 
+/*! @/utils/sectionProps */
+
 /*! @coreui/vue */
 
 /*! axios */
@@ -163,6 +165,10 @@
 /*! vue3-runtime-template */
 
 /*! vuex */
+
+/*!********************************************!*\
+  !*** ./resources/js/utils/sectionProps.js ***!
+  \********************************************/
 
 /*!***********************************************!*\
   !*** ./resources/js/views/blog/_id/index.vue ***!

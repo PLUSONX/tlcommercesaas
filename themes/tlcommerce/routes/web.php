@@ -11,6 +11,7 @@ use Theme\TLCommerce\Http\Controllers\Frontend\PagesController;
 use Theme\TLCommerce\Http\Controllers\Backend\HomePageController;
 use Theme\TLCommerce\Http\Controllers\Frontend\ProductController;
 use Theme\TLCommerce\Http\Controllers\Backend\ThemeOptionController;
+use Theme\TLCommerce\Http\Controllers\Backend\QuizController;
 
 // Route::get('/test-route-works', function() {
 //     return 'Core.php routes are loading!';
@@ -169,5 +170,32 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
         Route::get('/theme-options', [ThemeOptionController::class, 'themeOptions'])->name('theme.tlcommerce.options');
         Route::post('/get-theme-option-form', [ThemeOptionController::class, 'getOptionForm'])->name('theme.tlcommerce.get.option.form');
         Route::post('/save-theme-option-form', [ThemeOptionController::class, 'saveOptionForm'])->name('theme.tlcommerce.save.option.form');
+    });
+
+    Route::middleware(['can:Manage Quiz'])->group(function () {
+        Route::get('/quizzes', [QuizController::class, 'index'])->name('theme.tlcommerce.quiz.list');
+        Route::get('/quizzes/new', [QuizController::class, 'create'])->name('theme.tlcommerce.quiz.new');
+        Route::post('/quizzes/store', [QuizController::class, 'store'])->name('theme.tlcommerce.quiz.store');
+        Route::get('/quizzes/edit/{id}', [QuizController::class, 'edit'])->name('theme.tlcommerce.quiz.edit');
+        Route::post('/quizzes/update', [QuizController::class, 'update'])->name('theme.tlcommerce.quiz.update');
+        Route::post('/quizzes/delete', [QuizController::class, 'delete'])->name('theme.tlcommerce.quiz.delete')->middleware('demo');
+        Route::post('/quizzes/update-status', [QuizController::class, 'updateStatus'])->name('theme.tlcommerce.quiz.update.status');
+
+        Route::get('/quizzes/{id}/questions', [QuizController::class, 'questions'])->name('theme.tlcommerce.quiz.questions');
+        Route::post('/quizzes/questions/store', [QuizController::class, 'storeQuestion'])->name('theme.tlcommerce.quiz.questions.store');
+        Route::post('/quizzes/questions/update', [QuizController::class, 'updateQuestion'])->name('theme.tlcommerce.quiz.questions.update');
+        Route::post('/quizzes/questions/delete', [QuizController::class, 'deleteQuestion'])->name('theme.tlcommerce.quiz.questions.delete')->middleware('demo');
+        Route::post('/quizzes/questions/reorder', [QuizController::class, 'reorderQuestions'])->name('theme.tlcommerce.quiz.questions.reorder');
+        Route::post('/quizzes/{id}/answer-defaults', [QuizController::class, 'updateAnswerDefaults'])->name('theme.tlcommerce.quiz.answer.defaults');
+
+        Route::get('/quizzes/questions/{id}/answers', [QuizController::class, 'answers'])->name('theme.tlcommerce.quiz.answers');
+        Route::post('/quizzes/questions/{id}/answer-layout', [QuizController::class, 'updateQuestionAnswerLayout'])->name('theme.tlcommerce.quiz.question.answer.layout');
+        Route::post('/quizzes/answers/store', [QuizController::class, 'storeAnswer'])->name('theme.tlcommerce.quiz.answers.store');
+        Route::post('/quizzes/answers/update', [QuizController::class, 'updateAnswer'])->name('theme.tlcommerce.quiz.answers.update');
+        Route::post('/quizzes/answers/delete', [QuizController::class, 'deleteAnswer'])->name('theme.tlcommerce.quiz.answers.delete')->middleware('demo');
+
+        Route::get('/quizzes/answers/{id}/scores', [QuizController::class, 'scores'])->name('theme.tlcommerce.quiz.scores');
+        Route::post('/quizzes/scores/save', [QuizController::class, 'saveScores'])->name('theme.tlcommerce.quiz.scores.save');
+        Route::get('/quizzes/search-products', [QuizController::class, 'searchProducts'])->name('theme.tlcommerce.quiz.search.products');
     });
 });

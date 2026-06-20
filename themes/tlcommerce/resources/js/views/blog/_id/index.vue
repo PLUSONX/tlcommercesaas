@@ -436,6 +436,7 @@ import BlogSideBar from "../../../components/ui/BlogSideBar.vue";
 import VRuntimeTemplate from "vue3-runtime-template";
 import { mapState } from "vuex";
 import { scroller } from "vue-scrollto/src/scrollTo";
+import { cleanHtmlMediaPaths } from "@/utils/sectionProps";
 
 const axios = require("axios").default;
 export default {
@@ -671,7 +672,7 @@ export default {
         .post("/api/theme/tlcommerce/v1/blog/comment", request)
         .then((response) => {
           if (response.data.success) {
-            this.commentList = response.data.view;
+            this.commentList = cleanHtmlMediaPaths(response.data.view);
             this.currentPage = response.data.currentPage;
             this.endingPage = response.data.lastPage;
             this.isAdminLogin = response.data.isAdminLoggedIn;

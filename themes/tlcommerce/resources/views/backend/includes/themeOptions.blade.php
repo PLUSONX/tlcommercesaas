@@ -2,9 +2,11 @@
 @if (auth()->user()->can('Manage Theme General settings') ||
         auth()->user()->can('Manage Home Page Builder') ||
         auth()->user()->can('Manage Slider Settings') ||
-        auth()->user()->can('Manage Widget'))
+        auth()->user()->can('Manage Widget') ||
+        auth()->user()->can('Manage Layout Settings') ||
+        auth()->user()->can('Manage Quiz'))
     <li style="padding-left: 0 !important;"
-        class="hide-menu {{ Request::routeIs(['theme.tlcommerce.home.page.sections.edit', 'theme.tlcommerce.home.page.sections.new', 'theme.tlcommerce.home.page.sections', 'theme.tlcommerce.sliders.edit', 'theme.tlcommerce.sliders.new', 'theme.tlcommerce.sliders', 'theme.tlcommerce.options']) ? 'active sub-menu-opened' : '' }}">
+        class="hide-menu {{ Request::routeIs(['theme.tlcommerce.home.page.sections.edit', 'theme.tlcommerce.home.page.sections.new', 'theme.tlcommerce.home.page.sections', 'theme.tlcommerce.sliders.edit', 'theme.tlcommerce.sliders.new', 'theme.tlcommerce.sliders', 'theme.tlcommerce.options', 'theme.tlcommerce.quiz.list', 'theme.tlcommerce.quiz.new', 'theme.tlcommerce.quiz.edit', 'theme.tlcommerce.quiz.questions', 'theme.tlcommerce.quiz.answers', 'theme.tlcommerce.quiz.scores']) ? 'active sub-menu-opened' : '' }}">
         <!-- <li style="padding-left: 0 !important;"> -->
         <a href="#">
             <!-- <i class="icofont-ui-theme"></i> -->
@@ -46,6 +48,12 @@
                     </a>
                 </li>
                 <!--End Layout Module-->
+            @endif
+
+            @if (auth()->user()->can('Manage Quiz'))
+                <li class="{{ Request::routeIs(['theme.tlcommerce.quiz.list', 'theme.tlcommerce.quiz.new', 'theme.tlcommerce.quiz.edit', 'theme.tlcommerce.quiz.questions', 'theme.tlcommerce.quiz.answers', 'theme.tlcommerce.quiz.scores']) ? 'active ' : '' }}">
+                    <a class="pl-2" href="{{ route('theme.tlcommerce.quiz.list') }}">{{ translate('Quiz Builder') }}</a>
+                </li>
             @endif
         </ul>
     </li>

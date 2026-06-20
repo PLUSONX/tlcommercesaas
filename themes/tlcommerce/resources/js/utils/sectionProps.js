@@ -15,6 +15,11 @@ export function cleanMediaPath(path) {
   return path.replace(/^\/public/, "");
 }
 
+export function cleanHtmlMediaPaths(html) {
+  if (!html) return "";
+  return html.replace(/(src|href)="\/public\//g, '$1="/');
+}
+
 export function sectionBgImageUrl(path) {
   const cleaned = cleanMediaPath(path);
   return cleaned ? `url(${cleaned})` : "none";

@@ -54,57 +54,58 @@
             @endif
             <!-- Blog & Page-->
             <!--Blog Module-->
-            <!-- @canany(['Show Blog', 'Create Blog', 'Manage Category', 'Manage Tag', 'Manage Comment'])
-                <li
+            @canany(['Show Blog', 'Create Blog', 'Manage Category', 'Manage Tag', 'Manage Comment'])
+                <li style="padding-left: 0 !important;"
                     class="{{ Request::routeIs(['core.blog.category', 'core.add.blog.category', 'core.edit.blog.category', 'core.blog', 'core.add.blog', 'core.edit.blog', 'core.tag', 'core.edit.tag', 'core.add.tag', 'core.blog.comment', 'core.blog.comment.edit', 'core.blog.comment.setting']) ? 'active sub-menu-opened' : '' }}">
                     <a href="#">
-                        <i class="icofont-blogger"></i>
+                        <!-- <i class="icofont-blogger"></i> -->
+                        <x-lucide-file-pen-line style="width: 20px; height: 20px; margin-left: 8px;" />
                         <span class="link-title">{{ translate('Blog') }}</span>
                     </a>
                     <ul class="nav sub-menu">
                         @can('Show Blog')
                             <li class="{{ Request::routeIs(['core.blog', 'core.edit.blog']) ? 'active ' : '' }}">
-                                <a href="{{ route('core.blog') }}">{{ translate('All Blogs') }}</a>
+                                <a class="pl-2" href="{{ route('core.blog') }}">{{ translate('All Blogs') }}</a>
                             </li>
                         @endcan
                         @can('Create Blog')
                             <li class="{{ Request::routeIs('core.add.blog') ? 'active ' : '' }}">
-                                <a href="{{ route('core.add.blog') }}">{{ translate('Add New Blog') }}</a>
+                                <a class="pl-2" href="{{ route('core.add.blog') }}">{{ translate('Add New Blog') }}</a>
                             </li>
                         @endcan
                         @can('Manage Category')
                             <li
                                 class="{{ Request::routeIs(['core.blog.category', 'core.add.blog.category', 'core.edit.blog.category']) ? 'active ' : '' }}">
-                                <a href="{{ route('core.blog.category') }}">{{ translate('Categories') }}</a>
+                                <a class="pl-2" href="{{ route('core.blog.category') }}">{{ translate('Categories') }}</a>
                             </li>
                         @endcan
                         @can('Manage Tag')
                             <li class="{{ Request::routeIs(['core.tag', 'core.add.tag', 'core.edit.tag']) ? 'active ' : '' }}">
-                                <a href="{{ route('core.tag') }}">{{ translate('Tags') }}</a>
+                                <a class="pl-2" href="{{ route('core.tag') }}">{{ translate('Tags') }}</a>
                             </li>
                         @endcan
                         @can('Manage Comment')
                             <li
                                 class="{{ Request::routeIs(['core.blog.comment', 'core.blog.comment.edit']) ? 'active ' : '' }}">
-                                <a href="{{ route('core.blog.comment') }}">{{ translate('Comments') }}</a>
+                                <a class="pl-2" href="{{ route('core.blog.comment') }}">{{ translate('Comments') }}</a>
                             </li>
                             <li class="{{ Request::routeIs(['core.blog.comment.setting']) ? 'active sub-menu-opened' : '' }}">
-                                <a href="#">
+                                <a class="pl-2" href="#">
                                     <span class="link-title">{{ translate('Settings') }}</span>
                                 </a>
                                 <ul class="nav sub-menu">
                                     @if (!isTenant())
                                         <li class="{{ Request::routeIs(['core.blog.share.options']) ? 'active' : '' }}">
-                                            <a
+                                            <a class="pl-2"
                                                 href="{{ route('core.blog.share.options') }}">{{ translate('Blog Share Settings') }}</a>
                                         </li>
                                         <li class="{{ Request::routeIs(['core.blog.ai.setting']) ? 'active' : '' }}">
-                                            <a
+                                            <a class="pl-2"
                                                 href="{{ route('core.blog.ai.setting') }}">{{ translate('Open AI Settings') }}</a>
                                         </li>
                                     @endif
                                     <li class="{{ Request::routeIs(['core.blog.comment.setting']) ? 'active' : '' }}">
-                                        <a
+                                        <a class="pl-2"
                                             href="{{ route('core.blog.comment.setting') }}">{{ translate('Comment Settings') }}</a>
                                     </li>
                                 </ul>
@@ -112,7 +113,7 @@
                         @endcan
                     </ul>
                 </li>
-            @endcanany -->
+            @endcanany
             <!--End Blog module-->
 
             <!--Page Module-->

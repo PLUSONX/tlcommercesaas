@@ -234,7 +234,7 @@ class ProductController extends Controller
     {
         return view('plugin/tlecommercecore::products.product.edit_product')->with([
             'product_details' => $this->product_repository->editProduct($id),
-            'lang' => $request->lang,
+            'lang' => $request->lang ?? getDefaultLang(),
             'shipping_profiles' => ShippingProfile::all(),
         ]);
     }

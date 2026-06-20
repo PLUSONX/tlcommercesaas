@@ -134,6 +134,8 @@
 
 /*! @/components/pageheader/PageHeader.vue */
 
+/*! @/utils/sectionProps */
+
 /*! @coreui/vue */
 
 /*! axios */
@@ -147,6 +149,10 @@
 /*!*******************************************!*\
   !*** ./resources/js/views/blog/index.vue ***!
   \*******************************************/
+
+/*!********************************************!*\
+  !*** ./resources/js/utils/sectionProps.js ***!
+  \********************************************/
 
 /*!*************************************************!*\
   !*** ./resources/js/components/ui/BlogCard.vue ***!

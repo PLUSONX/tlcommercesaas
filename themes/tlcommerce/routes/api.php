@@ -10,6 +10,7 @@ use Plugin\TlcommerceCore\Http\Controllers\LayoutSettingsController;
 use Theme\TLCommerce\Http\Controllers\Frontend\NewsletterController;
 use Theme\TLCommerce\Http\Controllers\Frontend\ThemeOptionController;
 use Theme\TLCommerce\Http\Controllers\Backend\ThemeOptionController As ThemeController;
+use Theme\TLCommerce\Http\Controllers\Api\QuizController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,4 +71,9 @@ Route::group(['prefix' => 'theme/tlcommerce/v1'], function () {
     Route::get('/page/{slug}', [PagesController::class, 'pageDetails']);
     Route::get('/preview-page/{slug}', [PagesController::class, 'previewPage']);
     Route::post('/newsletter-store', [NewsletterController::class, 'store']);
+
+    // Quiz
+    Route::get('/quiz/{slug}', [QuizController::class, 'show']);
+    Route::post('/quiz/{slug}/submit', [QuizController::class, 'submit']);
+    Route::get('/quiz/submission/{id}/results', [QuizController::class, 'results']);
 });

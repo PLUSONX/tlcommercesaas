@@ -144,6 +144,8 @@
 
 /*! @/components/pageheader/PageHeader.vue */
 
+/*! @/utils/sectionProps */
+
 /*! @coreui/vue */
 
 /*! axios */
@@ -159,6 +161,10 @@
 /*! vue3-runtime-template */
 
 /*! vuex */
+
+/*!********************************************!*\
+  !*** ./resources/js/utils/sectionProps.js ***!
+  \********************************************/
 
 /*!************************************************!*\
   !*** ./node_modules/vue-scrollto/src/utils.js ***!

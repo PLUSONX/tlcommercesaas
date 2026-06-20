@@ -26,12 +26,8 @@
                 <input type="radio" :value="payment" class="shipping-method" name="payment-method"
                   v-model="selected_payment_method" @click="takeBankDetails" @input="!pay_wallet" />
                 <span class="label-title">
-                  <img
-                    v-if="payment.logo"
-                    class="payment-method-logo"
-                    :src="cleanImage(payment.logo)"
-                    :alt="payment.name"
-                  />
+                  <img v-if="payment.logo" class="payment-method-logo" :src="cleanImage(payment.logo)"
+                    :alt="payment.name" />
                   {{ payment.name }}
                 </span>
               </label>
@@ -271,7 +267,7 @@ export default {
   methods: {
     cleanImage(img) {
       if (!img) return '';
-      console.log("img: ", img.replace(/^\/public/, ''));
+      // console.log("img: ", img.replace(/^\/public/, ''));
       return img.replace(/^\/public/, '');
     },
     /**
@@ -288,7 +284,7 @@ export default {
         .then((response) => {
           if (response.data.success) {
             this.paymentMethods = response.data.data;
-            console.log("Payment Methods: ", this.paymentMethods);
+            // console.log("Payment Methods: ", this.paymentMethods);
             this.loading = false;
           } else {
             this.paymentMethods = [];

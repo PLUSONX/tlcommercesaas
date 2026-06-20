@@ -35,13 +35,13 @@
                 <!-- Comment Author Image -->
                 <div class="comment-author-image">
                     @if (isset($author_image))
-                        <img src="{{ getFilePath($author_image, true) }}" alt="{{ $author_name }}">
+                        <img src="{{ preg_replace('#^/public#', '', getFilePath($author_image, true)) }}" alt="{{ $author_name }}">
                     @else
                         @if ($comment_setting['show_avatars'] == 1)
-                            <img src="{{ asset('/public/web-assets/backend/img/comment-author-image/' . $comment_setting['avatar_default'] . '.png') }}"
+                            <img src="{{ asset('web-assets/backend/img/comment-author-image/' . $comment_setting['avatar_default'] . '.png') }}"
                                 alt="{{ $author_name }}">
                         @else
-                            <img src="{{ getFilePath($author_image, true) }}" alt="{{ $author_name }}">
+                            <img src="{{ preg_replace('#^/public#', '', getFilePath($author_image, true)) }}" alt="{{ $author_name }}">
                         @endif
                     @endif
                 </div>

@@ -89,21 +89,21 @@
         @csrf
         <!--Left side-->
         <div class="col-lg-8">
-            <!-- <div class="mb-3">
+            <div class="mb-3">
                 <p class="alert alert-info">You are editing <strong>"{{ getLanguageNameByCode($lang) }}"</strong> version
                 </p>
-            </div> -->
-            <!-- <ul class="nav nav-tabs nav-fill border-light border-0">
+            </div>
+            <ul class="nav nav-tabs nav-fill border-light border-0">
                 @foreach ($languages as $key => $language)
                     <li class="nav-item">
                         <a class="nav-link @if ($language->code == $lang) active border-0 @else bg-light @endif py-3"
                             href="{{ route('plugin.tlcommercecore.product.edit', ['id' => $product_details->id, 'lang' => $language->code]) }}">
-                            <img src="{{ asset('/public/flags/') . '/' . $language->code . '.png' }}" width="20px">
+                            <img src="{{ asset('flags/') . '/' . $language->code . '.png' }}" width="20px">
                             <span>{{ $language->name }}</span>
                         </a>
                     </li>
                 @endforeach
-            </ul> -->
+            </ul>
             <!--Product information-->
             <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-body">

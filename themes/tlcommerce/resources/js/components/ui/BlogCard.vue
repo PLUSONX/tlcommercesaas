@@ -6,7 +6,7 @@
       :href="`/blog/${blog.permalink}`"
       v-if="blog.image != null"
     >
-      <v-lazy-image :src="blog.image" :alt="blog.title" />
+      <v-lazy-image :src="blogImage" :alt="blog.title" />
     </a>
     <!-- End Image -->
 
@@ -65,6 +65,8 @@
 
 <script>
 import VLazyImage from "v-lazy-image";
+import { cleanMediaPath } from "@/utils/sectionProps";
+
 export default {
   name: "BlogCard",
   components: {
@@ -83,6 +85,11 @@ export default {
     styleTwo: {
       type: Boolean,
       default: false,
+    },
+  },
+  computed: {
+    blogImage() {
+      return cleanMediaPath(this.blog?.image);
     },
   },
 };

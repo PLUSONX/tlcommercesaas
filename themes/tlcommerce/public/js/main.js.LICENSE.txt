@@ -375,6 +375,8 @@
 
 /*! ../views/products/index.vue */
 
+/*! ../views/quiz/_slug/index.vue */
+
 /*! ../views/store-info/index.vue */
 
 /*! ./../core/settle */
@@ -936,6 +938,8 @@
 /*! import() | ProductDetails */
 
 /*! import() | ProductPage */
+
+/*! import() | Quiz */
 
 /*! import() | SearchBlogs */
 

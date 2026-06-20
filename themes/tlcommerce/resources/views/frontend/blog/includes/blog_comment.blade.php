@@ -32,12 +32,12 @@
                     <!-- Comment Author Image -->
                     <div class="comment-author-image">
                         <img src="
-                            @if (isset($author_image)) {{ getFilePath($author_image) }}
+                            @if (isset($author_image)) {{ preg_replace('#^/public#', '', getFilePath($author_image)) }}
                             @else
                                 @if ($comment_setting['show_avatars'] == 1)
-                                    {{ asset('/public/comment-author-image/' . $comment_setting['avatar_default'] . '.png') }}
+                                    {{ asset('comment-author-image/' . $comment_setting['avatar_default'] . '.png') }}
                                 @else
-                                    {{ getFilePath($author_image) }} @endif
+                                    {{ preg_replace('#^/public#', '', getFilePath($author_image)) }} @endif
                             @endif
                             "
                             alt="">
