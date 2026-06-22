@@ -529,21 +529,12 @@ export default {
 
 <style lang="scss" scoped>
 .logo-wrapper {
+  --header-logo-max-height: 45px;
   height: 45px;
   max-width: 100%;
   overflow: hidden;
   display: flex;
   align-items: center;
-}
-
-.logo-wrapper :deep(.logo),
-.logo-wrapper :deep(.logo img),
-.logo-wrapper :deep(img) {
-  max-height: 100%;
-  max-width: 100%;
-  width: auto;
-  display: block;
-  object-fit: contain;
 }
 
 .search-suggestion {

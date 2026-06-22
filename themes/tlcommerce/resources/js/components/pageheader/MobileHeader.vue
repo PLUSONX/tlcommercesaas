@@ -255,23 +255,12 @@ export default {
 
 <style scoped>
 .logo-wrapper {
+  --header-logo-max-height: 40px;
   /* Set the exact height you want for your mobile header content */
   height: 40px;
   overflow: hidden;
   display: flex;
   align-items: center;
-}
-
-/* Ensure the logo within the wrapper behaves */
-.logo-wrapper :deep(img),
-.logo-wrapper :deep(.site-logo),
-.logo-wrapper :deep(.the-logo) {
-  max-height: 100%;
-  /* Cannot exceed the 40px height */
-  max-width: 100%;
-  width: auto;
-  display: block;
-  object-fit: contain;
 }
 
 /* If you have a text title instead of a logo, ensure it doesn't break the line */

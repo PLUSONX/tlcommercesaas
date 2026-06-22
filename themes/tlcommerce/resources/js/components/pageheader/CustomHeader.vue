@@ -183,15 +183,12 @@ export default {
   flex: 1;
 }
 
-.custom-header-card__logo :deep(.logo img),
-.custom-header-card__logo :deep(img) {
-  max-height: 40px;
-  width: auto;
+.custom-header-card__logo {
+  --header-logo-max-height: 40px;
 }
 
-.custom-header-card--compact .custom-header-card__logo :deep(.logo img),
-.custom-header-card--compact .custom-header-card__logo :deep(img) {
-  max-height: 32px;
+.custom-header-card--compact .custom-header-card__logo {
+  --header-logo-max-height: 32px;
 }
 
 .custom-header-card__text {

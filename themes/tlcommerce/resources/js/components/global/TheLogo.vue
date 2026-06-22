@@ -78,4 +78,20 @@ export default {
   },
 };
 </script> -->
-<style scoped></style>
+<style lang="scss" scoped>
+.logo {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+  max-width: 100%;
+
+  img {
+    max-height: var(--header-logo-max-height, 45px);
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    display: block;
+    object-fit: contain;
+  }
+}
+</style>
