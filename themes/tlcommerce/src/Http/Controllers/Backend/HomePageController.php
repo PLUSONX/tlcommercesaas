@@ -154,6 +154,11 @@ class HomePageController extends Controller
             return view('theme/tlcommerce::backend.homepage.sections.featured_product.featured_product_options');
         }
 
+        //Custom Link Section Properties
+        if ($request['layout'] == 'custom_link') {
+            return view('theme/tlcommerce::backend.homepage.sections.custom_link.custom_link_options');
+        }
+
         //Category Section Properties
         if ($request['layout'] == 'category_slider') {
             return view('theme/tlcommerce::backend.homepage.sections.category_slider.category_slider_options');

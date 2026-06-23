@@ -117,6 +117,9 @@
             <cta-section v-if="section.layout === 'featured_product'" :content="section.content"
                 :properties="section.properties"></cta-section>
 
+            <custom-link-section v-if="section.layout === 'custom_link'" :content="section.content"
+                :properties="section.properties"></custom-link-section>
+
             <blog-section v-if="section.layout === 'blogs'" :content="section.content"
                 :properties="section.properties"></blog-section>
 
@@ -172,6 +175,10 @@ const ctaSection = defineAsyncComponent(() =>
     import("@/components/home-page-sections/ctaSection.vue")
 );
 
+const CustomLinkSection = defineAsyncComponent(() =>
+    import("@/components/home-page-sections/customLinkSection.vue")
+);
+
 const blogSection = defineAsyncComponent(() =>
     import("@/components/home-page-sections/blogSection.vue")
 );
@@ -203,6 +210,7 @@ export default {
         CustomCategorySliderSection,
         adsSection,
         ctaSection,
+        CustomLinkSection,
         blogSection,
         CustomProductSection,
         TopSellers,

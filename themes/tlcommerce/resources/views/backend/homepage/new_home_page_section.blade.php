@@ -32,6 +32,7 @@
                                         <option value="flashdeal">{{ translate('Flash Deal') }}</option>
                                     @endif
                                     <option value="featured_product">{{ translate('Featured Product') }}</option>
+                                    <option value="custom_link">{{ translate('Custom Link') }}</option>
                                     <option value="category_slider">{{ translate('Category Slider') }}</option>
                                     <option value="custom_category_slider">{{ translate('Custom Category Slider') }}</option>
                                     <option value="product_collection">{{ translate('Product Collection') }}</option>
@@ -75,6 +76,9 @@
                                 <div class="section_layout d-none featured_product">
                                     <img src="{{ asset('themes/tlcommerce/assets/img/featured_product.png') }}">
                                     <!-- <img src="{{ asset('/public/themes/tlcommerce/assets/img/featured_product.png') }}"> -->
+                                </div>
+                                <div class="section_layout d-none custom_link">
+                                    <img src="{{ asset('themes/tlcommerce/assets/img/featured_product.png') }}">
                                 </div>
                                 <div class="section_layout d-none blogs">
                                     <img src="{{ asset('themes/tlcommerce/assets/img/blog.png') }}">

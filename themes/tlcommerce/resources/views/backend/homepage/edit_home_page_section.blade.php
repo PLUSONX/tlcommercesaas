@@ -42,6 +42,9 @@
                                         <option value="featured_product" @selected(getHomePageSectionProperties($section_details->id, 'layout') == 'featured_product')>
                                             {{ translate('Featured Product') }}
                                         </option>
+                                        <option value="custom_link" @selected(getHomePageSectionProperties($section_details->id, 'layout') == 'custom_link')>
+                                            {{ translate('Custom Link') }}
+                                        </option>
                                         <option value="category_slider" @selected(getHomePageSectionProperties($section_details->id, 'layout') == 'category_slider')>
                                             {{ translate('Category Slider') }}
                                         </option>
@@ -88,6 +91,11 @@
                                         <img
                                             src="{{ asset('themes/tlcommerce/assets/img/featured_product.png') }}">
                                             <!-- src="{{ asset('/public/themes/tlcommerce/assets/img/featured_product.png') }}"> -->
+                                    </div>
+                                    <div
+                                        class="section_layout {{ getHomePageSectionProperties($section_details->id, 'layout') == 'custom_link' ? 'custom_link' : 'd-none' }} ">
+                                        <img
+                                            src="{{ asset('themes/tlcommerce/assets/img/featured_product.png') }}">
                                     </div>
                                     <div
                                         class="section_layout {{ getHomePageSectionProperties($section_details->id, 'layout') == 'blogs' ? 'blogs' : 'd-none' }} ">
@@ -179,6 +187,15 @@
                                 @if (getHomePageSectionProperties($section_details->id, 'layout') == 'featured_product')
                                     @include(
                                         'theme/tlcommerce::backend.homepage.sections.featured_product.featured_product_options_edit',
+                                        [
+                                            'details' => $section_details,
+                                        ]
+                                    )
+                                @endif
+
+                                @if (getHomePageSectionProperties($section_details->id, 'layout') == 'custom_link')
+                                    @include(
+                                        'theme/tlcommerce::backend.homepage.sections.custom_link.custom_link_options_edit',
                                         [
                                             'details' => $section_details,
                                         ]
