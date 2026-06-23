@@ -73,7 +73,7 @@
         <div class="row">
             <div class="col-md-8">
                 {{-- Languages --}}
-                <!-- <div class="row">
+                <div class="row">
                     <div class="col-12 mb-3">
                         <p class="alert alert-info">You are editing <strong>"{{ getLanguageNameByCode($lang) }}"</strong>
                             version</p>
@@ -92,7 +92,7 @@
                             @endforeach
                         </ul>
                     </div>
-                </div> -->
+                </div>
 
                 <div class="card mb-30">
                     <div class="card-body">
