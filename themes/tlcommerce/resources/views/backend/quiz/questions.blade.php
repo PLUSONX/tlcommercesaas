@@ -8,19 +8,31 @@
     </style>
 @endsection
 @section('main_content')
+    @php
+        $lang = $lang ?? getDefaultLang();
+        $isDefaultLang = $lang == getDefaultLang();
+    @endphp
     <div class="border-bottom2 pb-3 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-10">
         <div>
-            <h4 class="mb-1">{{ $quiz->title }}</h4>
+            <h4 class="mb-1">{{ $quiz->translation('title', $lang) }}</h4>
             <p class="text-muted mb-0">{{ translate('Manage questions for this quiz') }}</p>
         </div>
         <div class="d-flex flex-wrap gap-10">
-            <a href="{{ route('theme.tlcommerce.quiz.edit', $quiz->id) }}" class="btn long">{{ translate('Edit Quiz') }}</a>
+            <a href="{{ route('theme.tlcommerce.quiz.edit', ['id' => $quiz->id, 'lang' => $lang]) }}" class="btn long">{{ translate('Edit Quiz') }}</a>
             <a href="{{ route('theme.tlcommerce.quiz.list') }}" class="btn long btn-danger">{{ translate('Back') }}</a>
         </div>
     </div>
 
-    @include('theme/tlcommerce::backend.quiz.partials.answer_defaults_panel')
+    @include('theme/tlcommerce::backend.quiz.partials.language_tabs', [
+        'tabRoute' => 'theme.tlcommerce.quiz.questions',
+        'tabRouteParams' => ['id' => $quiz->id],
+    ])
 
+    <div @if (!$isDefaultLang) class="area-disabled" @endif>
+        @include('theme/tlcommerce::backend.quiz.partials.answer_defaults_panel')
+    </div>
+
+    @if ($isDefaultLang)
     <div class="card mb-20">
         <div class="card-body">
             <h5 class="mb-3">{{ translate('Add Question') }}</h5>
@@ -52,6 +64,7 @@
             </form>
         </div>
     </div>
+    @endif
 
     @if ($quiz->questions->count())
         <div id="sortable-questions">
@@ -60,7 +73,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start flex-wrap gap-10">
                             <div class="flex-grow-1">
-                                <h5><i class="icofont-drag mr-1"></i>{{ $question->question_text }}</h5>
+                                <h5>@if ($isDefaultLang)<i class="icofont-drag mr-1"></i>@endif{{ $question->translation('question_text', $lang) }}</h5>
                                 <small class="text-muted">
                                     {{ translate('Type') }}: {{ ucfirst(str_replace('_', ' ', $question->question_type)) }}
                                     · {{ $question->answers->count() }} {{ translate('answers') }}
@@ -68,22 +81,24 @@
                                 </small>
                             </div>
                             <div class="d-flex align-items-center gap-10">
-                                <a href="{{ route('theme.tlcommerce.quiz.answers', $question->id) }}" class="btn long btn-sm">
+                                <a href="{{ route('theme.tlcommerce.quiz.answers', ['id' => $question->id, 'lang' => $lang]) }}" class="btn long btn-sm">
                                     {{ translate('Answers') }}
                                 </a>
                                 <button type="button" class="btn long btn-sm edit-question-btn"
                                     data-id="{{ $question->id }}"
-                                    data-text="{{ e($question->question_text) }}"
+                                    data-text="{{ e($question->translation('question_text', $lang)) }}"
                                     data-type="{{ $question->question_type }}"
                                     data-required="{{ $question->is_required ? '1' : '0' }}">
                                     {{ translate('Edit') }}
                                 </button>
+                                @if ($isDefaultLang)
                                 <form action="{{ route('theme.tlcommerce.quiz.questions.delete') }}" method="POST" class="d-inline"
                                     onsubmit="return confirm('{{ translate('Are you sure?') }}')">
                                     @csrf
                                     <input type="hidden" name="id" value="{{ $question->id }}">
                                     <button type="submit" class="btn long btn-sm btn-danger">{{ translate('Delete') }}</button>
                                 </form>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -100,6 +115,7 @@
                 <form action="{{ route('theme.tlcommerce.quiz.questions.update') }}" method="POST">
                     @csrf
                     <input type="hidden" name="id" id="edit-question-id">
+                    <input type="hidden" name="lang" value="{{ $lang }}">
                     <div class="modal-header">
                         <h5 class="modal-title">{{ translate('Edit Question') }}</h5>
                         <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
@@ -109,7 +125,7 @@
                             <label>{{ translate('Question') }}</label>
                             <textarea name="question_text" id="edit-question-text" class="theme-input-style" rows="3" required></textarea>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group @if (!$isDefaultLang) area-disabled @endif">
                             <label>{{ translate('Type') }}</label>
                             <select name="question_type" id="edit-question-type" class="theme-input-style" required>
                                 <option value="radio">{{ translate('Radio') }}</option>
@@ -118,7 +134,7 @@
                                 <option value="image_select">{{ translate('Image Select') }}</option>
                             </select>
                         </div>
-                        <label>
+                        <label class="@if (!$isDefaultLang) area-disabled @endif">
                             <input type="checkbox" name="is_required" id="edit-question-required" value="1">
                             {{ translate('Required') }}
                         </label>
@@ -139,6 +155,7 @@
         (function($) {
             "use strict";
 
+            @if ($isDefaultLang)
             $('#sortable-questions').sortable({
                 update: function() {
                     var order = [];
@@ -151,6 +168,7 @@
                     });
                 }
             });
+            @endif
 
             $('.edit-question-btn').on('click', function() {
                 $('#edit-question-id').val($(this).data('id'));

@@ -1,6 +1,9 @@
 @php
     use Theme\TLCommerce\Http\Resources\QuizResultsConfig;
-    $resultsBlocksRaw = old('results_blocks_json') ? json_decode(old('results_blocks_json'), true) : (isset($quiz) && is_array($quiz->layout_config['results'] ?? null) ? ($quiz->layout_config['results']['blocks'] ?? null) : null);
+    $resultsBlocksSource = isset($layoutConfigForForm)
+        ? ($layoutConfigForForm['results']['blocks'] ?? null)
+        : (isset($quiz) && is_array($quiz->layout_config['results'] ?? null) ? ($quiz->layout_config['results']['blocks'] ?? null) : null);
+    $resultsBlocksRaw = old('results_blocks_json') ? json_decode(old('results_blocks_json'), true) : $resultsBlocksSource;
     $resultsBlocks = is_array($resultsBlocksRaw) && count($resultsBlocksRaw) ? $resultsBlocksRaw : QuizResultsConfig::defaultBlocks();
 @endphp
 

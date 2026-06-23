@@ -10,7 +10,13 @@
 @endsection
 @section('main_content')
     @php
-        $intro = isset($quiz) ? ($quiz->layout_config['intro'] ?? []) : [];
+        use Theme\TLCommerce\Services\QuizLayoutConfigTranslation;
+        $lang = $lang ?? getDefaultLang();
+        $isDefaultLang = $lang == getDefaultLang();
+        $layoutConfigForForm = isset($quiz)
+            ? QuizLayoutConfigTranslation::translatedLayoutForAdmin($quiz, $lang)
+            : [];
+        $intro = $layoutConfigForForm['intro'] ?? [];
     @endphp
     <div class="row">
         <div class="col-12">
@@ -18,7 +24,7 @@
                 <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-10">
                     <h4 style="font-size: 30px;" class="mb-0">{{ $quiz ? translate('Edit Quiz') : translate('New Quiz') }}</h4>
                     @if ($quiz)
-                        <a href="{{ route('theme.tlcommerce.quiz.questions', $quiz->id) }}" class="btn long">
+                        <a href="{{ route('theme.tlcommerce.quiz.questions', ['id' => $quiz->id, 'lang' => $lang]) }}" class="btn long">
                             {{ translate('Manage Questions') }}
                         </a>
                     @endif
@@ -33,6 +39,10 @@
                         @csrf
                         @if ($quiz)
                             <input type="hidden" name="id" value="{{ $quiz->id }}">
+                            @include('theme/tlcommerce::backend.quiz.partials.language_tabs', [
+                                'tabRoute' => 'theme.tlcommerce.quiz.edit',
+                                'tabRouteParams' => ['id' => $quiz->id],
+                            ])
                         @endif
 
                         <h5 class="mb-3">{{ translate('General') }}</h5>
@@ -41,12 +51,12 @@
                             <div class="col-sm-4"><label class="font-14 bold black">{{ translate('Title') }}</label></div>
                             <div class="col-md-12">
                                 <input type="text" name="title" id="quiz-title-input" class="theme-input-style quiz-preview-input"
-                                    value="{{ old('title', $quiz->title ?? '') }}" placeholder="{{ translate('Quiz title') }}" required>
+                                    value="{{ old('title', isset($quiz) ? $quiz->translation('title', $lang) : '') }}" placeholder="{{ translate('Quiz title') }}" required>
                                 <small id="intro-custom-stack-title-note" class="text-muted d-none">{{ translate('Display title is edited in Content blocks below; this field sets the quiz name for admin and lists.') }}</small>
                             </div>
                         </div>
 
-                        <div class="form-row mb-20">
+                        <div class="form-row mb-20 @if (!$isDefaultLang) area-disabled @endif">
                             <div class="col-sm-4"><label class="font-14 bold black">{{ translate('Slug') }}</label></div>
                             <div class="col-md-12">
                                 <input type="text" name="slug" class="theme-input-style" value="{{ old('slug', $quiz->slug ?? '') }}"
@@ -56,7 +66,7 @@
                         </div>
 
                         @if ($quiz)
-                            <div class="form-row mb-20">
+                            <div class="form-row mb-20 @if (!$isDefaultLang) area-disabled @endif">
                                 <div class="col-sm-4"><label class="font-14 bold black">{{ translate('Share URL') }}</label></div>
                                 <div class="col-md-12">
                                     @php $shareUrl = url('/quiz/' . $quiz->slug); @endphp
@@ -73,7 +83,7 @@
                         <hr class="my-4">
                         <h5 class="mb-3">{{ translate('Start Page') }}</h5>
 
-                        <div class="form-row mb-20">
+                        <div class="form-row mb-20 @if (!$isDefaultLang) area-disabled @endif">
                             <div class="col-sm-4"><label class="font-14 bold black">{{ translate('Skip intro page') }}</label></div>
                             <div class="col-md-12">
                                 <label class="switch glow primary medium">
@@ -97,7 +107,7 @@
                         <div class="form-row mb-20">
                             <div class="col-sm-4"><label class="font-14 bold black">{{ translate('Intro body') }}</label></div>
                             <div class="col-md-12">
-                                <textarea name="description" id="quiz-description-input" class="theme-input-style quiz-preview-input" rows="6">{!! old('description', $quiz->description ?? '') !!}</textarea>
+                                <textarea name="description" id="quiz-description-input" class="theme-input-style quiz-preview-input" rows="6">{!! old('description', isset($quiz) ? $quiz->translation('description', $lang) : '') !!}</textarea>
                             </div>
                         </div>
 
@@ -117,7 +127,7 @@
                             </div>
                         </div>
 
-                        <div class="form-row mb-20">
+                        <div class="form-row mb-20 @if (!$isDefaultLang) area-disabled @endif">
                             <div class="col-sm-4"><label class="font-14 bold black">{{ translate('Secondary link URL') }}</label></div>
                             <div class="col-md-12">
                                 <input type="text" name="intro_secondary_link_url" id="intro-secondary-url-input" class="theme-input-style quiz-preview-input"
@@ -126,7 +136,7 @@
                         </div>
                         </div>
 
-                        <div class="form-row mb-20">
+                        <div class="form-row mb-20 @if (!$isDefaultLang) area-disabled @endif">
                             <div class="col-sm-4"><label class="font-14 bold black">{{ translate('Layout preset') }}</label></div>
                             <div class="col-md-12">
                                 <select name="intro_layout" id="intro-layout-input" class="theme-input-style quiz-preview-input">
@@ -137,7 +147,7 @@
                             </div>
                         </div>
 
-                        <div class="form-row mb-20">
+                        <div class="form-row mb-20 @if (!$isDefaultLang) area-disabled @endif">
                             <div class="col-sm-4"><label class="font-14 bold black">{{ translate('Text alignment') }}</label></div>
                             <div class="col-md-12">
                                 <select name="intro_alignment" id="intro-alignment-input" class="theme-input-style quiz-preview-input">
@@ -148,7 +158,7 @@
                             </div>
                         </div>
 
-                        <div class="form-row mb-20">
+                        <div class="form-row mb-20 @if (!$isDefaultLang) area-disabled @endif">
                             <div class="col-sm-4"><label class="font-14 bold black">{{ translate('Show question count') }}</label></div>
                             <div class="col-md-12">
                                 <label class="switch glow primary medium">
@@ -159,7 +169,7 @@
                             </div>
                         </div>
 
-                        <div class="form-row mb-20">
+                        <div class="form-row mb-20 @if (!$isDefaultLang) area-disabled @endif">
                             <div class="col-sm-4"><label class="font-14 bold black">{{ translate('Show estimated time') }}</label></div>
                             <div class="col-md-12 d-flex align-items-center flex-wrap gap-10">
                                 <label class="switch glow primary medium mb-0">
@@ -173,7 +183,7 @@
                             </div>
                         </div>
 
-                        <div class="form-row mb-20">
+                        <div class="form-row mb-20 @if (!$isDefaultLang) area-disabled @endif">
                             <div class="col-sm-4">
                                 <label class="font-14 bold black mb-0">{{ translate('Hero image (desktop)') }}</label>
                             </div>
@@ -185,7 +195,7 @@
                             </div>
                         </div>
 
-                        <div class="form-row mb-20">
+                        <div class="form-row mb-20 @if (!$isDefaultLang) area-disabled @endif">
                             <div class="col-sm-4">
                                 <label class="font-14 bold black mb-0">{{ translate('Hero image (mobile)') }}</label>
                             </div>
@@ -197,9 +207,9 @@
                             </div>
                         </div>
 
-                        @include('theme/tlcommerce::backend.quiz.partials.intro_block_builder')
+                        @include('theme/tlcommerce::backend.quiz.partials.intro_block_builder', ['isDefaultLang' => $isDefaultLang])
 
-                        <div id="intro-legacy-color-fields">
+                        <div id="intro-legacy-color-fields" @if (!$isDefaultLang) class="area-disabled" @endif>
                         @php
                             $colorFields = [
                                 'intro_background_color' => ['label' => 'Background color', 'default' => '#ffffff', 'id' => 'intro-bg-input', 'key' => 'background_color'],
@@ -241,7 +251,7 @@
                         <hr class="my-4">
                         <h5 class="mb-3">{{ translate('Quiz flow') }}</h5>
 
-                        <div class="form-row mb-20">
+                        <div class="form-row mb-20 @if (!$isDefaultLang) area-disabled @endif">
                             <div class="col-sm-4"><label class="font-14 bold black">{{ translate('Step Style') }}</label></div>
                             <div class="col-md-12">
                                 @php $stepStyle = old('step_style', isset($quiz) ? ($quiz->layout_config['step_style'] ?? 'wizard') : 'wizard'); @endphp
@@ -253,7 +263,7 @@
                             </div>
                         </div>
 
-                        <div class="form-row mb-20">
+                        <div class="form-row mb-20 @if (!$isDefaultLang) area-disabled @endif">
                             <div class="col-sm-4"><label class="font-14 bold black">{{ translate('Results to show') }}</label></div>
                             <div class="col-md-12">
                                 <input type="number" name="top_n" class="theme-input-style" min="1" max="20"
@@ -261,11 +271,13 @@
                             </div>
                         </div>
 
+                        <div @if (!$isDefaultLang) class="area-disabled" @endif>
                         @include('theme/tlcommerce::backend.quiz.partials.questions_theme_panel')
+                        </div>
 
                         @include('theme/tlcommerce::backend.quiz.partials.results_theme_panel')
 
-                        <div class="form-row mb-20">
+                        <div class="form-row mb-20 @if (!$isDefaultLang) area-disabled @endif">
                             <div class="col-sm-4"><label class="font-14 bold black">{{ translate('Status') }}</label></div>
                             <div class="col-md-12">
                                 <label class="switch glow primary medium">
@@ -288,7 +300,7 @@
             </div>
         </div>
 
-        <div class="col-lg-4">
+        <div class="col-lg-4 @if (!$isDefaultLang) area-disabled @endif">
             @include('theme/tlcommerce::backend.quiz.partials.intro_preview')
         </div>
     </div>

@@ -14,6 +14,7 @@
     $blocksDefaults = QuizIntroConfig::defaultBlocks();
     $blocks = is_array($introBlocks) && count($introBlocks) ? $introBlocks : $blocksDefaults;
     $currentLayout = old('intro_layout', $intro['layout'] ?? 'minimal');
+    $isDefaultLang = $isDefaultLang ?? true;
 @endphp
 
 <input type="hidden" name="intro_blocks_json" id="intro-blocks-json" value='@json($blocks)'>
@@ -21,6 +22,7 @@
 
 <div id="intro-custom-stack-panel" class="{{ $currentLayout === 'custom_stack' ? '' : 'd-none' }}">
     <hr class="my-4">
+    <div @if (!$isDefaultLang) class="area-disabled" @endif>
     <h5 class="mb-3">{{ translate('Intro styling') }}</h5>
 
     <div class="form-row mb-20">
@@ -184,6 +186,7 @@
             <input type="number" id="intro-theme-max-width" class="theme-input-style intro-theme-input" min="280" max="900"
                 value="{{ $theme['content_max_width'] ?? 560 }}">
         </div>
+    </div>
     </div>
 
     <hr class="my-4">

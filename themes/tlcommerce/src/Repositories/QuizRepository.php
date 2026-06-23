@@ -8,6 +8,10 @@ use Theme\TLCommerce\Models\QuizAnswer;
 use Theme\TLCommerce\Models\QuizFeature;
 use Theme\TLCommerce\Models\QuizQuestion;
 use Theme\TLCommerce\Models\QuizAnswerProductScore;
+use Theme\TLCommerce\Models\QuizFeatureTranslation;
+use Theme\TLCommerce\Models\QuizQuestionTranslation;
+use Theme\TLCommerce\Models\QuizAnswerTranslation;
+use Theme\TLCommerce\Services\QuizLayoutConfigTranslation;
 use Theme\TLCommerce\Http\Resources\QuizAnswerDefaultsConfig;
 use Theme\TLCommerce\Http\Resources\QuizQuestionAnswersConfig;
 use Theme\TLCommerce\Http\Resources\QuizResultsConfig;
@@ -23,7 +27,11 @@ class QuizRepository
 
     public function findQuiz($id)
     {
-        return QuizFeature::with(['questions.answers'])->findOrFail($id);
+        return QuizFeature::with([
+            'quiz_feature_translations',
+            'questions.quiz_question_translations',
+            'questions.answers.quiz_answer_translations',
+        ])->findOrFail($id);
     }
 
     public function storeQuiz(Request $request)
@@ -44,6 +52,22 @@ class QuizRepository
     public function updateQuiz(Request $request)
     {
         $quiz = QuizFeature::findOrFail($request->input('id'));
+
+        if ($this->isNonDefaultLang($request)) {
+            $translation = QuizFeatureTranslation::firstOrNew([
+                'quiz_id' => $quiz->id,
+                'lang' => $request->input('lang'),
+            ]);
+            $translation->title = $request->input('title');
+            $translation->description = $request->input('description');
+            $translation->layout_config = QuizLayoutConfigTranslation::extractTranslatableText(
+                $this->translatableTextSourceFromRequest($request)
+            );
+            $translation->save();
+
+            return $quiz;
+        }
+
         $quiz->title = $request->input('title');
         $quiz->slug = $this->uniqueSlug(
             $request->input('slug') ?: $request->input('title'),
@@ -61,8 +85,13 @@ class QuizRepository
     {
         $quiz = QuizFeature::with(['questions.answers.productScores'])->findOrFail($id);
 
+        QuizFeatureTranslation::where('quiz_id', $quiz->id)->delete();
+
         foreach ($quiz->questions as $question) {
+            QuizQuestionTranslation::where('question_id', $question->id)->delete();
+
             foreach ($question->answers as $answer) {
+                QuizAnswerTranslation::where('answer_id', $answer->id)->delete();
                 QuizAnswerProductScore::where('answer_id', $answer->id)->delete();
                 $answer->delete();
             }
@@ -102,6 +131,18 @@ class QuizRepository
     public function updateQuestion(Request $request)
     {
         $question = QuizQuestion::findOrFail($request->input('id'));
+
+        if ($this->isNonDefaultLang($request)) {
+            $translation = QuizQuestionTranslation::firstOrNew([
+                'question_id' => $question->id,
+                'lang' => $request->input('lang'),
+            ]);
+            $translation->question_text = $request->input('question_text');
+            $translation->save();
+
+            return $question;
+        }
+
         $question->question_text = $request->input('question_text');
         $question->question_type = $request->input('question_type');
         $question->is_required = $request->has('is_required') ? 1 : 0;
@@ -117,7 +158,10 @@ class QuizRepository
     {
         $question = QuizQuestion::with('answers.productScores')->findOrFail($id);
 
+        QuizQuestionTranslation::where('question_id', $question->id)->delete();
+
         foreach ($question->answers as $answer) {
+            QuizAnswerTranslation::where('answer_id', $answer->id)->delete();
             QuizAnswerProductScore::where('answer_id', $answer->id)->delete();
             $answer->delete();
         }
@@ -152,6 +196,19 @@ class QuizRepository
     public function updateAnswer(Request $request)
     {
         $answer = QuizAnswer::findOrFail($request->input('id'));
+
+        if ($this->isNonDefaultLang($request)) {
+            $translation = QuizAnswerTranslation::firstOrNew([
+                'answer_id' => $answer->id,
+                'lang' => $request->input('lang'),
+            ]);
+            $translation->answer_text = $request->input('answer_text');
+            $translation->answer_description = $request->input('answer_description');
+            $translation->save();
+
+            return $answer;
+        }
+
         $answer->answer_text = $request->input('answer_text');
         $answer->answer_image = $request->input('edit_answer_image', $request->input('answer_image'));
         $answer->answer_description = $request->input('answer_description');
@@ -162,6 +219,7 @@ class QuizRepository
 
     public function deleteAnswer($id)
     {
+        QuizAnswerTranslation::where('answer_id', $id)->delete();
         QuizAnswerProductScore::where('answer_id', $id)->delete();
 
         return QuizAnswer::findOrFail($id)->delete();
@@ -368,5 +426,32 @@ class QuizRepository
         $decoded = json_decode(html_entity_decode($raw, ENT_QUOTES, 'UTF-8'), true);
 
         return is_array($decoded) ? $decoded : null;
+    }
+
+    private function isNonDefaultLang(Request $request): bool
+    {
+        $lang = $request->input('lang');
+
+        return $lang && $lang !== getDefaultLang();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function translatableTextSourceFromRequest(Request $request): array
+    {
+        return [
+            'intro' => [
+                'subtitle' => $request->input('intro_subtitle'),
+                'cta_text' => $request->input('intro_cta_text'),
+                'secondary_link_text' => $request->input('intro_secondary_link_text'),
+                'blocks' => $this->decodeRequestJson($request, 'intro_blocks_json'),
+            ],
+            'results' => [
+                'blocks' => $this->decodeRequestJson($request, 'results_blocks_json'),
+                'actions' => $this->decodeRequestJson($request, 'results_actions_json'),
+                'product_grid' => $this->decodeRequestJson($request, 'results_product_grid_json'),
+            ],
+        ];
     }
 }

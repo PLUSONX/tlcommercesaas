@@ -4,6 +4,7 @@ namespace Theme\TLCommerce\Http\Controllers\Backend;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Core\Models\Language;
 use Plugin\TlcommerceCore\Models\Product;
 use Theme\TLCommerce\Models\QuizAnswer;
 use Theme\TLCommerce\Models\QuizQuestion;
@@ -20,6 +21,18 @@ class QuizController extends Controller
         }
 
         $this->quiz_repository = $quiz_repository;
+    }
+
+    protected function activeLanguages()
+    {
+        return Language::where('status', config('settings.general_status.active'))
+            ->select('id', 'name', 'code', 'native_name')
+            ->get();
+    }
+
+    protected function resolveLang(Request $request): string
+    {
+        return $request->input('lang', getDefaultLang());
     }
 
     public function index()
@@ -51,10 +64,14 @@ class QuizController extends Controller
         return redirect()->route('theme.tlcommerce.quiz.questions', $quiz->id);
     }
 
-    public function edit($id)
+    public function edit($id, Request $request)
     {
+        $lang = $this->resolveLang($request);
+
         return view('theme/tlcommerce::backend.quiz.form', [
             'quiz' => $this->quiz_repository->findQuiz($id),
+            'lang' => $lang,
+            'languages' => $this->activeLanguages(),
         ]);
     }
 
@@ -71,7 +88,10 @@ class QuizController extends Controller
         $this->quiz_repository->updateQuiz($request);
         toastNotification('success', translate('Quiz updated successfully'));
 
-        return redirect()->route('theme.tlcommerce.quiz.edit', $request->input('id'));
+        return redirect()->route('theme.tlcommerce.quiz.edit', [
+            'id' => $request->input('id'),
+            'lang' => $this->resolveLang($request),
+        ]);
     }
 
     public function delete(Request $request)
@@ -90,12 +110,15 @@ class QuizController extends Controller
         return redirect()->back();
     }
 
-    public function questions($id)
+    public function questions($id, Request $request)
     {
+        $lang = $this->resolveLang($request);
         $quiz = $this->quiz_repository->findQuiz($id);
 
         return view('theme/tlcommerce::backend.quiz.questions')->with([
             'quiz' => $quiz,
+            'lang' => $lang,
+            'languages' => $this->activeLanguages(),
         ]);
     }
 
@@ -155,13 +178,20 @@ class QuizController extends Controller
         return redirect()->back();
     }
 
-    public function answers($questionId)
+    public function answers($questionId, Request $request)
     {
-        $question = QuizQuestion::with(['answers', 'quiz'])->findOrFail($questionId);
+        $lang = $this->resolveLang($request);
+        $question = QuizQuestion::with([
+            'answers.quiz_answer_translations',
+            'quiz_question_translations',
+            'quiz',
+        ])->findOrFail($questionId);
 
         return view('theme/tlcommerce::backend.quiz.answers')->with([
             'question' => $question,
             'quiz' => $question->quiz,
+            'lang' => $lang,
+            'languages' => $this->activeLanguages(),
         ]);
     }
 

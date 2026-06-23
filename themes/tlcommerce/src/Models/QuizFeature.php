@@ -2,6 +2,7 @@
 
 namespace Theme\TLCommerce\Models;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Database\Eloquent\Model;
 
 class QuizFeature extends Model
@@ -22,6 +23,19 @@ class QuizFeature extends Model
         'layout_config' => 'array',
         'is_active' => 'boolean',
     ];
+
+    public function translation($field = '', $lang = false)
+    {
+        $lang = $lang == false ? App::getLocale() : $lang;
+        $row = $this->quiz_feature_translations->where('lang', $lang)->first();
+
+        return $row != null ? $row->$field : $this->$field;
+    }
+
+    public function quiz_feature_translations()
+    {
+        return $this->hasMany(QuizFeatureTranslation::class, 'quiz_id');
+    }
 
     public function submissions()
     {

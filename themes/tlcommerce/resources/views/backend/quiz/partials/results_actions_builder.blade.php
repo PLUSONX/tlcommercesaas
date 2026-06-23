@@ -16,6 +16,10 @@
 
         }
 
+    } elseif (isset($layoutConfigForForm) && is_array($layoutConfigForForm['results'] ?? null)) {
+
+        $resultsActionsRaw = $layoutConfigForForm['results']['actions'] ?? null;
+
     } elseif (isset($quiz) && is_array($quiz->layout_config['results'] ?? null)) {
 
         $resultsActionsRaw = $quiz->layout_config['results']['actions'] ?? null;

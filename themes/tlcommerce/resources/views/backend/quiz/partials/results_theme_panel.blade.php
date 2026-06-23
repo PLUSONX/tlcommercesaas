@@ -1,6 +1,8 @@
 @php
     use Theme\TLCommerce\Http\Resources\QuizResultsConfig;
-    $resultsRaw = isset($quiz) ? ($quiz->layout_config['results'] ?? null) : null;
+    $resultsRaw = isset($layoutConfigForForm)
+        ? ($layoutConfigForForm['results'] ?? null)
+        : (isset($quiz) ? ($quiz->layout_config['results'] ?? null) : null);
     $hasResults = is_array($resultsRaw);
     $resultsThemeRaw = old('results_theme_json') ? json_decode(old('results_theme_json'), true) : ($hasResults ? ($resultsRaw['theme'] ?? null) : null);
     $resultsTheme = array_merge(QuizResultsConfig::defaultTheme(), is_array($resultsThemeRaw) ? $resultsThemeRaw : []);

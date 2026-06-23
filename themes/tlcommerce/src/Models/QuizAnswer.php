@@ -2,6 +2,7 @@
 
 namespace Theme\TLCommerce\Models;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Database\Eloquent\Model;
 
 class QuizAnswer extends Model
@@ -17,6 +18,19 @@ class QuizAnswer extends Model
         'answer_description',
         'sort_order',
     ];
+
+    public function translation($field = '', $lang = false)
+    {
+        $lang = $lang == false ? App::getLocale() : $lang;
+        $row = $this->quiz_answer_translations->where('lang', $lang)->first();
+
+        return $row != null ? $row->$field : $this->$field;
+    }
+
+    public function quiz_answer_translations()
+    {
+        return $this->hasMany(QuizAnswerTranslation::class, 'answer_id');
+    }
 
     public function question()
     {

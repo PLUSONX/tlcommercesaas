@@ -21,8 +21,11 @@ class QuizSubmissionRepository
     public function findActiveQuizBySlug(string $slug): ?QuizFeature
     {
         return QuizFeature::with([
+            'quiz_feature_translations',
             'questions' => fn ($q) => $q->orderBy('sort_order'),
+            'questions.quiz_question_translations',
             'questions.answers' => fn ($q) => $q->orderBy('sort_order'),
+            'questions.answers.quiz_answer_translations',
         ])
             ->where('slug', $slug)
             ->where('is_active', 1)
