@@ -157,12 +157,12 @@ export default {
           }`,
         "--title-color": p.title_color,
         "--button-color": p.btn_color,
-        "--button-background-color": p.btn_bg_color,
+        "--button-background-color": p.btn_bg_color || "transparent",
         "--button-border":
           p.btn_border != null ? p.btn_border + "px solid" : 0 + "px",
         "--button-border-color": p.btn_border_color,
         "--button-hover-border-color": p.btn_border_hover_color,
-        "--button-hover-bg-color": p.btn_bg_hover_color,
+        "--button-hover-bg-color": p.btn_bg_hover_color || "transparent",
         "--button-hover-color": p.btn_hover_color,
       };
     },
@@ -192,7 +192,7 @@ export default {
 
 .section_btn {
   color: var(--button-color, #fff) !important;
-  background-color: var(--button-background-color, var(--c1, #e62d04)) !important;
+  background-color: var(--button-background-color, transparent) !important;
   border: var(--button-border, 0) !important;
   border-color: var(--button-border-color, transparent) !important;
   min-height: 32px;
@@ -201,7 +201,7 @@ export default {
 
 .section_btn:hover {
   color: var(--button-hover-color, #fff);
-  background-color: var(--button-hover-bg-color, var(--c1, #e62d04));
+  background-color: var(--button-hover-bg-color, transparent);
   border-color: var(--button-hover-border-color, transparent);
 }
 
