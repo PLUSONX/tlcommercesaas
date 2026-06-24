@@ -13,16 +13,30 @@ const i18n = createI18n({
 })
 
 const loadedLanguages = [];
+const languageMeta = {};
+
+function applyDocumentDirection(language, langCode) {
+    const html = document.documentElement;
+    const isRtl = language?.is_rtl == 1;
+
+    html.classList.toggle("rtl", isRtl);
+    html.setAttribute("dir", isRtl ? "rtl" : "ltr");
+
+    if (langCode) {
+        html.setAttribute("lang", langCode);
+    }
+}
 
 function setI18nLanguage(lang) {
     i18n.global.locale.value = lang;
     axios.defaults.headers.common["Accept-Language"] = lang;
-    document.querySelector("html").setAttribute("lang", lang);
+    document.documentElement.setAttribute("lang", lang);
     return lang;
 }
 
 export async function loadLanguageAsync(lang) {
     if (loadedLanguages.includes(lang)) {
+        applyDocumentDirection(languageMeta[lang], lang);
         if (i18n.global.locale.value !== lang) {
             return Promise.resolve(setI18nLanguage(lang));
         }
@@ -36,9 +50,8 @@ export async function loadLanguageAsync(lang) {
             let language = response.data.language;
 
             if (language != null) {
-
-                var html = document.querySelector("html");
-                html.className = language?.is_rtl == 1 ? "rtl" : "";
+                languageMeta[lang] = language;
+                applyDocumentDirection(language, lang);
             }
 
             loadedLanguages.push(lang);
@@ -47,9 +60,7 @@ export async function loadLanguageAsync(lang) {
         })
         .catch(error => {
             console.error('=== Locale API Failed ===', error);
-            // Set default non-RTL if API fails
-            var html = document.querySelector("html");
-            html.className = "";
+            applyDocumentDirection(null, lang);
             return Promise.reject(error);
         });
 }

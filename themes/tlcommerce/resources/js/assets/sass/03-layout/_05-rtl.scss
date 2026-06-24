@@ -2,8 +2,11 @@
    03.5: RTL
    ********************* */
 
+html.rtl,
+html.rtl body {
+    direction: rtl;
+}
 html.rtl {
-    // direction: rtl;
 
     .header-info-wrap ul li:not(:last-child) {
         margin-right: 0px;
@@ -411,5 +414,19 @@ html.rtl {
 
     .modal .modal-header .btn-circle {
         margin-left: initial;
+    }
+
+    .swiper {
+        direction: rtl;
+    }
+
+    .langcurrency-dropdown ul li a {
+        text-align: right;
+
+        &:hover,
+        &.active {
+            padding-left: 20px;
+            padding-right: 25px;
+        }
     }
 }

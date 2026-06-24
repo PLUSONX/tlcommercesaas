@@ -94,9 +94,13 @@ export default {
     TextEditor,
   },
   data() {
-    return {
-      RTL: document.querySelector("html").className == "rtl" ? "-rtl" : "",
-    };
+    return {};
+  },
+
+  computed: {
+    RTL() {
+      return document.documentElement.classList.contains("rtl") ? "-rtl" : "";
+    },
   },
 
   props: {

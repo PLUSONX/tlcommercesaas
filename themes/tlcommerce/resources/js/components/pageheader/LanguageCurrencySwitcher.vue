@@ -154,11 +154,21 @@ export default {
       if (!trigger) return;
 
       const rect = trigger.getBoundingClientRect();
-      this.fixedDropdownStyle = {
-        top: `${rect.bottom + 10}px`,
-        right: `${window.innerWidth - rect.right}px`,
-        left: "auto",
-      };
+      const isRtl = document.documentElement.dir === "rtl";
+
+      if (isRtl) {
+        this.fixedDropdownStyle = {
+          top: `${rect.bottom + 10}px`,
+          left: `${rect.left}px`,
+          right: "auto",
+        };
+      } else {
+        this.fixedDropdownStyle = {
+          top: `${rect.bottom + 10}px`,
+          right: `${window.innerWidth - rect.right}px`,
+          left: "auto",
+        };
+      }
     },
     onViewportChange() {
       if (this.showLanguageCurrency && this.useFixedDropdown) {
