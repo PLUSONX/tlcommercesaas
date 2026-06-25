@@ -1,44 +1,23 @@
 <template>
   <!-- Widget -->
-  <div class="widget widget-style-1 price_widget">
+  <div class="widget widget-style-1 price_widget p-2">
     <h5>
       <span>{{ $t("Price") }}</span>
-      <span
-        @click="showPriceWidget = !showPriceWidget"
-        class="widget-collapse-toggle"
-        ><span class="material-icons"> expand_more </span></span
-      >
+      <span @click="showPriceWidget = !showPriceWidget" class="widget-collapse-toggle"><span class="material-icons">
+          expand_more </span></span>
     </h5>
     <ul class="list-unstyled mb-0">
       <li v-for="(item, index) in price_options" :key="index">
-        <input
-          type="radio"
-          name="price_group"
-          :id="index"
-          :checked="item == selectedOption"
-          @change="filter(item)"
-        />
+        <input type="radio" name="price_group" :id="index" :checked="item == selectedOption" @change="filter(item)" />
         <label :for="index">
           <the-currency :amount="item.min"></the-currency> -
-          <the-currency :amount="item.max"></the-currency
-        ></label>
+          <the-currency :amount="item.max"></the-currency></label>
       </li>
       <li for="p6">
-        <input
-          type="radio"
-          class="d-none"
-          name="price_group"
-          id="p6"
-          v-model="price_range"
-        />
-        <label for="p6" class="d-block"
-          ><RangeSlider
-            :min="0"
-            :max="500000"
-            :minValue="0"
-            :maxValue="300000"
-            @changePriceRange="changePriceRange"
-        /></label>
+        <input type="radio" class="d-none" name="price_group" id="p6" v-model="price_range" />
+        <label for="p6" class="d-block">
+          <RangeSlider :min="0" :max="500000" :minValue="0" :maxValue="300000" @changePriceRange="changePriceRange" />
+        </label>
       </li>
     </ul>
   </div>

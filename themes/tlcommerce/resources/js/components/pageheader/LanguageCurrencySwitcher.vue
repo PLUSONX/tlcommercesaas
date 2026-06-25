@@ -24,7 +24,7 @@
             href="#"
             class="custom-menu"
             :class="{ active: selected_lang === lang.code }"
-            @click.prevent="selected_lang = lang.code"
+            @click.prevent="selectLanguage(lang.code)"
           >{{ lang.title }}</a>
         </li>
         <li class="langcurrency-section-label">{{ $t("Currency") }}</li>
@@ -33,16 +33,16 @@
             href="#"
             class="custom-menu"
             :class="{ active: selected_currency?.code === currency.code }"
-            @click.prevent="selected_currency = currency"
+            @click.prevent="selectCurrency(currency)"
           >{{ currency.code }}</a>
         </li>
-        <li>
+        <!-- <li>
           <a
             href="#"
             class="custom-menu langcurrency-save"
             @click.prevent="setCurrencyLanguage"
           >{{ $t("Save Changes") }}</a>
-        </li>
+        </li> -->
       </ul>
     </div>
 
@@ -60,7 +60,7 @@
               href="#"
               class="custom-menu"
               :class="{ active: selected_lang === lang.code }"
-              @click.prevent="selected_lang = lang.code"
+              @click.prevent="selectLanguage(lang.code)"
             >{{ lang.title }}</a>
           </li>
           <li class="langcurrency-section-label">{{ $t("Currency") }}</li>
@@ -69,16 +69,16 @@
               href="#"
               class="custom-menu"
               :class="{ active: selected_currency?.code === currency.code }"
-              @click.prevent="selected_currency = currency"
+              @click.prevent="selectCurrency(currency)"
             >{{ currency.code }}</a>
           </li>
-          <li>
+          <!-- <li>
             <a
               href="#"
               class="custom-menu langcurrency-save"
               @click.prevent="setCurrencyLanguage"
             >{{ $t("Save Changes") }}</a>
-          </li>
+          </li> -->
         </ul>
       </div>
     </Teleport>
@@ -174,6 +174,20 @@ export default {
       if (this.showLanguageCurrency && this.useFixedDropdown) {
         this.updateFixedDropdownPosition();
       }
+    },
+    selectLanguage(code) {
+      if (this.selected_lang === code) return;
+      this.selected_lang = code;
+      this.applySelection();
+    },
+    selectCurrency(currency) {
+      if (this.selected_currency?.code === currency.code) return;
+      this.selected_currency = currency;
+      this.applySelection();
+    },
+    applySelection() {
+      this.showLanguageCurrency = false;
+      this.setCurrencyLanguage();
     },
     setCurrencyLanguage() {
       this.$emit(

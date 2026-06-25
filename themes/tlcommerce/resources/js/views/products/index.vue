@@ -1,60 +1,201 @@
 <template>
-  <div :class="mtClass">
+  <template v-if="isSplitScreen">
+    <div :class="mtClass">
 
-    <div class="custom-container2">
+      <div class="custom-container2">
 
-      <div class="card mb-3">
+        <div class="card mb-3">
 
-        <div class="col-lg-12">
-          <div class="section-header d-flex justify-content-between align-items-center">
+          <div class="col-lg-12">
+            <div class="section-header d-flex justify-content-between align-items-center">
 
-            <div class="header-title">
-              <h3 class="product_header mb-0" v-if="!categoryLoading">
-                {{ $t("Products") }}
-              </h3>
-              <h3 class="product_header mb-0" v-if="categoryLoading">
-                <skeleton :border-radius="5" :width="150" :height="30"></skeleton>
-                <!-- <skeleton border-radius="5px" width="150px" height="30px"></skeleton> -->
-              </h3>
-            </div>
-
-            <div class="header-count">
-              <div v-if="categoryLoading">
-                <p class="mb-0">
-                  <skeleton :border-radius="5" :width="50" :height="10"></skeleton>
-                  <!-- <skeleton border-radius="5px" width="50px" height="10px"></skeleton> -->
-                </p>
+              <div class="header-title">
+                <h3 class="product_header mb-0" v-if="!categoryLoading">
+                  {{ $t("Products") }}
+                </h3>
+                <h3 class="product_header mb-0" v-if="categoryLoading">
+                  <skeleton :border-radius="5" :width="150" :height="30"></skeleton>
+                  <!-- <skeleton border-radius="5px" width="150px" height="30px"></skeleton> -->
+                </h3>
               </div>
-              <div v-if="!categoryLoading">
-                <p class="mb-0" v-if="totalItems > 0">
-                  {{ totalItems }} {{ $t("items found") }}
-                </p>
-                <p class="mb-0" v-else>{{ $t("No item found") }}</p>
-              </div>
-            </div>
 
+              <div class="header-count">
+                <div v-if="categoryLoading">
+                  <p class="mb-0">
+                    <skeleton :border-radius="5" :width="50" :height="10"></skeleton>
+                    <!-- <skeleton border-radius="5px" width="50px" height="10px"></skeleton> -->
+                  </p>
+                </div>
+                <div v-if="!categoryLoading">
+                  <p class="mb-0" v-if="totalItems > 0">
+                    {{ totalItems }} {{ $t("items found") }}
+                  </p>
+                  <p class="mb-0" v-else>{{ $t("No item found") }}</p>
+                </div>
+              </div>
+
+            </div>
           </div>
+
         </div>
 
       </div>
+      <div class="row g-0 mobile-gap-10" v-if="productsLoading">
+
+        <div class="col-6" v-for="(item, index) in productSkeletons" :key="index">
+          <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
+        </div>
+      </div>
+      <div class="row g-0 mobile-gap-10" v-else>
+
+        <div v-for="product in paginatedItems" :key="product.id" class="col-6 compact-card">
+          <single-product :item="product" styleEight />
+        </div>
+      </div>
+
+      <company-footer v-if="isSplitScreen" class="split-screen-company-footer" />
 
     </div>
-    <div class="row g-0 mobile-gap-10" v-if="productsLoading">
+  </template>
 
-      <div class="col-6" v-for="(item, index) in productSkeletons" :key="index">
-        <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
+  <template v-else>
+    <div class="">
+      <page-header :items="bItems" />
+      <div class="pt-30 pt-lg-60 pb-60 light-bg">
+        <div class="custom-container2">
+          <div class="row">
+            <div class="col-lg-3">
+              <div class="widget_wrap" :class="{ active: wToggle }">
+                <button class="close-btn btn-circle d-lg-none" @click.prevent="wToggle = !wToggle">
+                  <span class="material-icons"> close </span>
+                </button>
+                <div class="widget_wrap-inner">
+                  <WidgetTopCategory v-if="!categoryLoading" :categories="categories" :selected-cat="category_filter"
+                    @filter="addCategoryFilter" />
+                  <div v-if="categoryLoading" class="widget widget-style-1 widget_top_category mb-4">
+                    <skeleton height="300px"></skeleton>
+                  </div>
+                  <!-- <WidgetBrand
+                    v-if="!brandLoading"
+                    :brands="brands"
+                    :selected-brand="brand_filter"
+                    @filter="addBrandFilter"
+                  /> -->
+                  <div v-if="brandLoading" class="widget widget-style-1 widget_top_category mb-4">
+                    <skeleton height="300px"></skeleton>
+                  </div>
+                  <WidgetRating :selected-item="rating_filter" @filter="addRatingFilter" />
+                  <WidgetPrice :selected-option="price_filter" @filter="addPriceFilter" />
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-9">
+              <div class="row">
+                <div class="col-12">
+                  <div class="mb-40 shadow-card">
+                    <div class="row">
+                      <div class="col-lg-6 order-1 order-lg-0 col-xl-6">
+                        <div class="section-header">
+                          <h3 class="product_header" v-if="!categoryLoading">
+                            {{ $t("Products") }}
+                          </h3>
+                          <h3 class="product_header" v-if="categoryLoading">
+                            <skeleton border-radius="5px" width="150px" height="30px"></skeleton>
+                          </h3>
+                          <div v-if="categoryLoading">
+                            <p class="mt-1">
+                              <skeleton border-radius="5px" width="50px" height="10px"></skeleton>
+                            </p>
+                          </div>
+                          <div v-if="!categoryLoading">
+                            <p v-if="totalItems > 0">
+                              {{ totalItems }} {{ $t("items found") }}
+                            </p>
+                            <p v-else>{{ $t("No item found") }}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <sorting-option class="col-lg-6 order-0 order-lg-1 text-lg-right" :data-loading="categoryLoading"
+                        :selected-item="sorting_by" @sorting-items="sortingItems"
+                        @filter-toggle="wToggle = !wToggle"></sorting-option>
+                    </div>
+                    <!-- Brand Collapse Box -->
+                    <brand-collapse-box :brands="brands" :brand-loading="brandLoading" @select-brand="addBrandFilter"
+                      v-if="!brandLoading && brands.length > 0"></brand-collapse-box>
+                    <!-- End Brand Collapse Box -->
+                    <!--Filter items-->
+                    <div class="filter-tag-wrap" v-if="
+                      brand_filter.id ||
+                      category_filter.id ||
+                      price_filter.max ||
+                      rating_filter != null
+                    ">
+                      <div class="filter-tags">
+                        <h6 class="filtered-by mb-0">{{ $t("Filtered By") }}:</h6>
+
+                        <div class="ant-tag" v-if="brand_filter.id">
+                          <span class="ant-tag-text">{{
+                            brand_filter.name
+                            }}</span>
+                          <span class="material-icons" @click.prevent="removeTag('brand')">close</span>
+                        </div>
+                        <div class="ant-tag" v-if="category_filter.id">
+                          <span class="ant-tag-text">{{
+                            category_filter.name
+                            }}</span>
+                          <span class="material-icons" @click.prevent="removeTag('category')">close</span>
+                        </div>
+                        <div class="ant-tag" v-if="rating_filter != null">
+                          <span class="ant-tag-text">{{ rating_filter }} Star</span>
+                          <span class="material-icons" @click.prevent="removeTag('rating')">close</span>
+                        </div>
+                        <div class="ant-tag" v-if="price_filter.max">
+                          <span class="ant-tag-text">
+                            <the-currency :amount="price_filter.min"></the-currency>-
+                            <the-currency :amount="price_filter.max"></the-currency>
+                          </span>
+                          <span class="material-icons" @click.prevent="removeTag('price')">close</span>
+                        </div>
+
+                        <span class="clear-all" @click.prevent="removeAllTag">{{
+                          $t("CLEAR ALL")
+                          }}</span>
+                      </div>
+                    </div>
+                    <!--End filter items-->
+                  </div>
+                </div>
+              </div>
+              <div class="row mobile-gap-10 products-listing-grid" v-if="productsLoading">
+                <div class="col-lg-3 col-6" v-for="(item, index) in productSkeletons" :key="index">
+                  <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
+                </div>
+              </div>
+              <div class="row mobile-gap-10 products-listing-grid" v-else>
+                <div v-for="product in paginatedItems" :key="product.id" class="col-lg-3 col-6">
+                  <single-product :item="product" styleEight listing-grid />
+                </div>
+              </div>
+              <div class="row align-items-center mt-10" v-if="!productsLoading">
+                <div class="col-md-6">
+                  <!-- Showing Per Page -->
+                  <ShowingPerPage class="text-center text-md-start" :items-per-page="perPage" :total-items="totalItems"
+                    :current-page="currentPage" />
+                  <!-- Showing Per Page -->
+                </div>
+                <div class="col-md-6 d-flex justify-content-center justify-content-md-end mt-3 mt-md-0">
+                  <!-- Pagination -->
+                  <pagination :options="paginationOptions" v-model="currentPage" :records="totalItems"
+                    :per-page="perPage" @paginate="getProducts" />
+                  <!-- End Pagination -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="row g-0 mobile-gap-10" v-else>
-
-      <div v-for="product in paginatedItems" :key="product.id" class="col-6 compact-card">
-        <single-product :item="product" styleEight />
-      </div>
-    </div>
-
-    <company-footer v-if="isSplitScreen" class="split-screen-company-footer" />
-
-  </div>
+  </template>
 </template>
 
 <script>
@@ -70,7 +211,7 @@ import SortingOption from "../../components/product/SortingOption.vue";
 import Pagination from "v-pagination-3";
 import CompanyFooter from "@/components/ui/CompanyFooter.vue";
 const axios = require("axios").default;
-import { mapState, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 export default {
   name: "Products",
   components: {
@@ -335,16 +476,16 @@ export default {
 }
 
 @media (max-width: 500px) {
-  .mobile-gap-10 {
+  .row.g-0.mobile-gap-10 {
     --bs-gutter-x: 0rem !important;
     --bs-gutter-y: 0rem !important;
   }
 
-  .mobile-gap-10 .compact-card {
+  .row.g-0.mobile-gap-10 .compact-card {
     padding: 3px 2px 0 !important;
   }
 
-  .mobile-gap-10 .compact-card :deep(.single-product-item) {
+  .row.g-0.mobile-gap-10 .compact-card :deep(.single-product-item) {
     box-shadow: none !important;
     border-radius: 6px !important;
     margin-bottom: 0 !important;
@@ -354,6 +495,42 @@ export default {
 .split-screen-company-footer {
   flex-shrink: 0;
   width: 100%;
+}
+
+/* Default layout product grid (non-split-screen) */
+.products-listing-grid>[class*="col-"] {
+  display: flex;
+  flex-direction: column;
+}
+
+.products-listing-grid :deep(.single-product-item.style--eight) {
+  width: 100% !important;
+  margin-bottom: 0 !important;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.products-listing-grid :deep(.product-summary) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 575px) {
+  .products-listing-grid {
+    margin-right: -5px;
+    margin-left: -5px;
+  }
+
+  .products-listing-grid>[class*="col-"] {
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+
+  .products-listing-grid :deep(.single-product-item.style--eight) {
+    margin-bottom: 10px !important;
+  }
 }
 </style>
 
