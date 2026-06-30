@@ -32,7 +32,11 @@
                         <!-- End Page Header -->
 
                         <!-- Page Content -->
-                        <div class="entry-content mb-40" v-html="page.content"></div>
+                        <div
+                            class="entry-content mb-40"
+                            :class="{ 'page-custom-content': hasCustomContentStyles }"
+                            v-html="page.content"
+                        ></div>
                         <!-- End Page Content -->
                     </article>
                 </div>
@@ -142,6 +146,10 @@
 import { defineAsyncComponent } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Autoplay, Pagination } from "swiper";
+import {
+    preparePageContentForRender,
+    removePageContentStyles,
+} from "@/utils/pageContentStyles";
 
 const BuilderSection = defineAsyncComponent(() =>
     import("@/components/page-builder/BuilderSection.vue")
@@ -236,6 +244,8 @@ export default {
             page_section: {},
             active_pagebuilder: false,
             page_builder_widgets: {},
+            contentStyleId: "",
+            hasCustomContentStyles: false,
 
             // HomePageDeliveryShipping
             showContactInfo: true,
@@ -305,6 +315,10 @@ export default {
 
     },
 
+    beforeUnmount() {
+        removePageContentStyles(this.contentStyleId);
+    },
+
     async created() {
         try {
             const response = await axios.get(
@@ -327,6 +341,15 @@ export default {
             // Only remove '/public' prefix, keep the leading '/'
             return img.replace(/^\/public/, '');
         },
+        setPageContent(rawContent, styleKey) {
+            if (this.contentStyleId) {
+                removePageContentStyles(this.contentStyleId);
+            }
+            this.contentStyleId = `page-content-styles-home-${styleKey || "default"}`;
+            const prepared = preparePageContentForRender(rawContent, this.contentStyleId);
+            this.page.content = prepared.htmlWithoutStyles;
+            this.hasCustomContentStyles = prepared.hasCustomStyles;
+        },
         /**
          * Get active sections
          */
@@ -343,6 +366,10 @@ export default {
                             response.data.active_pagebuilder ?? false;
                         this.page_builder_widgets =
                             response.data.page_builder_widgets ?? {};
+                        if (this.page?.content) {
+                            const styleKey = this.page.permalink || this.page.id || "default";
+                            this.setPageContent(this.page.content, styleKey);
+                        }
                         if (!this.active_pagebuilder) {
                             this.loaded();
                         }

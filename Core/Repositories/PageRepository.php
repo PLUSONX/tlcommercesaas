@@ -69,7 +69,7 @@ class PageRepository
         if ($request['lang'] != null && $request['lang'] != getDefaultLang()) {
             $page_translation = TlPageTranslation::firstOrNew(['page_id' => $request['id'], 'lang' => $request['lang']]);
             $page_translation->title   = xss_clean($request['title']);
-            $page_translation->content = xss_clean($request['content']);
+            $page_translation->content = xss_clean(normalize_page_content_styles($request['content']));
             $page_translation->save();
         } else {
             $this->pageCreateUpdate($request, $request->id);
@@ -89,7 +89,7 @@ class PageRepository
         $page->page_image = $request['page_image'];
         $page->title      = xss_clean($request['title']);
         $page->permalink  = xss_clean($request['permalink']);
-        $page->content    = xss_clean($request['content']);
+        $page->content    = xss_clean(normalize_page_content_styles($request['content']));
         $page->visibility = $request['visibility'];
 
         if ($request['visibility'] == 'password') {

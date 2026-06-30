@@ -2141,6 +2141,48 @@ if (!function_exists('xss_clean')) {
     }
 }
 
+if (!function_exists('normalize_page_content_styles')) {
+    /**
+     * Wrap orphaned leading CSS (plain text before HTML) in a style tag.
+     * Summernote codeviewFilter can strip style tags but leave the CSS body.
+     *
+     * @param  string|null  $content
+     * @return string
+     */
+    function normalize_page_content_styles($content)
+    {
+        if ($content === null || $content === '') {
+            return $content ?? '';
+        }
+
+        if (preg_match('/<style[^>]*>[\s\S]*?<\/style>/i', $content)) {
+            return $content;
+        }
+
+        if (!preg_match('/<([a-z][\w-]*)[\s>\/]/i', $content, $matches, PREG_OFFSET_CAPTURE)) {
+            return $content;
+        }
+
+        $tagOffset = $matches[0][1];
+        if ($tagOffset === 0) {
+            return $content;
+        }
+
+        $leading = trim(substr($content, 0, $tagOffset));
+        $rest = trim(substr($content, $tagOffset));
+
+        if ($leading === '' || strpos($leading, '{') === false) {
+            return $content;
+        }
+
+        if (!preg_match('/[\.\#\@][\w-]/', $leading)) {
+            return $content;
+        }
+
+        return '<style>' . $leading . '</style>' . "\n" . $rest;
+    }
+}
+
 
 //---- Blog & Page ----//
 

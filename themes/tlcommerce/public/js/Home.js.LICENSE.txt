@@ -196,6 +196,8 @@
 
 /*! @/components/widget/WidgetTopCategory.vue */
 
+/*! @/utils/pageContentStyles */
+
 /*! @/views/products/index.vue */
 
 /*! @coreui/vue */
@@ -223,6 +225,10 @@
 /*!***********************************************!*\
   !*** ./resources/js/views/products/index.vue ***!
   \***********************************************/
+
+/*!*************************************************!*\
+  !*** ./resources/js/utils/pageContentStyles.js ***!
+  \*************************************************/
 
 /*!****************************************************!*\
   !*** ./resources/js/components/ui/RangeSlider.vue ***!

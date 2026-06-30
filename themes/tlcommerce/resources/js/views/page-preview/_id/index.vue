@@ -25,7 +25,11 @@
               <!-- End Page Header -->
 
               <!-- Page Content -->
-              <div class="entry-content" v-html="page.content"></div>
+              <div
+                class="entry-content"
+                :class="{ 'page-custom-content': hasCustomContentStyles }"
+                v-html="page.content"
+              ></div>
               <!-- End Page Content -->
             </article>
           </div>
@@ -36,6 +40,10 @@
 </template>
 <script>
 import { defineAsyncComponent } from "vue";
+import {
+  preparePageContentForRender,
+  removePageContentStyles,
+} from "@/utils/pageContentStyles";
 const PageHeader = defineAsyncComponent(() =>
   import("@/components/pageheader/PageHeader.vue")
 );
@@ -72,11 +80,17 @@ export default {
       page_section: {},
       active_pagebuilder: false,
       page_builder_widgets: {},
+      contentStyleId: "",
+      hasCustomContentStyles: false,
     };
   },
 
   mounted() {
     this.getPageDetails();
+  },
+
+  beforeUnmount() {
+    removePageContentStyles(this.contentStyleId);
   },
 
   methods: {
@@ -87,6 +101,15 @@ export default {
     cleanContentImages(content) {
       if (!content) return '';
       return content.replace(/(src|href)="\/public\//g, '$1="/');
+    },
+    setPageContent(rawContent, slug) {
+      if (this.contentStyleId) {
+        removePageContentStyles(this.contentStyleId);
+      }
+      this.contentStyleId = `page-content-styles-preview-${slug}`;
+      const prepared = preparePageContentForRender(rawContent, this.contentStyleId);
+      this.page.content = prepared.htmlWithoutStyles;
+      this.hasCustomContentStyles = prepared.hasCustomStyles;
     },
     /**
      * Get page details
@@ -106,7 +129,8 @@ export default {
           if (response.data.success) {
             this.page = response.data.page;
             if (this.page.content) {
-              this.page.content = this.cleanContentImages(this.page.content);
+              const cleaned = this.cleanContentImages(this.page.content);
+              this.setPageContent(cleaned, slug);
             }
             this.page_section = response.data.page_sections ?? {};
             this.active_pagebuilder = response.data.active_pagebuilder;

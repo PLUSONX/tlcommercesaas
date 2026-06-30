@@ -29,7 +29,11 @@
               <!-- End Page Header -->
 
               <!-- Page Content -->
-              <div class="entry-content" v-html="page.content"></div>
+              <div
+                class="entry-content"
+                :class="{ 'page-custom-content': hasCustomContentStyles }"
+                v-html="page.content"
+              ></div>
               <!-- End Page Content -->
             </article>
           </div>
@@ -42,6 +46,10 @@
 <script>
 import { defineAsyncComponent } from "vue";
 import { mapGetters } from "vuex";
+import {
+  preparePageContentForRender,
+  removePageContentStyles,
+} from "@/utils/pageContentStyles";
 
 const PageHeader = defineAsyncComponent(() =>
   import("@/components/pageheader/PageHeader.vue")
@@ -92,16 +100,36 @@ export default {
       page_section: {},
       active_pagebuilder: false,
       page_builder_widgets: {},
+      contentStyleId: "",
+      hasCustomContentStyles: false,
     };
   },
   mounted() {
     this.getPageDetails();
 
   },
+  beforeUnmount() {
+    removePageContentStyles(this.contentStyleId);
+  },
+  watch: {
+    $route() {
+      this.pageLoading = true;
+      this.getPageDetails();
+    },
+  },
   methods: {
     cleanImage(img) {
       if (!img) return '';
       return img.replace(/^\/public/, '');
+    },
+    setPageContent(rawContent, slug) {
+      if (this.contentStyleId) {
+        removePageContentStyles(this.contentStyleId);
+      }
+      this.contentStyleId = `page-content-styles-${slug}`;
+      const prepared = preparePageContentForRender(rawContent, this.contentStyleId);
+      this.page.content = prepared.htmlWithoutStyles;
+      this.hasCustomContentStyles = prepared.hasCustomStyles;
     },
     /**
      * Get page details
@@ -132,6 +160,9 @@ export default {
             this.bItems = response.data.breadCrumbs;
             if (this.page == null) {
               this.$router.push({ path: "/404" });
+            }
+            if (this.page?.content) {
+              this.setPageContent(this.page.content, slug);
             }
             this.page_section = response.data.page_sections ?? {};
             this.active_pagebuilder = response.data.active_pagebuilder;

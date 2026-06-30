@@ -84,7 +84,11 @@
               <!-- End Post Header -->
 
               <!-- Post Content -->
-              <div class="entry-content mb-40" v-html="blog.content"></div>
+              <div
+                class="entry-content mb-40"
+                :class="{ 'page-custom-content': hasCustomContentStyles }"
+                v-html="blog.content"
+              ></div>
               <!-- End Post Content -->
 
               <!-- Post Footer -->
@@ -437,6 +441,10 @@ import VRuntimeTemplate from "vue3-runtime-template";
 import { mapState } from "vuex";
 import { scroller } from "vue-scrollto/src/scrollTo";
 import { cleanHtmlMediaPaths } from "@/utils/sectionProps";
+import {
+  preparePageContentForRender,
+  removePageContentStyles,
+} from "@/utils/pageContentStyles";
 
 const axios = require("axios").default;
 export default {
@@ -466,6 +474,8 @@ export default {
       blogOptionStyle: {},
       singleBlogPageStyle: {},
       blog_details_loading: true,
+      contentStyleId: "",
+      hasCustomContentStyles: false,
 
       userName: "",
       userEmail: "",
@@ -497,6 +507,9 @@ export default {
     this.getBlogComments();
     this.getRelatedBlogs();
   },
+  beforeUnmount() {
+    removePageContentStyles(this.contentStyleId);
+  },
   computed: mapState({
     isCustomerLogin: (state) => state.isCustomerLogin,
     blogsListLayoutClass() {
@@ -524,6 +537,15 @@ export default {
     },
   }),
   methods: {
+    setBlogContent(rawContent, slug) {
+      if (this.contentStyleId) {
+        removePageContentStyles(this.contentStyleId);
+      }
+      this.contentStyleId = `blog-content-styles-${slug}`;
+      const prepared = preparePageContentForRender(rawContent, this.contentStyleId);
+      this.blog.content = prepared.htmlWithoutStyles;
+      this.hasCustomContentStyles = prepared.hasCustomStyles;
+    },
     /**
      * Get blog theme style
      */
@@ -551,6 +573,9 @@ export default {
           if (response.data.success) {
             if (response.data.blog != null) {
               this.blog = response.data.blog;
+              if (this.blog.content) {
+                this.setBlogContent(this.blog.content, slug);
+              }
               this.bItems = [
                 {
                   text: this.$t("Home"),

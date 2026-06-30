@@ -12,11 +12,17 @@
 
 /*! @/components/pageheader/PageHeader.vue */
 
+/*! @/utils/pageContentStyles */
+
 /*! axios */
 
 /*! import() */
 
 /*! vue */
+
+/*!*************************************************!*\
+  !*** ./resources/js/utils/pageContentStyles.js ***!
+  \*************************************************/
 
 /*!*******************************************************!*\
   !*** ./resources/js/views/page-preview/_id/index.vue ***!

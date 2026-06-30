@@ -15,7 +15,7 @@
             'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
 
         window.SUMMERNOTE_CONTENT_FILTER_REGEX =
-            /<\/*(?:applet|b(?:ase|gsound|link)|embed|(?<![a-z])frameset(?=[\s>/])|(?<![a-z])frame(?=[\s>/])|ilayer|l(?:ayer|ink)|meta|object|s(?:cript|tyle)|t(?:itle|extarea)|xml)[^>]*>|on\w+\s*=\s*"[^"]*"|on\w+\s*=\s*'[^']*'|on\w+\s*=\s*[^\s>]+/gi;
+            /<\/*(?:applet|b(?:ase|gsound|link)|embed|(?<![a-z])frameset(?=[\s>/])|(?<![a-z])frame(?=[\s>/])|ilayer|l(?:ayer|ink)|meta|object|script|t(?:itle|extarea)|xml)[^>]*>|on\w+\s*=\s*"[^"]*"|on\w+\s*=\s*'[^']*'|on\w+\s*=\s*[^\s>]+/gi;
 
         function buildEmbedIframe(src) {
             return $('<iframe>')
@@ -109,13 +109,6 @@
                     ["view", ["fullscreen", "codeview", "help"]],
                 ],
                 placeholder: 'Content',
-                callbacks: {
-                    onChangeCodeview: function() {
-                        var code = $(this).summernote('code');
-                        code = code.replace(SUMMERNOTE_CONTENT_FILTER_REGEX, '');
-                        $(this).val(code);
-                    }
-                }
             }, extraOptions);
 
             options.callbacks = $.extend({}, options.callbacks, extraCallbacks);

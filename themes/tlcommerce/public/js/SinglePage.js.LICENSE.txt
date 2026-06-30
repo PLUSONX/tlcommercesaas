@@ -22,6 +22,8 @@
 
 /*! @/components/pageheader/PageHeader.vue */
 
+/*! @/utils/pageContentStyles */
+
 /*! axios */
 
 /*! import() */
@@ -33,6 +35,10 @@
 /*!***********************************************!*\
   !*** ./resources/js/views/page/_id/index.vue ***!
   \***********************************************/
+
+/*!*************************************************!*\
+  !*** ./resources/js/utils/pageContentStyles.js ***!
+  \*************************************************/
 
 /*!***********************************************************************!*\
   !*** ./resources/js/views/page/_id/index.vue?vue&type=script&lang=js ***!
