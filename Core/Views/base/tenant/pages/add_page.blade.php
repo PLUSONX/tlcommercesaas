@@ -486,6 +486,9 @@
         // page preview and draft
         function pagePreviewDraft(action) {
             "use strict";
+            if ($('#page_content').data('summernote')) {
+                $('#page_content').val($('#page_content').summernote('code'));
+            }
             var formData = $('#page_form').serializeArray();
             formData.push({
                 name: "action",

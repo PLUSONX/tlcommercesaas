@@ -141,7 +141,11 @@ class PageController extends Controller
                 $languages = $this->language_repository->allLanguages();
                 $lang =  $request->lang;
 
-                $page = $this->page_repository->findPage($request->permalink);
+                $page = TlPage::with('page_translations')->where('permalink', $request->permalink)->first();
+                if ($page == null) {
+                    toastNotification('error', translate('Page not found'));
+                    return redirect()->route('core.page');
+                }
                 $page->page_password = isset($page->page_password) ? Crypt::decrypt($page->page_password) : null;
 
                 $data = [

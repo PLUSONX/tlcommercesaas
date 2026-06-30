@@ -113,7 +113,18 @@
 
             options.callbacks = $.extend({}, options.callbacks, extraCallbacks);
             options.callbacks.onInit = function() {
-                patchSummernoteVideoDialog($(this));
+                var $note = $(this);
+                patchSummernoteVideoDialog($note);
+
+                var $form = $note.closest('form');
+                if ($form.length) {
+                    $form.off('submit.summernoteSync').on('submit.summernoteSync', function() {
+                        if ($note.data('summernote')) {
+                            $note.val($note.summernote('code'));
+                        }
+                    });
+                }
+
                 if (typeof userOnInit === 'function') {
                     userOnInit.apply(this, arguments);
                 }

@@ -23,9 +23,17 @@ class PageRequest extends FormRequest
      */
     public function rules()
     {
+        $lang = $this->input('lang');
+        $isTranslationSave = $lang && $lang != getDefaultLang();
+        $titleRule = $isTranslationSave
+            ? 'required|max:225'
+            : ($this->input('id')
+                ? 'required|max:225|unique:tl_pages,title,' . $this->input('id')
+                : 'required|max:225|unique:tl_pages,title');
+
         if ($this->input('id')) {
             return [
-                'title' => 'required|max:225||unique:tl_pages,title,'.$this->input('id'),
+                'title' => $titleRule,
                 'permalink' => 'required|unique:tl_pages,permalink,'.$this->input('id'),
                 'content'  => 'nullable',
                 'page_image' => 'nullable|exists:tl_uploaded_files,id',
@@ -38,7 +46,7 @@ class PageRequest extends FormRequest
             ];
         } else {
             return [
-                'title' => 'required|max:225||unique:tl_pages,title',
+                'title' => $titleRule,
                 'permalink' => 'required|unique:tl_pages,permalink',
                 'page_image' => 'nullable|exists:tl_uploaded_files,id',
                 'content'  => 'nullable',

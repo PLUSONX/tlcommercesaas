@@ -165,7 +165,7 @@
                             <label class="col-sm-2 font-14 bold black">{{ translate('Content') }}</label>
                             <div class="col-sm-10">
                                 <div class="editor-wrap">
-                                    <textarea name="content" id="page_content" data-href="">{{ $page->translation('content', $lang) }}</textarea>
+                                    <textarea name="content" id="page_content" data-href="">{{ old('content', $page->translation('content', $lang)) }}</textarea>
                                 </div>
                                 @if ($errors->has('content'))
                                     <p class="text-danger mt-2"> {{ $errors->first('content') }} </p>
@@ -547,6 +547,9 @@
         // page preview and draft
         function pagePreviewDraft(action) {
             "use strict";
+            if ($('#page_content').data('summernote')) {
+                $('#page_content').val($('#page_content').summernote('code'));
+            }
             var formData = $('#page_form').serializeArray();
             formData.push({
                 name: "action",
