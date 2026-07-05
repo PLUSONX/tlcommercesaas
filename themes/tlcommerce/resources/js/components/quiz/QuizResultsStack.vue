@@ -6,11 +6,41 @@
         <img :src="heroImageUrl" alt="" />
       </div>
 
-      <a v-else-if="block.type === 'product_image' && productImageForBlock(block) && productLinksByBlockId[block.id]"
+      <a v-else-if="block.type === 'hero_image' && heroProductImageForBlock(block) && productLinksByBlockId[block.id]"
+        :href="productLinksByBlockId[block.id].href"
+        class="quiz-results-stack__hero quiz-results-stack__product-link quiz-results-stack__product-image"
+        :class="heroClasses" :style="heroProductImageStyles(block)"
+        @click.prevent="navigateToProduct(productLinksByBlockId[block.id].to)">
+        <img :src="heroProductImageForBlock(block)" :alt="productAltForBlock(block)" />
+      </a>
+
+      <div v-else-if="block.type === 'hero_image' && heroProductImageForBlock(block)" class="quiz-results-stack__hero"
+        :class="heroClasses" :style="heroProductImageStyles(block)">
+        <img :src="heroProductImageForBlock(block)" :alt="productAltForBlock(block)" />
+      </div>
+
+      <a v-else-if="block.type === 'product_image' && isSwatchBlock(block) && productLinksByBlockId[block.id]"
+        :href="productLinksByBlockId[block.id].href"
+        class="quiz-results-stack__product-image quiz-results-stack__product-link quiz-results-stack__product-swatch"
+        :style="productSwatchStyles(block)" :aria-label="productAltForBlock(block)"
+        @click.prevent="navigateToProduct(productLinksByBlockId[block.id].to)">
+      </a>
+
+      <span v-else-if="block.type === 'product_image' && isSwatchBlock(block)"
+        class="quiz-results-stack__product-image quiz-results-stack__product-swatch"
+        :style="productSwatchStyles(block)" :aria-label="productAltForBlock(block)">
+      </span>
+
+      <a v-else-if="block.type === 'product_image' && !isSwatchBlock(block) && productImageForBlock(block) && productLinksByBlockId[block.id]"
         :href="productLinksByBlockId[block.id].href" class="quiz-results-stack__product-image quiz-results-stack__product-link"
         :style="productImageStyles(block)" @click.prevent="navigateToProduct(productLinksByBlockId[block.id].to)">
         <img :src="productImageForBlock(block)" :alt="productAltForBlock(block)" />
       </a>
+
+      <div v-else-if="block.type === 'product_image' && !isSwatchBlock(block) && productImageForBlock(block)"
+        class="quiz-results-stack__product-image" :style="productImageStyles(block)">
+        <img :src="productImageForBlock(block)" :alt="productAltForBlock(block)" />
+      </div>
 
       <a v-else-if="block.type === 'match_badge' && productLinksByBlockId[block.id]"
         :href="productLinksByBlockId[block.id].href" class="quiz-results-stack__match-badge quiz-results-stack__product-link"
@@ -88,11 +118,12 @@ export default {
     blocks: { type: Array, default: () => [] },
     theme: { type: Object, default: () => ({}) },
     results: { type: Array, default: () => [] },
+    productProfiles: { type: Array, default: () => [] },
     heroImage: { type: String, default: null },
   },
   computed: {
     tokenContext() {
-      return buildResultContext(this.results);
+      return buildResultContext(this.results, this.productProfiles);
     },
     activeBlocks() {
       return (this.blocks || []).filter((block) => block.enabled !== false);
@@ -128,8 +159,9 @@ export default {
     productLinksByBlockId() {
       const map = {};
       for (const block of this.activeBlocks) {
-        if (block.type !== "product_image" && block.type !== "match_badge") continue;
-        const url = getProductForRank(this.tokenContext, block.product_rank || 1).url;
+        if (block.type !== "product_image" && block.type !== "match_badge" && block.type !== "hero_image") continue;
+        const rank = block.type === "hero_image" ? 1 : (block.product_rank || 1);
+        const url = getProductForRank(this.tokenContext, rank).url;
         const link = resolveActionLink(url);
         if (link?.kind === "router") {
           const resolved = this.$router.resolve(link.to);
@@ -212,6 +244,20 @@ export default {
         height: "var(--quiz-hero-size)",
       };
     },
+    heroProductImageForBlock(block) {
+      if (this.heroImageUrl) return null;
+      return this.productImageForBlock({ ...block, product_rank: block.product_rank || 1 });
+    },
+    heroProductImageStyles(block) {
+      const size = parseInt(this.theme.hero_size, 10) || 80;
+      return {
+        ...this.blockSpacingStyles(block, { fullWidth: false }),
+        width: `${size}px`,
+        height: `${size}px`,
+        borderRadius: `${this.theme.card_border_radius || 0}px`,
+        overflow: "hidden",
+      };
+    },
     productImageStyles(block) {
       const size = block.size || 120;
       const isSwatch = block.display_mode === "swatch";
@@ -221,6 +267,22 @@ export default {
         height: `${isSwatch ? Math.min(size, 80) : size}px`,
         borderRadius: isSwatch ? "50%" : `${this.theme.card_border_radius || 0}px`,
         overflow: "hidden",
+      };
+    },
+    isSwatchBlock(block) {
+      return block.type === "product_image" && block.display_mode === "swatch";
+    },
+    productSwatchColor(block) {
+      const p = getProductForRank(this.tokenContext, block.product_rank || 1);
+      return p.color || this.theme.accent_color || "#c9a84c";
+    },
+    productSwatchStyles(block) {
+      return {
+        ...this.productImageStyles(block),
+        background: this.productSwatchColor(block),
+        border: "2px solid color-mix(in srgb, #ffffff 45%, transparent)",
+        boxSizing: "border-box",
+        flexShrink: 0,
       };
     },
     matchBadgeStyles(block) {
@@ -403,6 +465,23 @@ export default {
   color: var(--quiz-text, #fff);
 }
 
+.quiz-results-stack :deep(h1),
+.quiz-results-stack :deep(h2),
+.quiz-results-stack :deep(h3),
+.quiz-results-stack :deep(p),
+.quiz-results-stack :deep(span),
+.quiz-results-stack :deep(em) {
+  color: inherit;
+}
+
+.quiz-results-stack__title,
+.quiz-results-stack__subtitle,
+.quiz-results-stack__tagline,
+.quiz-results-stack__body,
+.quiz-results-stack__meta {
+  color: var(--quiz-text, #fff);
+}
+
 .quiz-results-stack__hero {
   display: flex;
   align-items: center;
@@ -423,6 +502,12 @@ export default {
 
 .quiz-results-stack__product-image {
   flex-shrink: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.quiz-results-stack__product-swatch {
+  display: block;
   margin-left: auto;
   margin-right: auto;
 }

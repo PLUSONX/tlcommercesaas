@@ -32,6 +32,11 @@ body.dark {
     .product-title {
         a {
             color: #fff;
+
+            &:hover {
+                color: #fff;
+                opacity: 0.85;
+            }
         }
     }
 
@@ -59,6 +64,33 @@ body.dark {
     h5,
     h6 {
         color: #fff !important;
+    }
+
+    // CMS pages with author-injected styles (white/light custom backgrounds)
+    .entry-content.page-custom-content {
+        color: #2d3436;
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        li,
+        td,
+        th {
+            color: inherit !important;
+        }
+
+        a {
+            color: $c1 !important;
+
+            &:hover {
+                color: $c1;
+                opacity: 0.85;
+            }
+        }
     }
 
     .btn.hover-light {
@@ -201,14 +233,28 @@ body.dark {
     .bottom-tabbar-list {
         box-shadow: 0 0 10px rgb(255 255 255 / 15%);
         background-color: var(--dark-two);
-    }
 
-    .bottom-tabbar-list a span:not(.material-icons) {
-        color: #fff;
-    }
+        a {
+            .material-icons {
+                color: #fff !important;
+            }
 
-    .bottom-tabbar-list a.router-link-exact-active span {
-        color: $c1;
+            span:not(.material-icons) {
+                color: #fff;
+            }
+
+            &.router-link-exact-active {
+                background-color: rgba(255, 255, 255, 0.08);
+
+                span {
+                    color: $c1;
+                }
+
+                .material-icons {
+                    color: $c1 !important;
+                }
+            }
+        }
     }
 
     .bg-white {
@@ -263,8 +309,14 @@ body.dark {
         }
     }
 
-    .single-product-item.style--eight .product-price {
-        color: #fff;
+    // Product prices — readable on dark backgrounds (don't use --mainC)
+    .single-product-item .product-price,
+    .product-price {
+        color: #fff !important;
+
+        del {
+            color: rgba(255, 255, 255, 0.55) !important;
+        }
     }
 
     .pagination li a {
@@ -515,10 +567,6 @@ body.dark {
     .single-preview-file {
         border: 1px solid rgb(255 255 255 / 0.2);
         background-color: var(--dark-two) !important;
-    }
-
-    .single-package .product-price {
-        color: #fff !important;
     }
 
     .single-package .shipping-content .pl-shipping-left .pl-shipping-left-title,

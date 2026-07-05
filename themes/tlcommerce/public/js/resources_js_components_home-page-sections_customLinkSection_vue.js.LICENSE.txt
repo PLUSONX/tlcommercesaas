@@ -18,6 +18,8 @@
 
 /*! ./customLinkSection.vue?vue&type=template&id=15ec39d8&scoped=true */
 
+/*! ./multilineText */
+
 /*! ./node_modules/vue-loader/dist/exportHelper.js */
 
 /*! @/utils/quizResultTokens */
@@ -33,6 +35,10 @@
 /*!********************************************!*\
   !*** ./resources/js/utils/sectionProps.js ***!
   \********************************************/
+
+/*!*********************************************!*\
+  !*** ./resources/js/utils/multilineText.js ***!
+  \*********************************************/
 
 /*!************************************************!*\
   !*** ./resources/js/utils/quizResultTokens.js ***!

@@ -1,19 +1,23 @@
 /**
  * Build token context from ranked quiz API results.
  * @param {Array} results - [{ product_id, match_pct, rank, product: { name, slug, ... } }]
+ * @param {Array} [productProfiles] - quiz layout_config.results.product_profiles
  */
-export function buildResultContext(results) {
+import { formatMultilineHtml, normalizeMultilineText, escapeHtml } from "./multilineText";
+
+export function buildResultContext(results, productProfiles = []) {
   const list = Array.isArray(results) ? results : [];
+  const profiles = Array.isArray(productProfiles) ? productProfiles : [];
   const byRank = {};
   const top = list[0] || null;
 
   list.forEach((item, index) => {
     const rank = item.rank || index + 1;
-    byRank[rank] = mapResultItem(item, rank);
+    byRank[rank] = mapResultItem(item, rank, profiles);
     byRank[`product_${rank}`] = byRank[rank];
   });
 
-  const topMapped = top ? mapResultItem(top, top.rank || 1) : emptyProduct();
+  const topMapped = top ? mapResultItem(top, top.rank || 1, profiles) : emptyProduct();
 
   return {
     product: topMapped,
@@ -24,6 +28,15 @@ export function buildResultContext(results) {
   };
 }
 
+function profileForProductId(profiles, productId) {
+  if (!productId || !Array.isArray(profiles)) return null;
+  return (
+    profiles.find(
+      (p) => p && p.enabled !== false && Number(p.product_id) === Number(productId)
+    ) || null
+  );
+}
+
 function emptyProduct() {
   return {
     name: "",
@@ -31,22 +44,31 @@ function emptyProduct() {
     summary: "",
     price: "",
     image: "",
+    tagline: "",
+    color: "",
     match_pct: 0,
     rank: 0,
   };
 }
 
-function mapResultItem(item, rank) {
+function mapResultItem(item, rank, profiles = []) {
   const product = item.product || {};
   const slug = product.slug || "";
+  const productId = item.product_id ?? product.id ?? null;
+  const profile = profileForProductId(profiles, productId);
+  const summaryRaw = product.summary ?? product.short_description ?? "";
+  const summary = normalizeMultilineText(summaryRaw);
   return {
     name: product.name || "",
     url: slug ? `/products/${slug}` : "",
-    summary: product.summary || product.short_description || "",
+    summary,
     price: formatPrice(product),
     image: productImageUrl(product),
+    tagline: profile?.tagline || "",
+    color: profile?.color || "",
     match_pct: item.match_pct ?? 0,
     rank: rank,
+    product_id: productId,
     raw: product,
   };
 }
@@ -54,11 +76,12 @@ function mapResultItem(item, rank) {
 function productImageUrl(product) {
   if (!product) return "";
   const thumb = product.thumbnail_image;
-  if (typeof thumb === "string") return thumb;
+  if (typeof thumb === "string" && thumb.trim()) return thumb.trim();
   if (thumb && typeof thumb === "object") {
     return thumb.medium || thumb.small || thumb.original || "";
   }
-  return product.image || "";
+  const fallback = product.image || "";
+  return typeof fallback === "string" ? fallback : "";
 }
 
 function formatPrice(product) {
@@ -77,12 +100,12 @@ export function resolveTokens(html, context) {
   let out = String(html);
 
   out = out.replace(/\{\{product\.(\w+)\}\}/g, (_, key) => {
-    return escapeHtml(String(context.product?.[key] ?? ""));
+    return formatTokenValue(key, context.product?.[key] ?? "");
   });
 
   out = out.replace(/\{\{product_(\d+)\.(\w+)\}\}/g, (_, rank, key) => {
     const item = context.byRank?.[parseInt(rank, 10)] || context.byRank?.[`product_${rank}`];
-    return escapeHtml(String(item?.[key] ?? ""));
+    return formatTokenValue(key, item?.[key] ?? "");
   });
 
   out = out.replace(/\{\{match_pct\}\}/g, () => String(context.match_pct ?? ""));
@@ -91,12 +114,11 @@ export function resolveTokens(html, context) {
   return out;
 }
 
-function escapeHtml(text) {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+function formatTokenValue(key, value) {
+  if (key === "summary") {
+    return formatMultilineHtml(value);
+  }
+  return escapeHtml(String(value ?? ""));
 }
 
 export function getProductForRank(context, rank) {

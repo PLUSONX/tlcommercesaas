@@ -37,10 +37,16 @@ class QuizQuestionsConfig
             'card_shadow' => true,
             'question_color' => '#111111',
             'required_color' => '#dc3545',
+            'question_background' => 'transparent',
+            'question_alignment' => '',
+            'question_padding' => 0,
+            'question_margin' => 16,
             'progress_track_color' => '#e9ecef',
             'progress_bar_color' => '#ff5a1f',
             'progress_height' => 6,
             'progress_label_color' => '#6b7280',
+            'progress_label_background' => 'transparent',
+            'progress_label_alignment' => 'left',
             'show_progress' => true,
             'show_back_button' => true,
             'show_next_button' => true,
@@ -69,6 +75,16 @@ class QuizQuestionsConfig
             $alignment = 'left';
         }
 
+        $progressLabelAlignment = $theme['progress_label_alignment'] ?? $defaults['progress_label_alignment'];
+        if (!in_array($progressLabelAlignment, ['left', 'center', 'right'], true)) {
+            $progressLabelAlignment = 'left';
+        }
+
+        $questionAlignment = $theme['question_alignment'] ?? $defaults['question_alignment'];
+        if ($questionAlignment !== '' && !in_array($questionAlignment, ['left', 'center', 'right'], true)) {
+            $questionAlignment = '';
+        }
+
         return [
             'background_type' => $bgType,
             'background_color' => self::sanitizeHexColor($theme['background_color'] ?? $defaults['background_color']),
@@ -85,10 +101,16 @@ class QuizQuestionsConfig
             'card_shadow' => array_key_exists('card_shadow', $theme) ? (bool) $theme['card_shadow'] : $defaults['card_shadow'],
             'question_color' => self::sanitizeHexColor($theme['question_color'] ?? $defaults['question_color']),
             'required_color' => self::sanitizeHexColor($theme['required_color'] ?? $defaults['required_color']),
+            'question_background' => self::sanitizeOptionalColor($theme['question_background'] ?? $defaults['question_background']),
+            'question_alignment' => $questionAlignment,
+            'question_padding' => max(0, min(64, (int) ($theme['question_padding'] ?? $defaults['question_padding']))),
+            'question_margin' => max(0, min(64, (int) ($theme['question_margin'] ?? $defaults['question_margin']))),
             'progress_track_color' => self::sanitizeHexColor($theme['progress_track_color'] ?? $defaults['progress_track_color']),
             'progress_bar_color' => self::sanitizeHexColor($theme['progress_bar_color'] ?? $defaults['progress_bar_color']),
             'progress_height' => max(4, min(16, (int) ($theme['progress_height'] ?? $defaults['progress_height']))),
             'progress_label_color' => self::sanitizeHexColor($theme['progress_label_color'] ?? $defaults['progress_label_color']),
+            'progress_label_background' => self::sanitizeOptionalColor($theme['progress_label_background'] ?? $defaults['progress_label_background']),
+            'progress_label_alignment' => $progressLabelAlignment,
             'show_progress' => array_key_exists('show_progress', $theme) ? (bool) $theme['show_progress'] : $defaults['show_progress'],
             'show_back_button' => array_key_exists('show_back_button', $theme) ? (bool) $theme['show_back_button'] : $defaults['show_back_button'],
             'show_next_button' => array_key_exists('show_next_button', $theme) ? (bool) $theme['show_next_button'] : $defaults['show_next_button'],
@@ -142,5 +164,19 @@ class QuizQuestionsConfig
         }
 
         return '#111111';
+    }
+
+    private static function sanitizeOptionalColor(?string $value): string
+    {
+        $value = trim((string) $value);
+        if ($value === '' || strtolower($value) === 'transparent') {
+            return 'transparent';
+        }
+
+        if (preg_match('/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $value)) {
+            return $value;
+        }
+
+        return 'transparent';
     }
 }

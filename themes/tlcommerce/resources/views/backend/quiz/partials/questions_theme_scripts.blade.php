@@ -18,10 +18,16 @@
         card_shadow: true,
         question_color: '#111111',
         required_color: '#dc3545',
+        question_background: 'transparent',
+        question_alignment: '',
+        question_padding: 0,
+        question_margin: 16,
         progress_track_color: '#e9ecef',
         progress_bar_color: '#ff5a1f',
         progress_height: 6,
         progress_label_color: '#6b7280',
+        progress_label_background: 'transparent',
+        progress_label_alignment: 'left',
         show_progress: true,
         show_back_button: true,
         show_next_button: true,
@@ -39,6 +45,18 @@
     function hexFromInput(id, fallback) {
         var val = $('#' + id).val();
         return val || fallback;
+    }
+
+    function optionalColorFromInput(id, fallback) {
+        var val = ($('#' + id).val() || '').trim();
+        if (!val || val.toLowerCase() === 'transparent') {
+            return 'transparent';
+        }
+        return val || fallback;
+    }
+
+    function resolvedQuestionAlignment(theme) {
+        return theme.question_alignment || theme.alignment || 'left';
     }
 
     function getQuestionsTheme() {
@@ -70,10 +88,16 @@
         theme.card_shadow = $('#qq-card-shadow').is(':checked');
         theme.question_color = hexFromInput('qq-question-color', '#111111');
         theme.required_color = hexFromInput('qq-required-color', '#dc3545');
+        theme.question_background = optionalColorFromInput('qq-question-bg', 'transparent');
+        theme.question_alignment = $('#qq-question-align').val() || '';
+        theme.question_padding = parseInt($('#qq-question-padding').val(), 10) || 0;
+        theme.question_margin = parseInt($('#qq-question-margin').val(), 10) || 16;
         theme.progress_track_color = hexFromInput('qq-progress-track', '#e9ecef');
         theme.progress_bar_color = hexFromInput('qq-progress-bar', '#ff5a1f');
         theme.progress_height = parseInt($('#qq-progress-height').val(), 10) || 6;
         theme.progress_label_color = hexFromInput('qq-progress-label', '#6b7280');
+        theme.progress_label_background = optionalColorFromInput('qq-progress-label-bg', 'transparent');
+        theme.progress_label_alignment = $('#qq-progress-label-align').val() || 'left';
         theme.show_progress = $('#qq-show-progress').is(':checked');
         theme.show_back_button = $('#qq-show-back-btn').is(':checked');
         theme.show_next_button = $('#qq-show-next-btn').is(':checked');
@@ -141,11 +165,21 @@
 
         $root.find('.qq-preview-question').css('color', theme.question_color);
         $root.find('.qq-preview-required').css('color', theme.required_color);
+        $root.find('.qq-preview-question-wrap').css({
+            background: theme.question_background || 'transparent',
+            textAlign: resolvedQuestionAlignment(theme),
+            padding: (theme.question_padding || 0) + 'px',
+            margin: (theme.question_margin != null ? theme.question_margin : 16) + 'px 0'
+        });
 
         var $progressWrap = $root.find('.qq-preview-progress-wrap');
         if (theme.show_progress) {
             $progressWrap.show();
-            $root.find('.qq-preview-progress-label').css('color', theme.progress_label_color);
+            $root.find('.qq-preview-progress-label').css({
+                color: theme.progress_label_color,
+                background: theme.progress_label_background || 'transparent',
+                textAlign: theme.progress_label_alignment || 'left'
+            });
             $root.find('.qq-preview-progress-track').css({
                 background: theme.progress_track_color,
                 height: (theme.progress_height || 6) + 'px'

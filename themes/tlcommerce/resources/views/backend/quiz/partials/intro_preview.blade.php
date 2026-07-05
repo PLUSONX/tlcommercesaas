@@ -78,7 +78,9 @@
                                 <div class="qq-preview-progress-bar h-100"></div>
                             </div>
                         </div>
-                        <h6 class="qq-preview-question mb-3">{{ translate('Sample question text') }} <span class="qq-preview-required">*</span></h6>
+                        <div class="qq-preview-question-wrap">
+                            <h6 class="qq-preview-question mb-0">{{ translate('Sample question text') }} <span class="qq-preview-required">*</span></h6>
+                        </div>
                         <p class="small text-muted mb-3">{{ translate('Answer styling is configured on the Questions and Answers pages.') }}</p>
                         <div class="d-flex justify-content-between gap-2">
                             <button type="button" class="btn btn-sm btn-outline-dark qq-preview-btn-back">{{ translate('Back') }}</button>

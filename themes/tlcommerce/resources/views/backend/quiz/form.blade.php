@@ -4,6 +4,7 @@
 @endsection
 @section('custom_css')
     <link href="{{ asset('backend/assets/plugins/summernote/summernote-lite.css') }}" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ asset('backend/assets/plugins/select2/select2.min.css') }}">
     <style>
         .color-picker { cursor: pointer; }
     </style>
@@ -310,6 +311,7 @@
 
 @section('custom_scripts')
     <script src="{{ asset('backend/assets/plugins/summernote/summernote-lite.js') }}"></script>
+    <script src="{{ asset('backend/assets/plugins/select2/select2.min.js') }}"></script>
     @include('theme/tlcommerce::backend.quiz.partials.intro_builder_scripts')
     @include('theme/tlcommerce::backend.quiz.partials.questions_theme_scripts')
     @include('theme/tlcommerce::backend.quiz.partials.results_builder_scripts')

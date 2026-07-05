@@ -2,10 +2,17 @@
 @section('title')
     {{ translate('Quiz Answers') }}
 @endsection
+@section('custom_css')
+    <link href="{{ asset('backend/assets/plugins/summernote/summernote-lite.css') }}" rel="stylesheet" />
+@endsection
 @section('main_content')
     @php
         $lang = $lang ?? getDefaultLang();
         $isDefaultLang = $lang == getDefaultLang();
+        $answerDescriptions = [];
+        foreach ($question->answers as $answerItem) {
+            $answerDescriptions[$answerItem->id] = $answerItem->translation('answer_description', $lang) ?? '';
+        }
     @endphp
     <div class="border-bottom2 pb-3 mb-4">
         <h4 class="mb-1">{{ translate('Answers') }}</h4>
@@ -39,8 +46,9 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="font-14 bold black">{{ translate('Description') }}</label>
-                        <textarea name="answer_description" class="theme-input-style" rows="2" maxlength="2000"
+                        <textarea name="answer_description" id="add-answer-description" class="theme-input-style answer-description-editor" rows="2" maxlength="2000"
                             placeholder="{{ translate('Optional description shown under the answer title') }}"></textarea>
+                        <small class="text-muted d-block mt-1">{{ translate('Use Enter or the paragraph tool for a new line') }}</small>
                     </div>
                 </div>
                 <div class="form-row align-items-end">
@@ -99,7 +107,6 @@
                                 <button type="button" class="btn long btn-sm edit-answer-btn"
                                     data-id="{{ $answer->id }}"
                                     data-text="{{ e($answer->translation('answer_text', $lang)) }}"
-                                    data-description="{{ e($answer->translation('answer_description', $lang)) }}"
                                     data-image="{{ e($answer->answer_image) }}">
                                     {{ translate('Edit') }}
                                 </button>
@@ -141,7 +148,8 @@
                         </div>
                         <div class="form-group">
                             <label>{{ translate('Description') }}</label>
-                            <textarea name="answer_description" id="edit-answer-description" class="theme-input-style" rows="3" maxlength="2000"></textarea>
+                            <textarea name="answer_description" id="edit-answer-description" class="theme-input-style answer-description-editor" rows="3" maxlength="2000"></textarea>
+                            <small class="text-muted d-block mt-1">{{ translate('Use Enter or the paragraph tool for a new line') }}</small>
                         </div>
                         <div class="form-group mb-0 @if (!$isDefaultLang) area-disabled @endif">
                             <label>{{ translate('Answer Image') }}</label>
@@ -159,24 +167,84 @@
             </div>
         </div>
     </div>
+
+    <script type="application/json" id="answer-descriptions-json">@json($answerDescriptions)</script>
 @endsection
 
 @section('custom_scripts')
+    <script src="{{ asset('backend/assets/plugins/summernote/summernote-lite.js') }}"></script>
     @include('core::base.media.partial.media_modal')
     @include('theme/tlcommerce::backend.quiz.partials.answer_style_utils')
     @include('theme/tlcommerce::backend.quiz.partials.answer_layout_scripts')
     <script>
         (function($) {
             "use strict";
+
+            var answerDescriptions = {};
+            try {
+                answerDescriptions = JSON.parse($('#answer-descriptions-json').text() || '{}');
+            } catch (e) {
+                answerDescriptions = {};
+            }
+
+            var summernoteOpts = {
+                height: 100,
+                toolbar: [
+                    ['font', ['bold', 'italic', 'underline', 'clear']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['view', ['codeview']]
+                ]
+            };
+
+            function initAnswerDescriptionEditor($el) {
+                if (!$el.length || $el.next('.note-editor').length) return;
+                $el.summernote(summernoteOpts);
+                if ($el.val()) {
+                    $el.summernote('code', $el.val());
+                }
+            }
+
+            function syncAnswerDescriptionEditor($el) {
+                if (!$el.length) return;
+                if ($el.next('.note-editor').length) {
+                    $el.val($el.summernote('code') || '');
+                }
+            }
+
+            function setAnswerDescriptionEditor($el, html) {
+                if (!$el.length) return;
+                if ($el.next('.note-editor').length) {
+                    $el.summernote('code', html || '');
+                } else {
+                    $el.val(html || '');
+                }
+            }
+
+            if ($('#add-answer-description').length) {
+                initAnswerDescriptionEditor($('#add-answer-description'));
+            }
+
+            var pendingEditDescription = '';
+
+            $('#editAnswerModal').on('shown.bs.modal', function() {
+                var $editDesc = $('#edit-answer-description');
+                initAnswerDescriptionEditor($editDesc);
+                setAnswerDescriptionEditor($editDesc, pendingEditDescription);
+            });
+
+            $('form').on('submit', function() {
+                $(this).find('.answer-description-editor').each(function() {
+                    syncAnswerDescriptionEditor($(this));
+                });
+            });
+
             $('.edit-answer-btn').on('click', function() {
-                $('#edit-answer-id').val($(this).data('id'));
+                var id = $(this).data('id');
+                $('#edit-answer-id').val(id);
                 $('#edit-answer-text').val($(this).data('text'));
-                $('#edit-answer-description').val($(this).data('description') || '');
+                pendingEditDescription = answerDescriptions[id] || '';
                 var imageVal = $(this).data('image') || '';
                 $('#edit_answer_image_id').val(imageVal);
-                if (imageVal && typeof getFilePath !== 'undefined') {
-                    // preview refreshed by filtermedia
-                }
                 if (typeof filtermedia === 'function') {
                     filtermedia();
                 }

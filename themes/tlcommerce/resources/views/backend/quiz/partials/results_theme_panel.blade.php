@@ -23,11 +23,16 @@
     <div class="col-md-12">
         <select name="results_layout_mode" id="results-layout-mode" class="theme-input-style results-preview-input">
             <option value="featured_card" {{ $layoutMode === 'featured_card' ? 'selected' : '' }}>{{ translate('Featured result card only') }}</option>
+            <option value="product_color_card" {{ $layoutMode === 'product_color_card' ? 'selected' : '' }}>{{ translate('Product color card') }}</option>
             <option value="product_grid" {{ $layoutMode === 'product_grid' ? 'selected' : '' }}>{{ translate('Product grid only') }}</option>
             <option value="featured_and_grid" {{ $layoutMode === 'featured_and_grid' ? 'selected' : '' }}>{{ translate('Featured card + product grid') }}</option>
         </select>
     </div>
 </div>
+
+@include('theme/tlcommerce::backend.quiz.partials.results_product_profiles', [
+    'isDefaultLang' => $isDefaultLang ?? true,
+])
 
 <div class="results-theme-section mb-3">
     <div class="intro-panel-label">{{ translate('Page') }}</div>

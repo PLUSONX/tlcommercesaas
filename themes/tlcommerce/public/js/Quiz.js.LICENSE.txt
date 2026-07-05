@@ -58,6 +58,8 @@
 
 /*! ../../../../node_modules/css-loader/dist/runtime/api.js */
 
+/*! ../../utils/multilineText */
+
 /*! ./QuizFlow.vue?vue&type=script&lang=js */
 
 /*! ./QuizFlow.vue?vue&type=template&id=56d8e5fc */
@@ -102,6 +104,8 @@
 
 /*! ./index.vue?vue&type=template&id=194b60d2 */
 
+/*! ./multilineText */
+
 /*! ./node_modules/vue-loader/dist/exportHelper.js */
 
 /*! @/components/product/SingleProduct.vue */
@@ -135,6 +139,10 @@
 /*!********************************************!*\
   !*** ./resources/js/utils/sectionProps.js ***!
   \********************************************/
+
+/*!*********************************************!*\
+  !*** ./resources/js/utils/multilineText.js ***!
+  \*********************************************/
 
 /*!************************************************!*\
   !*** ./resources/js/utils/quizResultTokens.js ***!

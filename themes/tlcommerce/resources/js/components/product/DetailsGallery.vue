@@ -162,24 +162,15 @@
           :title="productName"
           :description="summary"
         >
-        <svg class="social-icon" width="24" height="24">
-          <use :href="`/themes/default/public/assets/social/social_media_icons.svg#${network.network}`" />
-        </svg>
-        <!-- <svg class="social-icon">
-          <use
-            :href="`/themes/default/public/assets/social/${network.icon}`"
+          <img
+            v-if="isShareIconFile(network.icon) && !shareIconFailed[network.network]"
+            class="rounded"
+            :src="shareIconSrc(network.icon)"
+            :alt="network.name"
+            @error="onShareIconError(network.network)"
           />
-        </svg> -->
-        <!-- <img
-            class="rounded"
-            :src="`themes/default/public/assets/social/${network.icon}`"
-            :alt="network.name"
-          /> -->
-          <!-- <img
-            class="rounded"
-            :src="`/public/themes/tlcommerce/assets/img/social/${network.icon}`"
-            :alt="network.name"
-          /> -->
+          <span v-else-if="isShareIconHtml(network.icon)" v-html="network.icon"></span>
+          <i v-else :class="shareIconFaClass(network)"></i>
         </ShareNetwork>
       </li>
     </ul>
@@ -276,6 +267,7 @@ export default {
       index: null,
       showVoucherList: false,
       thumbsSwiper: null,
+      shareIconFailed: {},
     };
   },
 
@@ -283,6 +275,42 @@ export default {
   cleanImage(img) {
     if (!img) return '';
     return img.startsWith('/public') ? img.slice(7) : img;
+  },
+
+  isShareIconHtml(icon) {
+    return icon && String(icon).trim().startsWith('<');
+  },
+
+  isShareIconFile(icon) {
+    return icon && /\.(svg|png|jpe?g|gif|webp)$/i.test(String(icon).trim());
+  },
+
+  shareIconSrc(icon) {
+    const filename = String(icon).trim().replace(/^\/?public\//, '');
+    if (filename.startsWith('/') || filename.startsWith('http')) return filename;
+    return `/themes/default/public/assets/social/${filename}`;
+  },
+
+  shareIconFaClass(network) {
+    const map = {
+      facebook: 'fa fa-facebook',
+      twitter: 'fa fa-twitter',
+      linkedin: 'fa fa-linkedin',
+      pinterest: 'fa fa-pinterest',
+      whatsapp: 'fa fa-whatsapp',
+      gmail: 'fa fa-google',
+      email: 'fa fa-envelope',
+      reddit: 'fa fa-reddit',
+      telegramMe: 'fa fa-telegram',
+      tumblr: 'fa fa-tumblr',
+      vk: 'fa fa-vk',
+      digg: 'fa fa-digg',
+    };
+    return map[network.network] || 'fa fa-share-alt';
+  },
+
+  onShareIconError(networkKey) {
+    this.shareIconFailed = { ...this.shareIconFailed, [networkKey]: true };
   },
 
   /**
@@ -489,6 +517,10 @@ export default {
     img {
       width: 14px;
       height: 14px;
+    }
+    i,
+    .fa {
+      font-size: 14px;
     }
   }
 }

@@ -88,6 +88,20 @@ html.rtl {
         }
     }
 
+    @media (max-width: 767.98px) {
+        .home-page-section .text-center {
+            text-align: center !important;
+        }
+
+        .cta-section .cta-content.text-center {
+            text-align: center !important;
+        }
+
+        .text-md-end {
+            text-align: end !important;
+        }
+    }
+
     .cta-section {
         direction: ltr;
 
@@ -126,6 +140,11 @@ html.rtl {
     .mr-20 {
         margin-right: 0px;
         margin-left: 20px;
+    }
+
+    .mobile_header__two .btn-circle .count {
+        right: auto;
+        left: -5px;
     }
 
     .nav {

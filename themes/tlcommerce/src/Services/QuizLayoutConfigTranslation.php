@@ -79,6 +79,27 @@ class QuizLayoutConfigTranslation
                 }
             }
 
+            if (!empty($results['product_profiles']) && is_array($results['product_profiles'])) {
+                $profiles = [];
+                foreach ($results['product_profiles'] as $profile) {
+                    if (!is_array($profile)) {
+                        continue;
+                    }
+                    $productId = (int) ($profile['product_id'] ?? 0);
+                    if ($productId <= 0) {
+                        continue;
+                    }
+                    $item = ['product_id' => $productId];
+                    if (array_key_exists('tagline', $profile)) {
+                        $item['tagline'] = $profile['tagline'];
+                    }
+                    $profiles[] = $item;
+                }
+                if (!empty($profiles)) {
+                    $resultsExtract['product_profiles'] = $profiles;
+                }
+            }
+
             if (!empty($resultsExtract)) {
                 $result['results'] = $resultsExtract;
             }
@@ -143,6 +164,13 @@ class QuizLayoutConfigTranslation
                 $base['results']['actions'] = self::mergeActionsText(
                     is_array($base['results']['actions'] ?? null) ? $base['results']['actions'] : [],
                     $overlay['results']['actions']
+                );
+            }
+
+            if (!empty($overlay['results']['product_profiles'])) {
+                $base['results']['product_profiles'] = self::mergeProductProfileText(
+                    is_array($base['results']['product_profiles'] ?? null) ? $base['results']['product_profiles'] : [],
+                    $overlay['results']['product_profiles']
                 );
             }
         }
@@ -291,6 +319,43 @@ class QuizLayoutConfigTranslation
             }
 
             $merged[] = $action;
+        }
+
+        return $merged;
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $baseProfiles
+     * @param  array<int, array<string, mixed>>  $overlayProfiles
+     * @return array<int, array<string, mixed>>
+     */
+    private static function mergeProductProfileText(array $baseProfiles, array $overlayProfiles): array
+    {
+        if (empty($baseProfiles)) {
+            return $baseProfiles;
+        }
+
+        $overlayByProductId = [];
+        foreach ($overlayProfiles as $profile) {
+            if (!is_array($profile) || empty($profile['product_id'])) {
+                continue;
+            }
+            $overlayByProductId[(int) $profile['product_id']] = $profile;
+        }
+
+        $merged = [];
+        foreach ($baseProfiles as $profile) {
+            if (!is_array($profile)) {
+                $merged[] = $profile;
+                continue;
+            }
+
+            $productId = isset($profile['product_id']) ? (int) $profile['product_id'] : 0;
+            if ($productId && isset($overlayByProductId[$productId]) && array_key_exists('tagline', $overlayByProductId[$productId])) {
+                $profile['tagline'] = $overlayByProductId[$productId]['tagline'];
+            }
+
+            $merged[] = $profile;
         }
 
         return $merged;

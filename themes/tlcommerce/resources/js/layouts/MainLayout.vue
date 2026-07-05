@@ -48,22 +48,6 @@
             </label>
           </div>
           <!-- End Dark Light Switcher -->
-          <!--Website popup-->
-          <!-- <CModal :visible="visibleWebsitePopup" alignment="center" class="website-popup-modal" @close="
-            () => {
-              visibleWebsitePopup = false;
-            }
-          ">
-            <CModalBody class="modal-body p-0 position-relative website-popup-modal-body rounded-0">
-              <button class="btn-circle custom-modal-btn position-absolute size-35" @click="closePopupModal()">
-                <base-icon-svg name="close" :width="10" :height="10" />
-              </button>
-              <div class="m-0" v-html="website_popup_properties.website_popup_content"></div>
-              <subscribe-form class="mt-20"
-                v-if="website_popup_properties.website_popup_subscribe_status == 1"></subscribe-form>
-            </CModalBody>
-          </CModal> -->
-          <!--End website popup-->
 
         </div>
       </div>
@@ -100,24 +84,22 @@
         "></top-bar-banner>
         <!-- Header -->
         <header class="header__two love-sticky">
-          <header-top class="d-none d-lg-block" :data-loading="MenuItemsLoading"
-            :right-menu-items="rightMenuItems" :left-menu-items="leftMenuItems" :header-menu-style="headerMenuStyle"></header-top>
+          <header-top class="d-none d-lg-block" :data-loading="MenuItemsLoading" :right-menu-items="rightMenuItems"
+            :left-menu-items="leftMenuItems" :header-menu-style="headerMenuStyle"></header-top>
           <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
             :wishlist-item="wishlistItem" :compare-item="compareItem" :header-logo-style="headerLogoStyle"
-            :header-menu-style="headerMenuStyle" :data-loading="MenuItemsLoading"
-            :currencies="data.currencies" :languages="data.languages"
-            @change-language-currency="setCurrencyLanguage"
-            @logout-customer="logoutCustomer"
-            class="d-none d-lg-block"></header-middle>
+            :header-menu-style="headerMenuStyle" :data-loading="MenuItemsLoading" :currencies="data.currencies"
+            :languages="data.languages" @change-language-currency="setCurrencyLanguage"
+            @logout-customer="logoutCustomer" class="d-none d-lg-block"></header-middle>
           <header-bottom :data-loading="MenuItemsLoading" :mega-categories="data.megaCategories"
             :menu-items="headerBottomMenu" :header-style="headerStyle" :header-menu-style="headerMenuStyle"
             class="d-none d-lg-block"></header-bottom>
         </header>
 
         <mobile-header :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
-          :header-style="headerStyle" :header-menu-style="headerMenuStyle"
-          :header-logo-style="headerLogoStyle" :currencies="data.currencies" :languages="data.languages"
-          :data-loading="MenuItemsLoading" @change-language-currency="setCurrencyLanguage"></mobile-header>
+          :header-style="headerStyle" :header-menu-style="headerMenuStyle" :header-logo-style="headerLogoStyle"
+          :currencies="data.currencies" :languages="data.languages" :data-loading="MenuItemsLoading"
+          @change-language-currency="setCurrencyLanguage"></mobile-header>
         <!-- End Header -->
 
         <div class="main_content light-bg">
@@ -169,26 +151,6 @@
           </label>
         </div>
         <!-- End Dark Light Switcher -->
-        <!--Website popup-->
-        <CModal :visible="visibleWebsitePopup" alignment="center" class="website-popup-modal" @close="
-          () => {
-            visibleWebsitePopup = false;
-          }
-        ">
-          <CModalBody class="modal-body p-0 position-relative website-popup-modal-body rounded-0">
-            <button class="btn-circle custom-modal-btn position-absolute size-35" @click="closePopupModal()">
-              <base-icon-svg name="close" :width="10" :height="10" />
-            </button>
-            <!-- <div class="m-0" v-html="website_popup_properties?.website_popup_content"></div>
-            <subscribe-form class="mt-20"
-              v-if="website_popup_properties?.website_popup_subscribe_status == 1">
-            </subscribe-form> -->
-            <div class="m-0"></div>
-            <subscribe-form class="mt-20">
-            </subscribe-form>
-          </CModalBody>
-        </CModal>
-        <!--End website popup-->
 
         <BackToTop />
       </div>
@@ -226,6 +188,27 @@
     <!--Cookie Consent (default layout + split-screen desktop)-->
     <gdpr v-if="gdpr_properties != null && gdpr_properties.gdpr_status == 1 && !(isSplitScreen && isMobile)"
       :properties="gdpr_properties"></gdpr>
+
+    <!-- Website popup (shared — teleported to body for correct stacking on all layouts) -->
+    <teleport to="body">
+      <CModal
+        :visible="visibleWebsitePopup"
+        alignment="center"
+        class="website-popup-modal"
+        @close="visibleWebsitePopup = false"
+      >
+        <CModalBody class="modal-body p-0 position-relative website-popup-modal-body rounded-0">
+          <button class="btn-circle custom-modal-btn position-absolute size-35" @click="closePopupModal()">
+            <base-icon-svg name="close" :width="10" :height="10" />
+          </button>
+          <div class="m-0" v-html="website_popup_properties?.website_popup_content"></div>
+          <subscribe-form
+            class="mt-20"
+            v-if="website_popup_properties?.website_popup_subscribe_status == 1"
+          />
+        </CModalBody>
+      </CModal>
+    </teleport>
   </div>
 </template>
 
@@ -1221,10 +1204,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.modal-dialog.modal-dialog-centered {
-  background-color: red;
-}
-
 .modal.website-popup-modal .modal-content {
   border-radius: 0px !important;
 }
@@ -1232,7 +1211,6 @@ export default {
 :deep(.website-popup-modal .modal-content) {
   border-radius: 6px !important;
   overflow: visible !important;
-
 }
 
 .custom-modal-btn {

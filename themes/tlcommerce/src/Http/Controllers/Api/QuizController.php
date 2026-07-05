@@ -141,14 +141,45 @@ class QuizController extends Controller
             ->keyBy('id');
 
         $productCollection = new ProductCollection($products->values());
+        $locale = session()->get('api_locale');
 
         $productPayload = collect($productCollection->toArray(request())['data'] ?? [])
             ->keyBy('id');
 
-        return collect($ranked)->map(function ($row) use ($productPayload) {
+        return collect($ranked)->map(function ($row) use ($productPayload, $products, $locale) {
+            $product = $productPayload->get($row['product_id']);
+            if (empty($product)) {
+                return null;
+            }
+
+            $model = $products->get($row['product_id']);
+            if ($model) {
+                $summary = $model->translation('summary', $locale);
+                $product['summary'] = is_string($summary) ? $this->normalizeQuizProductSummary($summary) : '';
+            }
+
             return array_merge($row, [
-                'product' => $productPayload->get($row['product_id']),
+                'product' => $product,
             ]);
-        })->filter(fn ($row) => !empty($row['product']))->values()->all();
+        })->filter(fn ($row) => is_array($row) && !empty($row['product']))->values()->all();
+    }
+
+    protected function normalizeQuizProductSummary(string $html): string
+    {
+        $text = html_entity_decode($html, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = preg_replace('/<\s*br\s*\/?>/i', "\n", $text) ?? $text;
+        $text = preg_replace('/<\/\s*p\s*>/i', "\n\n", $text) ?? $text;
+        $text = preg_replace('/<\/\s*div\s*>/i', "\n\n", $text) ?? $text;
+        $text = strip_tags($text);
+        $lines = preg_split('/\r\n|\r|\n/', $text) ?: [];
+        $lines = array_map(function (string $line) {
+            $line = preg_replace('/[ \t\x{C2}\x{A0}]+/u', ' ', $line) ?? $line;
+
+            return trim($line);
+        }, $lines);
+        $lines = array_values(array_filter($lines, static fn (string $line) => $line !== ''));
+        $text = implode("\n\n", $lines);
+
+        return trim($text);
     }
 }

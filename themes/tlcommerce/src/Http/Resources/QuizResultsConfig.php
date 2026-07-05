@@ -16,7 +16,7 @@ class QuizResultsConfig
         'match_badge',
     ];
 
-    private const LAYOUT_MODES = ['featured_card', 'product_grid', 'featured_and_grid'];
+    private const LAYOUT_MODES = ['featured_card', 'product_grid', 'featured_and_grid', 'product_color_card'];
 
     private const SEPARATOR_STYLES = ['dot', 'line', 'dashed', 'double', 'diamond', 'dots', 'mixture'];
 
@@ -56,15 +56,17 @@ class QuizResultsConfig
         $blocks = self::normalizeBlocks(is_array($results['blocks'] ?? null) ? $results['blocks'] : null);
         $productGrid = self::normalizeProductGrid(is_array($results['product_grid'] ?? null) ? $results['product_grid'] : []);
         $actions = self::normalizeActions(is_array($results['actions'] ?? null) ? $results['actions'] : null);
+        $productProfiles = self::normalizeProductProfiles(is_array($results['product_profiles'] ?? null) ? $results['product_profiles'] : null);
 
         return [
             'layout_mode' => $layoutMode,
-            'show_featured_card' => in_array($layoutMode, ['featured_card', 'featured_and_grid'], true),
+            'show_featured_card' => in_array($layoutMode, ['featured_card', 'featured_and_grid', 'product_color_card'], true),
             'show_product_grid' => in_array($layoutMode, ['product_grid', 'featured_and_grid'], true),
             'theme' => $theme,
             'blocks' => $blocks,
             'product_grid' => $productGrid,
             'actions' => $actions,
+            'product_profiles' => $productProfiles,
         ];
     }
 
@@ -92,6 +94,64 @@ class QuizResultsConfig
             'card_border_radius' => 0,
             'card_padding' => 32,
             'card_max_width' => 480,
+        ];
+    }
+
+    public static function defaultProductProfiles(): array
+    {
+        return [];
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>|null  $profiles
+     * @return array<int, array<string, mixed>>
+     */
+    public static function normalizeProductProfiles(?array $profiles): array
+    {
+        if (empty($profiles) || !is_array($profiles)) {
+            return self::defaultProductProfiles();
+        }
+
+        $normalized = [];
+        $seen = [];
+
+        foreach ($profiles as $profile) {
+            if (!is_array($profile)) {
+                continue;
+            }
+            $sanitized = self::sanitizeProductProfile($profile);
+            if (!$sanitized) {
+                continue;
+            }
+            $productId = (int) $sanitized['product_id'];
+            if (isset($seen[$productId])) {
+                continue;
+            }
+            $seen[$productId] = true;
+            $normalized[] = $sanitized;
+        }
+
+        return $normalized;
+    }
+
+    public static function sanitizeProductProfile(array $profile): ?array
+    {
+        $productId = (int) ($profile['product_id'] ?? 0);
+        if ($productId <= 0) {
+            return null;
+        }
+
+        $tagline = trim((string) ($profile['tagline'] ?? ''));
+        if (strlen($tagline) > 255) {
+            $tagline = substr($tagline, 0, 255);
+        }
+
+        return [
+            'product_id' => $productId,
+            'color' => self::sanitizeHexColor($profile['color'] ?? '#c9a84c'),
+            'tagline' => $tagline,
+            'enabled' => array_key_exists('enabled', $profile) ? (bool) $profile['enabled'] : true,
+            'product_name' => trim((string) ($profile['product_name'] ?? '')),
         ];
     }
 
@@ -227,7 +287,7 @@ class QuizResultsConfig
                 'id' => 'tagline_mid',
                 'type' => 'tagline',
                 'enabled' => true,
-                'html' => '<p style="text-align:center"><span style="font-size:10px;letter-spacing:0.15em">THE NATURALLY ELEGANT</span></p>',
+                'html' => '<p style="text-align:center"><span style="font-size:10px;letter-spacing:0.15em">{{product.tagline}}</span></p>',
                 'spacing' => ['margin_top' => 0, 'margin_bottom' => 12, 'padding_top' => 0, 'padding_bottom' => 0, 'padding_x' => 0],
             ],
             [
@@ -271,6 +331,37 @@ class QuizResultsConfig
                 'spacing' => ['margin_top' => 16, 'margin_bottom' => 0, 'padding_top' => 0, 'padding_bottom' => 0, 'padding_x' => 0],
             ],
         ];
+    }
+
+    /**
+     * Product color card layout: catalog thumbnail first, then taglines / swatch / body.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public static function productColorCardBlocks(): array
+    {
+        $blocks = array_values(array_filter(
+            self::defaultBlocks(),
+            fn (array $block) => ($block['type'] ?? '') !== 'hero_image'
+        ));
+
+        array_unshift($blocks, [
+            'id' => 'product_hero',
+            'type' => 'product_image',
+            'enabled' => true,
+            'product_rank' => 1,
+            'display_mode' => 'image',
+            'size' => 80,
+            'spacing' => [
+                'margin_top' => 0,
+                'margin_bottom' => 12,
+                'padding_top' => 0,
+                'padding_bottom' => 0,
+                'padding_x' => 0,
+            ],
+        ]);
+
+        return $blocks;
     }
 
     public static function normalizeTheme(array $theme): array

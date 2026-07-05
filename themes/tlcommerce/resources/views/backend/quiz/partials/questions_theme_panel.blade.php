@@ -114,6 +114,32 @@
             @include('theme/tlcommerce::backend.quiz.partials.color_input', ['id' => 'qq-required-color', 'value' => $qqTheme['required_color'] ?? '#dc3545', 'class' => 'qq-theme-input'])
         </div>
     </div>
+    <div class="form-row mb-15">
+        <div class="col-md-6">
+            <label class="small">{{ translate('Background') }}</label>
+            @include('theme/tlcommerce::backend.quiz.partials.color_input', ['id' => 'qq-question-bg', 'value' => $qqTheme['question_background'] ?? 'transparent', 'class' => 'qq-theme-input'])
+            <small class="text-muted">{{ translate('Use transparent for no fill') }}</small>
+        </div>
+        <div class="col-md-6">
+            <label class="small">{{ translate('Question text alignment') }}</label>
+            <select id="qq-question-align" class="theme-input-style qq-theme-input w-100">
+                <option value="" {{ ($qqTheme['question_alignment'] ?? '') === '' ? 'selected' : '' }}>{{ translate('Use page alignment') }}</option>
+                <option value="left" {{ ($qqTheme['question_alignment'] ?? '') === 'left' ? 'selected' : '' }}>{{ translate('Left') }}</option>
+                <option value="center" {{ ($qqTheme['question_alignment'] ?? '') === 'center' ? 'selected' : '' }}>{{ translate('Center') }}</option>
+                <option value="right" {{ ($qqTheme['question_alignment'] ?? '') === 'right' ? 'selected' : '' }}>{{ translate('Right') }}</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-row mb-15">
+        <div class="col-md-6">
+            <label class="small">{{ translate('Padding') }} (px)</label>
+            <input type="number" id="qq-question-padding" class="theme-input-style qq-theme-input w-100" min="0" max="64" value="{{ $qqTheme['question_padding'] ?? 0 }}">
+        </div>
+        <div class="col-md-6">
+            <label class="small">{{ translate('Margin') }} (px)</label>
+            <input type="number" id="qq-question-margin" class="theme-input-style qq-theme-input w-100" min="0" max="64" value="{{ $qqTheme['question_margin'] ?? 16 }}">
+        </div>
+    </div>
 </div>
 
 <div class="qq-theme-section mb-3">
@@ -141,7 +167,20 @@
         </div>
     </div>
     <div class="form-row mb-15">
-        <div class="col-md-6">
+        <div class="col-md-4">
+            <label class="small">{{ translate('Counter background') }}</label>
+            @include('theme/tlcommerce::backend.quiz.partials.color_input', ['id' => 'qq-progress-label-bg', 'value' => $qqTheme['progress_label_background'] ?? 'transparent', 'class' => 'qq-theme-input'])
+            <small class="text-muted">{{ translate('Use transparent for no fill') }}</small>
+        </div>
+        <div class="col-md-4">
+            <label class="small">{{ translate('Counter alignment') }}</label>
+            <select id="qq-progress-label-align" class="theme-input-style qq-theme-input w-100">
+                <option value="left" {{ ($qqTheme['progress_label_alignment'] ?? 'left') === 'left' ? 'selected' : '' }}>{{ translate('Left') }}</option>
+                <option value="center" {{ ($qqTheme['progress_label_alignment'] ?? '') === 'center' ? 'selected' : '' }}>{{ translate('Center') }}</option>
+                <option value="right" {{ ($qqTheme['progress_label_alignment'] ?? '') === 'right' ? 'selected' : '' }}>{{ translate('Right') }}</option>
+            </select>
+        </div>
+        <div class="col-md-4">
             <label class="small">{{ translate('Height') }} (px)</label>
             <input type="number" id="qq-progress-height" class="theme-input-style qq-theme-input w-100" min="4" max="16" value="{{ $qqTheme['progress_height'] ?? 6 }}">
         </div>

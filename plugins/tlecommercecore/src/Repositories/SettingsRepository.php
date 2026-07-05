@@ -118,9 +118,14 @@ class SettingsRepository
     {
         try {
             DB::beginTransaction();
+            $reviewsActive = $request->has('enable_product_reviews')
+                ? config('settings.general_status.active')
+                : config('settings.general_status.in_active');
             $settings = [
-                'enable_product_reviews'                   => $request->has('enable_product_reviews') ? config('settings.general_status.active') : config('settings.general_status.in_active'),
-                'enable_product_star_rating'               => $request->has('enable_product_star_rating') ? config('settings.general_status.active') : config('settings.general_status.in_active'),
+                'enable_product_reviews'                   => $reviewsActive,
+                'enable_product_star_rating'               => $reviewsActive === config('settings.general_status.active')
+                    ? config('settings.general_status.active')
+                    : config('settings.general_status.in_active'),
                 'required_product_star_rating'             => $request->has('required_product_star_rating') ? config('settings.general_status.active') : config('settings.general_status.in_active'),
                 'verified_customer_on_product_review'      => $request->has('verified_customer_on_product_review') ? config('settings.general_status.active') : config('settings.general_status.in_active'),
                 'only_varified_customer_left_review'       => $request->has('only_varified_customer_left_review') ? config('settings.general_status.active') : config('settings.general_status.in_active'),

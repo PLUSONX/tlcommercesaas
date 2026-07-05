@@ -7,7 +7,7 @@
 
       <div v-if="showFeaturedCard && results.length" class="quiz-results__featured" :style="cardWrapperStyles">
         <quiz-results-stack :blocks="config.blocks" :theme="config.theme" :results="results"
-          :hero-image="heroBlockImage" />
+          :product-profiles="config.product_profiles || []" :hero-image="heroBlockImage" />
       </div>
 
       <div v-if="showProductGrid && results.length" class="quiz-results__grid-section"
@@ -142,7 +142,7 @@ export default {
       return this.config.product_grid || {};
     },
     tokenContext() {
-      return buildResultContext(this.results);
+      return buildResultContext(this.results, this.config.product_profiles || []);
     },
     resolvedHeading() {
       const h = this.gridConfig.heading;

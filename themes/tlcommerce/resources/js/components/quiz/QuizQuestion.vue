@@ -2,13 +2,17 @@
 
   <div class="quiz-question mb-4" :style="answerCssVars">
 
-    <h5 class="quiz-question__title mb-3">
+    <div class="quiz-question__title-wrap" :style="questionTitleWrapStyles">
 
-      {{ question.question_text }}
+      <h5 class="quiz-question__title mb-0">
 
-      <span v-if="question.is_required" class="quiz-question__required">*</span>
+        {{ question.question_text }}
 
-    </h5>
+        <span v-if="question.is_required" class="quiz-question__required">*</span>
+
+      </h5>
+
+    </div>
 
 
 
@@ -78,7 +82,7 @@
 
           <span class="quiz-answer-label">{{ answer.answer_text }}</span>
 
-          <span v-if="answer.answer_description" class="quiz-answer-description">{{ answer.answer_description }}</span>
+          <span v-if="answer.answer_description" class="quiz-answer-description" v-html="formatAnswerDescription(answer.answer_description)"></span>
 
         </span>
 
@@ -111,6 +115,8 @@
 
 
 <script>
+
+import { formatAnswerDescription } from "../../utils/multilineText";
 
 const FILL_KEYS = [
 
@@ -223,6 +229,32 @@ export default {
     pageTheme() {
 
       return this.quizQuestionsTheme || {};
+
+    },
+
+    resolvedQuestionAlignment() {
+
+      const t = this.pageTheme;
+
+      return t.question_alignment || t.alignment || "left";
+
+    },
+
+    questionTitleWrapStyles() {
+
+      const t = this.pageTheme;
+
+      return {
+
+        background: t.question_background || "transparent",
+
+        textAlign: this.resolvedQuestionAlignment,
+
+        padding: `${t.question_padding || 0}px`,
+
+        margin: `${t.question_margin != null ? t.question_margin : 16}px 0`,
+
+      };
 
     },
 
@@ -373,6 +405,8 @@ export default {
   },
 
   methods: {
+
+    formatAnswerDescription,
 
     isGradientFill(style, baseKey) {
 
@@ -723,6 +757,8 @@ export default {
 
 
 .quiz-answer-description {
+
+  display: block;
 
   font-size: 0.875rem;
 

@@ -159,8 +159,8 @@ export default {
       if (isRtl) {
         this.fixedDropdownStyle = {
           top: `${rect.bottom + 10}px`,
-          left: `${rect.left}px`,
-          right: "auto",
+          right: `${window.innerWidth - rect.right}px`,
+          left: "auto",
         };
       } else {
         this.fixedDropdownStyle = {
@@ -230,7 +230,9 @@ export default {
 .my-account-dropdown {
   position: absolute;
   top: calc(100% + 12px);
-  right: 0;
+  left: auto;
+  right: auto;
+  inset-inline-end: 0;
   z-index: 9999;
   min-width: 190px;
   background-color: #ffffff;

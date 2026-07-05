@@ -186,7 +186,7 @@ class QuizRepository
         $answer->question_id = $request->input('question_id');
         $answer->answer_text = $request->input('answer_text');
         $answer->answer_image = $request->input('answer_image');
-        $answer->answer_description = $request->input('answer_description');
+        $answer->answer_description = $this->sanitizeAnswerDescription($request->input('answer_description'));
         $answer->sort_order = ($maxOrder ?? -1) + 1;
         $answer->save();
 
@@ -203,7 +203,7 @@ class QuizRepository
                 'lang' => $request->input('lang'),
             ]);
             $translation->answer_text = $request->input('answer_text');
-            $translation->answer_description = $request->input('answer_description');
+            $translation->answer_description = $this->sanitizeAnswerDescription($request->input('answer_description'));
             $translation->save();
 
             return $answer;
@@ -211,7 +211,7 @@ class QuizRepository
 
         $answer->answer_text = $request->input('answer_text');
         $answer->answer_image = $request->input('edit_answer_image', $request->input('answer_image'));
-        $answer->answer_description = $request->input('answer_description');
+        $answer->answer_description = $this->sanitizeAnswerDescription($request->input('answer_description'));
         $answer->save();
 
         return $answer;
@@ -366,9 +366,11 @@ class QuizRepository
         $resultsTheme = $this->decodeRequestJson($request, 'results_theme_json');
         $resultsActions = $this->decodeRequestJson($request, 'results_actions_json');
         $resultsProductGrid = $this->decodeRequestJson($request, 'results_product_grid_json');
+        $resultsProductProfiles = $this->decodeRequestJson($request, 'results_product_profiles_json');
 
         if ($resultsLayoutMode !== null || $resultsBlocks !== null || $resultsTheme !== null
-            || $resultsActions !== null || $resultsProductGrid !== null || is_array($existingResults)) {
+            || $resultsActions !== null || $resultsProductGrid !== null || $resultsProductProfiles !== null
+            || is_array($existingResults)) {
             $config['results'] = is_array($existingResults) ? $existingResults : [];
 
             if ($resultsLayoutMode !== null) {
@@ -397,6 +399,12 @@ class QuizRepository
                 $config['results']['product_grid'] = $resultsProductGrid;
             } elseif (is_array($existingResults) && !empty($existingResults['product_grid'])) {
                 $config['results']['product_grid'] = $existingResults['product_grid'];
+            }
+
+            if (is_array($resultsProductProfiles)) {
+                $config['results']['product_profiles'] = QuizResultsConfig::normalizeProductProfiles($resultsProductProfiles);
+            } elseif (is_array($existingResults) && !empty($existingResults['product_profiles'])) {
+                $config['results']['product_profiles'] = $existingResults['product_profiles'];
             }
         }
 
@@ -435,6 +443,15 @@ class QuizRepository
         return $lang && $lang !== getDefaultLang();
     }
 
+    private function sanitizeAnswerDescription(?string $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return $value;
+        }
+
+        return strip_tags($value, '<p><br><strong><b><em><i><u><span>');
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -451,6 +468,7 @@ class QuizRepository
                 'blocks' => $this->decodeRequestJson($request, 'results_blocks_json'),
                 'actions' => $this->decodeRequestJson($request, 'results_actions_json'),
                 'product_grid' => $this->decodeRequestJson($request, 'results_product_grid_json'),
+                'product_profiles' => $this->decodeRequestJson($request, 'results_product_profiles_json'),
             ],
         ];
     }

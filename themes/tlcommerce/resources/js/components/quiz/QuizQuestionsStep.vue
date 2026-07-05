@@ -16,7 +16,7 @@
 
         <div v-if="showProgress && (stepStyle === 'wizard' || stepStyle === 'cards')" class="quiz-questions-step__progress mb-3">
 
-          <small class="quiz-questions-step__progress-label d-block mb-1">
+          <small class="quiz-questions-step__progress-label d-block mb-1" :style="progressLabelStyles">
 
             {{ $t("Question") }} {{ currentIndex + 1 }} / {{ quiz.questions.length }}
 
@@ -208,6 +208,14 @@ const DEFAULT_THEME = {
 
   required_color: "#dc3545",
 
+  question_background: "transparent",
+
+  question_alignment: "",
+
+  question_padding: 0,
+
+  question_margin: 16,
+
   progress_track_color: "#e9ecef",
 
   progress_bar_color: "#ff5a1f",
@@ -215,6 +223,10 @@ const DEFAULT_THEME = {
   progress_height: 6,
 
   progress_label_color: "#6b7280",
+
+  progress_label_background: "transparent",
+
+  progress_label_alignment: "left",
 
   show_progress: true,
 
@@ -355,6 +367,22 @@ export default {
       if (!this.quiz?.questions?.length) return 0;
 
       return Math.round(((this.currentIndex + 1) / this.quiz.questions.length) * 100);
+
+    },
+
+    progressLabelStyles() {
+
+      const t = this.theme;
+
+      return {
+
+        color: t.progress_label_color,
+
+        background: t.progress_label_background || "transparent",
+
+        textAlign: t.progress_label_alignment || "left",
+
+      };
 
     },
 

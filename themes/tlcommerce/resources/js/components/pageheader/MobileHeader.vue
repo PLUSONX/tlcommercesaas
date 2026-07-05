@@ -116,18 +116,18 @@
           ">
           <!-- Offcanvas -->
           <the-offcanvas :user-info="customerInfo" :menu-items="offcanvas.menuItems"
-            :header-menu-style="headerMenuStyle" :header-style="headerStyle" class="mr-20" />
+            :header-menu-style="headerMenuStyle" :header-style="headerStyle" />
           <!-- End The Offcanvas -->
 
           <!-- Search Form -->
           <!-- <search-form style-two mobile-style class="mr-20" /> -->
-          <search-form style-two mobile-style :fixed-overlay="true" class="mr-20" />
+          <search-form style-two mobile-style :fixed-overlay="true" />
           <!-- End Search Form -->
 
           <!-- Cart Button -->
-          <language-currency-switcher class="mr-20 langcurrency-mobile" :currencies="currencies" :languages="languages"
+          <language-currency-switcher class="langcurrency-mobile" :currencies="currencies" :languages="languages"
             :data-loading="dataLoading" :use-fixed-dropdown="true" @change-language-currency="setCurrencyLanguage" />
-          <router-link to="/cart" class="btn-circle custom-icon-btn" style="margin-left: 5px;">
+          <router-link to="/cart" class="btn-circle custom-icon-btn">
             <base-icon-svg name="cart" class="material-icons" :width="18" :height="15" />
             <span class="
                 count
@@ -274,6 +274,7 @@ export default {
 
 .mobile-header-actions {
   overflow: visible;
+  gap: 20px;
 }
 
 header {

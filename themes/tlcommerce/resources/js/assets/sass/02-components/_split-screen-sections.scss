@@ -79,19 +79,19 @@
 
   .home-page-section .section-header-row>.text-md-end,
   .home-page-section .section-header-row>[class*="col-"]:last-child {
-    text-align: right !important;
+    text-align: end !important;
   }
 
   .home-page-section .section-header-row .countdown {
-    justify-content: flex-end !important;
+    justify-content: end !important;
     flex-wrap: nowrap !important;
 
     li {
       flex-shrink: 0;
 
       &:not(:last-child) {
-        margin-right: 4px;
-        padding-right: 4px;
+        margin-inline-end: 4px;
+        padding-inline-end: 4px;
       }
 
       .digit {
