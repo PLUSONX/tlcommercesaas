@@ -84,8 +84,8 @@
         "></top-bar-banner>
         <!-- Header -->
         <header class="header__two love-sticky">
-          <header-top class="d-none d-lg-block" :data-loading="MenuItemsLoading" :right-menu-items="rightMenuItems"
-            :left-menu-items="leftMenuItems" :header-menu-style="headerMenuStyle"></header-top>
+          <!-- <header-top class="d-none d-lg-block" :data-loading="MenuItemsLoading" :right-menu-items="rightMenuItems"
+            :left-menu-items="leftMenuItems" :header-menu-style="headerMenuStyle"></header-top> -->
           <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
             :wishlist-item="wishlistItem" :compare-item="compareItem" :header-logo-style="headerLogoStyle"
             :header-menu-style="headerMenuStyle" :data-loading="MenuItemsLoading" :currencies="data.currencies"
@@ -191,21 +191,14 @@
 
     <!-- Website popup (shared — teleported to body for correct stacking on all layouts) -->
     <teleport to="body">
-      <CModal
-        :visible="visibleWebsitePopup"
-        alignment="center"
-        class="website-popup-modal"
-        @close="visibleWebsitePopup = false"
-      >
+      <CModal :visible="visibleWebsitePopup" alignment="center" class="website-popup-modal"
+        @close="visibleWebsitePopup = false">
         <CModalBody class="modal-body p-0 position-relative website-popup-modal-body rounded-0">
           <button class="btn-circle custom-modal-btn position-absolute size-35" @click="closePopupModal()">
             <base-icon-svg name="close" :width="10" :height="10" />
           </button>
           <div class="m-0" v-html="website_popup_properties?.website_popup_content"></div>
-          <subscribe-form
-            class="mt-20"
-            v-if="website_popup_properties?.website_popup_subscribe_status == 1"
-          />
+          <subscribe-form class="mt-20" v-if="website_popup_properties?.website_popup_subscribe_status == 1" />
         </CModalBody>
       </CModal>
     </teleport>

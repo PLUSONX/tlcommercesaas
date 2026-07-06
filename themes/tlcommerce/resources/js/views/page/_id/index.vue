@@ -21,7 +21,8 @@
             <!-- Page Details -->
             <article class="post-details">
               <!-- Page Header -->
-              <header class="entry-header mb-40" v-if="page.page_image != null">
+              <!-- <header class="entry-header mb-40" v-if="page.page_image != null"> -->
+              <header class="entry-header" v-if="page.page_image != null">
                 <div class="entry-thumbnail">
                   <img :src="cleanImage(page.page_image)" :alt="page.title" />
                 </div>
@@ -29,11 +30,8 @@
               <!-- End Page Header -->
 
               <!-- Page Content -->
-              <div
-                class="entry-content"
-                :class="{ 'page-custom-content': hasCustomContentStyles }"
-                v-html="page.content"
-              ></div>
+              <div class="entry-content" :class="{ 'page-custom-content': hasCustomContentStyles }"
+                v-html="page.content"></div>
               <!-- End Page Content -->
             </article>
           </div>
@@ -191,7 +189,7 @@ export default {
 </script>
 
 <style scoped>
-.force-mobile-layout .row > [class*="col-"] {
+.force-mobile-layout .row>[class*="col-"] {
   flex: 0 0 100% !important;
   max-width: 100% !important;
 }

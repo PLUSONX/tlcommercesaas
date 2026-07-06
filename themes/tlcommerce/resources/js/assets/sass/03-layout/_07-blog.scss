@@ -173,6 +173,40 @@ blockquote {
     min-height: 360px;
     border: 0;
   }
+
+  // Image stacks: one or multiple images per paragraph (Summernote)
+  p:has(> img:only-child),
+  p:has(> img + img) {
+    margin-bottom: 0;
+    line-height: 0;
+    font-size: 0;
+
+    br {
+      display: none;
+    }
+  }
+
+  // Collapse spacer paragraphs Summernote inserts between images
+  p:has(> br:only-child) {
+    margin-bottom: 0;
+    line-height: 0;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    vertical-align: top;
+  }
+
+  // Beat Summernote inline width/height on stacked images
+  p:has(> img:only-child) img,
+  p:has(> img + img) img {
+    width: 100%;
+    height: auto !important;
+  }
 }
 
 /* Post Author Info */

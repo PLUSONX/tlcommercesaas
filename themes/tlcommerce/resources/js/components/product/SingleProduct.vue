@@ -1500,6 +1500,8 @@ export default {
 
 /* Products index listing grid (default layout, listingGrid prop) */
 .single-product--listing.style--eight {
+  container-type: inline-size;
+  container-name: productListingCard;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -1512,16 +1514,18 @@ export default {
   .button-group {
     width: 100%;
     gap: 0.5em;
+    min-width: 0;
   }
 
   .btn-xs {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     margin-top: 10px;
-    padding: 1em 1em;
-    font-size: 14px;
+    padding: 0.65em 0.4em;
+    font-size: 13px;
     font-weight: 600;
     line-height: 1.2;
     white-space: nowrap;
@@ -1545,12 +1549,44 @@ export default {
     }
   }
 
+  @container productListingCard (max-width: 340px) {
+    .btn-xs {
+      font-size: 11px;
+      padding: 0.55em 0.35em;
+      white-space: normal;
+      line-height: 1.15;
+    }
+  }
+
+  @container productListingCard (max-width: 300px) {
+    .btn-xs {
+      font-size: 10px;
+      padding: 0.5em 0.3em;
+    }
+  }
+
+  @container productListingCard (max-width: 260px) {
+    .btn-xs {
+      font-size: 9px;
+      padding: 0.45em 0.25em;
+    }
+  }
+
   .product-title-price-row {
     @media (max-width: 767px) {
       .product-price {
         flex-wrap: wrap;
         gap: 2px 6px;
       }
+    }
+  }
+
+  @media (min-width: 992px) and (max-width: 1800px) {
+    .btn-xs {
+      font-size: 12px;
+      padding: 0.6em 0.35em;
+      white-space: normal;
+      min-width: 0;
     }
   }
 
