@@ -131,6 +131,25 @@ body.dark {
         color: #fff;
     }
 
+    header {
+        .header-bottom .nav-horizontal {
+            >li>a {
+                color: #fff;
+            }
+
+            li:hover>a,
+            li.active-menu-parent>a,
+            li.current-menu-item>a {
+                color: #fff !important;
+            }
+        }
+
+        .megamenu-wrapper>button:hover,
+        .megamenu-wrapper>button.custom-menu:hover {
+            color: #fff !important;
+        }
+    }
+
     .header__two .nav-horizontal:before {
         background-color: #fff;
     }
@@ -169,7 +188,15 @@ body.dark {
         border: none;
 
         &:hover {
-            color: $c1;
+            color: #fff !important;
+
+            svg,
+            .material-icons,
+            .icon-wrapper svg,
+            .icon-wrapper .icon {
+                color: #fff !important;
+                fill: currentColor;
+            }
         }
     }
 
