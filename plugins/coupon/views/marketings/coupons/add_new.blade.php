@@ -2,16 +2,16 @@
 @section('title')
     {{ translate('New Coupon') }}
 @endsection
-<!-- @section('custom_css') -->
+@section('custom_css')
     <!--Select2-->
-    <!-- <link rel="stylesheet" href="{{ asset('backend/assets/plugins/select2/select2.min.css') }}"> -->
+    <link rel="stylesheet" href="{{ asset('backend/assets/plugins/select2/select2.min.css') }}">
     <!--End select2-->
-    <!-- <style>
+    <style>
         .select2-container {
             width: 100% !important;
         }
-    </style> -->
-<!-- @endsection -->
+    </style>
+@endsection
 @section('main_content')
     <!-- <div class="theme-option-container"> -->
         <form method="POST" action="{{ route('plugin.tlcommercecore.marketing.coupon.store.new') }}">
@@ -404,8 +404,8 @@
 @endsection
 @section('custom_scripts')
     <!--Select2-->
-    <!-- <script src="{{ asset('backend/assets/plugins/select2/select2.min.js') }}"></script> -->
-    <!-- <script>
+    <script src="{{ asset('backend/assets/plugins/select2/select2.min.js') }}"></script>
+    <script>
         (function($) {
             "use strict";
             $(document).ready(function() {
@@ -426,7 +426,7 @@
                 });
             });
         })(jQuery);
-    </script> -->
+    </script>
 @endsection
 
 

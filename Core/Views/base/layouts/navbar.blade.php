@@ -56,11 +56,11 @@
             <!--Blog Module-->
             @canany(['Show Blog', 'Create Blog', 'Manage Category', 'Manage Tag', 'Manage Comment'])
                 <li style="padding-left: 0 !important;"
-                    class="{{ Request::routeIs(['core.blog.category', 'core.add.blog.category', 'core.edit.blog.category', 'core.blog', 'core.add.blog', 'core.edit.blog', 'core.tag', 'core.edit.tag', 'core.add.tag', 'core.blog.comment', 'core.blog.comment.edit', 'core.blog.comment.setting']) ? 'active sub-menu-opened' : '' }}">
+                    class="hide-menu {{ Request::routeIs(['core.blog.category', 'core.add.blog.category', 'core.edit.blog.category', 'core.blog', 'core.add.blog', 'core.edit.blog', 'core.tag', 'core.edit.tag', 'core.add.tag', 'core.blog.comment', 'core.blog.comment.edit', 'core.blog.comment.setting']) ? 'active sub-menu-opened' : '' }}">
                     <a href="#">
                         <!-- <i class="icofont-blogger"></i> -->
                         <x-lucide-file-pen-line style="width: 20px; height: 20px; margin-left: 8px;" />
-                        <span class="link-title">{{ translate('Blog') }}</span>
+                        <span class="link-title ml-2">{{ translate('Blog') }}</span>
                     </a>
                     <ul class="nav sub-menu">
                         @can('Show Blog')
@@ -119,7 +119,7 @@
             <!--Page Module-->
             @canany(['Show Page', 'Create Page'])
                 <li style="padding-left: 0 !important;"
-                    class="{{ Request::routeIs(['core.page', 'core.page.add', 'core.page.edit']) ? 'active sub-menu-opened' : '' }}">
+                    class="hide-menu {{ Request::routeIs(['core.page', 'core.page.add', 'core.page.edit']) ? 'active sub-menu-opened' : '' }}">
                     <a href="#">
                         <!-- <i class="icofont-page"></i> -->
                         <x-lucide-panels-top-left style="width: 20px; height: 20px; margin-left: 8px;" />
@@ -145,7 +145,7 @@
             <!--Appearances Modules-->
             @if (auth()->user()->can('Manage Themes') || auth()->user()->can('Manage Menus'))
                 <li style="padding-left: 0 !important;"
-                    class="{{ Request::routeIs(['core.themes.index', 'core.manage.menus']) ? 'active sub-menu-opened' : '' }}">
+                    class="hide-menu {{ Request::routeIs(['core.themes.index', 'core.manage.menus']) ? 'active sub-menu-opened' : '' }}">
                     <a href="#">
                         <!-- <i class="icofont-brand-designfloat"></i> -->
                          <x-lucide-view style="width: 20px; height: 20px; margin-left: 8px;" />
@@ -335,9 +335,9 @@
     <!--Side bar search result-->
     <div class="sidebar-body search-side-bar d-none">
         <!-- Nav -->
-        <ul class="nav">
+        <!-- <ul class="nav">
             <li>Hello</li>
-        </ul>
+        </ul> -->
     </div>
     <!--End sidebar search result-->
 </nav>

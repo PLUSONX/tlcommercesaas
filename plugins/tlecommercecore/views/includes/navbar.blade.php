@@ -105,12 +105,31 @@
                     @includeIf('plugin/multivendor::includes.submenu.products')
                 @endif
             @endif
+            @if (auth()->user()->can('Manage Brands'))
+                 <li
+                     class="{{ Request::routeIs(['plugin.tlcommercecore.product.brand.edit', 'plugin.tlcommercecore.product.brand.list', 'plugin.tlcommercecore.product.brand.new']) ? 'active ' : '' }}">
+                     <a class="pl-2" href="{{ route('plugin.tlcommercecore.product.brand.list') }}">{{ translate('Brands') }}</a>
+                 </li>
+             @endif
             @if (auth()->user()->can('Manage Categories'))
                 <li class="{{ Request::routeIs(['plugin.tlcommercecore.product.category.list', 'plugin.tlcommercecore.product.category.new', 'plugin.tlcommercecore.product.category.edit']) ? 'active' : '' }}">
                     <a class="pl-2"
                         href="{{ route('plugin.tlcommercecore.product.category.list') }}">{{ translate('Categories') }}</a>
                 </li>
             @endif
+            @if (auth()->user()->can('Manage Attributes'))
+                 <li
+                     class="{{ Request::routeIs(['plugin.tlcommercecore.product.attributes.values.edit', 'plugin.tlcommercecore.product.attributes.values', 'plugin.tlcommercecore.product.attributes.edit', 'plugin.tlcommercecore.product.attributes.add', 'plugin.tlcommercecore.product.attributes.list']) ? 'active ' : '' }}">
+                     <a class="pl-2"
+                         href="{{ route('plugin.tlcommercecore.product.attributes.list') }}">{{ translate('Attributes') }}</a>
+                 </li>
+             @endif
+            @if (auth()->user()->can('Manage Units'))
+                 <li
+                     class="{{ Request::routeIs(['plugin.tlcommercecore.product.units.edit', 'plugin.tlcommercecore.product.units.new', 'plugin.tlcommercecore.product.units.list']) ? 'active ' : '' }}">
+                     <a class="pl-2" href="{{ route('plugin.tlcommercecore.product.units.list') }}">{{ translate('Units') }}</a>
+                 </li>
+             @endif
             @if (auth()->user()->can('Manage Product Reviews'))
                 <li class="{{ Request::routeIs(['plugin.tlcommercecore.product.reviews.list']) ? 'active' : '' }}">
                     <a class="pl-2"
