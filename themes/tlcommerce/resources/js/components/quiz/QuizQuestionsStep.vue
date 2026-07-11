@@ -23,9 +23,7 @@
           </small>
 
           <div class="quiz-questions-step__progress-track">
-
-            <div class="quiz-questions-step__progress-bar" :style="{ width: progressPercent + '%' }"></div>
-
+            <div class="quiz-questions-step__progress-fill" :style="progressFillStyles"></div>
           </div>
 
         </div>
@@ -254,6 +252,28 @@ const DEFAULT_THEME = {
 
 };
 
+function normalizeHexColor(hex) {
+  const raw = String(hex || "").trim().replace(/^#/, "");
+  if (raw.length === 3) {
+    return raw
+      .split("")
+      .map((c) => c + c)
+      .join("")
+      .toLowerCase();
+  }
+  if (raw.length === 6) return raw.toLowerCase();
+  return "";
+}
+
+function resolveProgressTrackColor(trackColor, fillColor) {
+  const track = normalizeHexColor(trackColor);
+  const fill = normalizeHexColor(fillColor);
+  if (track && fill && track === fill) {
+    return `color-mix(in srgb, ${fillColor} 15%, #ffffff)`;
+  }
+  return trackColor;
+}
+
 
 
 export default {
@@ -370,6 +390,12 @@ export default {
 
     },
 
+    progressFillStyles() {
+      return {
+        width: `${this.progressPercent}%`,
+      };
+    },
+
     progressLabelStyles() {
 
       const t = this.theme;
@@ -387,27 +413,17 @@ export default {
     },
 
     cssVars() {
-
       const t = this.theme;
-
+      const trackColor = resolveProgressTrackColor(t.progress_track_color, t.progress_bar_color);
       return {
-
         "--qq-question-color": t.question_color,
-
         "--qq-required-color": t.required_color,
-
-        "--qq-progress-track": t.progress_track_color,
-
-        "--qq-progress-bar": t.progress_bar_color,
-
+        "--qq-progress-track": trackColor,
+        "--qq-progress-fill": t.progress_bar_color,
         "--qq-progress-height": `${t.progress_height}px`,
-
         "--qq-progress-label": t.progress_label_color,
-
         "--qq-error-color": t.error_color,
-
       };
-
     },
 
     rootStyles() {
@@ -609,29 +625,23 @@ export default {
 
 
 .quiz-questions-step__progress-track {
-
+  position: relative;
   width: 100%;
-
   height: var(--qq-progress-height, 6px);
-
   background: var(--qq-progress-track, #e9ecef);
-
   border-radius: 999px;
-
   overflow: hidden;
-
 }
 
-
-
-.quiz-questions-step__progress-bar {
-
+.quiz-questions-step__progress-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
   height: 100%;
-
-  background: var(--qq-progress-bar, #ff5a1f);
-
+  max-width: 100%;
+  border-radius: inherit;
+  background: var(--qq-progress-fill, #ff5a1f);
   transition: width 0.2s ease;
-
 }
 
 

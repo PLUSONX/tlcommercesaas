@@ -2,6 +2,8 @@
 
     use Theme\TLCommerce\Http\Resources\QuizResultsConfig;
 
+    $isDefaultLang = $isDefaultLang ?? true;
+
     $resultsActionsRaw = null;
 
     if (old('results_actions_json')) {
@@ -44,7 +46,7 @@
 
     <hr class="my-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-3 @if (!$isDefaultLang) area-disabled @endif">
 
         <h5 class="mb-0">{{ translate('Action buttons') }}</h5>
 

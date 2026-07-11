@@ -5,9 +5,19 @@
         {{ $t("No matching products found.") }}
       </div>
 
-      <div v-if="showFeaturedCard && results.length" class="quiz-results__featured" :style="cardWrapperStyles">
-        <quiz-results-stack :blocks="config.blocks" :theme="config.theme" :results="results"
-          :product-profiles="config.product_profiles || []" :hero-image="heroBlockImage" />
+      <div v-if="showFeaturedCard && results.length" class="quiz-results__featured" :class="cardFeaturedClasses"
+        :style="cardWrapperStyles">
+        <quiz-results-stack class="quiz-results__featured-content" :blocks="config.blocks" :theme="config.theme"
+          :results="results" :product-profiles="config.product_profiles || []" :hero-image="heroBlockImage" />
+        <div v-if="usesCardFrame" class="quiz-results__card-frame" :class="cardFrameOverlayClass"
+          :style="cardFrameOverlayStyles">
+          <template v-if="theme.hero_frame === 'corners'">
+            <span class="quiz-results__corner quiz-results__corner--tl"></span>
+            <span class="quiz-results__corner quiz-results__corner--tr"></span>
+            <span class="quiz-results__corner quiz-results__corner--bl"></span>
+            <span class="quiz-results__corner quiz-results__corner--br"></span>
+          </template>
+        </div>
       </div>
 
       <div v-if="showProductGrid && results.length" class="quiz-results__grid-section"
@@ -207,21 +217,51 @@ export default {
         width: "100%",
       };
     },
+    usesCardFrame() {
+      return (this.theme.hero_frame || "none") !== "none";
+    },
+    cardFeaturedClasses() {
+      return {
+        "quiz-results__featured--framed": this.usesCardFrame,
+        "quiz-results__featured--glow": this.usesCardFrame && !!this.theme.hero_glow,
+      };
+    },
+    cardFrameOverlayStyles() {
+      const t = this.theme;
+      const frameColor = t.hero_frame_color || t.accent_color || "#c9a84c";
+      return {
+        "--quiz-frame-color": frameColor,
+        "--quiz-frame-thickness": `${t.hero_frame_thickness || 2}px`,
+        "--quiz-frame-inset": `${t.hero_frame_inset || 10}px`,
+        "--quiz-frame-corner-size": `${t.hero_frame_corner_size || 18}px`,
+      };
+    },
+    cardFrameOverlayClass() {
+      const frameStyle = this.theme.hero_frame || "none";
+      return {
+        "quiz-results__card-frame--corners": frameStyle === "corners",
+        "quiz-results__card-frame--inset": frameStyle === "inset",
+      };
+    },
     cardWrapperStyles() {
       const t = this.theme;
-      if (!t.card_enabled) {
-        return { maxWidth: `${t.card_max_width || 480}px`, margin: "0 auto", width: "100%" };
-      }
-      const borderColor = t.card_border_color || "#c9a84c";
+      const frameColor = t.hero_frame_color || t.accent_color || "#c9a84c";
       const styles = {
         maxWidth: `${t.card_max_width || 480}px`,
         margin: "0 auto",
         width: "100%",
-        background: t.card_background || "#1f4530",
-        padding: `${t.card_padding ?? 32}px`,
-        borderRadius: `${t.card_border_radius ?? 0}px`,
         boxSizing: "border-box",
+        "--quiz-frame-color": frameColor,
+        "--quiz-frame-thickness": `${t.hero_frame_thickness || 2}px`,
+        "--quiz-frame-inset": `${t.hero_frame_inset || 10}px`,
       };
+      if (!t.card_enabled) {
+        return styles;
+      }
+      const borderColor = t.card_border_color || "#c9a84c";
+      styles.background = t.card_background || "#1f4530";
+      styles.padding = `${t.card_padding ?? 32}px`;
+      styles.borderRadius = `${t.card_border_radius ?? 0}px`;
       if (t.card_border_style === "double") {
         styles.border = `3px double ${borderColor}`;
       } else if (t.card_border_style === "single") {
@@ -365,6 +405,66 @@ export default {
 
 .quiz-results__featured {
   margin-bottom: 8px;
+}
+
+.quiz-results__featured--framed {
+  position: relative;
+  isolation: isolate;
+}
+
+.quiz-results__featured-content {
+  position: relative;
+  z-index: 1;
+}
+
+.quiz-results__featured--glow {
+  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--quiz-frame-color) 60%, transparent));
+}
+
+.quiz-results__card-frame {
+  position: absolute;
+  inset: var(--quiz-frame-inset, 10px);
+  pointer-events: none;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.quiz-results__card-frame--corners .quiz-results__corner {
+  position: absolute;
+  width: var(--quiz-frame-corner-size, 18px);
+  height: var(--quiz-frame-corner-size, 18px);
+  border-color: var(--quiz-frame-color, #c9a84c);
+  border-style: solid;
+  pointer-events: none;
+}
+
+.quiz-results__corner--tl {
+  top: 0;
+  left: 0;
+  border-width: var(--quiz-frame-thickness, 2px) 0 0 var(--quiz-frame-thickness, 2px);
+}
+
+.quiz-results__corner--tr {
+  top: 0;
+  right: 0;
+  border-width: var(--quiz-frame-thickness, 2px) var(--quiz-frame-thickness, 2px) 0 0;
+}
+
+.quiz-results__corner--bl {
+  bottom: 0;
+  left: 0;
+  border-width: 0 0 var(--quiz-frame-thickness, 2px) var(--quiz-frame-thickness, 2px);
+}
+
+.quiz-results__corner--br {
+  bottom: 0;
+  right: 0;
+  border-width: 0 var(--quiz-frame-thickness, 2px) var(--quiz-frame-thickness, 2px) 0;
+}
+
+.quiz-results__card-frame--inset {
+  border: var(--quiz-frame-thickness, 2px) solid var(--quiz-frame-color, #c9a84c);
+  border-radius: inherit;
 }
 
 .quiz-results__actions {

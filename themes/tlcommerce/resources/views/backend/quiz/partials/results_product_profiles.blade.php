@@ -24,7 +24,7 @@
 <div id="results-product-profiles-panel" class="results-theme-section mb-3 {{ $showProfilesPanel ? '' : 'd-none' }}">
     <div class="intro-panel-label">{{ translate('Product result profiles') }}</div>
     <p class="text-muted small mb-3">
-        {{ translate('Map each quiz outcome product to a display color and tagline. The product image is taken from the catalog.') }}
+        {{ translate('Map each quiz outcome product to a display color, tagline, and description. The product image is taken from the catalog.') }}
     </p>
 
     <div class="form-row mb-20 align-items-end @if (!$isDefaultLang) area-disabled @endif">
@@ -38,12 +38,14 @@
     </div>
 
     <div class="table-responsive">
-        <table class="hoverable text-nowrap border-top2" id="results-product-profiles-table">
+        <table class="hoverable border-top2" id="results-product-profiles-table">
             <thead style="background: #F3F4F6;">
                 <tr>
-                    <th>{{ translate('Product') }}</th>
-                    <th style="width: 200px;">{{ translate('Color') }}</th>
-                    <th>{{ translate('Tagline') }}</th>
+                    <th style="min-width: 140px;">{{ translate('Product') }}</th>
+                    <th style="min-width: 180px;">{{ translate('Color') }}</th>
+                    <th style="min-width: 160px;">{{ translate('Tagline') }}</th>
+                    <th style="min-width: 220px;">{{ translate('Description') }}</th>
+                    <th style="min-width: 180px;">{{ translate('Quote') }}</th>
                     <th style="width: 100px;">{{ translate('Remove') }}</th>
                 </tr>
             </thead>
@@ -52,6 +54,8 @@
                     @php
                         $colorId = 'results-profile-color-' . $profile['product_id'];
                         $taglineId = 'results-profile-tagline-' . $profile['product_id'];
+                        $descriptionId = 'results-profile-description-' . $profile['product_id'];
+                        $quoteId = 'results-profile-quote-' . $profile['product_id'];
                         $productName = $profile['product_name'] ?? '';
                         if ($productName === '' && !empty($profile['product_id'])) {
                             $profileProduct = \Plugin\TlcommerceCore\Models\Product::find($profile['product_id']);
@@ -76,6 +80,14 @@
                                 value="{{ $profile['tagline'] ?? '' }}" placeholder="{{ translate('THE GOLDEN OPTIMIST') }}">
                         </td>
                         <td>
+                            <textarea id="{{ $descriptionId }}" class="theme-input-style w-100 results-profile-description-input" rows="2"
+                                maxlength="2000" placeholder="{{ translate('Short description shown on the result card') }}">{{ $profile['description'] ?? '' }}</textarea>
+                        </td>
+                        <td>
+                            <input type="text" id="{{ $quoteId }}" class="theme-input-style w-100 results-profile-quote-input"
+                                value="{{ $profile['quote'] ?? '' }}" maxlength="255" placeholder="{{ translate('Quoted tagline below description') }}">
+                        </td>
+                        <td>
                             <button type="button" class="btn long btn-sm btn-danger results-profile-remove @if (!$isDefaultLang) area-disabled @endif">{{ translate('Remove') }}</button>
                         </td>
                     </tr>
@@ -91,4 +103,8 @@
 <style>
     #results-product-profiles-table .input-group { margin-bottom: 0; }
     #results-product-profiles-panel .select2-container { width: 100% !important; }
+    #results-product-profiles-table td,
+    #results-product-profiles-table th { vertical-align: top; }
+    #results-product-profiles-table .results-profile-description-input { min-height: 60px; }
+    #results-product-profiles-table .results-profile-quote-input { min-width: 160px; }
 </style>

@@ -2,6 +2,9 @@
 (function($) {
     "use strict";
 
+    var PREVIEW_LOCALE = @json($lang ?? getDefaultLang());
+    var RESULTS_STRUCTURE_LOCKED = @json(!($isDefaultLang ?? true));
+
     var MOCK_PRODUCT = {
         name: 'CUOIO',
         url: '/products/cuoio',
@@ -11,8 +14,12 @@
         rank: 1,
         image: '',
         tagline: 'THE GOLDEN OPTIMIST',
-        color: '#c9a84c'
+        color: '#c9a84c',
+        description: 'Like soft morning sunlight on warm leather.',
+        quote: 'Softness that never loses its features.'
     };
+
+    var APPEARANCE_BLOCK_TYPES = ['title', 'subtitle', 'tagline', 'body', 'meta'];
 
     var BLOCK_EDITOR_TYPES = ['title', 'subtitle', 'tagline', 'body', 'meta'];
     var BLOCK_LABELS = {
@@ -56,6 +63,16 @@
         padding_x: 0
     };
 
+    var DEFAULT_APPEARANCE = {
+        text_color: 'inherit',
+        text_color_custom: '#c9a84c',
+        background_color: 'transparent',
+        background_color_custom: '#1a3d2a',
+        padding_x: 0,
+        padding_y: 0,
+        border_radius: 0
+    };
+
     var MIXTURE_LINE_DIAMOND_PRESET = [
         { type: 'line', width: 'wide' },
         { type: 'gap', size: 12 },
@@ -96,10 +113,57 @@
         }
     }
 
+    function parseJsonFieldStrict(raw) {
+        if (raw == null || raw === '') return null;
+        try {
+            var parsed = JSON.parse(raw);
+            return parsed != null ? parsed : null;
+        } catch (e) {
+            try {
+                var decoded = $('<textarea>').html(String(raw)).text();
+                parsed = JSON.parse(decoded);
+                return parsed != null ? parsed : null;
+            } catch (e2) {
+                return null;
+            }
+        }
+    }
+
+    function isProductColorCardLayout() {
+        return ($('#results-layout-mode').val() || '') === 'product_color_card';
+    }
+
+    function defaultBlocksForLayout() {
+        return isProductColorCardLayout()
+            ? DEFAULT_PRODUCT_COLOR_BLOCKS.slice()
+            : DEFAULT_BLOCKS.slice();
+    }
+
+    function seedBlocksFromDataElement() {
+        var $data = $('#results-blocks-json-data');
+        if (!$data.length) return;
+        var parsed = parseJsonFieldStrict($data.text());
+        if (parsed !== null) {
+            $('#results-blocks-json').val(JSON.stringify(parsed));
+        } else {
+            console.error('Results blocks: failed to parse #results-blocks-json-data');
+        }
+    }
+
     function getBlocks() {
-        return parseJsonField($('#results-blocks-json').val(), DEFAULT_BLOCKS.slice());
+        return parseJsonField($('#results-blocks-json').val(), defaultBlocksForLayout());
     }
     function setBlocks(b) { $('#results-blocks-json').val(JSON.stringify(b)); }
+
+    function findBlockById(blocks, blockId, index) {
+        if (blockId) {
+            var id = String(blockId);
+            for (var j = 0; j < blocks.length; j++) {
+                if (blocks[j] && String(blocks[j].id) === id) return blocks[j];
+            }
+        }
+        return blocks[index] || null;
+    }
 
     function getActions() {
         return parseJsonField($('#results-actions-json').val(), DEFAULT_ACTIONS.slice());
@@ -193,8 +257,16 @@
             rank: MOCK_PRODUCT.rank,
             image: MOCK_PRODUCT.image,
             tagline: (profile && profile.tagline) ? profile.tagline : MOCK_PRODUCT.tagline,
-            color: (profile && profile.color) ? profile.color : MOCK_PRODUCT.color
+            color: (profile && profile.color) ? profile.color : MOCK_PRODUCT.color,
+            description: (profile && profile.description) ? profile.description : MOCK_PRODUCT.description,
+            quote: (profile && profile.quote) ? profile.quote : MOCK_PRODUCT.quote
         };
+    }
+
+    function filterBlocksForPreview(blocks) {
+        return blocks.filter(function(block) {
+            return block && block.enabled !== false;
+        });
     }
 
     function normalizeProductSummary(raw) {
@@ -235,21 +307,75 @@
         }
     }
 
+    function upgradeProductColorCardBlocks(blocks) {
+        blocks = Array.isArray(blocks) ? blocks : [];
+        var preset = DEFAULT_PRODUCT_COLOR_BLOCKS;
+        var savedById = {};
+        blocks.forEach(function(block) {
+            if (!block || !block.id) return;
+            savedById[String(block.id)] = block;
+        });
+
+        var mergeKeys = ['html', 'text', 'spacing', 'appearance', 'size', 'display_mode', 'product_rank'];
+        var merged = [];
+        var usedIds = {};
+
+        preset.forEach(function(presetBlock) {
+            var id = String(presetBlock.id || '');
+            var block = $.extend(true, {}, presetBlock);
+            if (id && savedById[id]) {
+                var saved = savedById[id];
+                mergeKeys.forEach(function(key) {
+                    if (Object.prototype.hasOwnProperty.call(saved, key)) {
+                        block[key] = saved[key];
+                    }
+                });
+                if (Object.prototype.hasOwnProperty.call(saved, 'enabled')) {
+                    block.enabled = saved.enabled;
+                }
+            }
+            delete block.visible_locales;
+            merged.push(block);
+            if (id) usedIds[id] = true;
+        });
+
+        blocks.forEach(function(block) {
+            if (!block || !block.id) return;
+            var id = String(block.id);
+            if (usedIds[id]) return;
+            var extra = $.extend(true, {}, block);
+            delete extra.visible_locales;
+            merged.push(extra);
+        });
+
+        return merged.length ? merged : JSON.parse(JSON.stringify(preset));
+    }
+
     function applyProductColorPresetIfNeeded() {
         if (($('#results-layout-mode').val() || '') !== 'product_color_card') return;
         var blocks = getBlocks();
         if (!blocks.length || blocksMatchDefaults(blocks)) {
             setBlocks(JSON.parse(JSON.stringify(DEFAULT_PRODUCT_COLOR_BLOCKS)));
             renderBlockList();
+            return;
+        }
+        var upgraded = upgradeProductColorCardBlocks(blocks);
+        if (JSON.stringify(upgraded) !== JSON.stringify(blocks)) {
+            setBlocks(upgraded);
+            renderBlockList();
         }
     }
 
-    function buildProfileRowHtml(productId, productName, color, tagline) {
+    function buildProfileRowHtml(productId, productName, color, tagline, description, quote) {
         color = color || '#c9a84c';
         var colorId = 'results-profile-color-' + productId;
         var taglineId = 'results-profile-tagline-' + productId;
+        var descriptionId = 'results-profile-description-' + productId;
+        var quoteId = 'results-profile-quote-' + productId;
         var safeName = $('<div>').text(productName || '').html();
         var safeTagline = $('<div>').text(tagline || '').html();
+        var safeDescription = $('<div>').text(description || '').html();
+        var safeQuote = $('<div>').text(quote || '').html();
         return '<tr data-product-id="' + productId + '" data-product-name="' + safeName + '">' +
             '<td class="results-profile-name">' + safeName + '</td>' +
             '<td><div class="input-group addon">' +
@@ -258,6 +384,8 @@
             '<input type="color" class="input-group-text theme-input-style2 color-picker results-profile-color-input" value="' + color + '" oninput="document.getElementById(\'' + colorId + '\').value = this.value; if (typeof window.syncResultsBuilder === \'function\') window.syncResultsBuilder();">' +
             '</div></div></td>' +
             '<td><input type="text" id="' + taglineId + '" class="theme-input-style w-100 results-profile-tagline-input" value="' + safeTagline + '" placeholder="{{ translate('THE GOLDEN OPTIMIST') }}"></td>' +
+            '<td><textarea id="' + descriptionId + '" class="theme-input-style w-100 results-profile-description-input" rows="2" maxlength="2000" placeholder="{{ translate('Short description shown on the result card') }}">' + safeDescription + '</textarea></td>' +
+            '<td><input type="text" id="' + quoteId + '" class="theme-input-style w-100 results-profile-quote-input" value="' + safeQuote + '" maxlength="255" placeholder="{{ translate('Quoted tagline below description') }}"></td>' +
             '<td><button type="button" class="btn long btn-sm btn-danger results-profile-remove">{{ translate('Remove') }}</button></td>' +
             '</tr>';
     }
@@ -275,6 +403,8 @@
                 product_name: String($row.data('product-name') || $row.find('.results-profile-name').text().trim()),
                 color: color,
                 tagline: ($row.find('.results-profile-tagline-input').val() || '').trim(),
+                description: ($row.find('.results-profile-description-input').val() || '').trim(),
+                quote: ($row.find('.results-profile-quote-input').val() || '').trim(),
                 enabled: true
             });
         });
@@ -292,6 +422,8 @@
             .replace(/\{\{product\.summary\}\}/g, summary)
             .replace(/\{\{product\.price\}\}/g, p.price)
             .replace(/\{\{product\.tagline\}\}/g, p.tagline || '')
+            .replace(/\{\{product\.description\}\}/g, formatSummaryToken(p.description || ''))
+            .replace(/\{\{product\.quote\}\}/g, p.quote || '')
             .replace(/\{\{product\.color\}\}/g, p.color || '')
             .replace(/\{\{match_pct\}\}/g, String(p.match_pct))
             .replace(/\{\{rank\}\}/g, String(p.rank))
@@ -316,9 +448,19 @@
         t.card_padding = parseInt($('#results-card-padding').val(), 10) || 32;
         t.card_max_width = parseInt($('#results-card-max-width').val(), 10) || 480;
         t.hero_size = parseInt($('#results-hero-size').val(), 10) || 80;
-        t.hero_glow = true;
-        t.tagline_font = 'serif_caps';
-        t.body_font = 'script';
+        t.hero_frame = $('#results-hero-frame').val() || 'none';
+        t.hero_frame_color = hexFrom('results-hero-frame-color', '#c9a84c');
+        t.hero_frame_thickness = parseInt($('#results-hero-frame-thickness').val(), 10) || 2;
+        t.hero_frame_inset = parseInt($('#results-hero-frame-inset').val(), 10) || 10;
+        t.hero_frame_corner_size = parseInt($('#results-hero-frame-corner-size').val(), 10) || 18;
+        t.hero_glow = $('#results-hero-glow').is(':checked');
+        t.tagline_font = $('#results-tagline-font').val() || 'default';
+        t.tagline_color = hexFrom('results-tagline-color', '#ffffff');
+        t.tagline_font_size = parseInt($('#results-tagline-font-size').val(), 10) || 11;
+        t.tagline_letter_spacing = parseFloat($('#results-tagline-letter-spacing').val()) || 0.15;
+        t.body_font = $('#results-description-font').val() || 'default';
+        t.description_color = hexFrom('results-description-color', '#ffffff');
+        t.description_font_size = parseInt($('#results-description-font-size').val(), 10) || 15;
         setTheme(t);
         return t;
     }
@@ -395,6 +537,155 @@
             css.background = color; css.opacity = '0.5';
         }
         return css;
+    }
+
+    function getBlockAppearance(block) {
+        return $.extend({}, DEFAULT_APPEARANCE, block.appearance || {});
+    }
+
+    function resolveColorMode(mode, custom, theme, fallbackKey) {
+        if (mode === 'custom') return custom || '#c9a84c';
+        if (mode === 'accent') return theme.accent_color || '#c9a84c';
+        if (mode === 'text') return theme.text_color || '#ffffff';
+        if (mode === 'transparent') return 'transparent';
+        return theme[fallbackKey] || theme.text_color || '#ffffff';
+    }
+
+    function parseHexColor(hex) {
+        var raw = String(hex || '').trim().replace(/^#/, '');
+        if (raw.length === 3) {
+            return {
+                r: parseInt(raw.charAt(0) + raw.charAt(0), 16),
+                g: parseInt(raw.charAt(1) + raw.charAt(1), 16),
+                b: parseInt(raw.charAt(2) + raw.charAt(2), 16)
+            };
+        }
+        if (raw.length === 6) {
+            return {
+                r: parseInt(raw.slice(0, 2), 16),
+                g: parseInt(raw.slice(2, 4), 16),
+                b: parseInt(raw.slice(4, 6), 16)
+            };
+        }
+        return null;
+    }
+
+    function relativeLuminance(rgb) {
+        function toLinear(c) {
+            var s = c / 255;
+            return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+        }
+        return 0.2126 * toLinear(rgb.r) + 0.7152 * toLinear(rgb.g) + 0.0722 * toLinear(rgb.b);
+    }
+
+    function colorsTooSimilar(a, b) {
+        var c1 = parseHexColor(a);
+        var c2 = parseHexColor(b);
+        if (!c1 || !c2) return false;
+        if (String(a).toLowerCase() === String(b).toLowerCase()) return true;
+        return Math.abs(relativeLuminance(c1) - relativeLuminance(c2)) < 0.08;
+    }
+
+    function readableColor(textColor, backgroundColor, fallback) {
+        var text = String(textColor || '').trim();
+        var bg = String(backgroundColor || '').trim();
+        var fb = String(fallback || '#111111').trim();
+        if (!text || !bg) return text || fb;
+        if (colorsTooSimilar(text, bg)) return fb;
+        return text;
+    }
+
+    function blockTypeTypographyStyles(block, theme) {
+        var css = {};
+        var textFallback = theme.text_color || theme.accent_color || '#c9a84c';
+        var cardBg = theme.card_background || '#ffffff';
+        var onCard = !!theme.card_enabled;
+        if (block.type === 'tagline') {
+            if (theme.tagline_color) {
+                css.color = onCard
+                    ? readableColor(theme.tagline_color, cardBg, textFallback)
+                    : theme.tagline_color;
+            }
+            if (theme.tagline_font_size) css.fontSize = theme.tagline_font_size + 'px';
+            if (theme.tagline_letter_spacing != null) css.letterSpacing = theme.tagline_letter_spacing + 'em';
+            if (theme.tagline_font === 'serif_caps') {
+                css.fontFamily = '"Playfair Display", Georgia, serif';
+                css.textTransform = 'uppercase';
+            }
+        }
+        if (block.type === 'body') {
+            if (theme.description_color) {
+                css.color = onCard
+                    ? readableColor(theme.description_color, cardBg, textFallback)
+                    : theme.description_color;
+            }
+            if (theme.description_font_size) css.fontSize = theme.description_font_size + 'px';
+            if (theme.body_font === 'script') css.fontFamily = '"Great Vibes", cursive';
+        }
+        return css;
+    }
+
+    function blockAppearanceStyles(block, theme) {
+        var app = getBlockAppearance(block);
+        var css = {};
+        if (app.text_color !== 'inherit' || block.type === 'meta') {
+            css.color = resolveColorMode(app.text_color, app.text_color_custom, theme, 'text_color');
+        }
+        if (app.background_color !== 'transparent') {
+            css.backgroundColor = resolveColorMode(app.background_color, app.background_color_custom, theme, 'card_background');
+        }
+        if (app.padding_x || app.padding_y) {
+            css.paddingLeft = (app.padding_x || 0) + 'px';
+            css.paddingRight = (app.padding_x || 0) + 'px';
+            css.paddingTop = (app.padding_y || 0) + 'px';
+            css.paddingBottom = (app.padding_y || 0) + 'px';
+        }
+        if (app.border_radius) css.borderRadius = app.border_radius + 'px';
+        return css;
+    }
+
+    function blockWrapperStyleString(block, theme) {
+        var css = $.extend({}, blockTypeTypographyStyles(block, theme), blockAppearanceStyles(block, theme));
+        return Object.keys(css).map(function(k) {
+            return k.replace(/([A-Z])/g, '-$1').toLowerCase() + ':' + css[k];
+        }).join(';');
+    }
+
+    function buildResultsTextAppearancePanel(block) {
+        var app = getBlockAppearance(block);
+        var $panel = $('<div class="results-block-appearance-panel mt-2"></div>');
+        $panel.append('<div class="intro-panel-label">{{ translate('Text styling') }}</div>');
+        var $row1 = $('<div class="results-sep-row d-flex flex-wrap gap-2 align-items-center mb-2"></div>');
+        var $textSel = $('<select class="theme-input-style results-app-text-color"></select>');
+        [['inherit', '{{ translate('Inherit') }}'], ['accent', '{{ translate('Accent') }}'], ['text', '{{ translate('Text') }}'], ['custom', '{{ translate('Custom') }}']].forEach(function(o) {
+            $textSel.append('<option value="' + o[0] + '">' + o[1] + '</option>');
+        });
+        $textSel.val(app.text_color);
+        $row1.append('<label class="small mb-0">{{ translate('Text color') }}</label>').append($textSel);
+        var $textCustom = $('<input type="color" class="results-app-text-color-custom" value="' + (app.text_color_custom || '#c9a84c') + '">');
+        if (app.text_color !== 'custom') $textCustom.hide();
+        $row1.append($textCustom);
+
+        var $bgSel = $('<select class="theme-input-style results-app-bg-color"></select>');
+        [['transparent', '{{ translate('None') }}'], ['accent', '{{ translate('Accent') }}'], ['text', '{{ translate('Text') }}'], ['custom', '{{ translate('Custom') }}']].forEach(function(o) {
+            $bgSel.append('<option value="' + o[0] + '">' + o[1] + '</option>');
+        });
+        $bgSel.val(app.background_color);
+        $row1.append('<label class="small mb-0 ml-2">{{ translate('Background') }}</label>').append($bgSel);
+        var $bgCustom = $('<input type="color" class="results-app-bg-color-custom" value="' + (app.background_color_custom || '#1a3d2a') + '">');
+        if (app.background_color !== 'custom') $bgCustom.hide();
+        $row1.append($bgCustom);
+
+        var $row2 = $('<div class="results-sep-row d-flex flex-wrap gap-2 align-items-center"></div>');
+        $row2.append('<label class="small mb-0">{{ translate('Pad X') }}</label>');
+        $row2.append('<input type="number" class="theme-input-style results-app-padding-x" min="0" max="64" style="width:56px" value="' + app.padding_x + '">');
+        $row2.append('<label class="small mb-0 ml-1">{{ translate('Pad Y') }}</label>');
+        $row2.append('<input type="number" class="theme-input-style results-app-padding-y" min="0" max="64" style="width:56px" value="' + app.padding_y + '">');
+        $row2.append('<label class="small mb-0 ml-1">{{ translate('Radius') }}</label>');
+        $row2.append('<input type="number" class="theme-input-style results-app-border-radius" min="0" max="32" style="width:56px" value="' + app.border_radius + '">');
+
+        $panel.append($row1).append($row2);
+        return $panel;
     }
 
     function buildResultsBlockSpacingPanel(block) {
@@ -574,6 +865,7 @@
         var $list = $('#results-blocks-list').empty();
         blocks.forEach(function(block, index) {
             var $row = $('<div class="results-block-row"></div>');
+            if (block.id) $row.attr('data-block-id', block.id);
             var $main = $('<div class="results-block-row__main"></div>');
             $main.append('<div class="results-block-row__type">' + (BLOCK_LABELS[block.type] || block.type) + '</div>');
             if (BLOCK_HINTS[block.type]) {
@@ -584,11 +876,11 @@
                 if (block.type === 'tagline' && block.text && !html) html = '<span>' + block.text + '</span>';
                 $main.append('<textarea class="results-block-editor theme-input-style mt-2">' + $('<div>').text(html).html() + '</textarea>');
             }
-            if (block.type === 'product_image' || block.type === 'match_badge') {
+            if (!RESULTS_STRUCTURE_LOCKED && (block.type === 'product_image' || block.type === 'match_badge')) {
                 var $rank = $('<div class="mt-2 d-flex gap-2 align-items-center"><label class="small mb-0">{{ translate('Product rank') }}</label><input type="number" class="theme-input-style results-block-rank" min="1" max="20" style="width:70px" value="' + (block.product_rank || 1) + '"></div>');
                 $main.append($rank);
             }
-            if (block.type === 'product_image') {
+            if (!RESULTS_STRUCTURE_LOCKED && block.type === 'product_image') {
                 var mode = block.display_mode || 'image';
                 var $mode = $('<div class="mt-2 d-flex gap-2 align-items-center"><label class="small mb-0">{{ translate('Display') }}</label><select class="theme-input-style results-block-display-mode"><option value="image">' + '{{ translate('Image') }}' + '</option><option value="swatch">' + '{{ translate('Swatch') }}' + '</option></select></div>');
                 $mode.find('select').val(mode);
@@ -597,14 +889,20 @@
             if (block.type === 'hero_image') {
                 $main.append('<p class="small text-muted mt-1 mb-0">{{ translate('Upload icon in block media field after save, or use product image block.') }}</p>');
             }
-            if (block.type === 'separator') {
+            if (!RESULTS_STRUCTURE_LOCKED && block.type === 'separator') {
                 $main.append(buildResultsSeparatorPanel(block));
             }
-            $main.append(buildResultsBlockSpacingPanel(block));
+            if (!RESULTS_STRUCTURE_LOCKED && APPEARANCE_BLOCK_TYPES.indexOf(block.type) !== -1) {
+                $main.append(buildResultsTextAppearancePanel(block));
+            }
+            if (!RESULTS_STRUCTURE_LOCKED) {
+                $main.append(buildResultsBlockSpacingPanel(block));
+            }
             var $actions = $('<div class="results-block-row__actions"></div>');
-            $actions.append('<label class="mb-0"><input type="checkbox" class="results-block-enable" ' + (block.enabled !== false ? 'checked' : '') + '> {{ translate('On') }}</label>');
-            var $up = $('<button type="button" class="btn btn-sm btn-outline-secondary results-block-up">&uarr;</button>').prop('disabled', index === 0);
-            var $down = $('<button type="button" class="btn btn-sm btn-outline-secondary results-block-down">&darr;</button>').prop('disabled', index === blocks.length - 1);
+            if (RESULTS_STRUCTURE_LOCKED) $actions.addClass('area-disabled');
+            $actions.append('<label class="mb-0"><input type="checkbox" class="results-block-enable" ' + (block.enabled !== false ? 'checked' : '') + (RESULTS_STRUCTURE_LOCKED ? ' disabled' : '') + '> {{ translate('On') }}</label>');
+            var $up = $('<button type="button" class="btn btn-sm btn-outline-secondary results-block-up">&uarr;</button>').prop('disabled', index === 0 || RESULTS_STRUCTURE_LOCKED);
+            var $down = $('<button type="button" class="btn btn-sm btn-outline-secondary results-block-down">&darr;</button>').prop('disabled', index === blocks.length - 1 || RESULTS_STRUCTURE_LOCKED);
             $up.data('index', index); $down.data('index', index);
             $actions.append($up).append($down);
             $row.append($main).append($actions);
@@ -617,13 +915,15 @@
         if (!$('#results-blocks-list .results-block-row').length) return;
         var blocks = getBlocks();
         $('#results-blocks-list .results-block-row').each(function(i) {
-            var block = blocks[i];
-            if (!block) return;
             var $row = $(this);
+            var blockId = $row.attr('data-block-id') || '';
+            var block = findBlockById(blocks, blockId, i);
+            if (!block) return;
             var $ed = $row.find('.results-block-editor');
             if ($ed.length) {
                 block.html = $ed.next('.note-editor').length ? ($ed.summernote('code') || '') : ($ed.val() || '');
             }
+            if (RESULTS_STRUCTURE_LOCKED) return;
             var rank = $row.find('.results-block-rank').val();
             if (rank) block.product_rank = parseInt(rank, 10) || 1;
             var dm = $row.find('.results-block-display-mode').val();
@@ -660,7 +960,21 @@
                     padding_x: parseInt($spPanel.find('.results-sp-padding-x').val(), 10) || 0
                 };
             }
-            block.enabled = $row.find('.results-block-enable').is(':checked');
+            var $appPanel = $row.find('.results-block-appearance-panel');
+            if ($appPanel.length) {
+                block.appearance = {
+                    text_color: $appPanel.find('.results-app-text-color').val() || 'inherit',
+                    text_color_custom: $appPanel.find('.results-app-text-color-custom').val() || '#c9a84c',
+                    background_color: $appPanel.find('.results-app-bg-color').val() || 'transparent',
+                    background_color_custom: $appPanel.find('.results-app-bg-color-custom').val() || '#1a3d2a',
+                    padding_x: parseInt($appPanel.find('.results-app-padding-x').val(), 10) || 0,
+                    padding_y: parseInt($appPanel.find('.results-app-padding-y').val(), 10) || 0,
+                    border_radius: parseInt($appPanel.find('.results-app-border-radius').val(), 10) || 0
+                };
+            }
+            if (!RESULTS_STRUCTURE_LOCKED) {
+                block.enabled = $row.find('.results-block-enable').is(':checked');
+            }
         });
         setBlocks(blocks);
     }
@@ -675,17 +989,17 @@
             if (action.enabled === false) $row.addClass('disabled');
 
             var $row1 = $('<div class="d-flex flex-wrap gap-2 align-items-center mb-2"></div>');
-            var $enable = $('<label class="mb-0"><input type="checkbox" class="results-action-enable"> {{ translate('On') }}</label>');
+            var $enable = $('<label class="mb-0"><input type="checkbox" class="results-action-enable"' + (RESULTS_STRUCTURE_LOCKED ? ' disabled' : '') + '> {{ translate('On') }}</label>');
             $enable.find('input').prop('checked', action.enabled !== false);
             var $label = $('<input type="text" class="theme-input-style results-action-label flex-grow-1">');
             $label.attr('placeholder', '{{ translate('Label') }}');
             $label.val(action.label || '');
-            var $style = $('<select class="theme-input-style results-action-style"></select>');
+            var $style = $('<select class="theme-input-style results-action-style"' + (RESULTS_STRUCTURE_LOCKED ? ' disabled' : '') + '></select>');
             $style.append('<option value="solid">{{ translate('Solid') }}</option>');
             $style.append('<option value="outline">{{ translate('Outline') }}</option>');
             $style.append('<option value="gradient_glow">{{ translate('Glow') }}</option>');
             $style.val(action.style || 'solid');
-            var $type = $('<select class="theme-input-style results-action-type"></select>');
+            var $type = $('<select class="theme-input-style results-action-type"' + (RESULTS_STRUCTURE_LOCKED ? ' disabled' : '') + '></select>');
             $type.append('<option value="top_product">{{ translate('Top product') }}</option>');
             $type.append('<option value="link">{{ translate('Link') }}</option>');
             $type.append('<option value="share">{{ translate('Share') }}</option>');
@@ -694,20 +1008,21 @@
             $row1.append($enable).append($label).append($style).append($type);
 
             var $row2 = $('<div class="d-flex flex-wrap gap-2 align-items-center"></div>');
-            var $url = $('<input type="text" class="theme-input-style results-action-url">');
+            if (RESULTS_STRUCTURE_LOCKED) $row2.addClass('area-disabled');
+            var $url = $('<input type="text" class="theme-input-style results-action-url"' + (RESULTS_STRUCTURE_LOCKED ? ' disabled' : '') + '>');
             $url.attr('placeholder', '{{ translate('URL (for link action)') }}');
             $url.css('min-width', '140px');
             $url.val((action.action === 'link' || action.action === 'top_product') ? (action.url || '') : '');
             var $urlWrap = $('<span class="results-action-url-wrap"></span>');
             $urlWrap.append($url);
             var $hint = $('<small class="results-action-type-hint text-muted"></small>');
-            var $bg = $('<input type="color" class="results-action-bg">');
+            var $bg = $('<input type="color" class="results-action-bg"' + (RESULTS_STRUCTURE_LOCKED ? ' disabled' : '') + '>');
             $bg.val(action.bg_color === 'transparent' ? '#c9a84c' : (action.bg_color || '#c9a84c'));
-            var $text = $('<input type="color" class="results-action-text">');
+            var $text = $('<input type="color" class="results-action-text"' + (RESULTS_STRUCTURE_LOCKED ? ' disabled' : '') + '>');
             $text.val(action.text_color || '#1a3d2a');
-            var $border = $('<input type="color" class="results-action-border">');
+            var $border = $('<input type="color" class="results-action-border"' + (RESULTS_STRUCTURE_LOCKED ? ' disabled' : '') + '>');
             $border.val(action.border_color || '#c9a84c');
-            var $remove = $('<button type="button" class="btn btn-sm btn-outline-danger results-action-remove">&times;</button>');
+            var $remove = $('<button type="button" class="btn btn-sm btn-outline-danger results-action-remove"' + (RESULTS_STRUCTURE_LOCKED ? ' disabled' : '') + '>&times;</button>');
             $row2.append($urlWrap).append($hint);
             $row2.append('<label class="small mb-0">{{ translate('BG') }}</label>').append($bg);
             $row2.append('<label class="small mb-0">{{ translate('Text') }}</label>').append($text);
@@ -736,15 +1051,29 @@
             var actionType = $r.find('.results-action-type').val() || 'link';
             actions.push({
                 id: actionId || (existingAction && existingAction.id) || ('action_' + (actions.length + 1)),
-                enabled: $r.find('.results-action-enable').is(':checked'),
+                enabled: RESULTS_STRUCTURE_LOCKED && existingAction
+                    ? existingAction.enabled !== false
+                    : $r.find('.results-action-enable').is(':checked'),
                 label: label,
-                style: $r.find('.results-action-style').val() || 'solid',
-                action: actionType,
-                url: actionTypeUsesUrl(actionType) ? ($r.find('.results-action-url').val() || '') : '',
+                style: RESULTS_STRUCTURE_LOCKED && existingAction
+                    ? (existingAction.style || 'solid')
+                    : ($r.find('.results-action-style').val() || 'solid'),
+                action: RESULTS_STRUCTURE_LOCKED && existingAction
+                    ? (existingAction.action || 'link')
+                    : actionType,
+                url: RESULTS_STRUCTURE_LOCKED && existingAction
+                    ? (existingAction.url || '')
+                    : (actionTypeUsesUrl(actionType) ? ($r.find('.results-action-url').val() || '') : ''),
                 product_rank: (existingAction && existingAction.product_rank) ? existingAction.product_rank : 1,
-                bg_color: $r.find('.results-action-bg').val() || '#c9a84c',
-                text_color: $r.find('.results-action-text').val() || '#1a3d2a',
-                border_color: $r.find('.results-action-border').val() || '#c9a84c'
+                bg_color: RESULTS_STRUCTURE_LOCKED && existingAction
+                    ? (existingAction.bg_color || '#c9a84c')
+                    : ($r.find('.results-action-bg').val() || '#c9a84c'),
+                text_color: RESULTS_STRUCTURE_LOCKED && existingAction
+                    ? (existingAction.text_color || '#1a3d2a')
+                    : ($r.find('.results-action-text').val() || '#1a3d2a'),
+                border_color: RESULTS_STRUCTURE_LOCKED && existingAction
+                    ? (existingAction.border_color || '#c9a84c')
+                    : ($r.find('.results-action-border').val() || '#c9a84c')
             });
         });
         setActions(actions.slice(0, 5));
@@ -823,6 +1152,53 @@
         return '<span style="' + styleStr + '">' + label + '</span>';
     }
 
+    function toggleResultsHeroFrameControls() {
+        var frameStyle = $('#results-hero-frame').val() || 'none';
+        $('.results-hero-frame-controls').toggleClass('d-none', frameStyle === 'none');
+        $('.results-hero-frame-corner-controls').toggleClass('d-none', frameStyle !== 'corners');
+    }
+
+    function renderCardFrameHtml(theme) {
+        var frameStyle = theme.hero_frame || 'none';
+        if (frameStyle === 'none') return '';
+        var inset = parseInt(theme.hero_frame_inset, 10) || 10;
+        var thickness = parseInt(theme.hero_frame_thickness, 10) || 2;
+        var cornerSize = parseInt(theme.hero_frame_corner_size, 10) || 18;
+        var frameColor = theme.hero_frame_color || theme.accent_color || '#c9a84c';
+        var vars = '--results-frame-color:' + frameColor + ';--results-frame-thickness:' + thickness + 'px;--results-frame-inset:' + inset + 'px;';
+
+        if (frameStyle === 'corners') {
+            vars += '--results-frame-corner-size:' + cornerSize + 'px;';
+            return '<div class="quiz-results-preview__card-frame quiz-results-preview__card-frame--corners" style="' + vars + '">' +
+                '<span class="quiz-results-preview__corner quiz-results-preview__corner--tl"></span>' +
+                '<span class="quiz-results-preview__corner quiz-results-preview__corner--tr"></span>' +
+                '<span class="quiz-results-preview__corner quiz-results-preview__corner--bl"></span>' +
+                '<span class="quiz-results-preview__corner quiz-results-preview__corner--br"></span>' +
+                '</div>';
+        }
+
+        if (frameStyle === 'inset') {
+            return '<div class="quiz-results-preview__card-frame quiz-results-preview__card-frame--inset" style="' + vars + '"></div>';
+        }
+
+        return '';
+    }
+
+    function renderSwatchPreviewHtml(block, theme, previewColor) {
+        var swatchSize = Math.min(parseInt(block.size, 10) || 48, 80);
+        var glowClass = theme.hero_glow ? ' quiz-results-preview__product-swatch-wrap--glow' : '';
+        return '<span class="quiz-results-preview__product-swatch-wrap' + glowClass + '" style="display:block;width:' + swatchSize + 'px;height:' + swatchSize + 'px;margin:8px auto;--results-accent:' + (theme.accent_color || '#c9a84c') + ';">' +
+            '<span class="quiz-results-preview__product-swatch-halo" aria-hidden="true"></span>' +
+            '<span style="display:block;width:100%;height:100%;border-radius:50%;background:' + previewColor + ';border:2px solid rgba(255,255,255,0.45);position:relative;z-index:1;"></span>' +
+            '</span>';
+    }
+
+    function renderProductImagePreviewHtml(block, theme, previewColor) {
+        var size = Math.min(parseInt(block.size, 10) || 80, 160);
+        var outerStyle = 'width:' + size + 'px;height:' + size + 'px;margin:8px auto;position:relative;border-radius:50%;background:linear-gradient(135deg,' + previewColor + ',rgba(255,255,255,0.28));overflow:hidden;';
+        return '<div class="quiz-results-preview__product-image" style="' + outerStyle + '"></div>';
+    }
+
     window.updateQuizResultsPreview = function() {
         if (!$('#preview-results-panel').length) return;
         var theme = readThemeFromPanel();
@@ -842,36 +1218,45 @@
         });
         var html = '';
         if (layout === 'featured_card' || layout === 'featured_and_grid' || layout === 'product_color_card') {
-            var cardStyle = 'max-width:' + (theme.card_max_width || 480) + 'px;margin:0 auto;padding:' + (theme.card_padding || 32) + 'px;';
+            var frameStyle = theme.hero_frame || 'none';
+            var frameColor = theme.hero_frame_color || theme.accent_color || '#c9a84c';
+            var cardStyle = 'max-width:' + (theme.card_max_width || 480) + 'px;margin:0 auto;padding:' + (theme.card_padding || 32) + 'px;position:relative;';
             if (theme.card_enabled) {
                 cardStyle += 'background:' + (theme.card_background || '#1f4530') + ';';
+                cardStyle += 'border-radius:' + (theme.card_border_radius || 0) + 'px;';
                 if (theme.card_border_style === 'double') {
                     cardStyle += 'border:3px double ' + (theme.card_border_color || '#c9a84c') + ';';
                 } else if (theme.card_border_style === 'single') {
                     cardStyle += 'border:1px solid ' + (theme.card_border_color || '#c9a84c') + ';';
                 }
             }
+            if (frameStyle !== 'none' && theme.hero_glow) {
+                cardStyle += 'filter:drop-shadow(0 0 12px ' + frameColor + ');';
+            }
             html += '<div style="text-align:center;' + cardStyle + '">';
+            html += '<div class="quiz-results-preview__card-content">';
             var previewColor = getPreviewProductContext().color || '#c9a84c';
-            blocks.filter(function(b) { return b.enabled !== false; }).forEach(function(block) {
+            filterBlocksForPreview(blocks).forEach(function(block) {
                 if (block.type === 'product_image') {
                     var isSwatch = block.display_mode === 'swatch';
-                    var swatchSize = Math.min(parseInt(block.size, 10) || 48, 80);
                     if (isSwatch) {
-                        html += '<div style="width:' + swatchSize + 'px;height:' + swatchSize + 'px;border-radius:50%;background:' + previewColor + ';margin:8px auto;border:2px solid rgba(255,255,255,0.45)"></div>';
+                        html += renderSwatchPreviewHtml(block, theme, previewColor);
                     } else {
-                        html += '<div style="width:48px;height:48px;border-radius:50%;background:#c9a84c;margin:8px auto;opacity:0.8"></div>';
+                        html += renderProductImagePreviewHtml(block, theme, previewColor);
                     }
                 } else if (block.type === 'match_badge') {
                     html += '<span style="display:inline-block;background:#ff5a1f;color:#fff;font-size:11px;padding:4px 10px;border-radius:999px;margin:8px 0">' + MOCK_PRODUCT.match_pct + '% match</span>';
                 } else if (block.type === 'hero_image') {
                     html += '<div style="width:' + (theme.hero_size || 80) + 'px;height:' + (theme.hero_size || 80) + 'px;margin:0 auto 12px;background:' + (theme.accent_color || '#c9a84c') + ';border-radius:50%;opacity:0.5"></div>';
                 } else if (block.html) {
-                    html += '<div style="margin:8px 0">' + resolveTokens(block.html) + '</div>';
+                    var wrapperStyle = blockWrapperStyleString(block, theme);
+                    html += '<div style="margin:8px 0' + (wrapperStyle ? ';' + wrapperStyle : '') + '">' + resolveTokens(block.html) + '</div>';
                 } else if (block.type === 'separator') {
                     html += renderSeparatorPreviewHtml(block, theme);
                 }
             });
+            html += '</div>';
+            html += renderCardFrameHtml(theme);
             html += '</div>';
         }
         if (layout === 'product_grid' || layout === 'featured_and_grid') {
@@ -914,6 +1299,7 @@
         $('#results-card-theme-section').toggleClass('d-none', !showCard);
         $('#results-product-grid-section').toggleClass('d-none', mode === 'featured_card' || mode === 'product_color_card');
         $('#results-product-profiles-panel').toggleClass('d-none', mode !== 'product_color_card');
+        $('#results-product-text-style-section').toggleClass('d-none', mode !== 'product_color_card');
     }
 
     $(function() {
@@ -921,12 +1307,25 @@
 
         repairActionsJsonOnInit();
         renderActionsList();
+        seedBlocksFromDataElement();
+        if (isProductColorCardLayout()) {
+            var parsedBlocks = parseJsonFieldStrict($('#results-blocks-json').val());
+            if (parsedBlocks !== null) {
+                var initBlocks = upgradeProductColorCardBlocks(parsedBlocks);
+                if (JSON.stringify(initBlocks) !== JSON.stringify(parsedBlocks)) {
+                    setBlocks(initBlocks);
+                }
+            } else {
+                console.error('Results blocks: could not parse #results-blocks-json on init');
+            }
+        }
         try {
             renderBlockList();
         } catch (e) {
             console.error('Results block list init failed', e);
         }
         toggleLayoutSections();
+        toggleResultsHeroFrameControls();
         window.updateQuizResultsPreview();
 
         if ($('#results-product-search').length) {
@@ -952,7 +1351,7 @@
             if (!selected || !selected.id) return;
             var productId = parseInt(selected.id, 10);
             if ($('#results-product-profiles-body tr[data-product-id="' + productId + '"]').length) return;
-            $('#results-product-profiles-body').append(buildProfileRowHtml(productId, selected.text, '#c9a84c', ''));
+            $('#results-product-profiles-body').append(buildProfileRowHtml(productId, selected.text, '#c9a84c', '', ''));
             $('#results-product-search').val(null).trigger('change');
             syncResultsBuilder();
         });
@@ -962,7 +1361,7 @@
             syncResultsBuilder();
         });
 
-        $(document).on('change input', '.results-profile-color-input, .results-profile-tagline-input', function() {
+        $(document).on('change input', '.results-profile-color-input, .results-profile-tagline-input, .results-profile-description-input, .results-profile-quote-input', function() {
             syncResultsBuilder();
         });
 
@@ -970,6 +1369,9 @@
             if ($(this).attr('id') === 'results-bg-type') {
                 $('.results-bg-solid-row').toggleClass('d-none', $(this).val() !== 'solid');
                 $('.results-bg-gradient-rows').toggleClass('d-none', $(this).val() !== 'radial_gradient');
+            }
+            if ($(this).attr('id') === 'results-hero-frame') {
+                toggleResultsHeroFrameControls();
             }
             if ($(this).attr('id') === 'results-layout-mode') {
                 toggleLayoutSections();
@@ -993,7 +1395,10 @@
 
         $(document).on('click', '#results-reset-blocks-btn', function() {
             if (confirm('{{ translate('Reset blocks to defaults?') }}')) {
-                setBlocks(DEFAULT_BLOCKS.slice());
+                var preset = ($('#results-layout-mode').val() === 'product_color_card')
+                    ? DEFAULT_PRODUCT_COLOR_BLOCKS
+                    : DEFAULT_BLOCKS;
+                setBlocks(JSON.parse(JSON.stringify(preset)));
                 renderBlockList();
                 syncResultsBuilder();
             }
@@ -1050,6 +1455,17 @@
         });
 
         $(document).on('change input', '.results-block-spacing-panel input', function() {
+            syncResultsBuilder();
+        });
+
+        $(document).on('change input', '.results-block-appearance-panel select, .results-block-appearance-panel input', function() {
+            var $panel = $(this).closest('.results-block-appearance-panel');
+            if ($panel.length && $(this).hasClass('results-app-text-color')) {
+                $panel.find('.results-app-text-color-custom').toggle($(this).val() === 'custom');
+            }
+            if ($panel.length && $(this).hasClass('results-app-bg-color')) {
+                $panel.find('.results-app-bg-color-custom').toggle($(this).val() === 'custom');
+            }
             syncResultsBuilder();
         });
 

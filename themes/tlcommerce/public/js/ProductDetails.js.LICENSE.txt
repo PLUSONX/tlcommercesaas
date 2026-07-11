@@ -60,6 +60,8 @@
 
 /*! @/components/widget/WidgetTopSellingProduct.vue */
 
+/*! @/utils/trackSocialPixels */
+
 /*! @coreui/vue */
 
 /*! axios */

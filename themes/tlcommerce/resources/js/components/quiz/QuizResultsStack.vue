@@ -19,16 +19,21 @@
         <img :src="heroProductImageForBlock(block)" :alt="productAltForBlock(block)" />
       </div>
 
-      <a v-else-if="block.type === 'product_image' && isSwatchBlock(block) && productLinksByBlockId[block.id]"
-        :href="productLinksByBlockId[block.id].href"
-        class="quiz-results-stack__product-image quiz-results-stack__product-link quiz-results-stack__product-swatch"
-        :style="productSwatchStyles(block)" :aria-label="productAltForBlock(block)"
-        @click.prevent="navigateToProduct(productLinksByBlockId[block.id].to)">
-      </a>
-
       <span v-else-if="block.type === 'product_image' && isSwatchBlock(block)"
-        class="quiz-results-stack__product-image quiz-results-stack__product-swatch"
-        :style="productSwatchStyles(block)" :aria-label="productAltForBlock(block)">
+        class="quiz-results-stack__product-swatch-wrap"
+        :class="{ 'quiz-results-stack__product-swatch-wrap--glow': swatchGlowEnabled }"
+        :style="productSwatchWrapStyles(block)">
+        <span class="quiz-results-stack__product-swatch-halo" aria-hidden="true"></span>
+        <a v-if="productLinksByBlockId[block.id]"
+          :href="productLinksByBlockId[block.id].href"
+          class="quiz-results-stack__product-image quiz-results-stack__product-link quiz-results-stack__product-swatch"
+          :style="productSwatchStyles(block)" :aria-label="productAltForBlock(block)"
+          @click.prevent="navigateToProduct(productLinksByBlockId[block.id].to)">
+        </a>
+        <span v-else
+          class="quiz-results-stack__product-image quiz-results-stack__product-swatch"
+          :style="productSwatchStyles(block)" :aria-label="productAltForBlock(block)">
+        </span>
       </span>
 
       <a v-else-if="block.type === 'product_image' && !isSwatchBlock(block) && productImageForBlock(block) && productLinksByBlockId[block.id]"
@@ -56,13 +61,13 @@
       <div v-else-if="block.type === 'title' && titleHtml(block)" class="quiz-results-stack__title"
         :style="blockWrapperStyles(block)" v-html="titleHtml(block)"></div>
 
-      <div v-else-if="block.type === 'subtitle' && subtitleHtml(block)" class="quiz-results-stack__subtitle"
+      <div v-else-if="block.type === 'subtitle' && resolvedBlockHasText(subtitleHtml(block))" class="quiz-results-stack__subtitle"
         :style="blockWrapperStyles(block)" v-html="subtitleHtml(block)"></div>
 
-      <div v-else-if="block.type === 'tagline' && taglineHtml(block)" class="quiz-results-stack__tagline"
+      <div v-else-if="block.type === 'tagline' && resolvedBlockHasText(taglineHtml(block))" class="quiz-results-stack__tagline"
         :class="taglineFontClass" :style="blockWrapperStyles(block)" v-html="taglineHtml(block)"></div>
 
-      <div v-else-if="block.type === 'body' && bodyHtml(block)" class="quiz-results-stack__body" :class="bodyFontClass"
+      <div v-else-if="block.type === 'body' && resolvedBlockHasText(bodyHtml(block))" class="quiz-results-stack__body" :class="bodyFontClass"
         :style="blockWrapperStyles(block)" v-html="bodyHtml(block)"></div>
 
       <div v-else-if="block.type === 'separator' && block.style === 'mixture'"
@@ -84,7 +89,7 @@
         </span>
       </div>
 
-      <div v-else-if="block.type === 'meta' && metaHtml(block)" class="quiz-results-stack__meta small"
+      <div v-else-if="block.type === 'meta' && resolvedBlockHasText(metaHtml(block))" class="quiz-results-stack__meta small"
         :style="blockWrapperStyles(block)" v-html="metaHtml(block)"></div>
     </template>
   </div>
@@ -93,6 +98,7 @@
 <script>
 import { cleanMediaPath } from "@/utils/sectionProps";
 import { buildResultContext, resolveTokens, getProductForRank, resolveActionLink } from "@/utils/quizResultTokens";
+import { readableColor } from "@/utils/readableColor";
 
 const FONT_LINK_ID = "quiz-results-stack-fonts";
 const DEFAULT_SPACING = {
@@ -139,22 +145,39 @@ export default {
     stackInnerStyles() {
       const align = this.theme.alignment || "center";
       const alignItems = align === "left" ? "flex-start" : align === "right" ? "flex-end" : "center";
+      const textFallback = this.theme.text_color || this.theme.accent_color || "#c9a84c";
+      const taglineColor = this.theme.tagline_color || this.theme.text_color || "#ffffff";
+      const descriptionColor = this.theme.description_color || this.theme.text_color || "#ffffff";
+      const cardBg = this.theme.card_background || "#ffffff";
+      const onCard = !!this.theme.card_enabled;
       return {
         "--quiz-accent": this.theme.accent_color || "#c9a84c",
         "--quiz-text": this.theme.text_color || "#ffffff",
         "--quiz-hero-size": `${this.theme.hero_size || 80}px`,
+        "--quiz-tagline-color": onCard
+          ? readableColor(taglineColor, cardBg, textFallback)
+          : taglineColor,
+        "--quiz-tagline-size": `${this.theme.tagline_font_size || 11}px`,
+        "--quiz-tagline-letter-spacing": `${this.theme.tagline_letter_spacing ?? 0.15}em`,
+        "--quiz-description-color": onCard
+          ? readableColor(descriptionColor, cardBg, textFallback)
+          : descriptionColor,
+        "--quiz-description-size": `${this.theme.description_font_size || 15}px`,
         alignItems,
         width: "100%",
       };
     },
     heroClasses() {
-      return { "quiz-results-stack__hero--glow": !!this.theme.hero_glow };
+      return {};
     },
     taglineFontClass() {
       return this.theme.tagline_font === "serif_caps" ? "quiz-results-stack__font-serif-caps" : "";
     },
     bodyFontClass() {
       return this.theme.body_font === "script" ? "quiz-results-stack__font-script" : "";
+    },
+    swatchGlowEnabled() {
+      return this.theme.hero_glow !== false;
     },
     productLinksByBlockId() {
       const map = {};
@@ -184,6 +207,13 @@ export default {
     },
     resolveHtml(html) {
       return resolveTokens(html, this.tokenContext);
+    },
+    resolvedBlockHasText(html) {
+      if (!html || !String(html).trim()) return false;
+      const tmp = document.createElement("div");
+      tmp.innerHTML = String(html);
+      const text = (tmp.textContent || tmp.innerText || "").replace(/\s+/g, " ").trim();
+      return text.length > 0;
     },
     getBlockSpacing(block) {
       const sp = { ...DEFAULT_SPACING, ...(block.spacing || {}) };
@@ -235,7 +265,10 @@ export default {
       return css;
     },
     blockWrapperStyles(block) {
-      return { ...this.blockSpacingStyles(block), ...this.blockAppearanceStyles(block, block.type) };
+      return {
+        ...this.blockSpacingStyles(block),
+        ...this.blockAppearanceStyles(block, block.type),
+      };
     },
     heroBlockStyles(block) {
       return {
@@ -276,12 +309,24 @@ export default {
       const p = getProductForRank(this.tokenContext, block.product_rank || 1);
       return p.color || this.theme.accent_color || "#c9a84c";
     },
+    productSwatchWrapStyles(block) {
+      const size = block.size || 120;
+      const swatchSize = Math.min(size, 80);
+      return {
+        ...this.blockSpacingStyles(block, { fullWidth: false }),
+        width: `${swatchSize}px`,
+        height: `${swatchSize}px`,
+      };
+    },
     productSwatchStyles(block) {
       return {
-        ...this.productImageStyles(block),
+        width: "100%",
+        height: "100%",
+        borderRadius: "50%",
         background: this.productSwatchColor(block),
         border: "2px solid color-mix(in srgb, #ffffff 45%, transparent)",
         boxSizing: "border-box",
+        display: "block",
         flexShrink: 0,
       };
     },
@@ -512,6 +557,48 @@ export default {
   margin-right: auto;
 }
 
+.quiz-results-stack__product-swatch-wrap {
+  display: block;
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  flex-shrink: 0;
+}
+
+.quiz-results-stack__product-swatch-wrap .quiz-results-stack__product-swatch {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+}
+
+.quiz-results-stack__product-swatch-halo {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.quiz-results-stack__product-swatch-wrap--glow .quiz-results-stack__product-swatch-halo {
+  animation: quiz-results-swatch-halo-blink 2s ease-in-out infinite;
+  box-shadow: 0 0 12px 4px color-mix(in srgb, var(--quiz-accent) 70%, #ffffff);
+}
+
+@keyframes quiz-results-swatch-halo-blink {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(1);
+    box-shadow: 0 0 8px 2px color-mix(in srgb, var(--quiz-accent) 50%, #ffffff);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+    box-shadow: 0 0 20px 6px color-mix(in srgb, var(--quiz-accent) 80%, #ffffff);
+  }
+}
+
 .quiz-results-stack__product-image img {
   width: 100%;
   height: 100%;
@@ -541,24 +628,40 @@ export default {
 }
 
 .quiz-results-stack__tagline {
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  color: var(--quiz-tagline-color, var(--quiz-text, #fff));
+  font-size: var(--quiz-tagline-size, 0.7rem);
+  letter-spacing: var(--quiz-tagline-letter-spacing, 0.1em);
   width: 100%;
+}
+
+.quiz-results-stack__tagline :deep(*) {
+  font-size: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  font-family: inherit;
+  color: inherit;
 }
 
 .quiz-results-stack__font-serif-caps {
   font-family: "Playfair Display", Georgia, serif;
+  text-transform: uppercase;
 }
 
 .quiz-results-stack__font-script {
   font-family: "Great Vibes", cursive;
-  font-size: 1.25rem;
+  font-size: var(--quiz-description-size, 0.95rem);
 }
 
 .quiz-results-stack__body {
   width: 100%;
-  font-size: 0.95rem;
+  color: var(--quiz-description-color, var(--quiz-text, #fff));
+  font-size: var(--quiz-description-size, 0.95rem);
+}
+
+.quiz-results-stack__body :deep(*) {
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
 }
 
 .quiz-results-stack__separator {

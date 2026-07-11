@@ -11,6 +11,8 @@
 </template>
 
 <script>
+import { trackSocialPixels } from "@/utils/trackSocialPixels";
+
 export default {
   name: "CustomFooter",
   props: {
@@ -63,15 +65,13 @@ export default {
           this.item.shopInfo != null ? this.item.shopInfo.slug : null,
       };
 
-      if (window.fbq) {
-        window.fbq('track', 'AddToCart', {
-          content_id: this.item.id,
-          content_name: this.item.name,
-          content_type: 'product',
-          value: this.item.price, // Total value for the items added
-          currency: 'KWD' // You can pass this as a prop if you have multi-currency
-        });
-      };
+      trackSocialPixels('AddToCart', {
+        content_id: this.item.id,
+        content_name: this.item.name,
+        content_type: 'product',
+        value: this.item.price, // Total value for the items added
+        currency: 'KWD' // You can pass this as a prop if you have multi-currency
+      });
 
 
       this.$store.dispatch("addToCart", cart_item);
@@ -116,15 +116,13 @@ export default {
 
       // console.log("cart_item: ", cart_item);
 
-      if (window.fbq) {
-        window.fbq('track', 'AddToCart', {
-          content_id: this.item.id,
-          content_name: this.item.name,
-          content_type: 'product',
-          value: this.item.price, // Total value for the items added
-          currency: 'KWD' // You can pass this as a prop if you have multi-currency
-        });
-      };
+      trackSocialPixels('AddToCart', {
+        content_id: this.item.id,
+        content_name: this.item.name,
+        content_type: 'product',
+        value: this.item.price, // Total value for the items added
+        currency: 'KWD' // You can pass this as a prop if you have multi-currency
+      });
 
       this.$store.dispatch("addToCart", cart_item);
     },

@@ -205,6 +205,7 @@ import HomePageDeliveryShipping from '@/components/order-steps/homePageDeliveryS
 // import HomePageDeliveryShipping from "../components/order-steps/homePageDeliveryShipping.vue";
 import enums from "../enums/enums";
 import { mapState, mapGetters } from "vuex";
+import { trackSocialPixels } from "@/utils/trackSocialPixels";
 // import CompanyFooter from "../components/ui/CompanyFooter.vue";
 const axios = require("axios").default;
 export default {
@@ -295,21 +296,13 @@ export default {
             this.getCustomerAddress();
         }
 
-        // console.log("Outisde window.fbq!!!");
+        const siteName = this.$store.state.siteSettings?.site_name ?? 'Store';
 
-        if (window.fbq) {
-
-            // console.log("Inside window.fbq!!!");
-
-            const siteName = this.$store.state.siteSettings?.site_name ?? 'Store';
-
-
-            window.fbq('track', 'ViewContent', {
-                content_name: siteName,
-                content_category: 'Store',
-                currency: 'KWD',
-            });
-        }
+        trackSocialPixels('ViewContent', {
+            content_name: siteName,
+            content_category: 'Store',
+            currency: 'KWD',
+        });
 
         // console.log('🟡 index.vue mounted!');
 

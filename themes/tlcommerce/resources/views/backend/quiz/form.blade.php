@@ -32,19 +32,22 @@
                 </div>
             </div>
         </div>
+    </div>
 
+    <form action="{{ $quiz ? route('theme.tlcommerce.quiz.update') : route('theme.tlcommerce.quiz.store') }}" method="POST" id="quiz-form">
+        @csrf
+        @if ($quiz)
+            <input type="hidden" name="id" value="{{ $quiz->id }}">
+            @include('theme/tlcommerce::backend.quiz.partials.language_tabs', [
+                'tabRoute' => 'theme.tlcommerce.quiz.edit',
+                'tabRouteParams' => ['id' => $quiz->id],
+            ])
+        @endif
+
+    <div class="row">
         <div class="col-lg-8">
             <div class="card mb-2" style="border-radius: 12px !important;">
                 <div class="form-element py-30">
-                    <form action="{{ $quiz ? route('theme.tlcommerce.quiz.update') : route('theme.tlcommerce.quiz.store') }}" method="POST" id="quiz-form">
-                        @csrf
-                        @if ($quiz)
-                            <input type="hidden" name="id" value="{{ $quiz->id }}">
-                            @include('theme/tlcommerce::backend.quiz.partials.language_tabs', [
-                                'tabRoute' => 'theme.tlcommerce.quiz.edit',
-                                'tabRouteParams' => ['id' => $quiz->id],
-                            ])
-                        @endif
 
                         <h5 class="mb-3">{{ translate('General') }}</h5>
 
@@ -276,8 +279,6 @@
                         @include('theme/tlcommerce::backend.quiz.partials.questions_theme_panel')
                         </div>
 
-                        @include('theme/tlcommerce::backend.quiz.partials.results_theme_panel')
-
                         <div class="form-row mb-20 @if (!$isDefaultLang) area-disabled @endif">
                             <div class="col-sm-4"><label class="font-14 bold black">{{ translate('Status') }}</label></div>
                             <div class="col-md-12">
@@ -289,14 +290,6 @@
                                 <span class="ml-2">{{ translate('Active') }}</span>
                             </div>
                         </div>
-
-                        <div class="form-row">
-                            <div class="col-md-12">
-                                <button type="submit" class="btn long btn-orange">{{ translate('Save') }}</button>
-                                <a href="{{ route('theme.tlcommerce.quiz.list') }}" class="btn long btn-danger ml-2">{{ translate('Cancel') }}</a>
-                            </div>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
@@ -305,6 +298,26 @@
             @include('theme/tlcommerce::backend.quiz.partials.intro_preview')
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-2" style="border-radius: 12px !important;">
+                <div class="form-element py-30">
+                    @include('theme/tlcommerce::backend.quiz.partials.results_theme_panel', [
+                        'isDefaultLang' => $isDefaultLang,
+                    ])
+
+                    <div class="form-row mt-4">
+                        <div class="col-md-12">
+                            <button type="submit" class="btn long btn-orange">{{ translate('Save') }}</button>
+                            <a href="{{ route('theme.tlcommerce.quiz.list') }}" class="btn long btn-danger ml-2">{{ translate('Cancel') }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
 
     @include('core::base.media.partial.media_modal')
 @endsection

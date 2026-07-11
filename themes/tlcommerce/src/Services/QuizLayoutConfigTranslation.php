@@ -93,6 +93,12 @@ class QuizLayoutConfigTranslation
                     if (array_key_exists('tagline', $profile)) {
                         $item['tagline'] = $profile['tagline'];
                     }
+                    if (array_key_exists('description', $profile)) {
+                        $item['description'] = $profile['description'];
+                    }
+                    if (array_key_exists('quote', $profile)) {
+                        $item['quote'] = $profile['quote'];
+                    }
                     $profiles[] = $item;
                 }
                 if (!empty($profiles)) {
@@ -351,8 +357,16 @@ class QuizLayoutConfigTranslation
             }
 
             $productId = isset($profile['product_id']) ? (int) $profile['product_id'] : 0;
-            if ($productId && isset($overlayByProductId[$productId]) && array_key_exists('tagline', $overlayByProductId[$productId])) {
-                $profile['tagline'] = $overlayByProductId[$productId]['tagline'];
+            if ($productId && isset($overlayByProductId[$productId])) {
+                if (array_key_exists('tagline', $overlayByProductId[$productId])) {
+                    $profile['tagline'] = $overlayByProductId[$productId]['tagline'];
+                }
+                if (array_key_exists('description', $overlayByProductId[$productId])) {
+                    $profile['description'] = $overlayByProductId[$productId]['description'];
+                }
+                if (array_key_exists('quote', $overlayByProductId[$productId])) {
+                    $profile['quote'] = $overlayByProductId[$productId]['quote'];
+                }
             }
 
             $merged[] = $profile;

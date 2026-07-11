@@ -42,9 +42,11 @@ function emptyProduct() {
     name: "",
     url: "",
     summary: "",
+    description: "",
     price: "",
     image: "",
     tagline: "",
+    quote: "",
     color: "",
     match_pct: 0,
     rank: 0,
@@ -56,15 +58,19 @@ function mapResultItem(item, rank, profiles = []) {
   const slug = product.slug || "";
   const productId = item.product_id ?? product.id ?? null;
   const profile = profileForProductId(profiles, productId);
-  const summaryRaw = product.summary ?? product.short_description ?? "";
-  const summary = normalizeMultilineText(summaryRaw);
+  const catalogSummary = normalizeMultilineText(
+    product.summary ?? product.short_description ?? ""
+  );
+  const description = normalizeMultilineText(profile?.description || catalogSummary);
   return {
     name: product.name || "",
     url: slug ? `/products/${slug}` : "",
-    summary,
+    description,
+    summary: description || catalogSummary,
     price: formatPrice(product),
     image: productImageUrl(product),
     tagline: profile?.tagline || "",
+    quote: profile?.quote || "",
     color: profile?.color || "",
     match_pct: item.match_pct ?? 0,
     rank: rank,
@@ -115,7 +121,7 @@ export function resolveTokens(html, context) {
 }
 
 function formatTokenValue(key, value) {
-  if (key === "summary") {
+  if (key === "summary" || key === "description") {
     return formatMultilineHtml(value);
   }
   return escapeHtml(String(value ?? ""));

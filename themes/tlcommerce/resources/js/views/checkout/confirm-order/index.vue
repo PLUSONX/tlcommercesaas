@@ -268,6 +268,7 @@ import PageHeader from "@/components/pageheader/PageHeader.vue";
 import ProductVariant from "@/components/ui/ProductVariant.vue";
 import axios from "axios";
 import { mapState, mapGetters } from "vuex";
+import { trackSocialPixels } from "@/utils/trackSocialPixels";
 import {
   CTable,
   CTableHead,
@@ -364,7 +365,11 @@ export default {
           if (response.data.success) {
             this.orderDetails = response.data.data;
             this.success = true;
-            this.trackMetaPurchase(response.data.data);
+            try {
+              this.trackMetaPurchase(response.data.data);
+            } catch (trackingError) {
+              console.error("trackMetaPurchase failed:", trackingError);
+            }
           } else {
             this.$toast.error("Order not found");
           }
@@ -414,26 +419,23 @@ export default {
 
 
     trackMetaPurchase(order) {
-      if (window.fbq) {
-        const items = order.products?.data ?? [];
+      const items = order.products?.data ?? [];
 
-        const contentIds = items.map(item => String(item.id));
+      const contentIds = items.map(item => String(item.id));
 
-        // Richer format preferred by Meta for catalog ads
-        const contents = items.map(item => ({
-          id: String(item.id),
-          quantity: item.quantity ?? 1,
-        }));
+      const contents = items.map(item => ({
+        id: String(item.id),
+        quantity: item.quantity ?? 1,
+      }));
 
-        window.fbq('track', 'Purchase', {
-          content_ids: contentIds,   // array of strings
-          contents: contents,        // richer product data
-          content_type: 'product',
-          value: order.total_payable_amount,
-          currency: 'KWD',           // ✅ correct ISO 4217 code
-          num_items: items.length,
-        });
-      }
+      trackSocialPixels('Purchase', {
+        content_ids: contentIds,
+        contents: contents,
+        content_type: 'product',
+        value: order.total_payable_amount,
+        currency: 'KWD',
+        num_items: items.length,
+      });
     }
     // guestCustomerOrderDetails() {
     //   console.log("guestCustomerOrderDetails method called!!!");

@@ -1,5 +1,6 @@
 @php
     use Theme\TLCommerce\Http\Resources\QuizResultsConfig;
+    $isDefaultLang = $isDefaultLang ?? true;
     $resultsRaw = isset($layoutConfigForForm)
         ? ($layoutConfigForForm['results'] ?? null)
         : (isset($quiz) ? ($quiz->layout_config['results'] ?? null) : null);
@@ -7,6 +8,7 @@
     $resultsThemeRaw = old('results_theme_json') ? json_decode(old('results_theme_json'), true) : ($hasResults ? ($resultsRaw['theme'] ?? null) : null);
     $resultsTheme = array_merge(QuizResultsConfig::defaultTheme(), is_array($resultsThemeRaw) ? $resultsThemeRaw : []);
     $layoutMode = old('results_layout_mode', $hasResults ? ($resultsRaw['layout_mode'] ?? 'featured_card') : 'featured_card');
+    $showProductTextStyle = $layoutMode === 'product_color_card';
     $productGridRaw = old('results_product_grid_json') ? json_decode(old('results_product_grid_json'), true) : ($hasResults ? ($resultsRaw['product_grid'] ?? null) : null);
     $productGrid = array_merge(QuizResultsConfig::defaultProductGrid(), is_array($productGridRaw) ? $productGridRaw : []);
 @endphp
@@ -18,6 +20,7 @@
 <h5 class="mb-3">{{ translate('Results page') }}</h5>
 <p class="text-muted small mb-3">{{ translate('Customize the quiz results step: featured result card, optional product grid, and action buttons.') }}</p>
 
+<div @if (!$isDefaultLang) class="area-disabled" @endif>
 <div class="form-row mb-20">
     <div class="col-sm-4"><label class="font-14 bold black">{{ translate('Layout mode') }}</label></div>
     <div class="col-md-12">
@@ -29,10 +32,75 @@
         </select>
     </div>
 </div>
+</div>
 
 @include('theme/tlcommerce::backend.quiz.partials.results_product_profiles', [
     'isDefaultLang' => $isDefaultLang ?? true,
 ])
+
+<div @if (!$isDefaultLang) class="area-disabled" @endif>
+
+<div id="results-product-text-style-section" class="results-theme-section mb-3 {{ $showProductTextStyle ? '' : 'd-none' }}">
+    <div class="intro-panel-label">{{ translate('Product text styling') }}</div>
+    <p class="text-muted small mb-3">{{ translate('Typography for tagline and description blocks on the product color card.') }}</p>
+
+    <div class="form-row mb-15">
+        <div class="col-12"><strong class="small">{{ translate('Tagline') }}</strong></div>
+    </div>
+    <div class="form-row mb-15">
+        <div class="col-md-3">
+            <label class="small">{{ translate('Font') }}</label>
+            <select id="results-tagline-font" class="theme-input-style results-theme-input w-100">
+                <option value="default" {{ ($resultsTheme['tagline_font'] ?? 'default') === 'default' ? 'selected' : '' }}>{{ translate('Default') }}</option>
+                <option value="serif_caps" {{ ($resultsTheme['tagline_font'] ?? '') === 'serif_caps' ? 'selected' : '' }}>{{ translate('Serif caps') }}</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="small">{{ translate('Color') }}</label>
+            @include('theme/tlcommerce::backend.quiz.partials.color_input', [
+                'id' => 'results-tagline-color',
+                'value' => $resultsTheme['tagline_color'] ?? '#ffffff',
+                'class' => 'results-theme-input',
+            ])
+        </div>
+        <div class="col-md-3">
+            <label class="small">{{ translate('Font size') }} (px)</label>
+            <input type="number" id="results-tagline-font-size" class="theme-input-style results-theme-input w-100" min="8" max="32"
+                value="{{ $resultsTheme['tagline_font_size'] ?? 11 }}">
+        </div>
+        <div class="col-md-3">
+            <label class="small">{{ translate('Letter spacing') }} (em)</label>
+            <input type="number" id="results-tagline-letter-spacing" class="theme-input-style results-theme-input w-100" min="0" max="0.5" step="0.01"
+                value="{{ $resultsTheme['tagline_letter_spacing'] ?? 0.15 }}">
+        </div>
+    </div>
+
+    <div class="form-row mb-15">
+        <div class="col-12"><strong class="small">{{ translate('Description') }}</strong></div>
+    </div>
+    <div class="form-row mb-15">
+        <div class="col-md-4">
+            <label class="small">{{ translate('Font') }}</label>
+            <select id="results-description-font" class="theme-input-style results-theme-input w-100">
+                <option value="default" {{ ($resultsTheme['body_font'] ?? 'default') === 'default' ? 'selected' : '' }}>{{ translate('Default') }}</option>
+                <option value="script" {{ ($resultsTheme['body_font'] ?? '') === 'script' ? 'selected' : '' }}>{{ translate('Script') }}</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="small">{{ translate('Color') }}</label>
+            @include('theme/tlcommerce::backend.quiz.partials.color_input', [
+                'id' => 'results-description-color',
+                'value' => $resultsTheme['description_color'] ?? '#ffffff',
+                'class' => 'results-theme-input',
+            ])
+        </div>
+        <div class="col-md-4">
+            <label class="small">{{ translate('Font size') }} (px)</label>
+            <input type="number" id="results-description-font-size" class="theme-input-style results-theme-input w-100" min="10" max="32"
+                value="{{ $resultsTheme['description_font_size'] ?? 15 }}">
+        </div>
+    </div>
+</div>
 
 <div class="results-theme-section mb-3">
     <div class="intro-panel-label">{{ translate('Page') }}</div>
@@ -132,6 +200,48 @@
                 <input type="number" id="results-hero-size" class="theme-input-style results-theme-input w-100" min="40" max="320" value="{{ $resultsTheme['hero_size'] ?? 80 }}">
             </div>
         </div>
+        <div class="form-row mb-15">
+            <div class="col-12">
+                <strong class="small">{{ translate('Card frame') }}</strong>
+            </div>
+        </div>
+        <div class="form-row mb-15">
+            <div class="col-md-4">
+                <label class="small">{{ translate('Frame style') }}</label>
+                <select id="results-hero-frame" class="theme-input-style results-theme-input w-100">
+                    <option value="none" {{ ($resultsTheme['hero_frame'] ?? 'none') === 'none' ? 'selected' : '' }}>{{ translate('None') }}</option>
+                    <option value="corners" {{ ($resultsTheme['hero_frame'] ?? '') === 'corners' ? 'selected' : '' }}>{{ translate('Corner brackets') }}</option>
+                    <option value="inset" {{ ($resultsTheme['hero_frame'] ?? '') === 'inset' ? 'selected' : '' }}>{{ translate('Inset border') }}</option>
+                </select>
+            </div>
+            <div class="col-md-4 results-hero-frame-controls {{ ($resultsTheme['hero_frame'] ?? 'none') === 'none' ? 'd-none' : '' }}">
+                <label class="small">{{ translate('Frame color') }}</label>
+                @include('theme/tlcommerce::backend.quiz.partials.color_input', ['id' => 'results-hero-frame-color', 'value' => $resultsTheme['hero_frame_color'] ?? '#c9a84c', 'class' => 'results-theme-input'])
+            </div>
+            <div class="col-md-4 d-flex align-items-end results-hero-frame-controls {{ ($resultsTheme['hero_frame'] ?? 'none') === 'none' ? 'd-none' : '' }}">
+                <label class="mb-0">
+                    <input type="checkbox" id="results-hero-glow" class="results-theme-input" {{ !empty($resultsTheme['hero_glow']) ? 'checked' : '' }}>
+                    {{ translate('Glow') }}
+                </label>
+            </div>
+        </div>
+        <div class="form-row mb-15 results-hero-frame-controls {{ ($resultsTheme['hero_frame'] ?? 'none') === 'none' ? 'd-none' : '' }}">
+            <div class="col-md-4">
+                <label class="small">{{ translate('Thickness') }} (px)</label>
+                <input type="number" id="results-hero-frame-thickness" class="theme-input-style results-theme-input w-100" min="1" max="6"
+                    value="{{ $resultsTheme['hero_frame_thickness'] ?? 2 }}">
+            </div>
+            <div class="col-md-4">
+                <label class="small">{{ translate('Inset') }} (px)</label>
+                <input type="number" id="results-hero-frame-inset" class="theme-input-style results-theme-input w-100" min="4" max="32"
+                    value="{{ $resultsTheme['hero_frame_inset'] ?? 10 }}">
+            </div>
+            <div class="col-md-4 results-hero-frame-corner-controls {{ ($resultsTheme['hero_frame'] ?? 'none') !== 'corners' ? 'd-none' : '' }}">
+                <label class="small">{{ translate('Bracket size') }} (px)</label>
+                <input type="number" id="results-hero-frame-corner-size" class="theme-input-style results-theme-input w-100" min="8" max="64"
+                    value="{{ $resultsTheme['hero_frame_corner_size'] ?? 18 }}">
+            </div>
+        </div>
     </div>
 </div>
 
@@ -175,5 +285,11 @@
     </div>
 </div>
 
-@include('theme/tlcommerce::backend.quiz.partials.results_block_builder')
-@include('theme/tlcommerce::backend.quiz.partials.results_actions_builder')
+</div>
+
+@include('theme/tlcommerce::backend.quiz.partials.results_block_builder', [
+    'isDefaultLang' => $isDefaultLang,
+])
+@include('theme/tlcommerce::backend.quiz.partials.results_actions_builder', [
+    'isDefaultLang' => $isDefaultLang,
+])

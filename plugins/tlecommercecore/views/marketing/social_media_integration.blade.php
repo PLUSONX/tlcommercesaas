@@ -1,6 +1,10 @@
 @php
     $facebook = $integrationSettings['facebook_pixel'] ?? null;
     $facebookSettings = $facebook ? json_decode($facebook->settings, true) : [];
+    $tiktok = $integrationSettings['tiktok_pixel'] ?? null;
+    $tiktokSettings = $tiktok ? json_decode($tiktok->settings, true) : [];
+    $snapchat = $integrationSettings['snapchat_pixel'] ?? null;
+    $snapchatSettings = $snapchat ? json_decode($snapchat->settings, true) : [];
 @endphp
 @extends('core::base.layouts.master')
 @section('title')
@@ -22,10 +26,10 @@
         </div>
 </div>
 
+<form action="{{ route('plugin.tlcommercecore.marketing.social.media.integration.update') }}" method="POST">
+    @csrf
+
 <div class="card mb-4" style="border-radius: 12px !important; overflow: hidden !important;">
-    <form action="{{ route('plugin.tlcommercecore.marketing.social.media.integration.update') }}" method="POST">
-        @csrf
-        
         <div class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Facebook Pixel</h5>
 
@@ -74,13 +78,83 @@
             </div>
         </div>
 
-        <div class="card-footer bg-transparent border-top-0 pb-3">
-            <div class="d-flex justify-content-end">
-                <button type="submit" class="btn long btn-orange">{{ translate('Update Settings') }}</button>
+</div>
+
+<div class="card mb-4" style="border-radius: 12px !important; overflow: hidden !important;">
+        <div class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">TikTok Pixel</h5>
+
+            <div class="form-check form-switch custom-switch-container d-flex align-items-center m-0 p-0">
+                <label class="form-check-label fw-medium me-2" for="tiktokPixelToggle"
+                    style="cursor: pointer; font-size: 0.85rem; color: #6c757d; margin-left: 30px;">
+                    {{ $tiktok && $tiktok->is_active ? 'Active' : 'Inactive' }}
+                </label>
+
+                <div class="switch-wrapper ml-1">
+                    <input class="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        id="tiktokPixelToggle"
+                        name="tiktok_pixel[is_active]"
+                        value="1"
+                        {{ $tiktok && $tiktok->is_active ? 'checked' : '' }}>
+                    <span class="checkmark"></span>
+                </div>
             </div>
         </div>
-    </form>
+
+        <div class="card-body">
+            <div class="form-group mb-0">
+                <label class="form-label fw-bold small text-uppercase text-muted">Pixel ID</label>
+                <input type="text"
+                       name="tiktok_pixel[pixel_id]"
+                       class="form-control"
+                       value="{{ $tiktokSettings['pixel_id'] ?? '' }}"
+                       placeholder="e.g. CXXXXXXXXXXXXXXXXX">
+            </div>
+        </div>
 </div>
+
+<div class="card mb-4" style="border-radius: 12px !important; overflow: hidden !important;">
+        <div class="card-header bg-transparent py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Snapchat Pixel</h5>
+
+            <div class="form-check form-switch custom-switch-container d-flex align-items-center m-0 p-0">
+                <label class="form-check-label fw-medium me-2" for="snapchatPixelToggle"
+                    style="cursor: pointer; font-size: 0.85rem; color: #6c757d; margin-left: 30px;">
+                    {{ $snapchat && $snapchat->is_active ? 'Active' : 'Inactive' }}
+                </label>
+
+                <div class="switch-wrapper ml-1">
+                    <input class="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        id="snapchatPixelToggle"
+                        name="snapchat_pixel[is_active]"
+                        value="1"
+                        {{ $snapchat && $snapchat->is_active ? 'checked' : '' }}>
+                    <span class="checkmark"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="form-group mb-0">
+                <label class="form-label fw-bold small text-uppercase text-muted">Pixel ID</label>
+                <input type="text"
+                       name="snapchat_pixel[pixel_id]"
+                       class="form-control"
+                       value="{{ $snapchatSettings['pixel_id'] ?? '' }}"
+                       placeholder="e.g. xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+            </div>
+        </div>
+</div>
+
+<div class="d-flex justify-content-end mb-4">
+    <button type="submit" class="btn long btn-orange">{{ translate('Update Settings') }}</button>
+</div>
+
+</form>
 
 
 @endsection

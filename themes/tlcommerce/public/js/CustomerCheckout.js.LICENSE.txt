@@ -110,6 +110,8 @@
 
 /*! @/components/pageheader/PageHeader.vue */
 
+/*! @/utils/trackSocialPixels */
+
 /*! @coreui/vue */
 
 /*! axios */

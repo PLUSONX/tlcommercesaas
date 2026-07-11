@@ -48,6 +48,8 @@
 
 /*! @/components/ui/ProductVariant.vue */
 
+/*! @/utils/trackSocialPixels */
+
 /*! @coreui/vue */
 
 /*! axios */

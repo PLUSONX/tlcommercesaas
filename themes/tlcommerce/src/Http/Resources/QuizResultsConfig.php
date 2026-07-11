@@ -54,6 +54,9 @@ class QuizResultsConfig
 
         $theme = self::normalizeTheme(is_array($results['theme'] ?? null) ? $results['theme'] : []);
         $blocks = self::normalizeBlocks(is_array($results['blocks'] ?? null) ? $results['blocks'] : null);
+        if ($layoutMode === 'product_color_card') {
+            $blocks = self::ensureProductColorCardBlocks($blocks);
+        }
         $productGrid = self::normalizeProductGrid(is_array($results['product_grid'] ?? null) ? $results['product_grid'] : []);
         $actions = self::normalizeActions(is_array($results['actions'] ?? null) ? $results['actions'] : null);
         $productProfiles = self::normalizeProductProfiles(is_array($results['product_profiles'] ?? null) ? $results['product_profiles'] : null);
@@ -84,9 +87,18 @@ class QuizResultsConfig
             'accent_color' => '#c9a84c',
             'hero_size' => 80,
             'hero_frame' => 'none',
+            'hero_frame_color' => '#c9a84c',
+            'hero_frame_thickness' => 2,
+            'hero_frame_inset' => 10,
+            'hero_frame_corner_size' => 18,
             'hero_glow' => true,
             'tagline_font' => 'serif_caps',
+            'tagline_color' => '#ffffff',
+            'tagline_font_size' => 11,
+            'tagline_letter_spacing' => 0.15,
             'body_font' => 'script',
+            'description_color' => '#ffffff',
+            'description_font_size' => 15,
             'card_enabled' => true,
             'card_background' => '#1f4530',
             'card_border_style' => 'double',
@@ -146,10 +158,22 @@ class QuizResultsConfig
             $tagline = substr($tagline, 0, 255);
         }
 
+        $description = trim((string) ($profile['description'] ?? ''));
+        if (strlen($description) > 2000) {
+            $description = substr($description, 0, 2000);
+        }
+
+        $quote = trim((string) ($profile['quote'] ?? ''));
+        if (strlen($quote) > 255) {
+            $quote = substr($quote, 0, 255);
+        }
+
         return [
             'product_id' => $productId,
             'color' => self::sanitizeHexColor($profile['color'] ?? '#c9a84c'),
             'tagline' => $tagline,
+            'description' => $description,
+            'quote' => $quote,
             'enabled' => array_key_exists('enabled', $profile) ? (bool) $profile['enabled'] : true,
             'product_name' => trim((string) ($profile['product_name'] ?? '')),
         ];
@@ -228,6 +252,10 @@ class QuizResultsConfig
                 'accent_color' => '#ff5a1f',
                 'hero_size' => 140,
                 'hero_frame' => 'none',
+                'hero_frame_color' => '#ff5a1f',
+                'hero_frame_thickness' => 2,
+                'hero_frame_inset' => 10,
+                'hero_frame_corner_size' => 18,
                 'hero_glow' => false,
                 'tagline_font' => 'default',
                 'body_font' => 'default',
@@ -361,7 +389,152 @@ class QuizResultsConfig
             ],
         ]);
 
-        return $blocks;
+        $postSwatchBlock = [
+            'id' => 'tagline_below_swatch',
+            'type' => 'tagline',
+            'enabled' => true,
+            'html' => '<p style="text-align:center"><span style="font-size:18px;letter-spacing:0.05em">{{product.tagline}}</span></p>',
+            'spacing' => ['margin_top' => 0, 'margin_bottom' => 12, 'padding_top' => 0, 'padding_bottom' => 0, 'padding_x' => 0],
+        ];
+
+        $postBodyBlocks = [
+            [
+                'id' => 'tagline_decorative',
+                'type' => 'tagline',
+                'enabled' => true,
+                'html' => '<p style="text-align:center"><span style="font-size:22px">{{product.tagline}}</span></p>',
+                'spacing' => ['margin_top' => 0, 'margin_bottom' => 8, 'padding_top' => 0, 'padding_bottom' => 0, 'padding_x' => 0],
+            ],
+            [
+                'id' => 'subtitle_powerful',
+                'type' => 'subtitle',
+                'enabled' => true,
+                'html' => '<p style="text-align:center"><span style="font-size:11px;letter-spacing:0.15em">- THE SOFTLY POWERFUL -</span></p>',
+                'spacing' => ['margin_top' => 0, 'margin_bottom' => 12, 'padding_top' => 0, 'padding_bottom' => 0, 'padding_x' => 0],
+            ],
+            [
+                'id' => 'tagline_quote',
+                'type' => 'tagline',
+                'enabled' => true,
+                'html' => '<p style="text-align:center"><span style="font-size:14px">"{{product.quote}}"</span></p>',
+                'spacing' => ['margin_top' => 8, 'margin_bottom' => 12, 'padding_top' => 0, 'padding_bottom' => 0, 'padding_x' => 0],
+            ],
+        ];
+
+        $result = [];
+        foreach ($blocks as $block) {
+            if (($block['id'] ?? '') === 'product_swatch') {
+                $block['size'] = 60;
+            }
+            if (($block['type'] ?? '') === 'body') {
+                $block['html'] = '<p style="text-align:center"><em>{{product.description}}</em></p>';
+            }
+
+            $result[] = $block;
+
+            if (($block['id'] ?? '') === 'product_swatch') {
+                $result[] = $postSwatchBlock;
+            }
+
+            if (($block['id'] ?? '') === 'body') {
+                foreach ($postBodyBlocks as $postBlock) {
+                    $result[] = $postBlock;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Merge saved blocks with the product color card preset (insert missing ids, strip locale gates).
+     *
+     * @param  array<int, array<string, mixed>>  $blocks
+     * @return array<int, array<string, mixed>>
+     */
+    public static function ensureProductColorCardBlocks(array $blocks): array
+    {
+        if (empty($blocks)) {
+            return self::productColorCardBlocks();
+        }
+
+        $preset = self::productColorCardBlocks();
+        $savedById = [];
+        foreach ($blocks as $block) {
+            if (!is_array($block)) {
+                continue;
+            }
+            $id = isset($block['id']) ? (string) $block['id'] : '';
+            if ($id !== '') {
+                $savedById[$id] = $block;
+            }
+        }
+
+        $mergeKeys = ['html', 'text', 'spacing', 'appearance', 'size', 'display_mode', 'product_rank'];
+        $merged = [];
+        $usedIds = [];
+
+        foreach ($preset as $presetBlock) {
+            $id = (string) ($presetBlock['id'] ?? '');
+            $block = $presetBlock;
+            if ($id !== '' && isset($savedById[$id])) {
+                $saved = $savedById[$id];
+                $block = $presetBlock;
+                foreach ($mergeKeys as $key) {
+                    if (array_key_exists($key, $saved)) {
+                        $block[$key] = $saved[$key];
+                    }
+                }
+                if (array_key_exists('enabled', $saved)) {
+                    $block['enabled'] = (bool) $saved['enabled'];
+                }
+            }
+            unset($block['visible_locales']);
+            $sanitized = self::sanitizeBlock($block);
+            if ($sanitized) {
+                $merged[] = $sanitized;
+            }
+            if ($id !== '') {
+                $usedIds[$id] = true;
+            }
+        }
+
+        foreach ($blocks as $block) {
+            if (!is_array($block)) {
+                continue;
+            }
+            $id = isset($block['id']) ? (string) $block['id'] : '';
+            if ($id === '' || isset($usedIds[$id])) {
+                continue;
+            }
+            unset($block['visible_locales']);
+            $sanitized = self::sanitizeBlock($block);
+            if ($sanitized) {
+                $merged[] = $sanitized;
+            }
+        }
+
+        return $merged ?: self::productColorCardBlocks();
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $blocks
+     * @return array<int, array<string, mixed>>
+     */
+    public static function filterBlocksForLocale(array $blocks, string $locale): array
+    {
+        return array_values(array_filter($blocks, function ($block) use ($locale) {
+            if (!is_array($block)) {
+                return false;
+            }
+
+            $locales = $block['visible_locales'] ?? null;
+            if (empty($locales) || !is_array($locales)) {
+                return true;
+            }
+
+            return in_array($locale, array_map('strval', $locales), true);
+        }));
     }
 
     public static function normalizeTheme(array $theme): array
@@ -393,16 +566,25 @@ class QuizResultsConfig
             'text_color' => self::sanitizeHexColor($theme['text_color'] ?? $defaults['text_color']),
             'accent_color' => self::sanitizeHexColor($theme['accent_color'] ?? $defaults['accent_color']),
             'hero_size' => max(40, min(320, (int) ($theme['hero_size'] ?? $defaults['hero_size']))),
-            'hero_frame' => in_array($theme['hero_frame'] ?? 'none', ['none', 'corners'], true)
+            'hero_frame' => in_array($theme['hero_frame'] ?? 'none', ['none', 'corners', 'inset'], true)
                 ? ($theme['hero_frame'] ?? 'none')
                 : 'none',
+            'hero_frame_color' => self::sanitizeHexColor($theme['hero_frame_color'] ?? $defaults['hero_frame_color']),
+            'hero_frame_thickness' => max(1, min(6, (int) ($theme['hero_frame_thickness'] ?? $defaults['hero_frame_thickness']))),
+            'hero_frame_inset' => max(4, min(32, (int) ($theme['hero_frame_inset'] ?? $defaults['hero_frame_inset']))),
+            'hero_frame_corner_size' => max(8, min(64, (int) ($theme['hero_frame_corner_size'] ?? $defaults['hero_frame_corner_size']))),
             'hero_glow' => (bool) ($theme['hero_glow'] ?? $defaults['hero_glow']),
             'tagline_font' => in_array($theme['tagline_font'] ?? 'default', ['default', 'serif_caps'], true)
                 ? ($theme['tagline_font'] ?? 'default')
                 : 'default',
+            'tagline_color' => self::sanitizeHexColor($theme['tagline_color'] ?? $defaults['tagline_color']),
+            'tagline_font_size' => max(8, min(32, (int) ($theme['tagline_font_size'] ?? $defaults['tagline_font_size']))),
+            'tagline_letter_spacing' => max(0, min(0.5, (float) ($theme['tagline_letter_spacing'] ?? $defaults['tagline_letter_spacing']))),
             'body_font' => in_array($theme['body_font'] ?? 'default', ['default', 'script'], true)
                 ? ($theme['body_font'] ?? 'default')
                 : 'default',
+            'description_color' => self::sanitizeHexColor($theme['description_color'] ?? $defaults['description_color']),
+            'description_font_size' => max(10, min(32, (int) ($theme['description_font_size'] ?? $defaults['description_font_size']))),
             'card_enabled' => array_key_exists('card_enabled', $theme) ? (bool) $theme['card_enabled'] : $defaults['card_enabled'],
             'card_background' => self::sanitizeHexColor($theme['card_background'] ?? $defaults['card_background']),
             'card_border_style' => $borderStyle,
@@ -531,6 +713,13 @@ class QuizResultsConfig
         $appearance = self::sanitizeBlockAppearance($block, $type);
         if ($appearance !== null) {
             $result['appearance'] = $appearance;
+        }
+
+        if (!empty($block['visible_locales']) && is_array($block['visible_locales'])) {
+            $locales = array_values(array_filter(array_map('strval', $block['visible_locales'])));
+            if (!empty($locales)) {
+                $result['visible_locales'] = $locales;
+            }
         }
 
         return $result;

@@ -187,6 +187,7 @@
 import axios from "axios";
 import { mapState } from "vuex";
 import { CSpinner } from "@coreui/vue";
+import { trackSocialPixels } from "@/utils/trackSocialPixels";
 export default {
   name: "PaymentMethods",
   emits: ["previous-step"],
@@ -555,7 +556,7 @@ export default {
 
       const items = this.$store.state.checkoutItems ?? [];
 
-      window.fbq('track', 'InitiateCheckout', {
+      trackSocialPixels('InitiateCheckout', {
         content_ids: items.map(item => String(item.id)),
         contents: items.map(item => ({
           id: String(item.id),

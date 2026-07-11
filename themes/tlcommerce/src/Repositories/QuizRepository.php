@@ -378,13 +378,19 @@ class QuizRepository
             }
 
             if (is_array($resultsBlocks)) {
-                $config['results']['blocks'] = $resultsBlocks;
+                $layoutMode = $resultsLayoutMode
+                    ?? ($config['results']['layout_mode'] ?? ($existingResults['layout_mode'] ?? 'featured_card'));
+                $blocks = QuizResultsConfig::normalizeBlocks($resultsBlocks);
+                if ($layoutMode === 'product_color_card') {
+                    $blocks = QuizResultsConfig::ensureProductColorCardBlocks($blocks);
+                }
+                $config['results']['blocks'] = $blocks;
             } elseif (is_array($existingResults) && !empty($existingResults['blocks'])) {
                 $config['results']['blocks'] = $existingResults['blocks'];
             }
 
             if (is_array($resultsTheme)) {
-                $config['results']['theme'] = $resultsTheme;
+                $config['results']['theme'] = QuizResultsConfig::normalizeTheme($resultsTheme);
             } elseif (is_array($existingResults) && !empty($existingResults['theme'])) {
                 $config['results']['theme'] = $existingResults['theme'];
             }

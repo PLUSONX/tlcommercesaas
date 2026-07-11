@@ -1,8 +1,8 @@
 <template>
   <!-- Header Bottom -->
   <div :class="this.headerStyle.custom_header == 1
-      ? 'custom-header-bottom header-bottom'
-      : 'header-bottom'
+    ? 'custom-header-bottom header-bottom'
+    : 'header-bottom'
     ">
     <div class="custom-container2">
       <div class="row position-relative align-items-center justify-content-between">
