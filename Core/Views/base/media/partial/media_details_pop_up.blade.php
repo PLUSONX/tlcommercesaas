@@ -34,7 +34,7 @@
         </div>
         <div>
             <span class="font-weight-bolder">{{ translate('File Size:') }} </span>
-            <span id="file_size">{{ $details->size / 100 }} KB</span>
+            <span id="file_size">{{ round($details->size / 1024, 1) }} KB</span>
         </div>
         <div>
             <span class="font-weight-bolder">{{ translate('Uploaded By:') }} </span>

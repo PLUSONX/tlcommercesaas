@@ -22,7 +22,7 @@
     <div class="details">
         <div class="filename" id="media_name">{{ $details->name }}</div>
         <div class="media_file_uploading_date" id="media_file_uploading_date">{{ $details->created_at }}</div>
-        <div class="media_file_size" id="media_file_size">{{ $details->size / 100 }} KB</div>
+        <div class="media_file_size" id="media_file_size">{{ round($details->size / 1024, 1) }} KB</div>
     </div>
 
 </div>
