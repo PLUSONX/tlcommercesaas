@@ -92,13 +92,27 @@ class DeviceTokenController extends Controller
             'tenantId' => $tenantId,
         ]);
 
-        DeviceToken::where('token', $token)
-            ->where('is_active', true)
-            ->update([
-                'user_id' => $userId,
-                'tenant_id' => $tenantId,
-                'last_used_at' => now(),
-            ]);
+        $deviceToken = DeviceToken::firstOrNew(['token' => $token]);
+        $wasCreated = !$deviceToken->exists;
+
+        $deviceToken->user_id = $userId;
+        $deviceToken->tenant_id = $tenantId;
+        $deviceToken->is_active = true;
+        $deviceToken->last_used_at = now();
+
+        if ($wasCreated) {
+            $deviceToken->platform = 'android';
+        }
+
+        $deviceToken->save();
+
+        Log::info('associateWithUser completed', [
+            'wasRecentlyCreated' => $wasCreated,
+            'id' => $deviceToken->id,
+            'user_id' => $deviceToken->user_id,
+            'tenant_id' => $deviceToken->tenant_id,
+            'is_active' => $deviceToken->is_active,
+        ]);
     }
 
 

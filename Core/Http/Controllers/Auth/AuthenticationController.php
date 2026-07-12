@@ -447,7 +447,16 @@ class AuthenticationController extends Controller
 
             Log::info('Inside of the If condition');
 
-            $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $user->id, tenant('id'));
+            $tenantId = tenant('id');
+
+            if (empty($tenantId)) {
+                Log::warning('associateWithUser fallthrough: tenant_id is missing', [
+                    'user_id' => $user->id,
+                    'user_type' => $user->user_type,
+                ]);
+            }
+
+            $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $user->id, $tenantId);
 
         }
 
