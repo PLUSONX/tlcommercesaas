@@ -364,10 +364,41 @@ $isCentralDomain = in_array($host, $centralDomains);
 @section('custom_scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const savedToken = localStorage.getItem('token');
         const tokenInput = document.getElementById('token');
-        if (savedToken && tokenInput) {
-            tokenInput.value = savedToken;
+        const loginForm = tokenInput ? tokenInput.closest('form') : null;
+
+        function syncDeviceToken() {
+            if (!tokenInput) {
+                return false;
+            }
+            const savedToken = localStorage.getItem('token');
+            if (savedToken) {
+                tokenInput.value = savedToken;
+                return true;
+            }
+            return false;
+        }
+
+        // Initial read (may be empty if native injects FCM token after page load)
+        syncDeviceToken();
+
+        // Re-read on submit so a late localStorage inject is included in the POST
+        if (loginForm) {
+            loginForm.addEventListener('submit', function () {
+                syncDeviceToken();
+            });
+        }
+
+        // Brief poll after load for late native WebView inject
+        if (!syncDeviceToken()) {
+            let attempts = 0;
+            const maxAttempts = 20; // ~10s at 500ms
+            const pollId = setInterval(function () {
+                attempts += 1;
+                if (syncDeviceToken() || attempts >= maxAttempts) {
+                    clearInterval(pollId);
+                }
+            }, 500);
         }
 
         const togglePassword = document.getElementById('togglePassword');
