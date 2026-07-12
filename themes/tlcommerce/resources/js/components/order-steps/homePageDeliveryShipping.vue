@@ -33,11 +33,15 @@
                         <span class="text-muted small">{{ $t('Earliest Arrival') }}</span>
                     </div>
                     <div v-if="selectedCity" class="arrival-time">
-                        <div v-if="tenant === 'Raneem'">
+                        <div v-if="['raneem', 'raneemjewelers', 'RANEEM JEWELERS'].includes(tenant)">
                             <strong>12-24 {{ $t('Hours') }}</strong>
                         </div>
 
-                        <div v-if="['kfc', 'tryguardi', 'TryGuardi', 'Guardi'].includes(tenant)">
+                        <div v-if="['kfc', 'tryguardi', 'TryGuardi', 'Guardi', 'TRYGUARDI'].includes(tenant)">
+                            <strong>3-6 {{ $t('Hours') }}</strong>
+                        </div>
+
+                        <div v-if="['Tasty', 'tasty'].includes(tenant)">
                             <strong>12-24 {{ $t('Hours') }}</strong>
                         </div>
                     </div>
