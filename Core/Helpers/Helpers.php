@@ -604,6 +604,7 @@ if (!function_exists('customizeImage')) {
 
             //Cropping theme based image
             $active_theme = getActiveTheme();
+            $generated = [];
             if ($active_theme != null) {
                 $theme_path = $active_theme->location;
                 $cropping_sizes = config($theme_path . '.image_cropping_sizes');
@@ -627,11 +628,119 @@ if (!function_exists('customizeImage')) {
                             }
                         }
                     }
-                    return $cropping_sizes;
+                    $generated = array_merge($generated, $cropping_sizes);
+                }
+
+                // Aspect-preserving display widths (banners/ads/icons — no square crop)
+                $display_tokens = generateDisplayImageVariants(
+                    $file_full_path,
+                    $destination_path,
+                    $disk,
+                    $file,
+                    $image_source_path
+                );
+                if (is_array($display_tokens) && count($display_tokens) > 0) {
+                    $generated = array_merge($generated, $display_tokens);
                 }
             }
 
+            return count($generated) > 0 ? $generated : null;
+        } catch (\Exception $e) {
             return null;
+        }
+    }
+}
+
+/*new */
+if (!function_exists('generateDisplayImageVariants')) {
+    /**
+     * Create aspect-preserving max-width variants (e.g. namew1600.jpg, namew800.jpg).
+     * Skips writing when the source is already within the max width.
+     *
+     * @param string $file_full_path
+     * @param string $destination_path
+     * @param string $disk
+     * @param mixed $file Uploaded file or null when backfilling from disk
+     * @param string|null $image_source_path Precomputed local/s3 source for Intervention
+     * @return array|null tokens like ['w1600','w800']
+     */
+    function generateDisplayImageVariants($file_full_path, $destination_path, $disk, $file = null, $image_source_path = null)
+    {
+        try {
+            $active_theme = getActiveTheme();
+            if ($active_theme == null) {
+                return null;
+            }
+
+            $theme_path = $active_theme->location;
+            $display_widths = config($theme_path . '.image_display_max_widths');
+            if ($display_widths == null || !is_array($display_widths)) {
+                return null;
+            }
+
+            if ($image_source_path === null) {
+                if ($disk == 'amazons3') {
+                    $image_source_path = Storage::disk('s3')->get($file_full_path);
+                } else {
+                    $image_source_path = 'public/' . $file_full_path;
+                }
+            }
+
+            $full_path_array = explode('/', $file_full_path);
+            $file_full_name = $full_path_array[sizeof($full_path_array) - 1];
+            $file_full_name_array = explode('.', $file_full_name);
+            if (sizeof($file_full_name_array) < 2) {
+                return null;
+            }
+            $file_name = $file_full_name_array[0];
+            $extension = $file_full_name_array[sizeof($file_full_name_array) - 1];
+
+            if ($disk == 'amazons3') {
+                $modified_file_path_prefix = $destination_path . '/' . $file_name;
+            } else {
+                $modified_file_path_prefix = 'public/' . $destination_path . '/' . $file_name;
+            }
+
+            $generated = [];
+            foreach ($display_widths as $max_width) {
+                $max_width = (int) $max_width;
+                if ($max_width <= 0) {
+                    continue;
+                }
+                $token = 'w' . $max_width;
+                $resizing_file_path = $modified_file_path_prefix . $token . '.' . $extension;
+
+                try {
+                    if ($disk == 'amazons3') {
+                        $source = $file !== null ? $file : $image_source_path;
+                        $img = Image::make($source);
+                    } else {
+                        $img = Image::make($image_source_path);
+                    }
+
+                    if ($img->width() > $max_width) {
+                        $img->resize($max_width, null, function ($constraint) {
+                            $constraint->aspectRatio();
+                            $constraint->upsize();
+                        });
+                    }
+
+                    if ($disk == 'amazons3') {
+                        Storage::disk('s3')->put($resizing_file_path, $img->stream()->__toString());
+                    } else {
+                        $img->save($resizing_file_path);
+                        if (File::exists($resizing_file_path)) {
+                            chmod($resizing_file_path, 0777);
+                        }
+                    }
+                    $generated[] = $token;
+                } catch (\Exception $inner) {
+                    // Skip this width; other widths / original remain available
+                    continue;
+                }
+            }
+
+            return count($generated) > 0 ? $generated : null;
         } catch (\Exception $e) {
             return null;
         }
@@ -785,6 +894,36 @@ if (!function_exists('getFilePathWithSize')) {
             }
         }
         return $file_path;
+    }
+}
+
+/*new */
+if (!function_exists('getDisplayImagePath')) {
+    /**
+     * Storefront display path: prefer aspect-preserving max-width variant (w1600 / w800).
+     * Falls back to the original getFilePath() when the variant is missing — never breaks images.
+     *
+     * @param int|string|null $id Media id
+     * @param int $maxWidth 1600 for desktop/banners, 800 for mobile/icons
+     * @param bool $placeholder
+     * @return string|null
+     */
+    function getDisplayImagePath($id, $maxWidth = 1600, $placeholder = true)
+    {
+        if ($id === null || $id === '' || $id === false) {
+            return $placeholder ? getPlaceHolderImagePath() : null;
+        }
+
+        $maxWidth = (int) $maxWidth;
+        if ($maxWidth <= 0) {
+            $maxWidth = 1600;
+        }
+
+        $token = 'w' . $maxWidth;
+        $sized = getFilePathWithSize($id, $placeholder, $token);
+
+        // If variant missing, getFilePathWithSize already returned the original for local disk.
+        return $sized;
     }
 }
 

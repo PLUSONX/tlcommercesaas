@@ -1,17 +1,16 @@
 <template>
   <div class="product-banner-item d-flex align-items-center justify-content-center">
-    <!-- Image -->
-    <div class="slide-img desktop">
+    <!-- Single viewport image — avoids downloading both desktop and mobile assets -->
+    <div class="slide-img" :class="isMobile ? 'mobile' : 'desktop'">
       <a :href="content.url">
-        <img :src="cleanDesktopImage" alt="image" />
+        <img
+          :src="activeImage"
+          alt="image"
+          :width="imageWidth"
+          :height="imageHeight"
+          decoding="async"
+        />
         <!-- <img :src="content.desktop" alt="image" /> -->
-      </a>
-    </div>
-    <!-- End Image -->
-    <!-- Image -->
-    <div class="slide-img mobile">
-      <a :href="content.url">
-        <img :src="cleanMobileImage" alt="image" />
         <!-- <img :src="content.mobile" alt="image" /> -->
       </a>
     </div>
@@ -20,6 +19,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "ProductBanner",
   props: {
@@ -29,6 +30,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters("layout", ["isMobile"]),
     cleanDesktopImage() {
       const img = this.content?.desktop;
       if (!img) return '';
@@ -45,6 +47,19 @@ export default {
       return img.startsWith('/public')
         ? img.slice(7)
         : img;
+    },
+    activeImage() {
+      if (this.isMobile) {
+        return this.cleanMobileImage || this.cleanDesktopImage;
+      }
+      return this.cleanDesktopImage || this.cleanMobileImage;
+    },
+    // Intrinsic size hints for CLS; CSS keeps width:100% / height:auto (no crop)
+    imageWidth() {
+      return this.isMobile ? 800 : 1600;
+    },
+    imageHeight() {
+      return this.isMobile ? 500 : 500;
     },
   },
 };
@@ -69,20 +84,6 @@ export default {
 <style lang="scss" scoped>
 @import "../../assets/sass/00-abstracts/01-variables";
 
-.slide-img.desktop {
-  @media (max-width: 767px) {
-    display: none;
-  }
-}
-
-.slide-img.mobile {
-  display: none;
-
-  @media (max-width: 767px) {
-    display: block;
-  }
-}
-
 // .product-banner-item {
 //   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 // }
@@ -90,5 +91,12 @@ export default {
 .slide-img {
   border-radius: 12px;
   overflow: hidden;
+  width: 100%;
+
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
 }
 </style>

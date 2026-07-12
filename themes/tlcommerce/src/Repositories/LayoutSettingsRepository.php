@@ -67,6 +67,15 @@ class LayoutSettingsRepository {
         if ($layout->name === 'split_screen') {
             $splitScreenSettings = $this->getSplitScreenProperties($layout->id);
 
+            if ($splitScreenSettings && !empty($splitScreenSettings->feature_image)) {
+                $displayPath = getDisplayImagePath($splitScreenSettings->feature_image, 1600, false);
+                if ($displayPath) {
+                    // BannerFeature expects a path without the /public prefix
+                    $splitScreenSettings->feature_image_path = preg_replace('#^/public/#', '', $displayPath);
+                    $splitScreenSettings->feature_image_path = ltrim($splitScreenSettings->feature_image_path, '/');
+                }
+            }
+
             return [
                 'id' => $layout->id,
                 'name' => $layout->name,

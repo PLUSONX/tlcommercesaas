@@ -90,7 +90,7 @@ class PageBuilderService
             $property = str_replace('_', '-', $key);
 
             if ($property == 'background-image') {
-                $value = "url('" . asset((getFilePath($value))) . "')";
+                $value = "url('" . asset((getDisplayImagePath($value, 1600))) . "')";
             }
 
             $css[$id][$property] = $value . ';';

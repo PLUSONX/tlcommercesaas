@@ -377,11 +377,11 @@ class PageBuilderRepository
                 'title' => $request->title,
                 'url' => $request->url,
                 'desktop_image' => [
-                    'path' => getFilePath($request->desktop_image_id),
+                    'path' => getDisplayImagePath($request->desktop_image_id, 1600),
                     'id' => $request->desktop_image_id
                 ],
                 'mobile_image' => [
-                    'path' => getFilePath($request->mobile_image_id),
+                    'path' => getDisplayImagePath($request->mobile_image_id, 800),
                     'id' => $request->mobile_image_id
                 ]
             ];

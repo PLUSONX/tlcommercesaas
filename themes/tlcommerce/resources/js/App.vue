@@ -1,5 +1,5 @@
 <template>
-  <div v-if="themeStyle">
+  <div>
     <component :is="layout" />
   </div>
 </template>
@@ -12,30 +12,33 @@ export default {
   components: {
     MainLayout,
   },
-  data() {
-    return {
-      themeStyle: null,
-    };
-  },
   computed: {
     layout() {
       return this.$route.meta.layout || MainLayout;
     },
   },
-  async created() {
-    try {
-      this.themeStyle = await axios.get("/api/theme/tlcommerce/v1/get-theme-color");
-      const themeColor = this.themeStyle?.data?.themeColor;
-
-      if (themeColor?.theme_primary_color) {
-        document.documentElement.style.setProperty(
-          "--mainC",
-          themeColor.theme_primary_color
+  created() {
+    // Non-blocking: Blade already injects --mainC. Refresh from API when available.
+    this.refreshThemeColor();
+  },
+  methods: {
+    async refreshThemeColor() {
+      try {
+        const response = await axios.get(
+          "/api/theme/tlcommerce/v1/get-theme-color"
         );
+        const themeColor = response?.data?.themeColor;
+
+        if (themeColor?.theme_primary_color) {
+          document.documentElement.style.setProperty(
+            "--mainC",
+            themeColor.theme_primary_color
+          );
+        }
+      } catch (e) {
+        // Blade already injects --mainC before Vue mounts.
       }
-    } catch (e) {
-      // Blade already injects --mainC before Vue mounts.
-    }
+    },
   },
 };
 </script>

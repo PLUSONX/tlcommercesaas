@@ -13,12 +13,12 @@ class SliderResource extends ResourceCollection
             'data' => $this->collection->map(function ($data) {
                 return [
                     'url' => $data->url,
-                    'desktop' => Cache::rememberForever('home-page-desktop-slider' . $data->desktop, function () use ($data) {
-                        return getFilePath($data->desktop, false);
+                    'desktop' => Cache::rememberForever('home-page-desktop-slider-display-v1-' . $data->desktop, function () use ($data) {
+                        return getDisplayImagePath($data->desktop, 1600, false);
                     }),
                     'mobile'
-                    => Cache::rememberForever('home-page-mobile-slider' . $data->mobile, function () use ($data) {
-                        return getFilePath($data->mobile, false);
+                    => Cache::rememberForever('home-page-mobile-slider-display-v1-' . $data->mobile, function () use ($data) {
+                        return getDisplayImagePath($data->mobile, 800, false);
                     }),
                 ];
             })

@@ -99,7 +99,15 @@ class BuilderHelper
 
                                 foreach ($properties as $key => $value) {
                                     if (str_contains($key, 'image')) {
-                                        $widget_properties[$key] = getFilePath($value);
+                                        // Nested banner slides already store path+id arrays — leave for modifiedWidgets
+                                        if (is_array($value)) {
+                                            $widget_properties[$key] = $value;
+                                            continue;
+                                        }
+                                        $maxWidth = (str_contains($key, 'mobile') || str_contains($key, 'icon'))
+                                            ? 800
+                                            : 1600;
+                                        $widget_properties[$key] = getDisplayImagePath($value, $maxWidth);
                                         continue;
                                     }
                                     $widget_properties[$key] = $value;
@@ -114,7 +122,14 @@ class BuilderHelper
                     if ($page_section->properties != null) {
                         foreach ($page_section->properties->properties as $key => $value) {
                             if (str_contains($key, 'image')) {
-                                $section_properties[$key] = getFilePath($value);
+                                if (is_array($value)) {
+                                    $section_properties[$key] = $value;
+                                    continue;
+                                }
+                                $maxWidth = (str_contains($key, 'mobile') || str_contains($key, 'icon'))
+                                    ? 800
+                                    : 1600;
+                                $section_properties[$key] = getDisplayImagePath($value, $maxWidth);
                                 continue;
                             }
                             $section_properties[$key] = $value;
@@ -156,9 +171,26 @@ class BuilderHelper
                             continue;
                         }
 
+                        if ($name == 'banner') {
+                            $props = $widget['properties']['properties'];
+                            if (is_string($props)) {
+                                $props = json_decode($props, true) ?: [];
+                            }
+                            if (is_array($props)) {
+                                $page_section['layouts'][$layout_key]['layout_widgets'][$widget_key]['properties']['properties']
+                                    = self::applyDisplayPathsToBannerSlides($props);
+                            }
+                        }
+
                         if (in_array($name, $modified_widgets)) {
-                            $data = self::getWidgetData($name, $widget['properties']['properties']);
-                            $page_section['layouts'][$layout_key]['layout_widgets'][$widget_key]['properties']['properties'] = $data;
+                            $props = $widget['properties']['properties'];
+                            if (is_string($props)) {
+                                $props = json_decode($props, true) ?: [];
+                            }
+                            if (is_array($props)) {
+                                $data = self::getWidgetData($name, $props);
+                                $page_section['layouts'][$layout_key]['layout_widgets'][$widget_key]['properties']['properties'] = $data;
+                            }
                         }
                     }
                 }
@@ -167,6 +199,32 @@ class BuilderHelper
         }, $page_section_layout_widgets);
 
         return $updated;
+    }
+
+    /**
+     * Prefer display-sized banner slide paths when media id is present; keep original path as fallback.
+     */
+    private static function applyDisplayPathsToBannerSlides(array $slides): array
+    {
+        foreach ($slides as $key => $slide) {
+            if (!is_array($slide)) {
+                continue;
+            }
+            if (isset($slide['desktop_image']['id']) && $slide['desktop_image']['id']) {
+                $slides[$key]['desktop_image']['path'] = getDisplayImagePath(
+                    $slide['desktop_image']['id'],
+                    1600
+                );
+            }
+            if (isset($slide['mobile_image']['id']) && $slide['mobile_image']['id']) {
+                $slides[$key]['mobile_image']['path'] = getDisplayImagePath(
+                    $slide['mobile_image']['id'],
+                    800
+                );
+            }
+        }
+
+        return $slides;
     }
 
     /**
@@ -243,7 +301,7 @@ class BuilderHelper
             ->map(function ($category) use ($lang) {
                 $category->name = $category->translation('name', $lang);
                 $category->slug = $category->permalink;
-                $category->icon = getFilePath($category->icon);
+                $category->icon = getDisplayImagePath($category->icon, 800);
                 unset($category->category_translations);
                 return $category;
             })

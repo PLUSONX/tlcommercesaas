@@ -17,6 +17,13 @@ return [
         '1000x1000',
         '250x250',
     ],
+
+    // Aspect-preserving max-width variants (filenamew1600.jpg) for storefront display.
+    // Used by getDisplayImagePath(); never square-crop banners.
+    'image_display_max_widths' => [
+        1600,
+        800,
+    ],
     //google font api
     'google_font_api_key' => [
         'url' => "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyB8m91pnDhVEOBYvwl0PUMosUCXKSH-uuk"
