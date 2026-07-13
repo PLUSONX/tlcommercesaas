@@ -1316,33 +1316,37 @@ export default {
   }
 
   .product-title-price-row {
-    @media (max-width: 767px) {
-      margin-bottom: 0;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    margin-bottom: 0;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    --bs-gutter-x: 0;
+    width: 100%;
+
+    .product-title-col,
+    .product-price-col {
+      width: 100%;
+      max-width: 100%;
+      flex: 0 0 auto;
+      padding-left: 0;
+      padding-right: 0;
     }
 
-    @media (max-width: 479px) {
-      flex-direction: column !important;
-      align-items: stretch !important;
-      margin-bottom: 0;
-      margin-left: 5px !important;
+    .product-price-col {
+      text-align: start !important;
+      margin-top: 2px;
+    }
 
-      .product-title-col,
-      .product-price-col {
-        width: 90%;
-        max-width: 90%;
-        flex: 0 0 auto;
-        padding-left: 0;
-        padding-right: 0;
-      }
+    .product-title {
+      margin-bottom: 4px;
+    }
 
-      .product-price-col {
-        text-align: start !important;
-      }
-
-      .product-price {
-        flex-wrap: wrap;
-        gap: 4px 8px;
-      }
+    .product-price {
+      margin-top: 0;
+      line-height: 1.15;
+      flex-wrap: wrap;
+      gap: 2px 6px;
     }
   }
 
