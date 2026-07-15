@@ -41,7 +41,9 @@
                   </div>
                   <div class="col-lg-7">
                     <details-content :product="product" @goto-section="goSec"
-                      @color-variant-images="colorVariantImages" />
+                      @color-variant-images="colorVariantImages"
+                      @variant-updating="variantUpdating = $event"
+                      @quantity-change="orderQuantity = $event" />
                   </div>
                 </template>
                 <div class="row" v-else>
@@ -259,7 +261,9 @@
                 </div>
                 <div class="col-lg-7">
                   <details-content :product="product" @goto-section="goSec"
-                    @color-variant-images="colorVariantImages" />
+                    @color-variant-images="colorVariantImages"
+                    @variant-updating="variantUpdating = $event"
+                    @quantity-change="orderQuantity = $event" />
                 </div>
               </template>
               <div class="row" v-else>
@@ -430,6 +434,8 @@
       v-if="showProductStickyFooter"
       class="custom-footer"
       :item="productData"
+      :quantity-value="orderQuantity"
+      :disabled="variantUpdating"
       :style="splitContentFooterStyle"
     />
   </div>
@@ -549,6 +555,8 @@ export default {
       galleryKey: 1,
       sectionTitle: this.$t("Related Products"),
       productLoading: true,
+      variantUpdating: false,
+      orderQuantity: 1,
       _isUnmounted: false,
       requestCancelSource: null,
     };
@@ -771,7 +779,6 @@ export default {
      * Color variant gallery images
      */
     colorVariantImages(color_id) {
-      this.$store.dispatch("showPreloader", true);
       this.galleryKey = this.galleryKey + 1;
       axios
         .post("/api/v1/ecommerce-core/color-variant-images", {
@@ -781,13 +788,9 @@ export default {
         .then((response) => {
           if (response.data.success) {
             this.product.galleryImages = response.data.images;
-            this.$store.dispatch("showPreloader", false);
-          } else {
-            this.$store.dispatch("showPreloader", false);
           }
         })
         .catch((error) => {
-          this.$store.dispatch("showPreloader", false);
           this.product.galleryImages = [];
         });
     },

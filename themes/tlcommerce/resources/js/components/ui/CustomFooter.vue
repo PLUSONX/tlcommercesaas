@@ -1,10 +1,12 @@
 <template>
   <div class="button-group d-flex align-items-center justify-content-between" v-if="item">
-    <button type="button" class="btn btn_fill btn-xs rounded" @click.prevent="placeOrder">
+    <button type="button" class="btn btn_fill btn-xs rounded" :disabled="disabled"
+      @click.prevent="placeOrder">
       {{ $t("Place Order") }}
     </button>
 
-    <button type="button" class="btn btn_borderd btn-xs rounded" @click.prevent="addToCart">
+    <button type="button" class="btn btn_borderd btn-xs rounded" :disabled="disabled"
+      @click.prevent="addToCart">
       {{ $t("Add To Cart") }}
     </button>
   </div>
@@ -24,7 +26,52 @@ export default {
     quantityValue: {
       type: Number,
       default: 1
-    }
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+  },
+
+  computed: {
+    product_variant() {
+      if (this.item.has_variant == 1 && this.item.selectedVariant) {
+        const output = [];
+        const variant_array = this.item.selectedVariant.split("/");
+        for (let i = 0; i < variant_array.length; i++) {
+          let single_variant = variant_array[i];
+          let single_variant_array = single_variant.split(":");
+          let variant_id = single_variant_array[0];
+          let variant_value_id = single_variant_array[1];
+          let match_variant = this.item.attribute?.find(
+            (attr) => attr.id == variant_id
+          );
+          if (!match_variant) {
+            continue;
+          }
+
+          let variant_name = match_variant.title;
+
+          let match_variant_value = match_variant.options.find(
+            (opt) => opt.id == variant_value_id
+          );
+          let variant_value_name = "";
+          if (variant_name == "Color" || variant_name == "color") {
+            variant_value_name = match_variant_value?.name;
+          } else {
+            variant_value_name = match_variant_value?.title;
+          }
+
+          let variant = variant_name + ":" + variant_value_name;
+
+          output.push(variant);
+        }
+        let text = output.join("/");
+        return text;
+      } else {
+        return null;
+      }
+    },
   },
 
   methods: {
@@ -33,6 +80,9 @@ export default {
      * Place order
      */
     placeOrder() {
+      if (this.disabled) {
+        return;
+      }
       // console.log("-----PlaceOrder method called!!-----");
 
       // console.log("item: ", this.item);
@@ -50,8 +100,8 @@ export default {
         name: this.item.name,
         permalink: this.item.permalink,
         image: image,
-        // variant: this.product_variant,
-        // variant_code: this.product.selectedVariant,
+        variant: this.product_variant,
+        variant_code: this.item.selectedVariant ?? null,
         unitPrice: this.item.price,
         oldPrice: this.item.oldPrice,
         quantity: this.quantityValue ?? this.item.quantity ?? 1,
@@ -82,6 +132,9 @@ export default {
      * Store items to cart
      */
     addToCart() {
+      if (this.disabled) {
+        return;
+      }
 
       // console.log('addToCart called in CustomFooter Vue');
 
@@ -99,8 +152,8 @@ export default {
         name: this.item.name,
         permalink: this.item.permalink,
         image: image,
-        // variant: this.product_variant,
-        // variant_code: this.product.selectedVariant,
+        variant: this.product_variant,
+        variant_code: this.item.selectedVariant ?? null,
         unitPrice: this.item.price,
         oldPrice: this.item.oldPrice,
         quantity: this.quantityValue ?? this.item.quantity ?? 1,

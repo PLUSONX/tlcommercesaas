@@ -18,7 +18,12 @@ const app = createApp(App);
 app.use(store);
 app.use(router);
 app.use(i18n);
-app.use(ToastPlugin);
+app.use(ToastPlugin, {
+  position: 'top-right',
+  duration: 3500,
+  dismissible: true,
+  pauseOnHover: true,
+});
 app.use(VueSocialSharing);
 app.component("base-icon-svg", BaseIconSvg);
 app.component("base-file-input", BaseFileInput);

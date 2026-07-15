@@ -4,11 +4,7 @@
       scrollable
       :visible="visibleQuickView"
       size="lg"
-      @close="
-        () => {
-          visibleQuickView = false;
-        }
-      "
+      @close="close"
     >
       <CModalHeader>
         <button class="btn-circle bg-black size-35" @click="close()">
@@ -17,7 +13,7 @@
       </CModalHeader>
 
       <CModalBody>
-        <div class="row">
+        <div class="row" v-if="visibleQuickView && product.id">
           <div class="col-lg-6 mb-30 mb-lg-0">
             <details-gallery
               :id="product.id"
@@ -30,7 +26,9 @@
 
           <div class="col-lg-6">
             <details-content
+              v-if="visibleQuickView && product.id"
               :product="product"
+              :force-show-actions="true"
               @color-variant-images="colorVariantImages"
             />
           </div>
@@ -108,7 +106,6 @@ export default {
      * Color variant gallery images
      */
     colorVariantImages(color_id) {
-      this.$store.dispatch("showPreloader", true);
       this.galleryKey = this.galleryKey + 1;
       axios
         .post("/api/v1/ecommerce-core/color-variant-images", {
@@ -118,17 +115,14 @@ export default {
         .then((response) => {
           if (response.data.success) {
             this.product.galleryImages = response.data.images;
-            this.$store.dispatch("showPreloader", false);
-          } else {
-            this.$store.dispatch("showPreloader", false);
           }
         })
         .catch((error) => {
-          this.$store.dispatch("showPreloader", false);
         });
     },
     close() {
       this.visibleQuickView = false;
+      this.product = {};
     },
   },
 };

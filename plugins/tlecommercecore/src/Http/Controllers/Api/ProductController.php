@@ -354,22 +354,42 @@ class ProductController extends Controller
     public function singleVariantInfo(Request $request)
     {
         try {
-            $old_variant_array = explode('/', $request->variant);
+            $old_variant_array = array_filter(explode('/', $request->variant));
             $new_variant_array = [];
+            $choice_matched = false;
             foreach ($old_variant_array as $variant) {
                 $item_array = explode(':', $variant);
                 $choice = $item_array[0];
-                if ($choice == $request->choice) {
+                if ((string) $choice === (string) $request->choice) {
                     $new_variant = $choice . ':' . $request->option;
                     array_push($new_variant_array, $new_variant);
+                    $choice_matched = true;
                 } else {
                     array_push($new_variant_array, $variant);
                 }
             }
-            $new_variant = implode('/', $new_variant_array);
+            // Client already sent the full optimistic code — if choice was already applied, keep it
+            if (!$choice_matched && $request->choice !== null && $request->option !== null) {
+                array_push($new_variant_array, $request->choice . ':' . $request->option);
+            }
+            $new_variant = rtrim(implode('/', $new_variant_array), '/');
 
             $m_variant = $new_variant;
-            $variant_info = VariantProductPrice::where('product_id', $request->id)->where('variant', $m_variant)->select('unit_price', 'quantity')->first();
+            $variant_info = VariantProductPrice::where('product_id', $request->id)
+                ->where(function ($q) use ($m_variant) {
+                    $q->where('variant', $m_variant)
+                        ->orWhere('variant', $m_variant . '/');
+                })
+                ->select('unit_price', 'quantity')
+                ->first();
+
+            if ($variant_info == null) {
+                return response()->json(
+                    [
+                        'success' => false,
+                    ]
+                );
+            }
 
             $product_info = Product::where('id', $request->id)->select('id', 'discount_amount', 'discount_type')->first();
             $applicable_discount = $product_info->applicableDiscount();

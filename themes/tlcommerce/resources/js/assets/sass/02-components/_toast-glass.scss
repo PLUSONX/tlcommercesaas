@@ -1,0 +1,228 @@
+// Apple-inspired frosted glass toasts (overrides vue-toast-notification theme-sugar)
+
+.v-toast {
+  padding: 1.25em 1.5em;
+  z-index: 1090;
+
+  @media screen and (max-width: 768px) {
+    padding: 0.75em;
+  }
+}
+
+.v-toast__item {
+  position: relative;
+  align-items: center;
+  max-width: min(420px, calc(100vw - 1.5em));
+  min-height: 0;
+  margin: 0.4em 0;
+  padding: 0.65em 0.85em 0.65em 0.75em;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.04),
+    0 8px 28px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+  color: #1d1d1f;
+  opacity: 1;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.35;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 180ms ease, box-shadow 180ms ease, opacity 150ms ease;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 16px 0 0 16px;
+    background: currentColor;
+    opacity: 0.55;
+  }
+
+  &:hover {
+    box-shadow:
+      0 0 0 0.5px rgba(0, 0, 0, 0.05),
+      0 12px 36px rgba(0, 0, 0, 0.14),
+      0 3px 10px rgba(0, 0, 0, 0.07);
+  }
+
+  .v-toast__icon {
+    display: block;
+    flex-shrink: 0;
+    width: 22px;
+    min-width: 22px;
+    height: 22px;
+    margin-left: 0.15em;
+    margin-right: 0;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .v-toast__text {
+    flex: 1;
+    margin: 0;
+    padding: 0.15em 0.65em 0.15em 0.7em;
+    word-break: break-word;
+    color: inherit;
+
+    // HTML injections (e.g. "View Cart" link from cart mutation)
+    a {
+      display: inline;
+      margin-left: 0.35em;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      color: #0071e3;
+      font-size: inherit;
+      font-weight: 600;
+      line-height: inherit;
+      text-decoration: none;
+      white-space: nowrap;
+      vertical-align: baseline;
+
+      &:hover,
+      &:focus {
+        color: #0077ed;
+        text-decoration: underline;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      &.btn,
+      &.btn-sm {
+        display: inline;
+        margin: 0 0 0 0.35em !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        color: #0071e3 !important;
+        font-size: inherit !important;
+        font-weight: 600 !important;
+        line-height: inherit !important;
+      }
+    }
+  }
+
+  // Soft type washes + tinted icons (not solid candy colors)
+  &.v-toast__item--success {
+    background: rgba(236, 251, 243, 0.82);
+    color: #1d1d1f;
+    border-color: rgba(52, 199, 89, 0.22);
+
+    &::before {
+      background: #34c759;
+      opacity: 1;
+    }
+
+    .v-toast__icon {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='12' r='10' fill='%2334C759'/%3E%3Cpath d='M7.5 12.5l3 3 6-6.5' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    }
+  }
+
+  &.v-toast__item--error {
+    background: rgba(255, 241, 240, 0.85);
+    color: #1d1d1f;
+    border-color: rgba(255, 59, 48, 0.22);
+
+    &::before {
+      background: #ff3b30;
+      opacity: 1;
+    }
+
+    .v-toast__icon {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23FF3B30'/%3E%3Cpath d='M8.5 8.5l7 7M15.5 8.5l-7 7' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    }
+  }
+
+  &.v-toast__item--info {
+    background: rgba(240, 247, 255, 0.85);
+    color: #1d1d1f;
+    border-color: rgba(0, 122, 255, 0.22);
+
+    &::before {
+      background: #007aff;
+      opacity: 1;
+    }
+
+    .v-toast__icon {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23007AFF'/%3E%3Cpath d='M12 10.5v5.5M12 7.75h.01' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
+    }
+  }
+
+  &.v-toast__item--warning {
+    background: rgba(255, 250, 235, 0.88);
+    color: #1d1d1f;
+    border-color: rgba(255, 149, 0, 0.28);
+
+    &::before {
+      background: #ff9500;
+      opacity: 1;
+    }
+
+    .v-toast__icon {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23FF9500'/%3E%3Cpath d='M12 7.5v6M12 16.25h.01' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
+    }
+  }
+
+  &.v-toast__item--default {
+    background: rgba(255, 255, 255, 0.78);
+    color: #1d1d1f;
+    border-color: rgba(0, 0, 0, 0.08);
+
+    &::before {
+      background: #8e8e93;
+      opacity: 1;
+    }
+
+    .v-toast__icon {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='12' r='10' fill='%238E8E93'/%3E%3Cpath d='M12 10.5v5.5M12 7.75h.01' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E");
+    }
+  }
+}
+
+[dir="rtl"] .v-toast__item {
+  &::before {
+    left: auto;
+    right: 0;
+    border-radius: 0 16px 16px 0;
+  }
+
+  .v-toast__icon {
+    margin-left: 0;
+    margin-right: 0.15em;
+  }
+
+  .v-toast__text a {
+    margin-left: 0;
+    margin-right: 0.35em;
+
+    &.btn,
+    &.btn-sm {
+      margin: 0 0.35em 0 0 !important;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .v-toast__item {
+    max-width: 100%;
+    width: 100%;
+    align-self: stretch !important;
+    border-radius: 14px;
+  }
+}

@@ -81,11 +81,13 @@
 
           <!-- Option List -->
           <div class="checkbox-group d-flex flex-wrap">
-            <div v-for="(option, j) in attr.options" :key="j">
-              <label class="custom-checkbox--two position-relative" :for="`${attr.title}-option-${j + 1}`">
-                <input :id="`${attr.title}-option-${j + 1}`" type="radio" :name="`product_${attr.title}`"
-                  :value="option" :checked="attr.options[j].id == attr.options[0].id"
-                  v-on:change="updateSelectedVariant(option)" />
+            <div v-for="(option, j) in attr.options" :key="option.id">
+              <label class="custom-checkbox--two position-relative"
+                :for="`p${product.id}-${attr.id}-option-${option.id}`">
+                <input :id="`p${product.id}-${attr.id}-option-${option.id}`" type="radio"
+                  :name="`product_${product.id}_${attr.id}`" :value="option"
+                  :checked="isOptionSelected(attr, option)"
+                  v-on:change="updateSelectedVariant(attr, option)" />
 
                 <template v-if="attr.title == 'color'">
                   <span class="checkmark p-0" :style="{
@@ -178,12 +180,14 @@
     <div class="product-details-action-area" v-if="!showSplitProductFooter">
       <div class="button-group d-flex align-items-center flex-wrap gap-3">
         <!--Place order button-->
-        <button type="button" class="btn btn_fill" :disabled="product.quantity < 1" @click.prevent="placeOrder">
+        <button type="button" class="btn btn_fill" :disabled="product.quantity < 1 || variantUpdating"
+          @click.prevent="placeOrder">
           {{ $t("Place Order") }}
         </button>
         <!--End place order button-->
         <!--Add to cart button-->
-        <button type="button" :disabled="product.quantity < 1" class="btn btn_borderd" @click.prevent="addToCart">
+        <button type="button" :disabled="product.quantity < 1 || variantUpdating" class="btn btn_borderd"
+          @click.prevent="addToCart">
           {{ $t("Add To Cart") }}
         </button>
         <!--End add to cart button-->
@@ -230,7 +234,7 @@ import Countdown from "../ui/Countdown.vue";
 import { mapState, mapGetters } from "vuex";
 import enums from "../../enums/enums";
 export default {
-  emits: ["goto-section", "color-variant-images"],
+  emits: ["goto-section", "color-variant-images", "variant-updating", "quantity-change"],
   components: {
     Countdown,
   },
@@ -239,12 +243,17 @@ export default {
       type: Object,
       required: true,
     },
+    forceShowActions: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
       enums: enums,
       errors: [],
       attachment: null,
+      variantUpdating: false,
       quantityValue:
         this.product.min_item_on_purchase != null &&
           this.product.min_item_on_purchase > 0
@@ -269,6 +278,10 @@ export default {
             (item) => item.id == variant_id
           );
 
+          if (!match_variant) {
+            continue;
+          }
+
           let variant_name = match_variant.title;
 
           let match_variant_value = match_variant.options.find(
@@ -276,9 +289,9 @@ export default {
           );
           let variant_value_name = "";
           if (variant_name == "Color" || variant_name == "color") {
-            variant_value_name = match_variant_value.name;
+            variant_value_name = match_variant_value?.name;
           } else {
-            variant_value_name = match_variant_value.title;
+            variant_value_name = match_variant_value?.title;
           }
 
           let variant = variant_name + ":" + variant_value_name;
@@ -313,6 +326,7 @@ export default {
     },
 
     showSplitProductFooter() {
+      if (this.forceShowActions) return false;
       return this.isSplitScreen || this.isMobile;
     },
 
@@ -329,7 +343,11 @@ export default {
         this.quantityValue = parseInt(this.max_qty);
       }
       this.quantityValue = parseInt(this.quantityValue);
+      this.$emit("quantity-change", this.quantityValue);
     },
+  },
+  mounted() {
+    this.$emit("quantity-change", this.quantityValue);
   },
   methods: {
 
@@ -348,19 +366,43 @@ export default {
       this.$emit("color-variant-images", color_id);
     },
     /**
+     * Apply chosen option to selectedVariant immediately (optimistic)
+     */
+    applyOptionToSelectedVariant(attr, option) {
+      const key = String(attr.id);
+      const parts = (this.product.selectedVariant || "")
+        .split("/")
+        .filter(Boolean);
+      let found = false;
+      const next = parts.map((p) => {
+        const [c] = p.split(":");
+        if (String(c) === key) {
+          found = true;
+          return `${c}:${option.id}`;
+        }
+        return p;
+      });
+      if (!found) next.push(`${key}:${option.id}`);
+      this.product.selectedVariant = next.join("/");
+    },
+    /**
      * Get product variant price
      *
      */
-    updateSelectedVariant(item) {
-      if (item.parent == "color") {
-        this.colorVariantImages(item.id);
+    updateSelectedVariant(attr, option) {
+      if (attr.id == "color" || attr.title == "color") {
+        this.colorVariantImages(option.id);
       }
+      this.applyOptionToSelectedVariant(attr, option);
+      this.variantUpdating = true;
+      this.$emit("variant-updating", true);
+      this.$store.dispatch("showPreloader", true);
       axios
         .post("/api/v1/ecommerce-core/single-variant-info", {
           id: this.product.id,
           variant: this.product.selectedVariant,
-          choice: item.parent,
-          option: item.id,
+          choice: attr.id,
+          option: option.id,
         })
         .then((response) => {
           if (response.data.success) {
@@ -368,47 +410,39 @@ export default {
             this.product.selectedVariant = response.data.new_variant;
             this.product.quantity = response.data.quantity;
             this.product.oldPrice = response.data.oldPrice;
-          }
-        })
-        .catch((error) => { });
-    },
-    /**
-     * Add attachment with order
-     */
-    addAttachment() {
-      this.errors = [];
-      let formData = new FormData();
-      formData.append(
-        "attachment_old",
-        this.attachment != null ? this.attachment.file_id : null
-      );
-      formData.append("attachment", this.$refs.attachment.files[0]);
-      axios
-        .post("/api/v1/ecommerce-core/upload-attachment-in-order", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((response) => {
-          if (response.data.success) {
-            this.attachment = response.data.attatchment;
-            this.$toast.success(this.$t("Attachment upload successfully"));
           } else {
-            this.$toast.error(this.$t("Attachment upload failed"));
+            this.$toast.error(this.$t("Something went wrong"));
           }
         })
         .catch((error) => {
-          if (error.response.status == 422) {
-            this.errors = error.response.data.errors;
-          } else {
-            this.$toast.error(this.$t("Attachment upload failed"));
-          }
+          this.$toast.error(this.$t("Something went wrong"));
+        })
+        .finally(() => {
+          this.variantUpdating = false;
+          this.$emit("variant-updating", false);
+          this.$store.dispatch("showPreloader", false);
         });
+    },
+    /**
+     * Whether this option is part of the current selectedVariant
+     */
+    isOptionSelected(attr, option) {
+      if (!this.product.selectedVariant) {
+        return attr.options[0] && attr.options[0].id == option.id;
+      }
+      const parts = this.product.selectedVariant.split("/");
+      const key = String(attr.id);
+      const match = parts.find((p) => p.split(":")[0] == key);
+      if (!match) return false;
+      return match.split(":")[1] == String(option.id);
     },
     /**
      * Place order
      */
     placeOrder() {
+      if (this.variantUpdating) {
+        return;
+      }
       let image = "";
       if (this.product.galleryImages[0].type == "image") {
         image = this.product.galleryImages[0].regular;
@@ -445,6 +479,9 @@ export default {
      * Store items to cart
      */
     addToCart() {
+      if (this.variantUpdating) {
+        return;
+      }
       let image = "";
       if (this.product.galleryImages[0].type == "image") {
         image = this.product.galleryImages[0].regular;
@@ -473,6 +510,39 @@ export default {
       };
 
       this.$store.dispatch("addToCart", cart_item);
+    },
+    /**
+     * Add attachment with order
+     */
+    addAttachment() {
+      this.errors = [];
+      let formData = new FormData();
+      formData.append(
+        "attachment_old",
+        this.attachment != null ? this.attachment.file_id : null
+      );
+      formData.append("attachment", this.$refs.attachment.files[0]);
+      axios
+        .post("/api/v1/ecommerce-core/upload-attachment-in-order", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => {
+          if (response.data.success) {
+            this.attachment = response.data.attatchment;
+            this.$toast.success(this.$t("Attachment upload successfully"));
+          } else {
+            this.$toast.error(this.$t("Attachment upload failed"));
+          }
+        })
+        .catch((error) => {
+          if (error.response.status == 422) {
+            this.errors = error.response.data.errors;
+          } else {
+            this.$toast.error(this.$t("Attachment upload failed"));
+          }
+        });
     },
     /**
      * Add to wishlist

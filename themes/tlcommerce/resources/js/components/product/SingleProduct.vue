@@ -74,12 +74,12 @@
         <div class="button-group d-flex align-items-center justify-content-between">
 
           <button type="button" class="btn btn_fill btn-xs rounded" :disabled="item.quantity < 1"
-            @click.prevent="placeOrder">
+            @click.prevent="handlePlaceOrderButton">
             {{ $t("Place Order") }}
           </button>
 
           <button type="button" :disabled="item.quantity < 1" class="btn btn_borderd btn-xs rounded"
-            @click.prevent="addToCart">
+            @click.prevent="handleAddToCartButton">
             {{ $t("Add To Cart") }}
           </button>
         </div>
@@ -88,11 +88,7 @@
       <!-- End Summary -->
       <!-- Quick View Modal -->
       <teleport to="body">
-        <CModal scrollable :visible="visibleQuickView" size="lg" @close="
-          () => {
-            visibleQuickView = false;
-          }
-        ">
+        <CModal scrollable :visible="visibleQuickView" size="lg" @close="close">
           <CModalHeader>
             <button class="btn-circle bg-black size-35" @click="close()">
               <base-icon-svg name="close" :width="10" :height="10" />
@@ -100,7 +96,7 @@
           </CModalHeader>
 
           <CModalBody>
-            <div class="row">
+            <div class="row" v-if="visibleQuickView && product.id">
               <div class="col-lg-6 mb-30 mb-lg-0">
                 <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
                   :product-name="product.name" :url="product.url" :summary="product.summary"
@@ -108,7 +104,7 @@
               </div>
 
               <div class="col-lg-6">
-                <details-content :product="product" @color-variant-images="colorVariantImages" :key="product.id" />
+                <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true" @color-variant-images="colorVariantImages" :key="product.id" />
               </div>
             </div>
           </CModalBody>
@@ -217,11 +213,7 @@
       </CTableDataCell>
       <!-- Quick View Modal -->
       <teleport to="body">
-        <CModal scrollable :visible="visibleQuickView" size="lg" @close="
-          () => {
-            visibleQuickView = false;
-          }
-        ">
+        <CModal scrollable :visible="visibleQuickView" size="lg" @close="close">
           <CModalHeader>
             <button class="btn-circle bg-black size-35" @click="close()">
               <base-icon-svg name="close" :width="10" :height="10" />
@@ -229,7 +221,7 @@
           </CModalHeader>
 
           <CModalBody>
-            <div class="row">
+            <div class="row" v-if="visibleQuickView && product.id">
               <div class="col-lg-6 mb-30 mb-lg-0">
                 <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
                   :product-name="product.name" :url="product.url" :summary="product.summary"
@@ -237,7 +229,7 @@
               </div>
 
               <div class="col-lg-6">
-                <details-content :product="product" @color-variant-images="colorVariantImages" :key="product.id" />
+                <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true" @color-variant-images="colorVariantImages" :key="product.id" />
               </div>
             </div>
           </CModalBody>
@@ -257,11 +249,7 @@
       </button>
       <!-- Quick View Modal -->
       <teleport to="body">
-        <CModal scrollable :visible="visibleQuickView" size="lg" @close="
-          () => {
-            visibleQuickView = false;
-          }
-        ">
+        <CModal scrollable :visible="visibleQuickView" size="lg" @close="close">
           <CModalHeader>
             <button class="btn-circle bg-black size-35" @click="close()">
               <base-icon-svg name="close" :width="10" :height="10" />
@@ -269,7 +257,7 @@
           </CModalHeader>
 
           <CModalBody>
-            <div class="row">
+            <div class="row" v-if="visibleQuickView && product.id">
               <div class="col-lg-6 mb-30 mb-lg-0">
                 <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
                   :product-name="product.name" :url="product.url" :summary="product.summary"
@@ -277,7 +265,7 @@
               </div>
 
               <div class="col-lg-6">
-                <details-content :product="product" @color-variant-images="colorVariantImages" :key="product.id" />
+                <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true" @color-variant-images="colorVariantImages" :key="product.id" />
               </div>
             </div>
           </CModalBody>
@@ -366,11 +354,7 @@
       <!-- End Summary -->
       <!-- Quick View Modal -->
       <teleport to="body">
-        <CModal scrollable :visible="visibleQuickView" size="lg" @close="
-          () => {
-            visibleQuickView = false;
-          }
-        ">
+        <CModal scrollable :visible="visibleQuickView" size="lg" @close="close">
           <CModalHeader>
             <button class="btn-circle bg-black size-35" @click="close()">
               <base-icon-svg name="close" :width="10" :height="10" />
@@ -378,7 +362,7 @@
           </CModalHeader>
 
           <CModalBody>
-            <div class="row">
+            <div class="row" v-if="visibleQuickView && product.id">
               <div class="col-lg-6 mb-30 mb-lg-0">
                 <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
                   :product-name="product.name" :url="product.url" :summary="product.summary"
@@ -386,7 +370,7 @@
               </div>
 
               <div class="col-lg-6">
-                <details-content :product="product" @color-variant-images="colorVariantImages" :key="product.id" />
+                <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true" @color-variant-images="colorVariantImages" :key="product.id" />
               </div>
             </div>
           </CModalBody>
@@ -457,33 +441,33 @@
 
         <div class="button-group d-flex align-items-center justify-content-between">
           <button type="button" class="btn btn_fill btn-xs rounded" :disabled="item.quantity < 1"
-            @click.prevent="placeOrder">
+            @click.prevent="handlePlaceOrderButton">
             {{ $t("Place Order") }}
           </button>
 
           <button type="button" :disabled="item.quantity < 1" class="btn btn_borderd btn-xs rounded"
-            @click.prevent="addToCart">
+            @click.prevent="handleAddToCartButton">
             {{ $t("Add To Cart") }}
           </button>
         </div>
       </div>
 
       <teleport to="body">
-        <CModal scrollable :visible="visibleQuickView" size="lg" @close="() => { visibleQuickView = false; }">
+        <CModal scrollable :visible="visibleQuickView" size="lg" @close="close">
           <CModalHeader>
             <button class="btn-circle bg-black size-35" @click="close()">
               <base-icon-svg name="close" :width="10" :height="10" />
             </button>
           </CModalHeader>
           <CModalBody>
-            <div class="row">
+            <div class="row" v-if="visibleQuickView && product.id">
               <div class="col-lg-6 mb-30 mb-lg-0">
                 <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
                   :product-name="product.name" :url="product.url" :summary="product.summary"
                   :networks="product.shareOptions" />
               </div>
               <div class="col-lg-6">
-                <details-content :product="product" @color-variant-images="colorVariantImages" :key="product.id" />
+                <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true" @color-variant-images="colorVariantImages" :key="product.id" />
               </div>
             </div>
           </CModalBody>
@@ -563,21 +547,21 @@
         </span>
       </CTableDataCell>
       <teleport to="body">
-        <CModal scrollable :visible="visibleQuickView" size="lg" @close="() => { visibleQuickView = false; }">
+        <CModal scrollable :visible="visibleQuickView" size="lg" @close="close">
           <CModalHeader>
             <button class="btn-circle bg-black size-35" @click="close()">
               <base-icon-svg name="close" :width="10" :height="10" />
             </button>
           </CModalHeader>
           <CModalBody>
-            <div class="row">
+            <div class="row" v-if="visibleQuickView && product.id">
               <div class="col-lg-6 mb-30 mb-lg-0">
                 <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
                   :product-name="product.name" :url="product.url" :summary="product.summary"
                   :networks="product.shareOptions" />
               </div>
               <div class="col-lg-6">
-                <details-content :product="product" @color-variant-images="colorVariantImages" :key="product.id" />
+                <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true" @color-variant-images="colorVariantImages" :key="product.id" />
               </div>
             </div>
           </CModalBody>
@@ -593,21 +577,21 @@
         {{ $t("Add To Cart") }}
       </button>
       <teleport to="body">
-        <CModal scrollable :visible="visibleQuickView" size="lg" @close="() => { visibleQuickView = false; }">
+        <CModal scrollable :visible="visibleQuickView" size="lg" @close="close">
           <CModalHeader>
             <button class="btn-circle bg-black size-35" @click="close()">
               <base-icon-svg name="close" :width="10" :height="10" />
             </button>
           </CModalHeader>
           <CModalBody>
-            <div class="row">
+            <div class="row" v-if="visibleQuickView && product.id">
               <div class="col-lg-6 mb-30 mb-lg-0">
                 <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
                   :product-name="product.name" :url="product.url" :summary="product.summary"
                   :networks="product.shareOptions" />
               </div>
               <div class="col-lg-6">
-                <details-content :product="product" @color-variant-images="colorVariantImages" :key="product.id" />
+                <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true" @color-variant-images="colorVariantImages" :key="product.id" />
               </div>
             </div>
           </CModalBody>
@@ -673,21 +657,21 @@
       </div>
 
       <teleport to="body">
-        <CModal scrollable :visible="visibleQuickView" size="lg" @close="() => { visibleQuickView = false; }">
+        <CModal scrollable :visible="visibleQuickView" size="lg" @close="close">
           <CModalHeader>
             <button class="btn-circle bg-black size-35" @click="close()">
               <base-icon-svg name="close" :width="10" :height="10" />
             </button>
           </CModalHeader>
           <CModalBody>
-            <div class="row">
+            <div class="row" v-if="visibleQuickView && product.id">
               <div class="col-lg-6 mb-30 mb-lg-0">
                 <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
                   :product-name="product.name" :url="product.url" :summary="product.summary"
                   :networks="product.shareOptions" />
               </div>
               <div class="col-lg-6">
-                <details-content :product="product" @color-variant-images="colorVariantImages" :key="product.id" />
+                <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true" @color-variant-images="colorVariantImages" :key="product.id" />
               </div>
             </div>
           </CModalBody>
@@ -906,6 +890,28 @@ export default {
       }
     },
     /**
+     * styleEight Add to Cart — variants open quick view first
+     */
+    handleAddToCartButton(event) {
+      event.preventDefault();
+      if (this.item.has_variant == 2) {
+        this.addToCart();
+      } else {
+        this.productQuickView();
+      }
+    },
+    /**
+     * styleEight Place Order — variants open quick view first
+     */
+    handlePlaceOrderButton(event) {
+      event.preventDefault();
+      if (this.item.has_variant == 2) {
+        this.placeOrder();
+      } else {
+        this.productQuickView();
+      }
+    },
+    /**
      * Product quick view
      */
     productQuickView() {
@@ -933,7 +939,6 @@ export default {
      * Color variant gallery images
      */
     colorVariantImages(color_id) {
-      this.$store.dispatch("showPreloader", true);
       this.galleryKey = this.galleryKey + 1;
       axios
         .post("/api/v1/ecommerce-core/color-variant-images", {
@@ -943,13 +948,9 @@ export default {
         .then((response) => {
           if (response.data.success) {
             this.product.galleryImages = response.data.images;
-            this.$store.dispatch("showPreloader", false);
-          } else {
-            this.$store.dispatch("showPreloader", false);
           }
         })
         .catch((error) => {
-          this.$store.dispatch("showPreloader", false);
         });
     },
     /**
@@ -1062,6 +1063,7 @@ export default {
     },
     close() {
       this.visibleQuickView = false;
+      this.product = {};
     },
 
 

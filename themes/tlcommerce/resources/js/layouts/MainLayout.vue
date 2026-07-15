@@ -10,6 +10,7 @@
     <!-- <template v-if="isSplitScreen && !isMobile"> -->
     <template v-else-if="isSplitScreen">
       <div class="split-screen-container" :style="containerStyle">
+        <preloader :loading="preloaderLoading"></preloader>
         <div class="split-screen-content" :class="[contentSideClass, 'force-mobile-view']" :style="contentStyle">
           <div class="split-screen-header-sticky"
             :class="{ 'split-screen-header-sticky--compact': isSplitScreen && isMobile }">

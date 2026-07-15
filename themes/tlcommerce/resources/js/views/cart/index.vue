@@ -31,7 +31,7 @@
                 </div>
 
                 <div class="col-12 mb-2 mt-2 px-0 single-package border-bottom" v-for="tdata in tableData"
-                  :key="tdata.id" :class="{
+                  :key="tdata.uid" :class="{
                     disableCart: tdata.is_available == 2,
                   }">
                   <div class="row product-content mb-2">

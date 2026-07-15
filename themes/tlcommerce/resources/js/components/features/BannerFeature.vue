@@ -334,17 +334,17 @@ export default {
 
 .banner-feature__toolbar :deep(.banner-feature__cart.btn-circle .count) {
 
-  width: 10px;
+  width: 18px;
 
-  height: 10px;
+  height: 18px;
 
-  font-size: 12px;
+  font-size: 11px;
 
   line-height: 1;
 
-  right: -4px;
+  right: -6px;
 
-  top: -2px;
+  top: -4px;
 
 }
 

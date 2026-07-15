@@ -415,76 +415,49 @@ class OrderController extends Controller
             //     }
             // }
 
+            // Reset each iteration so fields from a prior line (e.g. variant) cannot leak
+            $temp = [];
             $temp['id'] = $item['id'];
             $temp['uid'] = $item['uid'];
             $temp['name'] = $item['name'];
-            if (!empty($item['permalink'])) {
-                $temp['permalink'] = $item['permalink'];
-            }
+            $temp['permalink'] = !empty($item['permalink']) ? $item['permalink'] : null;
             // $temp['permalink'] = $item['permalink'];
-            if (!empty($item['image'])) {
-                $temp['image'] = $item['image'];
-                
-            }
+            $temp['image'] = !empty($item['image']) ? $item['image'] : null;
 
             //  \Log::info('validateCartItems method middle point!!!!');
             // $temp['image'] = $item['image'];
-            if (!empty($item['variant'])) {
-                $temp['variant'] = $item['variant'];
-            }
+            $temp['variant'] = !empty($item['variant']) ? $item['variant'] : null;
             // $temp['variant'] = $item['variant'];
-            if (!empty($item['variant_code'])) {
-                $temp['variant_code'] = $item['variant_code'];
-            }
+            $temp['variant_code'] = !empty($item['variant_code']) ? $item['variant_code'] : null;
             // $temp['variant_code'] = $item['variant_code'];
 
             // $temp['quantity'] = $item['quantity'];
-            if (!empty($item['quantity'])) {
-                
-                $temp['quantity'] = $item['quantity'];
-            }
+            $temp['quantity'] = !empty($item['quantity']) ? $item['quantity'] : null;
             
             // $temp['unitPrice'] = $item['unitPrice'];
-            if (!empty($item['unitPrice'])) {
-                
-                $temp['unitPrice'] = $item['unitPrice'];
-            }
+            $temp['unitPrice'] = !empty($item['unitPrice']) ? $item['unitPrice'] : null;
 
-            if (!empty($item['oldPrice'])) {
-                $temp['oldPrice'] = $item['oldPrice'];
-            }
+            $temp['oldPrice'] = !empty($item['oldPrice']) ? $item['oldPrice'] : null;
             // $temp['oldPrice'] = $item['oldPrice'];
             // $temp['min_item'] = $item['min_item'];
 
-            if (!empty($item['min_item'])) {
-                $temp['min_item'] = $item['min_item'];
-            }
+            $temp['min_item'] = !empty($item['min_item']) ? $item['min_item'] : null;
 
             // $temp['max_item'] = $item['max_item'];
 
-            if (!empty($item['max_item'])) {
-                $temp['max_item'] = $item['max_item'];
-            }
+            $temp['max_item'] = !empty($item['max_item']) ? $item['max_item'] : null;
 
             // $temp['attachment'] = $attachment;
 
-            if (!empty($item['attachment'])) {
-                $temp['attachment'] = $item['attachment'];
-            }
+            $temp['attachment'] = !empty($attachment) ? $attachment : null;
 
             // $temp['seller'] = $item['seller'];
 
-            if (!empty($item['seller'])) {
-                $temp['seller'] = $item['seller'];
-            }
+            $temp['seller'] = !empty($item['seller']) ? $item['seller'] : null;
 
-            if (!empty($item['shop_name'])) {
-                $temp['shop_name'] = $item['shop_name'];
-            }
+            $temp['shop_name'] = !empty($item['shop_name']) ? $item['shop_name'] : null;
             // $temp['shop_name'] = $item['shop_name'];
-            if (!empty($item['shop_slug'])) {
-                $temp['shop_slug'] = $item['shop_slug'];
-            }
+            $temp['shop_slug'] = !empty($item['shop_slug']) ? $item['shop_slug'] : null;
 
             // \Log::info('validateCartItems method validation end!!!!');
 
@@ -511,9 +484,9 @@ class OrderController extends Controller
         $product_details = Product::where('id', $item['id'])->select('supplier', 'id', 'status', 'is_approved', 'has_variant')->first();
 
         //If Product not found
-        // if ($product_details == null) {
-        //     return config('settings.general_status.in_active');
-        // }
+        if ($product_details == null) {
+            return config('settings.general_status.in_active');
+        }
 
         //Check product status
         // if ($product_details->status != config('settings.general_status.active')) {
@@ -533,9 +506,16 @@ class OrderController extends Controller
 
         //check  variant product available stock
         if ($product_details->has_variant == config('tlecommercecore.product_variant.variable')) {
+            $variantCode = $item['variant_code'] ?? null;
+            if (empty($variantCode)) {
+                return config('settings.general_status.in_active');
+            }
+
             $variant_price = VariantProductPrice::where('product_id', $item['id'])
-                ->where('variant', $item['variant_code'])
-                ->orWhere('variant', $item['variant_code'] . '/')
+                ->where(function ($q) use ($variantCode) {
+                    $q->where('variant', $variantCode)
+                        ->orWhere('variant', $variantCode . '/');
+                })
                 ->select('quantity')
                 ->first();
 

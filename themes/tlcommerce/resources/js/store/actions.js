@@ -1,6 +1,5 @@
 import axios from "axios";
 import { useToast } from 'vue-toast-notification';
-import 'vue-toast-notification/dist/theme-sugar.css';
 import router from '../router/index'
 const $toast = useToast();
 export default {
