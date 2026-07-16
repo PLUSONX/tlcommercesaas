@@ -285,23 +285,24 @@ class CarrierRepository
                 $data = $armadaResponse['data'];
 
                 try {
+                    $normalized = $this->normalizeArmadaWebhookPayload(is_array($data) ? $data : []);
 
-                     ShippingCourierOrders::create([
+                    ShippingCourierOrders::create([
                         'order_id'             => $order->id,
                         'shipping_courier_id'  => $courier->id,
-                        'code'                 => $data['code'],
-                        'status'               => $data['status'],
-                        'amount'               => $data['amount'],
-                        'delivery_fee'         => $data['delivery_fee'],
-                        'currency'             => $data['currency'],
-                        'driver_name'          => $data['driver']['name'] ?? null,
-                        'driver_phone'         => $data['driver']['phone'] ?? null,
-                        'driver_latitude'      => $data['driver']['latitude'] ?? null,
-                        'driver_longitude'     => $data['driver']['longitude'] ?? null,
-                        'estimated_distance'   => $data['logistics']['estimated_distance'] ?? null,
-                        'estimated_duration'   => $data['logistics']['estimated_duration'] ?? null,
-                        'tracking_url'         => $data['logistics']['tracking_url'] ?? null,
-                        'pickup_qr_url'        => $data['logistics']['pickup_qr_url'] ?? null,
+                        'code'                 => $normalized['code'] ?? $normalized['id'] ?? null,
+                        'status'               => $normalized['status'],
+                        'amount'               => $normalized['amount'],
+                        'delivery_fee'         => $normalized['delivery_fee'],
+                        'currency'             => $normalized['currency'],
+                        'driver_name'          => $normalized['driver_name'],
+                        'driver_phone'         => $normalized['driver_phone'],
+                        'driver_latitude'      => $normalized['driver_latitude'],
+                        'driver_longitude'     => $normalized['driver_longitude'],
+                        'estimated_distance'   => $normalized['estimated_distance'],
+                        'estimated_duration'   => $normalized['estimated_duration'],
+                        'tracking_url'         => $normalized['tracking_url'],
+                        'pickup_qr_url'        => $normalized['pickup_qr_url'],
                     ]);
 
                     return true;
@@ -326,74 +327,171 @@ class CarrierRepository
         }
     }
 
-     /**
-     * Will save courier properties
+    /**
+     * Will update courier order from Armada webhook (v0/v1/v2 compatible)
      *
      * @param Object $request
      * @return bool
      */
-    public function updateShippingCourierOrders($request) {
+    public function updateShippingCourierOrders($request)
+    {
         try {
-            $payload = $request->all();
+            $raw = $request->all();
+            $payload = $this->normalizeArmadaWebhookPayload($raw);
 
             Log::info("updateShippingCourierOrders method called:", [
-                    'payload' => $payload
+                'payload' => $raw,
+                'normalized' => $payload,
+            ]);
+
+            // Armada dashboard "Send delivery test" uses a canned body — acknowledge without DB work.
+            if (($payload['code'] ?? null) === 'TEST123') {
+                Log::info("Armada Test Webhook (TEST123) acknowledged successfully.");
+                return true;
+            }
+
+            $shippingCourierOrder = $this->findShippingCourierOrder($payload);
+
+            if (!$shippingCourierOrder) {
+                Log::warning("Courier Order Update: No record found", [
+                    'code' => $payload['code'] ?? null,
+                    'id' => $payload['id'] ?? null,
+                    'reference' => $payload['reference'] ?? null,
                 ]);
+                // Return true so Armada gets 2xx and does not retry on unknown/test codes.
+                return true;
+            }
 
-            // Handle Armada's test payload specifically
-        // if (isset($payload['code']) && $payload['code'] === 'TEST123') {
-        //     Log::info("Armada Test Webhook (TEST123) acknowledged successfully.");
-        //     return true; 
-        // }
-
-            ShippingCourierOrders::where('code', $payload['code'])->update([
+            $updateData = array_filter([
                 'status'             => $payload['status'],
                 'amount'             => $payload['amount'],
                 'delivery_fee'       => $payload['delivery_fee'],
-                'estimated_distance' => $payload['logistics']['estimated_distance'] ?? null,
-                'estimated_duration' => $payload['logistics']['estimated_duration'] ?? null,
-                'tracking_url'       => $payload['logistics']['tracking_url'] ?? null,
-                'pickup_qr_url'      => $payload['logistics']['pickup_qr_url'] ?? null,
-            ]);
+                'estimated_distance' => $payload['estimated_distance'],
+                'estimated_duration' => $payload['estimated_duration'],
+                'tracking_url'       => $payload['tracking_url'],
+                'pickup_qr_url'      => $payload['pickup_qr_url'],
+                'driver_name'        => $payload['driver_name'],
+                'driver_phone'       => $payload['driver_phone'],
+                'driver_latitude'    => $payload['driver_latitude'],
+                'driver_longitude'   => $payload['driver_longitude'],
+            ], static function ($value) {
+                return $value !== null;
+            });
 
-            $shippingCourierOrder =  ShippingCourierOrders::where('code', $payload['code'])->first();
-
-            if (!$shippingCourierOrder) {
-                Log::error("Courier Order Update: No record found for code " . $payload['code']);
-                return false;
+            if (!empty($updateData)) {
+                $shippingCourierOrder->update($updateData);
             }
 
             $order = Orders::where('id', $shippingCourierOrder->order_id)->first();
 
             if (!$order) {
-                Log::error("Courier Order Update: No order found for id " . $shippingCourierOrder->order_id);
-                return false;
+                Log::warning("Courier Order Update: No order found for id " . $shippingCourierOrder->order_id);
+                return true;
             }
 
-            //Send notification to admin
             $link = '/orders/order-details/' . $shippingCourierOrder->order_id;
-            $message =  "Update received from courier, Order code " . $order->order_code;
+            $message = "Update received from courier, Order code " . $order->order_code;
             $data = [
                 'message' => $message,
-                'link' => $link
+                'link' => $link,
             ];
 
-            $admins = User::where('user_type', config('tlecommercecore.user_type.admin'))->where('status', config('settings.general_status.active'))->get();
+            $admins = User::where('user_type', config('tlecommercecore.user_type.admin'))
+                ->where('status', config('settings.general_status.active'))
+                ->get();
 
-            if ($admins != null) {
-                
-                $notification = new CourierOrderUpdateNotification($data);
-
-                Notification::send($admins, $notification);
-
+            if ($admins->isNotEmpty()) {
+                Notification::send($admins, new CourierOrderUpdateNotification($data));
             }
 
             return true;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             Log::error("Courier Order Update failure: " . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Normalize Armada v0 / v1 / v2 create + webhook bodies to one internal shape.
+     *
+     * @param array $payload
+     * @return array
+     */
+    private function normalizeArmadaWebhookPayload(array $payload): array
+    {
+        $logistics = is_array($payload['logistics'] ?? null) ? $payload['logistics'] : [];
+        $driver = is_array($payload['driver'] ?? null) ? $payload['driver'] : [];
+        $driverLocation = is_array($payload['driverLocation'] ?? null) ? $payload['driverLocation'] : [];
+
+        return [
+            'id' => $payload['id'] ?? null,
+            'code' => $payload['code'] ?? null,
+            'reference' => $payload['reference'] ?? null,
+            'status' => $payload['status'] ?? $payload['orderStatus'] ?? null,
+            'amount' => $payload['amount'] ?? null,
+            'delivery_fee' => $payload['delivery_fee'] ?? $payload['deliveryFee'] ?? null,
+            'currency' => $payload['currency'] ?? null,
+            'estimated_distance' => $logistics['estimated_distance']
+                ?? $payload['distance']
+                ?? $payload['estimatedDistance']
+                ?? null,
+            'estimated_duration' => $logistics['estimated_duration']
+                ?? $payload['duration']
+                ?? $payload['estimatedDuration']
+                ?? null,
+            'tracking_url' => $logistics['tracking_url']
+                ?? $payload['trackingLink']
+                ?? $payload['tracking_url']
+                ?? null,
+            'pickup_qr_url' => $logistics['pickup_qr_url']
+                ?? $payload['qrCodeLink']
+                ?? $payload['pickup_qr_url']
+                ?? null,
+            'driver_name' => $driver['name'] ?? $payload['driverName'] ?? null,
+            'driver_phone' => $driver['phone']
+                ?? $driver['phoneNumber']
+                ?? $payload['driverPhone']
+                ?? null,
+            'driver_latitude' => $driver['latitude']
+                ?? $driverLocation['latitude']
+                ?? null,
+            'driver_longitude' => $driver['longitude']
+                ?? $driverLocation['longitude']
+                ?? null,
+        ];
+    }
+
+    /**
+     * Resolve ShippingCourierOrders from webhook identity fields.
+     *
+     * @param array $payload Normalized payload
+     * @return ShippingCourierOrders|null
+     */
+    private function findShippingCourierOrder(array $payload)
+    {
+        if (!empty($payload['code'])) {
+            $row = ShippingCourierOrders::where('code', $payload['code'])->first();
+            if ($row) {
+                return $row;
+            }
+        }
+
+        // Create may have stored v2 delivery id as code when short code was absent.
+        if (!empty($payload['id'])) {
+            $row = ShippingCourierOrders::where('code', $payload['id'])->first();
+            if ($row) {
+                return $row;
+            }
+        }
+
+        if (!empty($payload['reference'])) {
+            $order = Orders::where('order_code', $payload['reference'])->first();
+            if ($order) {
+                return ShippingCourierOrders::where('order_id', $order->id)->first();
+            }
+        }
+
+        return null;
     }
 
     /**
