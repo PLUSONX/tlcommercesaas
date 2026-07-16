@@ -22,7 +22,11 @@ class ArmadaService {
 
         try {
             // FAIL-SAFE 1: Validate Required Courier Properties
-            if (!isset($courier->properties->api_key) || !isset($courier->properties->api_secret)) {
+            $apiKey = trim((string) ($courier->properties->api_key ?? ''));
+            $apiSecret = trim((string) ($courier->properties->api_secret ?? ''));
+            $branchId = trim((string) ($courier->properties->branch_id ?? ''));
+
+            if ($apiKey === '' || $apiSecret === '') {
                 Log::error("Armada: Missing API credentials for courier ID: {$courier->id}");
                 return ['success' => false, 'message' => translate('Courier configuration is incomplete.')];
             }
@@ -46,18 +50,18 @@ class ArmadaService {
             $orderData = [
                 'reference' => (string) $order->order_code,
                 'origin_format' => 'branch_format',
-                'origin' => ['branch_id' => $courier->properties->branch_id],
+                'origin' => ['branch_id' => $branchId],
                 'destination_format' => 'location_format',
                 'destination' => [
                     'contact_name'  => (string) $address->name,
                     'contact_phone' => (string) $address->phone,
                     'latitude'      => (float) $coordinates["lat"],
                     'longitude'     => (float) $coordinates["lng"],
-                    'address'       => (string) $address->address,
+                    'first_line'    => (string) $address->address,
                 ],
                 'payment' => [
-                    'amount' => (float) $order->total_payable_amount, 
-                    'type'   => $order->payment_status == 1 ? 'paid' : 'unpaid'
+                    'amount' => (float) $order->total_payable_amount,
+                    'type'   => $order->payment_status == config('tlecommercecore.order_payment_status.paid') ? 'paid' : 'cash',
                 ],
             ];
 
@@ -65,23 +69,26 @@ class ArmadaService {
 
             // Generate Signature
             $signature = $this->generateSignature(
-                $courier->properties->api_secret, 
-                $timestamp, 
-                $method, 
-                $path, 
+                $apiSecret,
+                $timestamp,
+                $method,
+                $path,
                 $body
             );
 
             // FAIL-SAFE 4: Network Timeout & Exception Handling
             // We use a timeout so the request doesn't hang the server if Armada is down
+            // Send the exact $body bytes used for signing — Armada rejects mismatched HMAC payloads with 401
             $response = Http::timeout(20)
                 ->withHeaders([
-                    'Authorization'      => 'Key ' . $courier->properties->api_key,
+                    'Authorization'      => 'Key ' . $apiKey,
                     'X-Armada-Timestamp' => $timestamp,
                     'X-Armada-Signature' => $signature,
                     'Content-Type'       => 'application/json',
                     'Accept'             => 'application/json',
-                ])->post($this->baseUrl . $path, $orderData);
+                ])
+                ->withBody($body, 'application/json')
+                ->post($this->baseUrl . $path);
 
             // FAIL-SAFE 5: Handle Non-200 Responses
             if ($response->failed()) {
@@ -89,7 +96,8 @@ class ArmadaService {
                 Log::error("Armada API Refused Request:", [
                     'order' => $order->order_code,
                     'status' => $response->status(),
-                    'response' => $errorData
+                    'response' => $errorData,
+                    'raw_body' => $response->body(),
                 ]);
 
                 return [

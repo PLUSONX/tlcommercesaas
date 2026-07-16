@@ -24,12 +24,22 @@ class ShippingCourierProperties extends Model
         return $this->belongsTo(ShippingCourier::class, 'shipping_courier_id');
     }
 
+    public function setApiKeyAttribute($value)
+    {
+        $this->attributes['api_key'] = trim((string) $value);
+    }
+
+    public function setBranchIdAttribute($value)
+    {
+        $this->attributes['branch_id'] = trim((string) $value);
+    }
+
     /**
      * Automatically encrypt the secret when saving and decrypt when retrieving.
      */
     public function setApiSecretAttribute($value)
     {
-        $this->attributes['api_secret'] = Crypt::encryptString($value);
+        $this->attributes['api_secret'] = Crypt::encryptString(trim((string) $value));
     }
 
     public function getApiSecretAttribute($value)

@@ -9,7 +9,6 @@ use Plugin\TlcommerceCore\Models\ShippingCourier;
 use Plugin\TlcommerceCore\Models\ShippingCourierProperties;
 use Plugin\TlcommerceCore\Models\ShippingCourierOrders;
 use Plugin\TlcommerceCore\Models\Orders;
-use Plugin\TlcommerceCore\Models\CustomerAddress;
 use Plugin\Carrier\Services\ArmadaService;
 use Illuminate\Http\Request;
 use Core\Models\User;
@@ -207,9 +206,9 @@ class CarrierRepository
             ShippingCourierProperties::updateOrCreate(
                 ['shipping_courier_id' => $request->shipping_courier_id], // The search criteria
                 [
-                    'api_key'    => $request->api_key,
-                    'api_secret' => $request->api_secret, // This will be auto-encrypted by your Model mutator
-                    'branch_id'  => $request->branch_id,
+                    'api_key'    => trim((string) $request->api_key),
+                    'api_secret' => trim((string) $request->api_secret), // This will be auto-encrypted by your Model mutator
+                    'branch_id'  => trim((string) $request->branch_id),
                 ]
             );
             DB::commit();
@@ -251,7 +250,7 @@ class CarrierRepository
                 ];
             }
 
-            $order = Orders::where('id', $order_id)->first();
+            $order = Orders::where('id', $order_id)->with('shipping_details.country', 'shipping_details.state', 'shipping_details.city')->first();
 
             if (!$order) {
                 Log::warning("Order not found for ID: " . $order_id);
@@ -262,26 +261,17 @@ class CarrierRepository
 
             Log::info("order data:", ['order' => json_encode($order)]);
 
-            $address = null;
+            $address = $order->shipping_details;
 
-            if($order->customer_id != null) {
-
-                $address = CustomerAddress::with(['country', 'state', 'city'])
-                ->where('customer_id', $order->customer_id)
-                ->first();
-            }
-            else if($order->guest_customer_id != null) {
-
-                $address = CustomerAddress::with(['country', 'state', 'city'])
-                ->where('guest_customer', $order->guest_customer_id)
-                ->first();
-
-                Log::info("address data with relations:", ['address' => $address ? $address->toArray() : 'null']);
-            }
-            else {
-                Log::warning("Order has neither customer_id nor guest_customer_id", ['order_id' => $order_id]);
+            if (!$address) {
+                Log::warning("Shipping address not found for order", [
+                    'order_id' => $order_id,
+                    'shipping_address_id' => $order->shipping_address,
+                ]);
                 return false;
             }
+
+            Log::info("address data with relations:", ['address' => $address->toArray()]);
 
             $armadaResponse = $this->armadaService->createDelivery($courier, $order, $address);
            
