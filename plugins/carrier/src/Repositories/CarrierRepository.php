@@ -203,13 +203,19 @@ class CarrierRepository
         
             Log::info("Courier Properties data:", ['request' => $request->all()]);
 
+            $propertiesData = [
+                'api_key'   => trim((string) $request->api_key),
+                'branch_id' => trim((string) $request->branch_id),
+            ];
+
+            $apiSecret = trim((string) $request->api_secret);
+            if ($apiSecret !== '') {
+                $propertiesData['api_secret'] = $apiSecret; // auto-encrypted by model mutator
+            }
+
             ShippingCourierProperties::updateOrCreate(
-                ['shipping_courier_id' => $request->shipping_courier_id], // The search criteria
-                [
-                    'api_key'    => trim((string) $request->api_key),
-                    'api_secret' => trim((string) $request->api_secret), // This will be auto-encrypted by your Model mutator
-                    'branch_id'  => trim((string) $request->branch_id),
-                ]
+                ['shipping_courier_id' => $request->shipping_courier_id],
+                $propertiesData
             );
             DB::commit();
             return true;

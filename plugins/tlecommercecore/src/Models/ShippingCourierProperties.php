@@ -4,6 +4,7 @@ namespace Plugin\TlcommerceCore\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 
 class ShippingCourierProperties extends Model
 {
@@ -47,6 +48,9 @@ class ShippingCourierProperties extends Model
         try {
             return Crypt::decryptString($value);
         } catch (\Exception $e) {
+            Log::warning('Armada: failed to decrypt api_secret — check APP_KEY or re-save courier credentials', [
+                'shipping_courier_id' => $this->shipping_courier_id ?? null,
+            ]);
             return $value; // Return plain if not encrypted (useful during migration)
         }
     }

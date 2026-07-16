@@ -79,6 +79,7 @@ class ArmadaService {
             // FAIL-SAFE 4: Network Timeout & Exception Handling
             // We use a timeout so the request doesn't hang the server if Armada is down
             // Send the exact $body bytes used for signing — Armada rejects mismatched HMAC payloads with 401
+            // Use send('POST') not post() — Laravel post() injects default [] and overwrites withBody()
             $response = Http::timeout(20)
                 ->withHeaders([
                     'Authorization'      => 'Key ' . $apiKey,
@@ -88,17 +89,26 @@ class ArmadaService {
                     'Accept'             => 'application/json',
                 ])
                 ->withBody($body, 'application/json')
-                ->post($this->baseUrl . $path);
+                ->send('POST', $this->baseUrl . $path);
 
             // FAIL-SAFE 5: Handle Non-200 Responses
             if ($response->failed()) {
                 $errorData = $response->json();
-                Log::error("Armada API Refused Request:", [
+                $logContext = [
                     'order' => $order->order_code,
                     'status' => $response->status(),
                     'response' => $errorData,
                     'raw_body' => $response->body(),
-                ]);
+                ];
+
+                if ($response->status() === 401) {
+                    $logContext['api_key_prefix'] = substr($apiKey, 0, 8);
+                    $logContext['api_secret_length'] = strlen($apiSecret);
+                    $logContext['body_length'] = strlen($body);
+                    $logContext['timestamp'] = $timestamp;
+                }
+
+                Log::error("Armada API Refused Request:", $logContext);
 
                 return [
                     'success' => false,
