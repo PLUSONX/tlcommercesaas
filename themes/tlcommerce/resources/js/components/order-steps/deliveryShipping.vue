@@ -187,6 +187,13 @@
 
           <h5>{{ $t("Personal Information") }}</h5>
           <div class="form-group mb-20 col-lg-6">
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("Your Name") }}
+              <span class="text-danger" v-if="
+                isActivePickupPoint ||
+                config?.enable_personal_info_guest_checkout == enums.status.ACTIVE
+              ">*</span>
+            </label>
             <input type="text" v-bind:placeholder="$t('Your Name')" class="theme-input-style"
               v-model="guestCustomerInfo.name" />
             <div v-for="error in errors" :key="error.customer_name">
@@ -196,6 +203,13 @@
             </div>
           </div>
           <div class="form-group mb-20 col-lg-6">
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("Email") }}
+              <span class="text-danger" v-if="
+                isActivePickupPoint ||
+                config?.enable_personal_info_guest_checkout == enums.status.ACTIVE
+              ">*</span>
+            </label>
             <input type="email" v-bind:placeholder="$t('Email')" v-model="guestCustomerInfo.email"
               class="theme-input-style" />
             <div v-for="error in errors" :key="error.customer_email">
@@ -243,7 +257,10 @@
             <h5>{{ $t("Shipping Details") }}</h5>
           </div>
           <div class="form-group mb-20 col-lg-6" v-if="config?.enable_name_in_checkout == enums.status.ACTIVE">
-
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("Your Name") }}
+              <span class="text-danger" v-if="config?.name_required_in_checkout == enums.status.ACTIVE">*</span>
+            </label>
             <input type="text" v-bind:placeholder="$t('Your Name')" v-model="guestShippingInfo.name"
               class="theme-input-style" />
             <div v-for="error in errors" :key="error.shipping_name">
@@ -253,7 +270,10 @@
             </div>
           </div>
           <div class="form-group mb-20 col-lg-6" v-if="config?.enable_email_in_checkout == enums.status.ACTIVE">
-
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("Email Address") }}
+              <span class="text-danger" v-if="config?.email_required_in_checkout == enums.status.ACTIVE">*</span>
+            </label>
             <input type="email" v-bind:placeholder="$t('Email Address')" v-model="guestShippingInfo.email"
               class="theme-input-style" />
             <div v-for="error in errors" :key="error.shipping_email">
@@ -267,6 +287,9 @@
             v-if="config?.enable_phone_in_checkout == enums.status.ACTIVE"
           > -->
           <div class="form-group mb-20 col-lg-6">
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("Phone Number") }} <span class="text-danger">*</span>
+            </label>
             <input type="tel" v-bind:placeholder="$t('Phone Number')" v-model="guestShippingInfo.phone"
               class="theme-input-style" />
             <div v-for="error in errors" :key="error.shipping_phone">
@@ -280,6 +303,9 @@
             v-if="config?.enable_address_in_checkout == enums.status.ACTIVE"
           > -->
           <div class="form-group mb-20 col-lg-6">
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("Address") }} <span class="text-danger">*</span>
+            </label>
             <input type="text" class="theme-input-style" v-bind:placeholder="$t('Address')"
               v-model="guestShippingInfo.address" />
             <div v-for="error in errors" :key="error.shipping_address">
@@ -293,6 +319,10 @@
             ? 'form-group mb-20 col-lg-12'
             : 'form-group mb-20 col-lg-6'
             ">
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("Postal Code") }}
+              <span class="text-danger" v-if="config?.post_code_required_in_checkout == enums.status.ACTIVE">*</span>
+            </label>
             <input type="text" class="theme-input-style" v-bind:placeholder="$t('Postal Code')"
               v-model="guestShippingInfo.postal_code" />
             <div v-for="error in errors" :key="error.shipping_postal_code">
@@ -306,6 +336,9 @@
             config?.hide_country_state_city_in_checkout !=
             enums.status.ACTIVE && countries.length > 1
           ">
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("Country") }} <span class="text-danger">*</span>
+            </label>
             <v-select :options="countries" v-model="guestShippingInfo.country" label="name"
               :clearable="false"></v-select>
             <div v-for="error in errors" :key="error.shipping_country">
@@ -317,6 +350,9 @@
           <div class="form-group mb-20 col-lg-6" v-if="
             config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
           ">
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("State") }} <span class="text-danger">*</span>
+            </label>
             <v-select :options="guestShippingInfo.states_options" v-model="guestShippingInfo.state" label="name"
               :clearable="false"></v-select>
             <div v-for="error in errors" :key="error.shipping_state">
@@ -328,6 +364,9 @@
           <div class="form-group mb-20 col-lg-6" v-if="
             config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
           ">
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("City") }} <span class="text-danger">*</span>
+            </label>
             <v-select :options="guestShippingInfo.cities_options" v-model="guestShippingInfo.city" label="name"
               :clearable="false" @option:selected="goNextStep"></v-select>
             <div v-for="error in errors" :key="error.shipping_city">
@@ -381,6 +420,9 @@
             <h5>{{ $t("Billing Details") }}</h5>
           </div>
           <div class="form-group mb-20 col-lg-6">
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("Your Name") }} <span class="text-danger">*</span>
+            </label>
             <input type="text" v-bind:placeholder="$t('Your Name')" v-model="guestBillingInfo.name"
               class="theme-input-style" />
             <div v-for="error in errors" :key="error.billing_name">
@@ -390,6 +432,9 @@
             </div>
           </div>
           <div class="form-group mb-20 col-lg-6">
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("Email Address") }} <span class="text-danger">*</span>
+            </label>
             <input type="email" v-bind:placeholder="$t('Email Address')" v-model="guestBillingInfo.email"
               class="theme-input-style" />
             <div v-for="error in errors" :key="error.billing_email">
@@ -399,6 +444,9 @@
             </div>
           </div>
           <div class="form-group mb-20 col-lg-6">
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("Phone Number") }} <span class="text-danger">*</span>
+            </label>
             <input type="tel" v-bind:placeholder="$t('Phone Number')" v-model="guestBillingInfo.phone"
               class="theme-input-style" />
             <div v-for="error in errors" :key="error.billing_phone">
@@ -408,6 +456,9 @@
             </div>
           </div>
           <div class="form-group mb-20 col-lg-6">
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("Address") }} <span class="text-danger">*</span>
+            </label>
             <input type="text" class="theme-input-style" v-bind:placeholder="$t('Address')"
               v-model="guestBillingInfo.address" />
             <div v-for="error in errors" :key="error.billing_address">
@@ -420,6 +471,10 @@
             ? 'form-group mb-20 col-lg-12'
             : 'form-group mb-20 col-lg-6'
             ">
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("Postal Code") }}
+              <span class="text-danger" v-if="config?.post_code_required_in_checkout != 2">*</span>
+            </label>
             <input type="text" class="theme-input-style" v-bind:placeholder="$t('Postal Code')"
               v-model="guestBillingInfo.postal_code" />
             <div v-for="error in errors" :key="error.billing_postal_code">
@@ -431,6 +486,9 @@
           <div class="form-group mb-20 col-lg-6" v-if="
             config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
           ">
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("Country") }} <span class="text-danger">*</span>
+            </label>
             <v-select :options="countries" v-model="guestBillingInfo.country" label="name"
               :clearable="false"></v-select>
             <div v-for="error in errors" :key="error.billing_country">
@@ -442,6 +500,9 @@
           <div class="form-group mb-20 col-lg-6" v-if="
             config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
           ">
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("State") }} <span class="text-danger">*</span>
+            </label>
             <v-select :options="guestBillingInfo.states_options" v-model="guestBillingInfo.state" label="name"
               :clearable="false"></v-select>
             <div v-for="error in errors" :key="error.billing_state">
@@ -453,6 +514,9 @@
           <div class="form-group mb-20 col-lg-6" v-if="
             config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
           ">
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("City") }} <span class="text-danger">*</span>
+            </label>
             <v-select :options="guestBillingInfo.cities_options" v-model="guestBillingInfo.city" :clearable="false"
               label="name"></v-select>
             <div v-for="error in errors" :key="error.billing_city">
@@ -1325,21 +1389,12 @@ export default {
           }
 
           //Phone validation
-          if (
-            !this.guestShippingInfo.phone &&
-            this.config?.enable_phone_in_checkout == this.enums.status.ACTIVE &&
-            this.config?.phone_required_in_checkout == this.enums.status.ACTIVE
-          ) {
+          if (!this.guestShippingInfo.phone) {
             this.errors.push({ shipping_phone: this.$t("Phone is required") });
           }
 
           //address validation
-          if (
-            !this.guestShippingInfo.address &&
-            this.config?.enable_address_in_checkout ==
-            this.enums.status.ACTIVE &&
-            this.config?.address_required_in_checkout == this.enums.status.ACTIVE
-          ) {
+          if (!this.guestShippingInfo.address) {
             this.errors.push({
               shipping_address: this.$t("Address is required"),
             });
