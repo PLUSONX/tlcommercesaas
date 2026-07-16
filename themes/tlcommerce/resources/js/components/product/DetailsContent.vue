@@ -79,46 +79,91 @@
             attr.title
           }}</label>
 
-          <!-- Option List -->
-          <div class="checkbox-group d-flex flex-wrap">
-            <div v-for="(option, j) in attr.options" :key="option.id">
-              <label class="custom-checkbox--two position-relative"
-                :for="`p${product.id}-${attr.id}-option-${option.id}`">
-                <input :id="`p${product.id}-${attr.id}-option-${option.id}`" type="radio"
-                  :name="`product_${product.id}_${attr.id}`" :value="option"
-                  :checked="isOptionSelected(attr, option)"
-                  v-on:change="updateSelectedVariant(attr, option)" />
+          <!-- Option List: split-screen list-cards (desktop + mobile) -->
+          <template v-if="isSplitScreen">
+            <div class="option-list-cards d-flex flex-column">
+              <button
+                v-for="(option, j) in attr.options"
+                :key="option.id"
+                type="button"
+                class="option-list-card text-start"
+                :class="{ 'is-selected': isOptionSelected(attr, option) }"
+                :aria-pressed="isOptionSelected(attr, option)"
+                @click.prevent="updateSelectedVariant(attr, option)"
+              >
 
                 <template v-if="attr.title == 'color'">
-                  <span class="checkmark p-0" :style="{
-                    backgroundColor: option.value,
-                    height: '50px',
-                    width: '50px',
-                  }">
-                    <img :src="cleanImage(option.image)" :alt="`${option.name}`" v-if="option.image" />
-                    <!-- <img
-                      :src="option.image"
-                      :alt="`${option.name}`"
+                  <span
+                    class="option-list-card__swatch"
+                    :style="{ backgroundColor: option.value }"
+                  >
+                    <img
                       v-if="option.image"
-                    /> -->
-                    <p v-else>{{ option.name }}</p>
+                      :src="cleanImage(option.image)"
+                      :alt="`${option.name}`"
+                    />
                   </span>
+                  <span class="option-list-card__label text-capitalize">{{
+                    option.name
+                  }}</span>
                 </template>
 
                 <template v-else-if="attr.title == 'size'">
-                  <span class="checkmark">
-                    <strong class="text-uppercase">{{ option.title }}</strong>
+                  <span class="option-list-card__label text-uppercase">
+                    <strong>{{ option.title }}</strong>
                   </span>
                 </template>
 
                 <template v-else>
-                  <span class="checkmark text-capitalize">
+                  <span class="option-list-card__label text-capitalize">
                     <strong>{{ option.title }}</strong>
                   </span>
                 </template>
-              </label>
+              </button>
             </div>
-          </div>
+          </template>
+          <!-- Option List: default chips -->
+          <template v-else>
+            <div class="checkbox-group d-flex flex-wrap">
+              <div v-for="(option, j) in attr.options" :key="option.id">
+                <label class="custom-checkbox--two position-relative"
+                  :for="`p${product.id}-${attr.id}-option-${option.id}`">
+                  <input :id="`p${product.id}-${attr.id}-option-${option.id}`" type="radio"
+                    :name="`product_${product.id}_${attr.id}`" :value="option"
+                    :checked="isOptionSelected(attr, option)"
+                    v-on:change="updateSelectedVariant(attr, option)" />
+
+                  <template v-if="attr.title == 'color'">
+                    <span class="checkmark p-0" :style="{
+                      backgroundColor: option.value,
+                      height: '50px',
+                      width: '50px',
+                    }">
+                      <img :src="cleanImage(option.image)" :alt="`${option.name}`" v-if="option.image" />
+                      <!-- <img
+                        :src="option.image"
+                        :alt="`${option.name}`"
+                        v-if="option.image"
+                      /> -->
+                      <p v-else>{{ option.name }}</p>
+                    </span>
+                  </template>
+
+                  <template v-else-if="attr.title == 'size'">
+                    <span class="checkmark">
+                      <strong class="text-uppercase">{{ option.title }}</strong>
+                    </span>
+                  </template>
+
+                  <template v-else>
+                    <span class="checkmark text-capitalize">
+                      <strong>{{ option.title }}</strong>
+                    </span>
+                  </template>
+                </label>
+              </div>
+            </div>
+          </template>
           <!-- End Option List -->
         </div>
       </div>
@@ -182,13 +227,21 @@
         <!--Place order button-->
         <button type="button" class="btn btn_fill" :disabled="product.quantity < 1 || variantUpdating"
           @click.prevent="placeOrder">
-          {{ $t("Place Order") }}
+          <span v-if="variantUpdating" class="btn-loading-content">
+            <span class="btn-loader" aria-hidden="true"></span>
+            {{ $t("Please wait") }}
+          </span>
+          <span v-else>{{ $t("Place Order") }}</span>
         </button>
         <!--End place order button-->
         <!--Add to cart button-->
         <button type="button" :disabled="product.quantity < 1 || variantUpdating" class="btn btn_borderd"
           @click.prevent="addToCart">
-          {{ $t("Add To Cart") }}
+          <span v-if="variantUpdating" class="btn-loading-content">
+            <span class="btn-loader" aria-hidden="true"></span>
+            {{ $t("Please wait") }}
+          </span>
+          <span v-else>{{ $t("Add To Cart") }}</span>
         </button>
         <!--End add to cart button-->
         <div class="btn-group-right d-flex flex-md-column align-items-center align-items-md-start">
@@ -326,7 +379,7 @@ export default {
     },
 
     showSplitProductFooter() {
-      if (this.forceShowActions) return false;
+      if (this.forceShowActions && !this.isSplitScreen) return false;
       return this.isSplitScreen || this.isMobile;
     },
 
@@ -396,7 +449,6 @@ export default {
       this.applyOptionToSelectedVariant(attr, option);
       this.variantUpdating = true;
       this.$emit("variant-updating", true);
-      this.$store.dispatch("showPreloader", true);
       axios
         .post("/api/v1/ecommerce-core/single-variant-info", {
           id: this.product.id,
@@ -420,7 +472,6 @@ export default {
         .finally(() => {
           this.variantUpdating = false;
           this.$emit("variant-updating", false);
-          this.$store.dispatch("showPreloader", false);
         });
     },
     /**
@@ -594,6 +645,75 @@ export default {
   line-height: 1;
   margin-bottom: 10px;
   font-family: $title-font;
+}
+
+.btn-loading-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Split-screen attribute list-cards */
+.option-list-cards {
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.option-list-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid #e6e6e6;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+
+  input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  &:hover {
+    border-color: rgba($c1, 0.5);
+    background-color: rgba($c1, 0.04);
+  }
+
+  &.is-selected {
+    border-color: $c1;
+    background-color: rgba($c1, 0.08);
+    box-shadow: 0 0 0 1px $c1;
+  }
+
+  &__swatch {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__label {
+    flex: 1;
+    line-height: 1.3;
+    font-size: 14px;
+  }
 }
 
 .button-group {

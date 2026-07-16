@@ -86,32 +86,7 @@
 
       </div>
       <!-- End Summary -->
-      <!-- Quick View Modal -->
-      <teleport to="body">
-        <CModal scrollable :visible="visibleQuickView" size="lg" @close="close">
-          <CModalHeader>
-            <button class="btn-circle bg-black size-35" @click="close()">
-              <base-icon-svg name="close" :width="10" :height="10" />
-            </button>
-          </CModalHeader>
-
-          <CModalBody>
-            <div class="row" v-if="visibleQuickView && product.id">
-              <div class="col-lg-6 mb-30 mb-lg-0">
-                <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
-                  :product-name="product.name" :url="product.url" :summary="product.summary"
-                  :networks="product.shareOptions" />
-              </div>
-
-              <div class="col-lg-6">
-                <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true" @color-variant-images="colorVariantImages" :key="product.id" />
-              </div>
-            </div>
-          </CModalBody>
-        </CModal>
-      </teleport>
-      <!-- End Quick View Modal -->
-    </div>
+</div>
     <!--End Product Page style-->
 
     <!--Product search style-->
@@ -211,32 +186,7 @@
           <span class="material-icons"> delete </span>
         </span>
       </CTableDataCell>
-      <!-- Quick View Modal -->
-      <teleport to="body">
-        <CModal scrollable :visible="visibleQuickView" size="lg" @close="close">
-          <CModalHeader>
-            <button class="btn-circle bg-black size-35" @click="close()">
-              <base-icon-svg name="close" :width="10" :height="10" />
-            </button>
-          </CModalHeader>
-
-          <CModalBody>
-            <div class="row" v-if="visibleQuickView && product.id">
-              <div class="col-lg-6 mb-30 mb-lg-0">
-                <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
-                  :product-name="product.name" :url="product.url" :summary="product.summary"
-                  :networks="product.shareOptions" />
-              </div>
-
-              <div class="col-lg-6">
-                <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true" @color-variant-images="colorVariantImages" :key="product.id" />
-              </div>
-            </div>
-          </CModalBody>
-        </CModal>
-      </teleport>
-      <!-- End Quick View Modal -->
-    </CTableRow>
+</CTableRow>
     <!-- End Wishlist style-->
 
     <!--Compare page style-->
@@ -247,32 +197,7 @@
         ">
         {{ $t("Add To Cart") }}
       </button>
-      <!-- Quick View Modal -->
-      <teleport to="body">
-        <CModal scrollable :visible="visibleQuickView" size="lg" @close="close">
-          <CModalHeader>
-            <button class="btn-circle bg-black size-35" @click="close()">
-              <base-icon-svg name="close" :width="10" :height="10" />
-            </button>
-          </CModalHeader>
-
-          <CModalBody>
-            <div class="row" v-if="visibleQuickView && product.id">
-              <div class="col-lg-6 mb-30 mb-lg-0">
-                <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
-                  :product-name="product.name" :url="product.url" :summary="product.summary"
-                  :networks="product.shareOptions" />
-              </div>
-
-              <div class="col-lg-6">
-                <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true" @color-variant-images="colorVariantImages" :key="product.id" />
-              </div>
-            </div>
-          </CModalBody>
-        </CModal>
-      </teleport>
-      <!-- End Quick View Modal -->
-    </div>
+</div>
     <!--End compare page style-->
 
     <!--Home page style-->
@@ -352,32 +277,7 @@
         <!-- End Price -->
       </div>
       <!-- End Summary -->
-      <!-- Quick View Modal -->
-      <teleport to="body">
-        <CModal scrollable :visible="visibleQuickView" size="lg" @close="close">
-          <CModalHeader>
-            <button class="btn-circle bg-black size-35" @click="close()">
-              <base-icon-svg name="close" :width="10" :height="10" />
-            </button>
-          </CModalHeader>
-
-          <CModalBody>
-            <div class="row" v-if="visibleQuickView && product.id">
-              <div class="col-lg-6 mb-30 mb-lg-0">
-                <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
-                  :product-name="product.name" :url="product.url" :summary="product.summary"
-                  :networks="product.shareOptions" />
-              </div>
-
-              <div class="col-lg-6">
-                <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true" @color-variant-images="colorVariantImages" :key="product.id" />
-              </div>
-            </div>
-          </CModalBody>
-        </CModal>
-      </teleport>
-      <!-- End Quick View Modal -->
-    </div>
+</div>
     <!--End home page style-->
   </template>
 
@@ -451,29 +351,7 @@
           </button>
         </div>
       </div>
-
-      <teleport to="body">
-        <CModal scrollable :visible="visibleQuickView" size="lg" @close="close">
-          <CModalHeader>
-            <button class="btn-circle bg-black size-35" @click="close()">
-              <base-icon-svg name="close" :width="10" :height="10" />
-            </button>
-          </CModalHeader>
-          <CModalBody>
-            <div class="row" v-if="visibleQuickView && product.id">
-              <div class="col-lg-6 mb-30 mb-lg-0">
-                <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
-                  :product-name="product.name" :url="product.url" :summary="product.summary"
-                  :networks="product.shareOptions" />
-              </div>
-              <div class="col-lg-6">
-                <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true" @color-variant-images="colorVariantImages" :key="product.id" />
-              </div>
-            </div>
-          </CModalBody>
-        </CModal>
-      </teleport>
-    </div>
+</div>
 
     <div class="single-product-item style--eight d-flex flex-column m-0" v-else-if="small">
       <div class="position-relative overflow-hidden d-flex">
@@ -546,28 +424,7 @@
           <span class="material-icons"> delete </span>
         </span>
       </CTableDataCell>
-      <teleport to="body">
-        <CModal scrollable :visible="visibleQuickView" size="lg" @close="close">
-          <CModalHeader>
-            <button class="btn-circle bg-black size-35" @click="close()">
-              <base-icon-svg name="close" :width="10" :height="10" />
-            </button>
-          </CModalHeader>
-          <CModalBody>
-            <div class="row" v-if="visibleQuickView && product.id">
-              <div class="col-lg-6 mb-30 mb-lg-0">
-                <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
-                  :product-name="product.name" :url="product.url" :summary="product.summary"
-                  :networks="product.shareOptions" />
-              </div>
-              <div class="col-lg-6">
-                <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true" @color-variant-images="colorVariantImages" :key="product.id" />
-              </div>
-            </div>
-          </CModalBody>
-        </CModal>
-      </teleport>
-    </CTableRow>
+</CTableRow>
 
     <div class="compare-style-product" v-else-if="compareStyle">
       <button class="btn btn_bordered" v-bind:title="$t('Add To Cart')" :disabled="item.quantity < 1" v-on="item.has_variant == 2
@@ -576,28 +433,7 @@
         ">
         {{ $t("Add To Cart") }}
       </button>
-      <teleport to="body">
-        <CModal scrollable :visible="visibleQuickView" size="lg" @close="close">
-          <CModalHeader>
-            <button class="btn-circle bg-black size-35" @click="close()">
-              <base-icon-svg name="close" :width="10" :height="10" />
-            </button>
-          </CModalHeader>
-          <CModalBody>
-            <div class="row" v-if="visibleQuickView && product.id">
-              <div class="col-lg-6 mb-30 mb-lg-0">
-                <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
-                  :product-name="product.name" :url="product.url" :summary="product.summary"
-                  :networks="product.shareOptions" />
-              </div>
-              <div class="col-lg-6">
-                <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true" @color-variant-images="colorVariantImages" :key="product.id" />
-              </div>
-            </div>
-          </CModalBody>
-        </CModal>
-      </teleport>
-    </div>
+</div>
 
     <div v-else class="single-product-item d-flex flex-column">
       <div class="position-relative overflow-hidden">
@@ -655,35 +491,55 @@
           <the-currency :amount="item.base_price" tag="del" v-if="item.base_price > item.price"></the-currency>
         </span>
       </div>
-
-      <teleport to="body">
-        <CModal scrollable :visible="visibleQuickView" size="lg" @close="close">
-          <CModalHeader>
-            <button class="btn-circle bg-black size-35" @click="close()">
-              <base-icon-svg name="close" :width="10" :height="10" />
-            </button>
-          </CModalHeader>
-          <CModalBody>
-            <div class="row" v-if="visibleQuickView && product.id">
-              <div class="col-lg-6 mb-30 mb-lg-0">
-                <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
-                  :product-name="product.name" :url="product.url" :summary="product.summary"
-                  :networks="product.shareOptions" />
-              </div>
-              <div class="col-lg-6">
-                <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true" @color-variant-images="colorVariantImages" :key="product.id" />
-              </div>
-            </div>
-          </CModalBody>
-        </CModal>
-      </teleport>
-    </div>
+</div>
   </template>
+
+  <!-- Shared Quick View Modal -->
+  <teleport to="body">
+    <CModal scrollable :visible="visibleQuickView" size="lg" @close="close">
+      <CModalHeader>
+        <button class="btn-circle bg-black size-35" @click="close()">
+          <base-icon-svg name="close" :width="10" :height="10" />
+        </button>
+      </CModalHeader>
+
+      <CModalBody :class="{ 'quick-view-modal-body--has-footer': showQuickViewCustomFooter }">
+        <div class="row" v-if="visibleQuickView && product.id">
+          <div class="col-lg-6 mb-30 mb-lg-0">
+            <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
+              :product-name="product.name" :url="product.url" :summary="product.summary"
+              :networks="product.shareOptions" :key="galleryKey" />
+          </div>
+
+          <div class="col-lg-6">
+            <details-content
+              v-if="visibleQuickView && product.id"
+              :product="product"
+              :force-show-actions="true"
+              @color-variant-images="colorVariantImages"
+              @variant-updating="variantUpdating = $event"
+              @quantity-change="orderQuantity = $event"
+              :key="product.id"
+            />
+          </div>
+        </div>
+      </CModalBody>
+
+      <custom-footer
+        v-if="showQuickViewCustomFooter"
+        class="quick-view-custom-footer"
+        :item="product"
+        :quantity-value="orderQuantity"
+        :disabled="variantUpdating"
+      />
+    </CModal>
+  </teleport>
 </template>
 
 <script>
 import DetailsGallery from "@/components/product/DetailsGallery.vue";
 import DetailsContent from "@/components/product/DetailsContent.vue";
+import CustomFooter from "@/components/ui/CustomFooter.vue";
 import VLazyImage from "v-lazy-image";
 const axios = require("axios").default;
 import { mapState, mapGetters } from "vuex";
@@ -708,6 +564,7 @@ export default {
     "v-lazy-image": VLazyImage,
     DetailsGallery,
     DetailsContent,
+    CustomFooter,
     CModal,
     CButton,
     CModalHeader,
@@ -762,6 +619,8 @@ export default {
       visibleQuickView: false,
       product: {},
       galleryKey: 0,
+      variantUpdating: false,
+      orderQuantity: 1,
     };
   },
   computed: {
@@ -783,6 +642,9 @@ export default {
         parseInt(this.item.max_qty) < parseInt(this.item.quantity)
         ? parseInt(this.item.max_qty)
         : this.item.quantity;
+    },
+    showQuickViewCustomFooter() {
+      return this.isSplitScreen && this.visibleQuickView && !!this.product?.id;
     },
   },
   mounted() {
@@ -1064,6 +926,8 @@ export default {
     close() {
       this.visibleQuickView = false;
       this.product = {};
+      this.variantUpdating = false;
+      this.orderQuantity = 1;
     },
 
 
@@ -1072,6 +936,20 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "../../assets/sass/00-abstracts/01-variables";
+
+:deep(.quick-view-modal-body--has-footer) {
+  padding-bottom: 70px;
+}
+
+:deep(.quick-view-custom-footer) {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  background: #fff;
+  border-top: 1px solid #e6e6e6;
+}
 
 .fixed-top {
   z-index: 99 !important;

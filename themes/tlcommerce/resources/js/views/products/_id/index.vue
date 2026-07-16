@@ -791,7 +791,6 @@ export default {
           }
         })
         .catch((error) => {
-          this.product.galleryImages = [];
         });
     },
     goSec(sec) {

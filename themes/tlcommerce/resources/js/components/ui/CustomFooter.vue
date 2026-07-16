@@ -2,12 +2,20 @@
   <div class="button-group d-flex align-items-center justify-content-between" v-if="item">
     <button type="button" class="btn btn_fill btn-xs rounded" :disabled="disabled"
       @click.prevent="placeOrder">
-      {{ $t("Place Order") }}
+      <span v-if="disabled" class="btn-loading-content">
+        <span class="btn-loader" aria-hidden="true"></span>
+        {{ $t("Please wait") }}
+      </span>
+      <span v-else>{{ $t("Place Order") }}</span>
     </button>
 
     <button type="button" class="btn btn_borderd btn-xs rounded" :disabled="disabled"
       @click.prevent="addToCart">
-      {{ $t("Add To Cart") }}
+      <span v-if="disabled" class="btn-loading-content">
+        <span class="btn-loader" aria-hidden="true"></span>
+        {{ $t("Please wait") }}
+      </span>
+      <span v-else>{{ $t("Add To Cart") }}</span>
     </button>
   </div>
 </template>
@@ -206,5 +214,12 @@ export default {
   justify-content: center;
   height: 45px;
   /* Consistent height */
+}
+
+.btn-loading-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 </style>
