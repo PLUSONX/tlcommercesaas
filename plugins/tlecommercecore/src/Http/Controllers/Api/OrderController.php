@@ -17,11 +17,12 @@ use Plugin\TlcommerceCore\Models\Customers;
 use Plugin\TlcommerceCore\Models\ShippingRate;
 use Plugin\Coupon\Models\CouponExcludeProducts;
 use Plugin\TlcommerceCore\Models\PaymentMethods;
+use Plugin\TlcommerceCore\Models\ProductAttribute;
 use Plugin\TlcommerceCore\Models\ShippingZoneCities;
 use Plugin\TlcommerceCore\Models\SingleProductPrice;
-use Plugin\TlcommerceCore\Models\VariantProductPrice;
 use Plugin\TlcommerceCore\Models\ProductHasCategories;
 use Plugin\TlcommerceCore\Repositories\OrderRepository;
+use Plugin\TlcommerceCore\Repositories\ShippingRepository;
 use Plugin\TlcommerceCore\Http\Resources\CityCollection;
 use Plugin\TlcommerceCore\Http\Resources\OrderCollection;
 use Plugin\TlcommerceCore\Http\Resources\StateCollection;
@@ -38,11 +39,13 @@ class OrderController extends Controller
 {
     protected $order_repository;
     protected $payment_method_repository;
+    protected $shipping_repository;
 
-    public function __construct(OrderRepository $order_repository, PaymentMethodRepository $payment_method_repository)
+    public function __construct(OrderRepository $order_repository, PaymentMethodRepository $payment_method_repository, ShippingRepository $shipping_repository)
     {
         $this->order_repository = $order_repository;
         $this->payment_method_repository = $payment_method_repository;
+        $this->shipping_repository = $shipping_repository;
     }
 
 
@@ -284,6 +287,33 @@ class OrderController extends Controller
             );
         }
     }
+
+    /**
+     * Earliest arrival estimate for homepage / location selection.
+     * Prefers location-matched profile rates, else fastest shipping time.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function earliestArrival(Request $request)
+    {
+        try {
+            return response()->json(
+                $this->shipping_repository->earliestArrival(
+                    $request->input('city_id'),
+                    $request->input('state_id')
+                )
+            );
+        } catch (\Exception $e) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'shipping_time' => null,
+                    'source' => null,
+                ]
+            );
+        }
+    }
     /**
      * Will calculate Delivery Cost
      *
@@ -511,13 +541,7 @@ class OrderController extends Controller
                 return config('settings.general_status.in_active');
             }
 
-            $variant_price = VariantProductPrice::where('product_id', $item['id'])
-                ->where(function ($q) use ($variantCode) {
-                    $q->where('variant', $variantCode)
-                        ->orWhere('variant', $variantCode . '/');
-                })
-                ->select('quantity')
-                ->first();
+            $variant_price = ProductAttribute::resolveVariantPrice($item['id'], $variantCode);
 
             if ($variant_price == null) {
                 return config('settings.general_status.in_active');

@@ -97,20 +97,8 @@
                                 <span class="material-icons"> remove </span>
                               </button>
                               <input v-model="tdata.quantity" type="number"
-                                class="border-0 text-center font-weight-bold w-100" @change="
-                                  () => {
-                                    if (tdata.quantity > tdata.max_item) {
-                                      tdata.quantity = tdata.max_item;
-                                    } else if (
-                                      tdata.quantity < tdata.min_item
-                                    ) {
-                                      tdata.quantity = tdata.min_item;
-                                    } else {
-                                      tdata.quantity = parseInt(tdata.quantity);
-                                    }
-                                    updateCartItems(tdata);
-                                  }
-                                " />
+                                class="border-0 text-center font-weight-bold w-100"
+                                @change="clampAndUpdateQuantity(tdata)" />
                               <button
                                 class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
                                 @click.prevent="increase(tdata.uid)">
@@ -643,6 +631,32 @@ export default {
       this.$emit("go-next-step");
     },
     /**
+     * Resolve a usable min purchase qty for cart rows.
+     * Missing/invalid min_item, or min_item >= max_item (CustomFooter bug), fall back to 1.
+     */
+    effectiveMinItem(item) {
+      let minItem = parseInt(item.min_item);
+      if (!minItem || minItem <= 0 || isNaN(minItem)) {
+        minItem = 1;
+      }
+      const maxItem = parseInt(item.max_item);
+      if (!isNaN(maxItem) && minItem >= maxItem) {
+        minItem = 1;
+      }
+      return minItem;
+    },
+    clampAndUpdateQuantity(tdata) {
+      const minItem = this.effectiveMinItem(tdata);
+      if (tdata.quantity > tdata.max_item) {
+        tdata.quantity = tdata.max_item;
+      } else if (tdata.quantity < minItem) {
+        tdata.quantity = minItem;
+      } else {
+        tdata.quantity = parseInt(tdata.quantity);
+      }
+      this.updateCartItems(tdata);
+    },
+    /**
      * Decrease item number from cart
      *
      * @param {*} id
@@ -652,7 +666,8 @@ export default {
       for (let i = 0; i < data.length; i++) {
         const item = data[i];
         if (item.uid === id) {
-          if (item.quantity > 1 && item.quantity > item.min_item) {
+          const minItem = this.effectiveMinItem(item);
+          if (item.quantity > 1 && item.quantity > minItem) {
             item.quantity--;
             this.updateCartItems(item);
           } else {

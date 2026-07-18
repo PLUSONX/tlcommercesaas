@@ -17,6 +17,24 @@ class ProductAttributeRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     *
+     * @return void
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'multi_select' => $this->boolean('multi_select'),
+        ]);
+
+        if (!$this->boolean('multi_select')) {
+            $this->merge([
+                'multi_select_limit' => null,
+            ]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, mixed>
@@ -24,7 +42,9 @@ class ProductAttributeRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required'
+            'name' => 'required',
+            'multi_select' => 'boolean',
+            'multi_select_limit' => 'nullable|required_if:multi_select,1,true|integer|min:1',
         ];
     }
     /**
@@ -35,7 +55,10 @@ class ProductAttributeRequest extends FormRequest
     public function messages()
     {
         return [
-            'name.required' => translate('Name is required')
+            'name.required' => translate('Name is required'),
+            'multi_select_limit.required_if' => translate('Multi select limit is required'),
+            'multi_select_limit.integer' => translate('Multi select limit must be an integer'),
+            'multi_select_limit.min' => translate('Multi select limit must be at least 1'),
         ];
     }
 }

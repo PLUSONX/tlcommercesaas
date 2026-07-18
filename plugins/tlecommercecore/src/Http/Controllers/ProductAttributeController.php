@@ -206,6 +206,23 @@ class ProductAttributeController extends Controller
             toastNotification('error', translate('Attribute status update failed'), 'Failed');
         }
     }
+
+    /**
+     * Will change product attribute multi-select setting
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return void
+     */
+    public function attributeMultiSelectChange(Request $request)
+    {
+        $res = $this->attribute_repository->changeAttributeMultiSelect($request->id);
+        if ($res == true) {
+            toastNotification('success', translate('Attribute multi select update successfully'), 'Success');
+        } else {
+            toastNotification('error', translate('Attribute multi select update failed'), 'Failed');
+        }
+    }
+
     /**
      * Will change product attribute status
      * 

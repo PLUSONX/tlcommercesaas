@@ -78,6 +78,9 @@
           <label class="option-label font-weight-bold text-capitalize">{{
             attr.title
           }}</label>
+          <span v-if="attr.multi_select" class="multi-select-count ml-10">
+            {{ selectedOptionCount(attr) }} / {{ attr.multi_select_limit }}
+          </span>
 
           <!-- Option List: split-screen list-cards (desktop + mobile) -->
           <template v-if="isSplitScreen">
@@ -89,6 +92,7 @@
                 class="option-list-card text-start"
                 :class="{ 'is-selected': isOptionSelected(attr, option) }"
                 :aria-pressed="isOptionSelected(attr, option)"
+                :disabled="isOptionSelectionDisabled(attr, option)"
                 @click.prevent="updateSelectedVariant(attr, option)"
               >
 
@@ -128,9 +132,11 @@
               <div v-for="(option, j) in attr.options" :key="option.id">
                 <label class="custom-checkbox--two position-relative"
                   :for="`p${product.id}-${attr.id}-option-${option.id}`">
-                  <input :id="`p${product.id}-${attr.id}-option-${option.id}`" type="radio"
+                  <input :id="`p${product.id}-${attr.id}-option-${option.id}`"
+                    :type="attr.multi_select ? 'checkbox' : 'radio'"
                     :name="`product_${product.id}_${attr.id}`" :value="option"
                     :checked="isOptionSelected(attr, option)"
+                    :disabled="isOptionSelectionDisabled(attr, option)"
                     v-on:change="updateSelectedVariant(attr, option)" />
 
                   <template v-if="attr.title == 'color'">
@@ -326,7 +332,9 @@ export default {
           let single_variant = variant_array[i];
           let single_variant_array = single_variant.split(":");
           let variant_id = single_variant_array[0];
-          let variant_value_id = single_variant_array[1];
+          let variant_value_ids = (single_variant_array[1] || "")
+            .split(",")
+            .filter(Boolean);
           let match_variant = this.product.attribute.find(
             (item) => item.id == variant_id
           );
@@ -337,15 +345,18 @@ export default {
 
           let variant_name = match_variant.title;
 
-          let match_variant_value = match_variant.options.find(
-            (item) => item.id == variant_value_id
-          );
-          let variant_value_name = "";
-          if (variant_name == "Color" || variant_name == "color") {
-            variant_value_name = match_variant_value?.name;
-          } else {
-            variant_value_name = match_variant_value?.title;
-          }
+          let variant_value_name = variant_value_ids
+            .map((variant_value_id) => {
+              let match_variant_value = match_variant.options.find(
+                (item) => item.id == variant_value_id
+              );
+              if (variant_name == "Color" || variant_name == "color") {
+                return match_variant_value?.name;
+              }
+              return match_variant_value?.title;
+            })
+            .filter(Boolean)
+            .join(",");
 
           let variant = variant_name + ":" + variant_value_name;
 
@@ -400,6 +411,7 @@ export default {
     },
   },
   mounted() {
+    this.initializeMultiSelectAttributes();
     this.$emit("quantity-change", this.quantityValue);
   },
   methods: {
@@ -418,6 +430,55 @@ export default {
     colorVariantImages(color_id) {
       this.$emit("color-variant-images", color_id);
     },
+    getSelectedOptionIds(attr) {
+      const key = String(attr.id);
+      const segment = (this.product.selectedVariant || "")
+        .split("/")
+        .filter(Boolean)
+        .find((part) => part.split(":")[0] === key);
+
+      if (!segment) {
+        return [];
+      }
+
+      return (segment.split(":")[1] || "").split(",").filter(Boolean);
+    },
+    selectedOptionCount(attr) {
+      return this.getSelectedOptionIds(attr).length;
+    },
+    isOptionSelectionDisabled(attr, option) {
+      if (!attr.multi_select || this.isOptionSelected(attr, option)) {
+        return false;
+      }
+      const limit = parseInt(attr.multi_select_limit);
+      return limit > 0 && this.selectedOptionCount(attr) >= limit;
+    },
+    initializeMultiSelectAttributes() {
+      const multiSelectIds = (this.product.attribute || [])
+        .filter((attr) => attr.multi_select)
+        .map((attr) => String(attr.id));
+
+      this.product.selectedVariant = (this.product.selectedVariant || "")
+        .split("/")
+        .filter(Boolean)
+        .filter((segment) => !multiSelectIds.includes(segment.split(":")[0]))
+        .join("/");
+    },
+    validateMultiSelectSelections() {
+      const invalidAttribute = (this.product.attribute || []).find((attr) => {
+        return attr.multi_select &&
+          this.selectedOptionCount(attr) !== parseInt(attr.multi_select_limit);
+      });
+
+      if (!invalidAttribute) {
+        return true;
+      }
+
+      this.$toast.error(
+        `${this.$t("Please select")} ${invalidAttribute.multi_select_limit} ${invalidAttribute.title}`
+      );
+      return false;
+    },
     /**
      * Apply chosen option to selectedVariant immediately (optimistic)
      */
@@ -426,6 +487,34 @@ export default {
       const parts = (this.product.selectedVariant || "")
         .split("/")
         .filter(Boolean);
+
+      if (attr.multi_select) {
+        const selectedIds = this.getSelectedOptionIds(attr);
+        const optionId = String(option.id);
+        const selectedIndex = selectedIds.indexOf(optionId);
+
+        if (selectedIndex >= 0) {
+          selectedIds.splice(selectedIndex, 1);
+        } else {
+          const limit = parseInt(attr.multi_select_limit);
+          if (limit > 0 && selectedIds.length >= limit) {
+            return false;
+          }
+          selectedIds.push(optionId);
+        }
+
+        selectedIds.sort((first, second) =>
+          first.localeCompare(second, undefined, { numeric: true })
+        );
+
+        const next = parts.filter((part) => part.split(":")[0] !== key);
+        if (selectedIds.length > 0) {
+          next.push(`${key}:${selectedIds.join(",")}`);
+        }
+        this.product.selectedVariant = next.join("/");
+        return true;
+      }
+
       let found = false;
       const next = parts.map((p) => {
         const [c] = p.split(":");
@@ -437,6 +526,7 @@ export default {
       });
       if (!found) next.push(`${key}:${option.id}`);
       this.product.selectedVariant = next.join("/");
+      return true;
     },
     /**
      * Get product variant price
@@ -446,7 +536,18 @@ export default {
       if (attr.id == "color" || attr.title == "color") {
         this.colorVariantImages(option.id);
       }
-      this.applyOptionToSelectedVariant(attr, option);
+      const selectionUpdated = this.applyOptionToSelectedVariant(attr, option);
+      if (!selectionUpdated) {
+        this.$toast.error(
+          `${this.$t("You can select up to")} ${attr.multi_select_limit} ${attr.title}`
+        );
+        return;
+      }
+
+      if (attr.multi_select) {
+        return;
+      }
+
       this.variantUpdating = true;
       this.$emit("variant-updating", true);
       axios
@@ -479,12 +580,20 @@ export default {
      */
     isOptionSelected(attr, option) {
       if (!this.product.selectedVariant) {
+        if (attr.multi_select) {
+          return false;
+        }
         return attr.options[0] && attr.options[0].id == option.id;
       }
       const parts = this.product.selectedVariant.split("/");
       const key = String(attr.id);
       const match = parts.find((p) => p.split(":")[0] == key);
       if (!match) return false;
+      if (attr.multi_select) {
+        return (match.split(":")[1] || "")
+          .split(",")
+          .includes(String(option.id));
+      }
       return match.split(":")[1] == String(option.id);
     },
     /**
@@ -492,6 +601,9 @@ export default {
      */
     placeOrder() {
       if (this.variantUpdating) {
+        return;
+      }
+      if (!this.validateMultiSelectSelections()) {
         return;
       }
       let image = "";
@@ -531,6 +643,9 @@ export default {
      */
     addToCart() {
       if (this.variantUpdating) {
+        return;
+      }
+      if (!this.validateMultiSelectSelections()) {
         return;
       }
       let image = "";
@@ -689,6 +804,11 @@ export default {
     border-color: $c1;
     background-color: rgba($c1, 0.08);
     box-shadow: 0 0 0 1px $c1;
+  }
+
+  &:disabled:not(.is-selected) {
+    cursor: not-allowed;
+    opacity: 0.55;
   }
 
   &__swatch {

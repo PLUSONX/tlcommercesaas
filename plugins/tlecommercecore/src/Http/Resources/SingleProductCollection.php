@@ -252,6 +252,10 @@ class SingleProductCollection extends JsonResource
             $productAttr = ProductAttribute::where('id', $choice->choice_id)->first();
             $singleproductAttribute['id'] = $choice->choice_id;
             $singleproductAttribute['title'] = $productAttr->translation('name', session::get('api_locale'));
+            $singleproductAttribute['multi_select'] = (bool) $productAttr->multi_select;
+            $singleproductAttribute['multi_select_limit'] = $productAttr->multi_select
+                ? (int) $productAttr->multi_select_limit
+                : null;
             $singleproductAttribute['options'] = AttributeValues::whereIn('id', ProductHasChoiceOption::where('product_id', $this->id)->where('choice_id', $productAttr->id)->pluck('option_id'))->select('id', 'attribute_id as parent', 'name as title',)->get();
             array_push($productAttributes, $singleproductAttribute);
         }
@@ -259,6 +263,8 @@ class SingleProductCollection extends JsonResource
             $colorAttributes = [];
             $colorAttributes['id'] = 'color';
             $colorAttributes['title'] = 'color';
+            $colorAttributes['multi_select'] = false;
+            $colorAttributes['multi_select_limit'] = null;
             $colors = [];
             $color_ids = ProductHasColors::where('product_id', $this->id)->pluck('color_id');
             foreach ($color_ids as $color_id) {

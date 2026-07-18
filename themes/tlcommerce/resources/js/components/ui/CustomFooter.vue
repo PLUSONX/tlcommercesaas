@@ -50,7 +50,9 @@ export default {
           let single_variant = variant_array[i];
           let single_variant_array = single_variant.split(":");
           let variant_id = single_variant_array[0];
-          let variant_value_id = single_variant_array[1];
+          let variant_value_ids = (single_variant_array[1] || "")
+            .split(",")
+            .filter(Boolean);
           let match_variant = this.item.attribute?.find(
             (attr) => attr.id == variant_id
           );
@@ -60,15 +62,18 @@ export default {
 
           let variant_name = match_variant.title;
 
-          let match_variant_value = match_variant.options.find(
-            (opt) => opt.id == variant_value_id
-          );
-          let variant_value_name = "";
-          if (variant_name == "Color" || variant_name == "color") {
-            variant_value_name = match_variant_value?.name;
-          } else {
-            variant_value_name = match_variant_value?.title;
-          }
+          let variant_value_name = variant_value_ids
+            .map((variant_value_id) => {
+              let match_variant_value = match_variant.options.find(
+                (opt) => opt.id == variant_value_id
+              );
+              if (variant_name == "Color" || variant_name == "color") {
+                return match_variant_value?.name;
+              }
+              return match_variant_value?.title;
+            })
+            .filter(Boolean)
+            .join(",");
 
           let variant = variant_name + ":" + variant_value_name;
 
@@ -80,15 +85,62 @@ export default {
         return null;
       }
     },
+    min_qty() {
+      return this.item.min_item_on_purchase != null &&
+        parseInt(this.item.min_item_on_purchase) > 0
+        ? parseInt(this.item.min_item_on_purchase)
+        : 1;
+    },
+    max_qty() {
+      return this.item.max_item_on_purchase != null &&
+        parseInt(this.item.max_item_on_purchase) > 0 &&
+        parseInt(this.item.max_item_on_purchase) <
+        parseInt(this.item.quantity)
+        ? parseInt(this.item.max_item_on_purchase)
+        : this.item.quantity;
+    },
   },
 
   methods: {
+
+    getSelectedOptionIds(attr) {
+      const key = String(attr.id);
+      const segment = (this.item.selectedVariant || "")
+        .split("/")
+        .filter(Boolean)
+        .find((part) => part.split(":")[0] === key);
+
+      if (!segment) {
+        return [];
+      }
+
+      return (segment.split(":")[1] || "").split(",").filter(Boolean);
+    },
+
+    validateMultiSelectSelections() {
+      const invalidAttribute = (this.item.attribute || []).find((attr) => {
+        return attr.multi_select &&
+          this.getSelectedOptionIds(attr).length !== parseInt(attr.multi_select_limit);
+      });
+
+      if (!invalidAttribute) {
+        return true;
+      }
+
+      this.$toast.error(
+        `${this.$t("Please select")} ${invalidAttribute.multi_select_limit} ${invalidAttribute.title}`
+      );
+      return false;
+    },
 
     /**
      * Place order
      */
     placeOrder() {
       if (this.disabled) {
+        return;
+      }
+      if (!this.validateMultiSelectSelections()) {
         return;
       }
       // console.log("-----PlaceOrder method called!!-----");
@@ -114,8 +166,8 @@ export default {
         oldPrice: this.item.oldPrice,
         quantity: this.quantityValue ?? this.item.quantity ?? 1,
         attachment: this.attachment ?? null,
-        max_item: this.max_qty ?? this.item.quantity ?? 0,
-        min_item: this.min_qty ?? this.item.quantity ?? 0,
+        max_item: this.max_qty,
+        min_item: this.min_qty,
         seller: this.item.seller,
         shop_name:
           this.item.shopInfo != null ? this.item.shopInfo.name : null,
@@ -143,6 +195,9 @@ export default {
       if (this.disabled) {
         return;
       }
+      if (!this.validateMultiSelectSelections()) {
+        return;
+      }
 
       // console.log('addToCart called in CustomFooter Vue');
 
@@ -166,8 +221,8 @@ export default {
         oldPrice: this.item.oldPrice,
         quantity: this.quantityValue ?? this.item.quantity ?? 1,
         attachment: this.attachment ?? null,
-        max_item: this.max_qty ?? this.item.quantity ?? 0,
-        min_item: this.min_qty ?? this.item.quantity ?? 0,
+        max_item: this.max_qty,
+        min_item: this.min_qty,
         seller: this.item.seller,
         shop_name:
           this.item.shopInfo != null ? this.item.shopInfo.name : null,

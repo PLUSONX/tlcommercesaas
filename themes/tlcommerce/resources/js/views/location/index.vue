@@ -4,7 +4,7 @@
 
         <!-- Back to Homepage Button (fixed top-left) -->
         <!-- <router-link to="/" class="back-home-btn">
-            <i class="fas fa-arrow-left"></i>
+            <span class="material-icons">arrow_back</span>
             <span>{{ $t("Home") }}</span>
         </router-link> -->
 
@@ -69,7 +69,7 @@
                         <div class="location-header-row">
                             <h3 class="product_header mb-0">{{ $t("Deliver To") }}</h3>
                             <router-link to="/" class="back-home-btn">
-                                <i class="fas fa-arrow-left"></i>
+                                <span class="material-icons">arrow_back</span>
                                 <span>{{ $t("Home") }}</span>
                             </router-link>
                         </div>
@@ -79,7 +79,7 @@
                     <div class="location-header-row">
                         <h3 class="product_header mb-0">{{ $t("Deliver To") }}</h3>
                         <router-link to="/" class="back-home-btn">
-                            <i class="fas fa-arrow-left"></i>
+                            <span class="material-icons">arrow_back</span>
                             <span>{{ $t("Home") }}</span>
                         </router-link>
                     </div>
@@ -138,7 +138,7 @@
                                         @click="selectCity(state, city)">
 
                                         <span class="material-icons city-tile__icon">location_city</span>
-                                        <span>{{ city.name }}</span>
+                                        <span class="city-tile__name" :title="city.name">{{ city.name }}</span>
 
                                         <span v-if="guestShippingInfo.city && guestShippingInfo.city.id === city.id"
                                             class="material-icons city-tile__check">check</span>
@@ -681,8 +681,9 @@ export default {
     text-decoration: none;
 }
 
-.back-home-btn i {
-    font-size: 0.8rem;
+.back-home-btn .material-icons {
+    font-size: 1rem;
+    line-height: 1;
 }
 
 /* ── Selected Location Badge ─────────────────────────────────── */
@@ -828,7 +829,7 @@ export default {
 /* ── City Tile ───────────────────────────────────────────────── */
 .city-tile {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 6px;
     padding: 9px 12px;
     border: 1.5px solid #e2e8f0;
@@ -840,6 +841,8 @@ export default {
     background: #ffffff;
     transition: all 0.15s ease;
     position: relative;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .city-tile:hover {
@@ -858,16 +861,27 @@ export default {
 .city-tile__icon {
     font-size: 0.75rem;
     color: #a0aec0;
+    flex-shrink: 0;
 }
 
 .city-tile--selected .city-tile__icon {
     color: #48bb78;
 }
 
+.city-tile__name {
+    min-width: 0;
+    flex: 1;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.3;
+}
+
 .city-tile__check {
     font-size: 0.7rem;
     color: #48bb78;
     margin-left: auto;
+    flex-shrink: 0;
 }
 
 /* ── Transition ──────────────────────────────────────────────── */
@@ -943,7 +957,7 @@ export default {
 /* ── Mobile tweaks ───────────────────────────────────────────── */
 @media screen and (max-width: 768px) {
     .cities-grid {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .back-home-btn span {

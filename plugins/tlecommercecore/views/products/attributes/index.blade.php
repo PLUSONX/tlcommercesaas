@@ -31,6 +31,8 @@
                                 <th>{{ translate('Name') }}</th>
                                 <th>{{ translate('Values') }}</th>
                                 <th>{{ translate('Status') }}</th>
+                                <th>{{ translate('Multi Select') }}</th>
+                                <th>{{ translate('Multi Select Limit') }}</th>
                                 <th>{{ translate('Actions') }}</th>
                             </tr>
                         </thead>
@@ -63,6 +65,15 @@
                                             <span class="control"></span>
                                         </label>
                                     </td>
+                                    <td>
+                                        <label class="switch glow primary medium">
+                                            <input type="checkbox" class="change-multi-select"
+                                                data-attribute="{{ $attribute->id }}"
+                                                {{ $attribute->multi_select ? 'checked' : '' }}>
+                                            <span class="control"></span>
+                                        </label>
+                                    </td>
+                                    <td>{{ $attribute->multi_select_limit ?: 0 }}</td>
                                     <td>
                                         <div class="dropdown-button">
                                             <a href="#" class="d-flex align-items-center justify-content-end"
@@ -187,6 +198,23 @@
                 let $this = $(this);
                 let id = $this.data('attribute');
                 $.post('{{ route('plugin.tlcommercecore.product.attributes.status.change') }}', {
+                    _token: '{{ csrf_token() }}',
+                    id: id
+                }, function(data) {
+                    location.reload();
+                });
+
+            });
+            /**
+             *
+             * Change multi-select setting
+             *
+             * */
+            $(document).on('click', '.change-multi-select', function(e) {
+                e.preventDefault();
+                let $this = $(this);
+                let id = $this.data('attribute');
+                $.post('{{ route('plugin.tlcommercecore.product.attributes.multi_select.change') }}', {
                     _token: '{{ csrf_token() }}',
                     id: id
                 }, function(data) {

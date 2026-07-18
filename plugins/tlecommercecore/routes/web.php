@@ -154,6 +154,7 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
         Route::get('/product-attribute-value-edit/{id}', [ProductAttributeController::class, 'attributeValueEdit'])->name('plugin.tlcommercecore.product.attributes.values.edit');
         Route::post('/product-attribute-value-update', [ProductAttributeController::class, 'attributeValueUpdate'])->name('plugin.tlcommercecore.product.attributes.values.update');
         Route::post('/product-attribute-status-change', [ProductAttributeController::class, 'attributeStatusChange'])->name('plugin.tlcommercecore.product.attributes.status.change');
+        Route::post('/product-attribute-multi-select-change', [ProductAttributeController::class, 'attributeMultiSelectChange'])->name('plugin.tlcommercecore.product.attributes.multi_select.change');
         Route::post('/product-attribute-value-status-change', [ProductAttributeController::class, 'attributeValueStatusChange'])->name('plugin.tlcommercecore.product.attributes.value.status.change');
     });
 

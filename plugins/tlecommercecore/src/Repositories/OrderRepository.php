@@ -22,12 +22,12 @@ use Plugin\TlcommerceCore\Models\ShippingZone;
 use Plugin\TlcommerceCore\Models\ProductReview;
 use Plugin\TlcommerceCore\Models\GuestCustomers;
 use Plugin\TlcommerceCore\Models\PaymentMethods;
+use Plugin\TlcommerceCore\Models\ProductAttribute;
 use Plugin\TlcommerceCore\Models\CustomerAddress;
 use Plugin\TlcommerceCore\Models\OrderHasProducts;
 use Plugin\TlcommerceCore\Models\ShippingZoneCities;
 use Plugin\TlcommerceCore\Models\SingleProductPrice;
 use Plugin\TlcommerceCore\Models\ProductShippingInfo;
-use Plugin\TlcommerceCore\Models\VariantProductPrice;
 use Plugin\TlcommerceCore\Models\OrderPackageTracking;
 use Plugin\TlcommerceCore\Models\ShippingZoneHasTaxes;
 use Plugin\TlcommerceCore\Models\CollectionHasProducts;
@@ -843,6 +843,8 @@ class OrderRepository
 
                 if (sizeof($all_product_shipping_profiles) > 0) {
                     $shipping_options = [];
+                    // Allocate one order-level profile rate across packages (same pattern as flat rate).
+                    $total_products = sizeof($all_product_shipping_profiles);
                     foreach ($all_product_shipping_profiles as $key => $profile) {
                         //When free shipping is allow
                         if ($allow_free_shipping) {
@@ -859,8 +861,15 @@ class OrderRepository
                         $validate_shipping_rates = $this->getMatchingShippingRate($profile['product']['id'], $shipping_rates, $profile['product']['unitPrice'], $profile['product']['quantity']);
 
                         if (sizeof($validate_shipping_rates) > 0) {
-                            $options = new ShippingRateCollection($validate_shipping_rates);
-                            $default_option = new SingleShippingRateCollection($validate_shipping_rates[0]);
+                            $options = (new ShippingRateCollection($validate_shipping_rates))->resolve();
+                            foreach ($options['data'] as &$option) {
+                                $option['shipping_cost'] = $option['shipping_cost'] / $total_products;
+                            }
+                            unset($option);
+
+                            $default_option = (new SingleShippingRateCollection($validate_shipping_rates[0]))->resolve();
+                            $default_option['shipping_cost'] = $default_option['shipping_cost'] / $total_products;
+
                             $tax = $this->calculateProductTax($profile['product']['id'], $profile['product']['unitPrice'], $profile['product']['quantity'], $request['location'], $request['post_code']);
                             $temp = [
                                 'id' => $profile['product']['uid'],
@@ -1567,7 +1576,7 @@ class OrderRepository
     public static function getProductPurchasePrice($product_id, $variant = null)
     {
         if ($variant != null) {
-            $variant_price = VariantProductPrice::where('product_id', $product_id)->where('variant')->select('purchase_price')->first();
+            $variant_price = ProductAttribute::resolveVariantPrice($product_id, $variant);
             if ($variant_price != null) {
                 return $variant_price->purchase_price;
             } else {
@@ -1594,7 +1603,7 @@ class OrderRepository
     {
         //Update single product inventory
         if ($variant != null) {
-            $variant_price = VariantProductPrice::where('product_id', $product_id)->where('variant', $variant)->first();
+            $variant_price = ProductAttribute::resolveVariantPrice($product_id, $variant);
             if ($variant_price != null) {
                 $updated_qty = $variant_price->quantity - $quantity;
                 $variant_price->quantity = $updated_qty;

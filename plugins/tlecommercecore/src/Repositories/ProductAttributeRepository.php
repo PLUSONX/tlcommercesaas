@@ -35,6 +35,7 @@ class ProductAttributeRepository
             $attribute = new ProductAttribute;
             $attribute->name = $request['name'];
             $attribute->status = 1;
+            $this->applyMultiSelectSettings($attribute, $request);
             $attribute->save();
             DB::commit();
             return true;
@@ -75,6 +76,12 @@ class ProductAttributeRepository
                 $attribute->name = $request['name'];
                 $attribute->save();
             }
+
+            // Multi-select settings are attribute-wide and not language-specific
+            $attribute = ProductAttribute::findOrFail($request['id']);
+            $this->applyMultiSelectSettings($attribute, $request);
+            $attribute->save();
+
             DB::commit();
             return true;
         } catch (\Exception $e) {
@@ -84,6 +91,20 @@ class ProductAttributeRepository
             DB::rollBack();
             return false;
         }
+    }
+
+    /**
+     * Apply multi-select settings to an attribute
+     *
+     * @param ProductAttribute $attribute
+     * @param array|\Illuminate\Http\Request $request
+     * @return void
+     */
+    protected function applyMultiSelectSettings($attribute, $request)
+    {
+        $multiSelect = !empty($request['multi_select']);
+        $attribute->multi_select = $multiSelect;
+        $attribute->multi_select_limit = $multiSelect ? ($request['multi_select_limit'] ?? null) : null;
     }
     /**
      * Will delete attribute
@@ -243,6 +264,42 @@ class ProductAttributeRepository
             return false;
         }
     }
+
+    /**
+     * Change attribute multi-select setting
+     *
+     * @param Int $id
+     * @return bool
+     */
+    public function changeAttributeMultiSelect($id)
+    {
+        try {
+            DB::beginTransaction();
+            $attribute = ProductAttribute::findOrFail($id);
+
+            // Enabling from the index requires a positive limit configured via create/edit
+            if (!$attribute->multi_select) {
+                if (empty($attribute->multi_select_limit) || $attribute->multi_select_limit < 1) {
+                    DB::rollBack();
+                    return false;
+                }
+                $attribute->multi_select = true;
+            } else {
+                $attribute->multi_select = false;
+            }
+
+            $attribute->save();
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return false;
+        } catch (\Error $e) {
+            DB::rollBack();
+            return false;
+        }
+    }
+
     /**
      * Change attribute  value Status
      * 

@@ -32,7 +32,10 @@
                         <span class="material-icons mr-2">schedule</span>
                         <span class="text-muted small">{{ $t('Earliest Arrival') }}</span>
                     </div>
-                    <div v-if="selectedCity" class="arrival-time">
+                    <div v-if="earliestArrival" class="arrival-time">
+                        <strong>{{ earliestArrival }}</strong>
+                    </div>
+                    <!-- <div v-if="selectedCity" class="arrival-time">
                         <div v-if="['raneem', 'raneemjewelers', 'RANEEM JEWELERS'].includes(tenant)">
                             <strong>12-24 {{ $t('Hours') }}</strong>
                         </div>
@@ -44,7 +47,7 @@
                         <div v-if="['Tasty', 'tasty'].includes(tenant)">
                             <strong>12-24 {{ $t('Hours') }}</strong>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
 
             </div>
@@ -141,6 +144,7 @@
 
 <script>
 
+import axios from "axios";
 import { mapState, mapGetters } from "vuex";
 
 export default {
@@ -154,6 +158,13 @@ export default {
         tenant: String,
     },
 
+    data() {
+        return {
+            earliestArrival: null,
+            loadingEarliestArrival: false,
+        };
+    },
+
     computed: {
         selectedCity() {
             return this.$store.state.shippingDetails?.city || null;
@@ -163,6 +174,20 @@ export default {
         },
         tenant() {
             return this.$store.state.siteProperties?.site_name;
+        },
+        locationKey() {
+            const cityId = this.selectedCity?.id || "";
+            const stateId = this.selectedState?.id || "";
+            return `${cityId}-${stateId}`;
+        },
+    },
+
+    watch: {
+        locationKey: {
+            immediate: true,
+            handler() {
+                this.fetchEarliestArrival();
+            },
         },
     },
 
@@ -174,6 +199,28 @@ export default {
     },
 
     methods: {
+
+        fetchEarliestArrival() {
+            this.loadingEarliestArrival = true;
+            axios
+                .post("/api/v1/ecommerce-core/earliest-arrival", {
+                    city_id: this.selectedCity?.id || null,
+                    state_id: this.selectedState?.id || null,
+                })
+                .then((response) => {
+                    if (response.data?.success && response.data?.shipping_time) {
+                        this.earliestArrival = response.data.shipping_time;
+                    } else {
+                        this.earliestArrival = null;
+                    }
+                })
+                .catch(() => {
+                    this.earliestArrival = null;
+                })
+                .finally(() => {
+                    this.loadingEarliestArrival = false;
+                });
+        },
 
         goToLocation() {
 

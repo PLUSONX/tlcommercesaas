@@ -195,6 +195,7 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
     Route::post('cart/validate-cart-items', [OrderController::class, 'validateCartItems']);
     Route::post('apply-coupon', [OrderController::class, 'applyCoupon']);
     Route::post('get-shipping-options', [OrderController::class, 'shippingOptions']);
+    Route::post('earliest-arrival', [OrderController::class, 'earliestArrival']);
     Route::post('active-payment-methods', [OrderController::class, 'activePaymentMethods']);
     Route::post('guest/checkout', [OrderController::class, 'guestCheckout']);
     Route::post('guest/order/details', [OrderController::class, 'guestCustomerOrderDetails']);

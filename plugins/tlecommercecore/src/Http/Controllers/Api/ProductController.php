@@ -13,7 +13,7 @@ use Plugin\TlcommerceCore\Models\ProductBrand;
 use Plugin\TlcommerceCore\Models\SearchKeyword;
 use Plugin\TlcommerceCore\Models\ProductHasTags;
 use Plugin\TlcommerceCore\Models\ProductCategory;
-use Plugin\TlcommerceCore\Models\VariantProductPrice;
+use Plugin\TlcommerceCore\Models\ProductAttribute;
 use Plugin\TlcommerceCore\Http\Resources\BrandCollection;
 use Plugin\TlcommerceCore\Repositories\ProductRepository;
 use Plugin\TlcommerceCore\Repositories\SettingsRepository;
@@ -374,14 +374,7 @@ class ProductController extends Controller
             }
             $new_variant = rtrim(implode('/', $new_variant_array), '/');
 
-            $m_variant = $new_variant;
-            $variant_info = VariantProductPrice::where('product_id', $request->id)
-                ->where(function ($q) use ($m_variant) {
-                    $q->where('variant', $m_variant)
-                        ->orWhere('variant', $m_variant . '/');
-                })
-                ->select('unit_price', 'quantity')
-                ->first();
+            $variant_info = ProductAttribute::resolveVariantPrice($request->id, $new_variant);
 
             if ($variant_info == null) {
                 return response()->json(

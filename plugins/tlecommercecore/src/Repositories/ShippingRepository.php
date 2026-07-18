@@ -677,4 +677,168 @@ class ShippingRepository
             return false;
         }
     }
+
+    /**
+     * Resolve earliest arrival from location-matched rates, else fastest shipping time.
+     *
+     * @param int|null $city_id
+     * @param int|null $state_id
+     * @return array
+     */
+    public function earliestArrival($city_id = null, $state_id = null)
+    {
+        try {
+            if (empty($state_id) && !empty($city_id)) {
+                $city_info = Cities::where('id', $city_id)->select('state_id')->first();
+                $state_id = $city_info != null ? $city_info->state_id : null;
+            }
+
+            $matched_time = $this->earliestShippingTimeForLocation($city_id, $state_id);
+            if ($matched_time != null) {
+                return $this->formatEarliestArrivalResponse($matched_time, 'rate');
+            }
+
+            $fallback_time = $this->fastestShippingTime();
+            if ($fallback_time != null) {
+                return $this->formatEarliestArrivalResponse($fallback_time, 'fallback');
+            }
+
+            return [
+                'success' => true,
+                'shipping_time' => null,
+                'source' => null,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'shipping_time' => null,
+                'source' => null,
+            ];
+        }
+    }
+
+    /**
+     * Find earliest shipping time among rates covering city, then state.
+     *
+     * @param int|null $city_id
+     * @param int|null $state_id
+     * @return ShippingTimes|null
+     */
+    protected function earliestShippingTimeForLocation($city_id = null, $state_id = null)
+    {
+        $zone_ids = collect();
+
+        if (!empty($city_id)) {
+            $zone_ids = ShippingZoneCities::where('city_id', $city_id)->pluck('zone_id');
+        }
+
+        if ($zone_ids->count() < 1 && !empty($state_id)) {
+            $state_zone_ids = ShippingZoneStates::where('state_id', $state_id)->pluck('zone_id');
+            $city_ids_in_state = Cities::where('state_id', $state_id)->pluck('id');
+            $city_zone_ids = ShippingZoneCities::whereIn('city_id', $city_ids_in_state)->pluck('zone_id');
+            $zone_ids = $state_zone_ids->merge($city_zone_ids)->unique()->values();
+        }
+
+        if ($zone_ids->count() < 1) {
+            return null;
+        }
+
+        $delivery_time_ids = ShippingRate::whereIn('zone_id', $zone_ids)
+            ->whereNotNull('delivery_time')
+            ->pluck('delivery_time')
+            ->unique()
+            ->values();
+
+        if ($delivery_time_ids->count() < 1) {
+            return null;
+        }
+
+        $times = ShippingTimes::whereIn('id', $delivery_time_ids)->get();
+
+        return $this->pickFastestShippingTime($times);
+    }
+
+    /**
+     * Fastest range from the full shipping times table.
+     *
+     * @return ShippingTimes|null
+     */
+    protected function fastestShippingTime()
+    {
+        return $this->pickFastestShippingTime(ShippingTimes::all());
+    }
+
+    /**
+     * Pick the shipping time with the smallest min duration.
+     *
+     * @param \Illuminate\Support\Collection|array $times
+     * @return ShippingTimes|null
+     */
+    protected function pickFastestShippingTime($times)
+    {
+        $fastest = null;
+        $fastest_minutes = null;
+
+        foreach ($times as $time) {
+            $minutes = $this->shippingTimeToMinutes($time->min_value, $time->min_unit);
+            if ($minutes === null) {
+                continue;
+            }
+            if ($fastest_minutes === null || $minutes < $fastest_minutes) {
+                $fastest_minutes = $minutes;
+                $fastest = $time;
+            }
+        }
+
+        return $fastest;
+    }
+
+    /**
+     * Convert a shipping time value/unit to minutes for comparison.
+     *
+     * @param mixed $value
+     * @param string|null $unit
+     * @return int|null
+     */
+    protected function shippingTimeToMinutes($value, $unit)
+    {
+        if ($value === null || $value === '' || $unit === null || $unit === '') {
+            return null;
+        }
+
+        $numeric = (float) $value;
+        $unit_key = strtolower(trim($unit));
+
+        if (in_array($unit_key, ['minute', 'minutes'])) {
+            return (int) $numeric;
+        }
+        if (in_array($unit_key, ['hour', 'hours'])) {
+            return (int) ($numeric * 60);
+        }
+        if (in_array($unit_key, ['day', 'days'])) {
+            return (int) ($numeric * 24 * 60);
+        }
+
+        return null;
+    }
+
+    /**
+     * Format earliest-arrival API payload.
+     *
+     * @param ShippingTimes $time
+     * @param string $source
+     * @return array
+     */
+    protected function formatEarliestArrivalResponse($time, $source)
+    {
+        return [
+            'success' => true,
+            'shipping_time' => $time->min_value . ' ' . $time->min_unit . '-' . $time->max_value . ' ' . $time->max_unit,
+            'source' => $source,
+            'min_value' => $time->min_value,
+            'min_unit' => $time->min_unit,
+            'max_value' => $time->max_value,
+            'max_unit' => $time->max_unit,
+        ];
+    }
 }

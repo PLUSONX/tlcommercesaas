@@ -3,7 +3,7 @@
     {{ translate('Manage Profile') }}
 @endsection
 @section('custom_css')
-    <link rel="stylesheet" href="{{ asset('/public/backend/assets/plugins/select2/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/assets/plugins/select2/select2.min.css') }}">
     @include('core::base.includes.data_table.css')
     <style>
         .select2-container {
@@ -971,7 +971,7 @@
     <!--Delete  Zone Modal-->
 @endsection
 @section('custom_scripts')
-    <script src="{{ asset('/public/backend/assets/plugins/select2/select2.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/plugins/select2/select2.min.js') }}"></script>
     @include('core::base.includes.data_table.script')
     <script type="text/javascript">
         //Global variable
@@ -986,11 +986,13 @@
              * 
              * Product data table
              */
-            $("#productTable").DataTable({
-                "responsive": true,
-                "lengthChange": true,
-                "autoWidth": false,
-            });
+            if ($("#productTable").length) {
+                $("#productTable").DataTable({
+                    "responsive": true,
+                    "lengthChange": true,
+                    "autoWidth": false,
+                });
+            }
             /**
              * Select product
              * 
@@ -1032,6 +1034,7 @@
                 searched_location_page_number = 1;
                 searched_location_all_page_count = 0;
                 $('.location-options').html('');
+                $('.zone-create-modal').modal('show');
                 getCountriesOptions();
             });
 
@@ -1092,7 +1095,6 @@
                         if (response.success) {
                             $('.location-options').append(response.list);
                             location_page_number = location_page_number + 1;
-                            $('.zone-create-modal').modal('show');
                         } else {
                             toastr.error('Request Failed', "Error!");
                         }
