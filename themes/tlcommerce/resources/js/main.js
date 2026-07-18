@@ -13,8 +13,7 @@ import vSelect from "vue-select";
 import ToastPlugin from 'vue-toast-notification';
 import NotFound from "./components/global/NotFound.vue"
 import VueSocialSharing from 'vue-social-sharing'
-
-const CHUNK_RELOAD_KEY = "tlc_chunk_reload_v219";
+import { isChunkLoadError, reloadOnceForChunkError } from "./utils/chunkLoadRecovery";
 
 function showBootFallback(message) {
   const el = document.getElementById("app");
@@ -29,26 +28,6 @@ function showBootFallback(message) {
     "</p>" +
     '<button type="button" onclick="location.reload()" style="margin-top:12px;padding:8px 16px">Reload</button>' +
     "</div>";
-}
-
-function isChunkLoadError(err) {
-  const msg = err && (err.message || String(err));
-  return /Loading chunk|ChunkLoadError|Failed to fetch dynamically imported module|Importing a module script failed/i.test(
-    msg || ""
-  );
-}
-
-function reloadOnceForChunkError() {
-  try {
-    if (!sessionStorage.getItem(CHUNK_RELOAD_KEY)) {
-      sessionStorage.setItem(CHUNK_RELOAD_KEY, "1");
-      window.location.reload();
-      return true;
-    }
-  } catch (e) {
-    // sessionStorage may be blocked
-  }
-  return false;
 }
 
 window.addEventListener("error", (event) => {

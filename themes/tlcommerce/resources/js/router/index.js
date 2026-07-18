@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { loadLanguageAsync } from "../i18n_setup";
 import store from "../store";
+import { isChunkLoadError, reloadOnceForChunkError } from "../utils/chunkLoadRecovery";
 
 /**
  * Check customer is logged in or not
@@ -313,6 +314,12 @@ router.afterEach(() => {
     }
     window.scrollTo(0, 0);
   });
+});
+
+router.onError((err) => {
+  if (isChunkLoadError(err)) {
+    reloadOnceForChunkError();
+  }
 });
 
 export default router;
