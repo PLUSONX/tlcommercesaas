@@ -5,7 +5,7 @@
         <!-- Back to Homepage Button (fixed top-left) -->
         <!-- <router-link to="/" class="back-home-btn">
             <span class="material-icons">arrow_back</span>
-            <span>{{ $t("Home") }}</span>
+            <span class="back-home-btn__label">{{ $t("Home") }}</span>
         </router-link> -->
 
         <template v-if="isActiveHomeDelivery">
@@ -70,7 +70,7 @@
                             <h3 class="product_header mb-0">{{ $t("Deliver To") }}</h3>
                             <router-link to="/" class="back-home-btn">
                                 <span class="material-icons">arrow_back</span>
-                                <span>{{ $t("Home") }}</span>
+                                <span class="back-home-btn__label">{{ $t("Home") }}</span>
                             </router-link>
                         </div>
 
@@ -80,7 +80,7 @@
                         <h3 class="product_header mb-0">{{ $t("Deliver To") }}</h3>
                         <router-link to="/" class="back-home-btn">
                             <span class="material-icons">arrow_back</span>
-                            <span>{{ $t("Home") }}</span>
+                            <span class="back-home-btn__label">{{ $t("Home") }}</span>
                         </router-link>
                     </div>
 
@@ -960,7 +960,7 @@ export default {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .back-home-btn span {
+    .back-home-btn__label {
         display: none;
         /* icon-only on very small screens */
     }

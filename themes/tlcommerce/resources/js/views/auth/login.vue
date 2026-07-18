@@ -11,8 +11,8 @@
               <h3 class="mb-4">{{ $t("Login") }}</h3>
 
               <router-link to="/" class="back-home-btn">
-                <i class="fas fa-arrow-left"></i>
-                <span>{{ $t("Home") }}</span>
+                <span class="material-icons">arrow_back</span>
+                <span class="back-home-btn__label">{{ $t("Home") }}</span>
               </router-link>
 
             </div>
@@ -217,7 +217,8 @@ export default {
   text-decoration: none;
 }
 
-.back-home-btn i {
-  font-size: 0.8rem;
+.back-home-btn .material-icons {
+  font-size: 1rem;
+  line-height: 1;
 }
 </style>
