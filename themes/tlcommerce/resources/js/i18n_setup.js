@@ -1,9 +1,12 @@
 
 import { createI18n } from 'vue-i18n'
 import axios from "axios";
+import { safeGetItem } from "./utils/safeStorage";
+
+const LOCALE_TIMEOUT_MS = 8000;
 
 const i18n = createI18n({
-    locale: localStorage.getItem("locale") || "en",
+    locale: safeGetItem("locale") || "en",
     fallbackLocale: "en",
     missingWarn: false, // This hides the "Not found" warnings
     fallbackWarn: false, // This hides warnings when it falls back to another language
@@ -43,7 +46,7 @@ export async function loadLanguageAsync(lang) {
         return Promise.resolve();
     }
 
-    return axios.get(`/api/v1/locale/${lang}`)
+    return axios.get(`/api/v1/locale/${lang}`, { timeout: LOCALE_TIMEOUT_MS })
         .then(response => {
 
             let messages = response.data.data;
@@ -61,7 +64,8 @@ export async function loadLanguageAsync(lang) {
         .catch(error => {
             console.error('=== Locale API Failed ===', error);
             applyDocumentDirection(null, lang);
-            return Promise.reject(error);
+            // Fail open so router navigation is never blocked forever
+            return Promise.resolve(setI18nLanguage(lang));
         });
 }
 

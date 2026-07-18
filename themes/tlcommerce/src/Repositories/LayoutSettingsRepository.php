@@ -2,11 +2,14 @@
 
 namespace Theme\TLCommerce\Repositories;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Theme\TLCommerce\Models\TlThemeOptionSettings;
 
 class LayoutSettingsRepository {
+
+    private const ACTIVE_LAYOUT_CACHE_KEY = 'active-store-layout';
 
     /**
      * Get all layouts and the currently active layout
@@ -51,17 +54,30 @@ class LayoutSettingsRepository {
     }
 
     /**
-     * Get active layout
-     * * @return array
-    */
+     * Get active layout (cached per tenant for instant storefront bootstrap)
+     *
+     * @return array|null
+     */
     public function getActiveLayout()
+    {
+        return Cache::rememberForever($this->activeLayoutCacheKey(), function () {
+            return $this->resolveActiveLayout();
+        });
+    }
+
+    /**
+     * Resolve active layout from DB (uncached)
+     *
+     * @return array|null
+     */
+    private function resolveActiveLayout()
     {
         $layout = DB::table('tl_store_layouts')
             ->where('is_active', 1)
             ->first();
 
         if (!$layout) {
-            return response()->json(['layout' => null]);
+            return null;
         }
 
         if ($layout->name === 'split_screen') {
@@ -76,21 +92,37 @@ class LayoutSettingsRepository {
                 }
             }
 
+            // Normalize to arrays for cache / JSON bootstrap
             return [
                 'id' => $layout->id,
                 'name' => $layout->name,
                 'type' => 'split_screen',
                 'settings' => json_decode($layout->settings, true),
                 'split_screen' => $splitScreenSettings
+                    ? json_decode(json_encode($splitScreenSettings), true)
+                    : null,
             ];
         }
 
         return [
-                'id' => $layout->id,
-                'name' => $layout->name,
-                'type' => 'default',
-                'settings' => json_decode($layout->settings, true)
+            'id' => $layout->id,
+            'name' => $layout->name,
+            'type' => 'default',
+            'settings' => json_decode($layout->settings, true),
         ];
+    }
+
+    /**
+     * Clear cached active layout for the current tenant
+     */
+    public function clearActiveLayoutCache(): void
+    {
+        Cache::forget($this->activeLayoutCacheKey());
+    }
+
+    private function activeLayoutCacheKey(): string
+    {
+        return tenantCacheKey(self::ACTIVE_LAYOUT_CACHE_KEY);
     }
 
     /**
@@ -100,7 +132,7 @@ class LayoutSettingsRepository {
     public function updateLayoutSettings($layoutId) 
     {
         try {
-            return DB::transaction(function () use ($layoutId) {
+            $updated = DB::transaction(function () use ($layoutId) {
                 // 1. Deactivate all
                 DB::table('tl_store_layouts')->update(['is_active' => 0]);
                 
@@ -115,6 +147,12 @@ class LayoutSettingsRepository {
                     
                 return $updated > 0;
             });
+
+            if ($updated) {
+                $this->clearActiveLayoutCache();
+            }
+
+            return $updated;
         } catch (\Exception $e) {
             \Log::error("Repo Error: " . $e->getMessage());
             return false;
@@ -194,7 +232,10 @@ class LayoutSettingsRepository {
                     ->update($updateData);
 
         // \Log::info('After updating the split screen properties!!!');
-        
+
+        if ($updated > 0) {
+            $this->clearActiveLayoutCache();
+        }
 
         return $updated > 0;
     }

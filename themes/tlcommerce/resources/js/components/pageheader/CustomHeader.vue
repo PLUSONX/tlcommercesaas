@@ -137,17 +137,27 @@ export default {
       this.closeHeaderOverlays();
 
       if (this.$route.name === "product") {
-        if (this.resetRouteOutlet) {
-          await this.resetRouteOutlet();
-        }
+        const referrer = document.referrer || "";
+        const fromInstagram = /instagram\.com/i.test(referrer);
+        // Instagram WebView often reports history.length > 1 even on landing URLs.
+        // Prefer an in-SPA home navigation so the outlet cannot stay blank.
+        const preferHome = fromInstagram || window.history.length <= 1;
+
         try {
-          if (window.history.length > 1) {
-            this.$router.go(-1);
-          } else {
+          if (preferHome) {
             await this.$router.replace({ name: "home" });
+          } else {
+            if (this.resetRouteOutlet) {
+              await this.resetRouteOutlet();
+            }
+            this.$router.go(-1);
           }
         } catch {
-          // Ignore duplicate navigation to home
+          try {
+            await this.$router.replace({ name: "home" });
+          } catch {
+            // Ignore duplicate navigation to home
+          }
         }
         return;
       }

@@ -76,6 +76,8 @@
 
 /*! @/components/ui/ShowingPerPage.vue */
 
+/*! @/utils/safeStorage */
+
 /*! @/views/dashboard.vue */
 
 /*! @coreui/vue */

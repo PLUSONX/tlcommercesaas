@@ -94,6 +94,8 @@
 </template>
 
 <script>
+import { safeGetItem, safeJsonParse } from "../../utils/safeStorage";
+
 export default {
   name: "LanguageCurrencySwitcher",
   emits: ["change-language-currency"],
@@ -120,8 +122,8 @@ export default {
   },
   data() {
     return {
-      selected_lang: localStorage.getItem("locale") || "en",
-      selected_currency: JSON.parse(localStorage.getItem("currency")),
+      selected_lang: safeGetItem("locale") || "en",
+      selected_currency: safeJsonParse("currency", null),
       showLanguageCurrency: false,
       fixedDropdownStyle: {},
     };

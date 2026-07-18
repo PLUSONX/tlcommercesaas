@@ -3,7 +3,7 @@ export default {
     return state.currency;
   },
   cartItemCount(state) {
-    if (!state.cart.length) {
+    if (!Array.isArray(state.cart) || !state.cart.length) {
       return 0;
     }
     return state.cart.reduce(

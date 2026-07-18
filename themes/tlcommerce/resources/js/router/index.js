@@ -294,7 +294,12 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const lang = localStorage.getItem("locale") || "en";
+  let lang = "en";
+  try {
+    lang = localStorage.getItem("locale") || "en";
+  } catch (e) {
+    lang = "en";
+  }
   loadLanguageAsync(lang)
     .then(() => next())
     .catch(() => next());

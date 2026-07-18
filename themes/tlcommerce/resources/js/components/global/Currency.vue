@@ -3,6 +3,31 @@
 </template>
 <script>
 import { mapState } from "vuex";
+import { safeJsonParse } from "../../utils/safeStorage";
+
+const EMPTY_CURRENCY = {
+  symbol: "",
+  conversion_rate: 1,
+  position: 1,
+  thousand_separator: ",",
+  decimal_separator: ".",
+  number_of_decimal: 2,
+};
+
+function readCurrency(key) {
+  const parsed = safeJsonParse(key, null);
+  if (!parsed || typeof parsed !== "object") {
+    return { ...EMPTY_CURRENCY };
+  }
+  return {
+    ...EMPTY_CURRENCY,
+    ...parsed,
+    conversion_rate: Number(parsed.conversion_rate) || 1,
+    number_of_decimal:
+      parsed.number_of_decimal != null ? Number(parsed.number_of_decimal) : 2,
+  };
+}
+
 export default {
   name: "Currency",
   props: {
@@ -18,8 +43,8 @@ export default {
   },
   data() {
     return {
-      system_currency: JSON.parse(localStorage.getItem("default_currency")),
-      user_currency: JSON.parse(localStorage.getItem("currency")),
+      system_currency: readCurrency("default_currency"),
+      user_currency: readCurrency("currency"),
     };
   },
   computed: mapState({
@@ -73,6 +98,8 @@ export default {
       if (this.user_currency.position == 4) {
         return final_amount + " " + this.user_currency.symbol;
       }
+
+      return final_amount;
     },
   }),
 };

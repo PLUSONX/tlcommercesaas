@@ -2,39 +2,41 @@ import { createStore } from "vuex";
 import mutations from "./mutations.js";
 import actions from "./actions.js";
 import getters from "./getters.js";
-import createMultiTabState from 'vuex-multi-tab-state';
 import layout from './modules/layout';
+import { safeGetItem, safeJsonParse, asArray } from "../utils/safeStorage";
 
+// vuex-multi-tab-state removed: it throws when localStorage is blocked
+// (common in Instagram WebView) and can restore corrupt full-store snapshots.
 
 const store = createStore({
   state() {
     return {
       notifications: [],
-      siteSettings: JSON.parse(localStorage.getItem("siteSettings")) || null,
-      siteProperties: JSON.parse(localStorage.getItem("siteProperties")) || null,
-      currency: JSON.parse(localStorage.getItem("currency")) || {},
-      defaultCurrency: JSON.parse(localStorage.getItem("default_currency")) || {},
-      customerToken: JSON.parse(localStorage.getItem("customerToken")) || "",
-      customerInfo: JSON.parse(localStorage.getItem("customerInfo")) || {},
-      customerDashboardInfo: JSON.parse(localStorage.getItem("customerDashboardInfo")) || null,
-      isCustomerLogin: JSON.parse(localStorage.getItem("isCustomerLogin")) || false,
-      locale: localStorage.getItem("locale") || "en",
-      compareItems: JSON.parse(localStorage.getItem("compareItems") || "[]"),
-      cart: JSON.parse(localStorage.getItem("cart") || "[]"),
-      checkoutItems: JSON.parse(localStorage.getItem("checkoutItems") || "[]"),
-      billingDetails: JSON.parse(localStorage.getItem("billingDetails") || null),
-      shippingDetails: JSON.parse(localStorage.getItem("shippingDetails") || null),
-      guestCustomerInfo: JSON.parse(localStorage.getItem("guestCustomerInfo") || null),
-      isActiveBillToDifferentAddress: JSON.parse(localStorage.getItem("isActiveBillToDifferentAddress") || false),
-      isActiveCreateNewAccount: JSON.parse(localStorage.getItem("isActiveCreateNewAccount") || false),
-      isActivePickupPoint: JSON.parse(localStorage.getItem("isActivePickupPoint") || false),
-      isActiveHomeDelivery: JSON.parse(localStorage.getItem("isActiveHomeDelivery") || true),
-      pickupPoint: JSON.parse(localStorage.getItem("pickupPoint") || null),
-      shippingCost: JSON.parse(localStorage.getItem("shippingCost") || 0),
-      tax: JSON.parse(localStorage.getItem("tax") || 0),
-      couponDiscount: JSON.parse(localStorage.getItem("couponDiscount") || "[]"),
-      couponCode: JSON.parse(localStorage.getItem("couponCode") || null),
-      mode: localStorage.getItem("mode") || null,
+      siteSettings: safeJsonParse("siteSettings", null),
+      siteProperties: safeJsonParse("siteProperties", null),
+      currency: safeJsonParse("currency", {}) || {},
+      defaultCurrency: safeJsonParse("default_currency", {}) || {},
+      customerToken: safeJsonParse("customerToken", "") || "",
+      customerInfo: safeJsonParse("customerInfo", {}) || {},
+      customerDashboardInfo: safeJsonParse("customerDashboardInfo", null),
+      isCustomerLogin: safeJsonParse("isCustomerLogin", false) || false,
+      locale: safeGetItem("locale") || "en",
+      compareItems: asArray(safeJsonParse("compareItems", [])),
+      cart: asArray(safeJsonParse("cart", [])),
+      checkoutItems: asArray(safeJsonParse("checkoutItems", [])),
+      billingDetails: safeJsonParse("billingDetails", null),
+      shippingDetails: safeJsonParse("shippingDetails", null),
+      guestCustomerInfo: safeJsonParse("guestCustomerInfo", null),
+      isActiveBillToDifferentAddress: safeJsonParse("isActiveBillToDifferentAddress", false) || false,
+      isActiveCreateNewAccount: safeJsonParse("isActiveCreateNewAccount", false) || false,
+      isActivePickupPoint: safeJsonParse("isActivePickupPoint", false) || false,
+      isActiveHomeDelivery: safeJsonParse("isActiveHomeDelivery", true) !== false,
+      pickupPoint: safeJsonParse("pickupPoint", null),
+      shippingCost: safeJsonParse("shippingCost", 0) || 0,
+      tax: safeJsonParse("tax", 0) || 0,
+      couponDiscount: asArray(safeJsonParse("couponDiscount", [])),
+      couponCode: safeJsonParse("couponCode", null),
+      mode: safeGetItem("mode") || null,
       preloaderLoading: false,
       deliveryData: {}
     };
@@ -45,9 +47,7 @@ const store = createStore({
   modules: {
     layout
   },
-  plugins: [
-    createMultiTabState(),
-  ],
+  plugins: [],
 });
 
 export default store;

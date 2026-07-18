@@ -120,8 +120,11 @@ class ThemeOptionController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error("Layout Get Error: {$e->getMessage()}");
-            toastNotification('error', translate('Layout Get Error'));
-            return redirect()->back();
+            // SPA API — never redirect HTML; axios must receive JSON
+            return response()->json([
+                'layout' => null,
+                'error' => 'Layout Get Error',
+            ], 500);
         }
     }
 

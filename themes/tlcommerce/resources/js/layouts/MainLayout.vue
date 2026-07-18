@@ -1,42 +1,113 @@
 <template>
   <div :class="layoutClass">
     <preloader v-if="!layoutReady" :loading="true" />
-    <!-- <div style="position:fixed;top:0;left:0;z-index:9999;background:yellow;padding:10px;">
-      onMainLyout: isSplitScreen: {{ isSplitScreen }} | isMobile: {{ isMobile }}
-    </div> -->
-    <!-- <div style="position:fixed;top:0;left:0;z-index:9999;background:yellow;padding:10px;">
-      <h1 style="color: red;">Test again</h1>
-    </div> -->
-    <!-- <template v-if="isSplitScreen && !isMobile"> -->
-    <template v-else-if="isSplitScreen">
-      <div class="split-screen-container" :style="containerStyle">
-        <preloader :loading="preloaderLoading"></preloader>
-        <div class="split-screen-content" :class="[contentSideClass, 'force-mobile-view']" :style="contentStyle">
-          <div class="split-screen-header-sticky"
-            :class="{ 'split-screen-header-sticky--compact': isSplitScreen && isMobile }">
-            <div class="split-screen-search-inline-host"></div>
-            <custom-header :key="$route.fullPath" :site-properties="data.site_properties" :mode="mode"
-              :header-logo-style="headerLogoStyle" :cart-item="cartItem" :header-style="headerStyle"
-              :header-menu-style="headerMenuStyle" />
+    <template v-else>
+      <template v-if="isSplitScreen">
+        <div class="split-screen-container" :style="containerStyle">
+          <preloader :loading="preloaderLoading"></preloader>
+          <div class="split-screen-content" :class="[contentSideClass, 'force-mobile-view']" :style="contentStyle">
+            <div class="split-screen-header-sticky"
+              :class="{ 'split-screen-header-sticky--compact': isSplitScreen && isMobile }">
+              <div class="split-screen-search-inline-host"></div>
+              <custom-header :key="$route.fullPath" :site-properties="data.site_properties" :mode="mode"
+                :header-logo-style="headerLogoStyle" :cart-item="cartItem" :header-style="headerStyle"
+                :header-menu-style="headerMenuStyle" />
+            </div>
+
+            <div ref="splitContentScroll" class="content-split-nudge">
+              <router-view v-slot="{ Component, route }">
+                <component v-if="showRouteOutlet && Component" :is="Component"
+                  :key="`${route.name}-${route.fullPath}-${outletKey}`" />
+              </router-view>
+            </div>
+
+            <gdpr v-if="isSplitScreen && isMobile && gdpr_properties != null && gdpr_properties.gdpr_status == 1"
+              class="split-screen-gdpr" :properties="gdpr_properties"></gdpr>
+
           </div>
 
-          <div ref="splitContentScroll" class="content-split-nudge">
+          <div class="split-screen-feature" :class="featureSideClass" :style="featureStyle">
+            <BannerFeature v-if="isSplitScreen && !isMobile" :settings="splitScreenSettings" :imagePath="featureImagePath"
+              :cart-item="cartItem" :header-style="headerStyle" :header-menu-style="headerMenuStyle" />
+
+            <!-- Dark Light Switcher -->
+            <div class="floating-mode-switcher-wrap" v-if="dark_light_status == '1'">
+              <label class="dl-switch">
+                <input class="dark-looks-mode-changer" @change="toggleDark" :checked="mode == 'dark'" type="checkbox" />
+                <span class="dl-slider"></span>
+                <span class="dl-light">Light</span>
+                <span class="dl-dark">Dark</span>
+              </label>
+            </div>
+            <!-- End Dark Light Switcher -->
+
+          </div>
+        </div>
+      </template>
+
+      <!-- Default Layout -->
+      <template v-else>
+        <div class="layout__two">
+          <preloader :loading="preloaderLoading"></preloader>
+          <top-bar-banner :properties="top_bar_banner_properties" v-if="
+            top_bar_banner_properties != null &&
+            top_bar_banner_properties.topbar_banner_status == 1
+          "></top-bar-banner>
+          <!-- Header -->
+          <header class="header__two love-sticky">
+            <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
+              :wishlist-item="wishlistItem" :compare-item="compareItem" :header-logo-style="headerLogoStyle"
+              :header-menu-style="headerMenuStyle" :data-loading="MenuItemsLoading" :currencies="data.currencies"
+              :languages="data.languages" @change-language-currency="setCurrencyLanguage"
+              @logout-customer="logoutCustomer" class="d-none d-lg-block"></header-middle>
+            <header-bottom :data-loading="MenuItemsLoading" :mega-categories="data.megaCategories"
+              :menu-items="headerBottomMenu" :header-style="headerStyle" :header-menu-style="headerMenuStyle"
+              class="d-none d-lg-block"></header-bottom>
+          </header>
+
+          <mobile-header :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
+            :header-style="headerStyle" :header-menu-style="headerMenuStyle" :header-logo-style="headerLogoStyle"
+            :currencies="data.currencies" :languages="data.languages" :data-loading="MenuItemsLoading"
+            @change-language-currency="setCurrencyLanguage"></mobile-header>
+          <!-- End Header -->
+
+          <div class="main_content light-bg">
             <router-view v-slot="{ Component, route }">
               <component v-if="showRouteOutlet && Component" :is="Component"
                 :key="`${route.name}-${route.fullPath}-${outletKey}`" />
             </router-view>
           </div>
 
-          <gdpr v-if="isSplitScreen && isMobile && gdpr_properties != null && gdpr_properties.gdpr_status == 1"
-            class="split-screen-gdpr" :properties="gdpr_properties"></gdpr>
+          <StickyFooter v-if="!isSingleProduct" />
 
-        </div>
+          <!-- Footer -->
+          <footer :class="this.footerStyle.custom_footer == 1
+            ? 'custom-footer footer footer__two c1-bg'
+            : 'footer footer__two c1-bg'
+            " :style="{ backgroundImage: `url('${footerBgImg}')` }">
+            <!-- Footer Top -->
+            <div class="footer-top">
+              <div class="custom-container2">
+                <div class="row justify-content-between">
+                  <v-runtime-template :template="widget_html"></v-runtime-template>
+                </div>
+              </div>
+            </div>
+            <!-- End Footer Top -->
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+              <div class="custom-container2">
+                <div class="border-top text-center py-4">
+                  <copyright :site-properties="data.site_properties" />
+                </div>
+              </div>
+            </div>
+            <!-- End Footer Bottom -->
+          </footer>
+          <!-- End Footer -->
 
-        <div class="split-screen-feature" :class="featureSideClass" :style="featureStyle">
-          <BannerFeature v-if="isSplitScreen && !isMobile" :settings="splitScreenSettings" :imagePath="featureImagePath"
-            :cart-item="cartItem" :header-style="headerStyle" :header-menu-style="headerMenuStyle" />
-
-
+          <!--Cookie Consent-->
+          <gdpr v-if="gdpr_properties != null && gdpr_properties.gdpr_status == 1" :properties="gdpr_properties"></gdpr>
           <!--End Cookie Consent-->
 
           <!-- Dark Light Switcher -->
@@ -50,140 +121,9 @@
           </div>
           <!-- End Dark Light Switcher -->
 
+          <BackToTop />
         </div>
-      </div>
-    </template>
-
-    <!-- <template v-else-if="isSplitScreen && isMobile">
-
-      <div class="layout__two">
-        <preloader :loading="preloaderLoading"></preloader>
-
-        <mobile-header :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
-          :header-style="headerStyle" :header-menu-style="headerMenuStyle"
-          :header-logo-style="headerLogoStyle"></mobile-header>
-
-        <div class="main_content light-bg">
-          <slot />
-        </div>
-
-
-
-        <BackToTop />
-      </div>
-    </template> -->
-
-    <!-- Default Layout -->
-    <template v-else>
-
-
-      <div class="layout__two">
-        <preloader :loading="preloaderLoading"></preloader>
-        <top-bar-banner :properties="top_bar_banner_properties" v-if="
-          top_bar_banner_properties != null &&
-          top_bar_banner_properties.topbar_banner_status == 1
-        "></top-bar-banner>
-        <!-- Header -->
-        <header class="header__two love-sticky">
-          <!-- <header-top class="d-none d-lg-block" :data-loading="MenuItemsLoading" :right-menu-items="rightMenuItems"
-            :left-menu-items="leftMenuItems" :header-menu-style="headerMenuStyle"></header-top> -->
-          <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
-            :wishlist-item="wishlistItem" :compare-item="compareItem" :header-logo-style="headerLogoStyle"
-            :header-menu-style="headerMenuStyle" :data-loading="MenuItemsLoading" :currencies="data.currencies"
-            :languages="data.languages" @change-language-currency="setCurrencyLanguage"
-            @logout-customer="logoutCustomer" class="d-none d-lg-block"></header-middle>
-          <header-bottom :data-loading="MenuItemsLoading" :mega-categories="data.megaCategories"
-            :menu-items="headerBottomMenu" :header-style="headerStyle" :header-menu-style="headerMenuStyle"
-            class="d-none d-lg-block"></header-bottom>
-        </header>
-
-        <mobile-header :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
-          :header-style="headerStyle" :header-menu-style="headerMenuStyle" :header-logo-style="headerLogoStyle"
-          :currencies="data.currencies" :languages="data.languages" :data-loading="MenuItemsLoading"
-          @change-language-currency="setCurrencyLanguage"></mobile-header>
-        <!-- End Header -->
-
-        <div class="main_content light-bg">
-          <router-view v-slot="{ Component, route }">
-            <component v-if="showRouteOutlet && Component" :is="Component"
-              :key="`${route.name}-${route.fullPath}-${outletKey}`" />
-          </router-view>
-        </div>
-
-        <StickyFooter v-if="!isSingleProduct" />
-
-        <!-- Footer -->
-        <footer :class="this.footerStyle.custom_footer == 1
-          ? 'custom-footer footer footer__two c1-bg'
-          : 'footer footer__two c1-bg'
-          " :style="{ backgroundImage: `url('${footerBgImg}')` }">
-          <!-- Footer Top -->
-          <div class="footer-top">
-            <div class="custom-container2">
-              <div class="row justify-content-between">
-                <v-runtime-template :template="widget_html"></v-runtime-template>
-              </div>
-            </div>
-          </div>
-          <!-- End Footer Top -->
-          <!-- Footer Bottom -->
-          <div class="footer-bottom">
-            <div class="custom-container2">
-              <div class="border-top text-center py-4">
-                <copyright :site-properties="data.site_properties" />
-              </div>
-            </div>
-          </div>
-          <!-- End Footer Bottom -->
-        </footer>
-        <!-- End Footer -->
-
-        <!--Cookie Consent-->
-        <gdpr v-if="gdpr_properties != null && gdpr_properties.gdpr_status == 1" :properties="gdpr_properties"></gdpr>
-        <!--End Cookie Consent-->
-
-        <!-- Dark Light Switcher -->
-        <div class="floating-mode-switcher-wrap" v-if="dark_light_status == '1'">
-          <label class="dl-switch">
-            <input class="dark-looks-mode-changer" @change="toggleDark" :checked="mode == 'dark'" type="checkbox" />
-            <span class="dl-slider"></span>
-            <span class="dl-light">Light</span>
-            <span class="dl-dark">Dark</span>
-          </label>
-        </div>
-        <!-- End Dark Light Switcher -->
-
-        <BackToTop />
-      </div>
-
-      <!-- <div class="layout__two">
-        <preloader :loading="preloaderLoading"></preloader>
-
-        <top-bar-banner :properties="top_bar_banner_properties" v-if="
-          top_bar_banner_properties != null &&
-          top_bar_banner_properties.topbar_banner_status == 1
-        "></top-bar-banner>
-        <header class="header__two love-sticky">
-
-          <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
-            :wishlist-item="wishlistItem" :compare-item="compareItem" :header-logo-style="headerLogoStyle"
-            :header-menu-style="headerMenuStyle" class="d-none d-lg-block"></header-middle>
-
-        </header>
-
-        <mobile-header :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
-          :header-style="headerStyle" :header-menu-style="headerMenuStyle"
-          :header-logo-style="headerLogoStyle"></mobile-header>
-
-        <div class="main_content light-bg">
-          <slot />
-        </div>
-
-
-
-        <BackToTop />
-      </div> -->
-
+      </template>
     </template>
 
     <!--Cookie Consent (default layout + split-screen desktop)-->
@@ -507,13 +447,16 @@ export default {
         state.customerDashboardInfo != null
           ? state.customerDashboardInfo.total_wishlisted_product : 0,
       cartItem: (state) =>
-        state.cart.length ? state.cart.reduce((a, b) => a + b.quantity, 0) : 0,
+        Array.isArray(state.cart) && state.cart.length
+          ? state.cart.reduce((a, b) => a + (b.quantity || 0), 0)
+          : 0,
       compareItem: (state) =>
-        state.compareItems.length ? state.compareItems.length : 0,
+        Array.isArray(state.compareItems) ? state.compareItems.length : 0,
     }),
 
     ...mapState('layout', {
       layoutLoading: (state) => state.loading,
+      hasFetchedLayout: (state) => state.hasFetched,
     }),
 
     ...mapGetters('layout', [
@@ -526,7 +469,8 @@ export default {
     ]),
 
     layoutReady() {
-      return !this.layoutLoading;
+      // Server bootstrap sets hasFetched immediately; API refresh is non-blocking.
+      return this.hasFetchedLayout && !this.layoutLoading;
     },
 
     layoutClass() {
@@ -755,6 +699,11 @@ export default {
     async resetRouteOutlet() {
       this.showRouteOutlet = false;
       await this.$nextTick();
+      // Fail-safe: never leave the router outlet blank if history/route
+      // does not update (common in Instagram in-app browsers).
+      setTimeout(() => {
+        this.showRouteOutlet = true;
+      }, 400);
     },
 
     // Your existing methods...

@@ -3,12 +3,16 @@
 @php
     use Plugin\TlcommerceCore\Repositories\SettingsRepository;
     use Core\Repositories\SettingsRepository as CoreSettingRepository;
+    use Theme\TLCommerce\Repositories\LayoutSettingsRepository;
     use Illuminate\Support\Facades\Cache;
     use Illuminate\Support\Facades\Log;
 
     $siteProperties = Cache::rememberForever(tenantCacheKey('site-properties'), function () {
         return CoreSettingRepository::SiteProperties();
     });
+
+    // Instant layout bootstrap for Vue (cached per tenant)
+    $activeLayoutBootstrap = (new LayoutSettingsRepository())->getActiveLayout();
 
     $site_name = str_replace('"', '', $siteProperties['site_title']);
     $site_name = str_replace("'", '', $site_name);
@@ -18,6 +22,7 @@
 
     $default_language = defaultLanguage();
     $default_curency = SettingsRepository::defaultCurrency();
+    $default_currency_json = $default_curency ? $default_curency->toJson() : null;
 
     $active_theme = getActiveTheme();
 
@@ -53,10 +58,23 @@
     
 @endphp
 
+@php
+    // Force browsers / proxies to revalidate the HTML shell so new main.js?v= is picked up
+    if (!headers_sent()) {
+        header('Cache-Control: no-cache, no-store, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+    }
+@endphp
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
+    {{-- Force browsers / Instagram WebView to revalidate HTML so they pick up new ?v= assets --}}
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
 
     @if($facebook_integration && $facebook_integration->is_active)
     @php 
@@ -223,27 +241,29 @@
     </div>
     <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('custom_css.css')) }}">
     <script>
+        try {
+            //set site title
+            localStorage.setItem('site_title', @json($site_title));
 
-        //set site title
-        let site_title = localStorage.getItem('site_title');
-        localStorage.setItem('site_title', '<?php echo $site_title; ?>');
+            //set default language
+            if (localStorage.getItem('locale') == null) {
+                localStorage.setItem('locale', @json($default_language));
+            }
 
-        //set default language
-        let locale = localStorage.getItem('locale');
-        if (locale == null) {
-            localStorage.setItem('locale', '<?php echo $default_language; ?>');
+            //set selected / default currency (JSON-safe; never echo Eloquent model raw)
+            @if ($default_currency_json)
+                if (localStorage.getItem('currency') == null) {
+                    localStorage.setItem('currency', @json($default_currency_json));
+                }
+                localStorage.setItem('default_currency', @json($default_currency_json));
+            @endif
+
+            //set default mood
+            localStorage.setItem('mode', @json($site_default_mood));
+        } catch (e) {
+            // Instagram / private WebViews may block storage — do not break page boot
+            console.warn('[tlcommerce] localStorage seed failed', e);
         }
-        //set selected currency
-        let currency = localStorage.getItem('currency');
-
-        if (currency == null) {
-            localStorage.setItem('currency', '<?php echo $default_curency; ?>');
-        }
-        //set default currency
-        localStorage.setItem('default_currency', '<?php echo $default_curency; ?>');
-
-        //set default mood
-        localStorage.setItem('mode', '<?php echo $site_default_mood; ?>');
     </script>
     <!--Custom script-->
     @if ($custom_js_properties != null)
@@ -253,10 +273,17 @@
 
     @if (isActivePluging('tlecommercecore'))
 
+    <script>
+        window.__TLC_BOOTSTRAP__ = {
+            activeLayout: @json($activeLayoutBootstrap)
+        };
+    </script>
+
     <!-- <script src="{{ asset('themes/tlcommerce/public/js/main.js?v=210') }}"></script>  -->
 
     <!-- <script src="{{ asset('themes/tlcommerce/js/main.js?v=210') }}"></script> -->
-     <script src="{{ asset('themes/tlcommerce/js/main.js?v=216') }}"></script>
+     {{-- Bump ASSET_VERSION in webpack.mix.js whenever this ?v= changes --}}
+     <script src="{{ asset('themes/tlcommerce/js/main.js?v=219') }}"></script>
     <!-- <script src="{{ asset('themes/tlcommerce/public/js/main.js?v=210') }}"></script> -->
 
 

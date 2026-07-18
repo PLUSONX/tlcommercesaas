@@ -433,6 +433,7 @@ import enums from "../../../enums/enums";
 import axios from "axios";
 import { mapState } from "vuex";
 import { CSpinner } from "@coreui/vue";
+import { safeJsonParse } from "@/utils/safeStorage";
 import {
   CTable,
   CTableBody,
@@ -555,8 +556,8 @@ export default {
       wallet_available_balance: 0,
       wallet_pending_balance: 0,
       minimum_recharge_error: "",
-      system_currency: JSON.parse(localStorage.getItem("default_currency")),
-      user_currency: JSON.parse(localStorage.getItem("currency")),
+      system_currency: safeJsonParse("default_currency", { conversion_rate: 1, number_of_decimal: 2 }),
+      user_currency: safeJsonParse("currency", { conversion_rate: 1, number_of_decimal: 2 }),
     };
   },
   watch: {
@@ -668,7 +669,7 @@ export default {
         return null;
       }
       if (this.recharge_amount >= this.minimum_recharge_amount) {
-        let user_currency = JSON.parse(localStorage.getItem("currency"));
+        let user_currency = safeJsonParse("currency", { conversion_rate: 1 });
         //Online Recharge
         if (this.selected_recharge_type == this.recharge_type.ONLINE) {
           if (this.selected_online_payment_method == null) {
