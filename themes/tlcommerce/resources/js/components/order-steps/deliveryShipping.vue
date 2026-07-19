@@ -683,21 +683,21 @@
     <!--End delivery not available alert-->
 
     <!--Action area-->
-    <div class="row">
-      <div class="col-12 d-flex flex-wrap justify-content-between">
-        <!-- <button type="button" class="btn btn_border m-w-100 mb-10 justify-content-center"
-          @click.prevent="goPreviousStep"> -->
+    <!-- Continue removed: Place Order on Payment runs validateAndPersist + prep + submit -->
+    <!-- <div class="row">
+      <div class="col-12 checkout-cta-stack">
         <button type="button" class="btn btn_fill m-w-100 mb-10 justify-content-center" @click.prevent="goPreviousStep">
           <span class="material-icons me-2"> arrow_back </span>
           {{ $t("Previous") }}
         </button>
-        <button type="button" class="btn btn_fill m-w-100 mb-10 justify-content-center" :disabled="deliveryNotAvailable"
-          @click.prevent="goNextStep">
+        <button type="button"
+          class="btn btn_fill checkout-cta-primary w-100 justify-content-center"
+          :disabled="deliveryNotAvailable" @click.prevent="goNextStep">
           {{ $t("Continue") }}
           <span class="material-icons ms-2"> arrow_forward </span>
         </button>
       </div>
-    </div>
+    </div> -->
     <!--End Action Area-->
 
     <!--Shipping mot available Product modal-->
@@ -759,9 +759,14 @@
         </div>
       </CModalBody>
       <CModalFooter>
-        <router-link to="/cart" class="btn btn_fill">
+        <button type="button" class="btn btn_fill" @click.prevent="
+          () => {
+            notAvailableProductsModal = false;
+            $emit('previous-step');
+          }
+        ">
           {{ $t("Update cart") }}
-        </router-link>
+        </button>
       </CModalFooter>
     </CModal>
     <!--End Shipping mot available Product modal-->
@@ -779,7 +784,7 @@ import {
 } from "@coreui/vue";
 export default {
   name: "deliveryShipping",
-  emits: ["next-step"],
+  emits: ["next-step", "previous-step"],
   components: {
     CModal,
     CModalHeader,
@@ -1085,98 +1090,98 @@ export default {
       }
     },
     /**
-     * Go to cart page
+     * Go to previous step (cart)
      */
     goPreviousStep() {
-      this.$router.push("/cart");
+      this.$emit("previous-step");
     },
     /**
-     * Will submit shipping info
+     * Validate delivery form and persist shipping/billing state to Vuex.
+     * Used by Place Order pipeline (no step emit).
+     * @returns {boolean}
+     */
+    validateAndPersist() {
+      if (!this.validateData()) {
+        return false;
+      }
+      if (this.deliveryNotAvailable) {
+        this.$toast.error(this.$t("Delivery not available in your location"));
+        return false;
+      }
+      //Home delivery checkout
+      if (this.isActiveHomeDelivery && !this.isActivePickupPoint) {
+        let shippingAddress = {};
+        let billingAddress = {};
+        if (this.isCustomerLogin) {
+          shippingAddress = this.customerShippingInfo;
+          billingAddress =
+            this.config?.use_shipping_address_as_billing_address ==
+              this.enums.status.ACTIVE
+              ? this.customerShippingInfo
+              : this.customerBillingInfo;
+        } else {
+          shippingAddress = this.guestShippingInfo;
+          billingAddress =
+            this.config?.use_shipping_address_as_billing_address ==
+              this.enums.status.ACTIVE ||
+              !this.isActiveBillToDifferentAddress
+              ? this.guestShippingInfo
+              : this.guestBillingInfo;
+          this.$store.dispatch(
+            "storeGuestCustomerDetails",
+            this.guestCustomerInfo
+          );
+          this.$store.dispatch(
+            "storeIsActiveBillToDifferentAddress",
+            this.isActiveBillToDifferentAddress
+          );
+          this.$store.dispatch(
+            "storeIsActiveCreateNewAccount",
+            this.isActiveCreateNewAccount
+          );
+        }
+        this.$store.dispatch(
+          "storeHomeDeliveryCheckout",
+          this.isActiveHomeDelivery
+        );
+        this.$store.dispatch("storeShippingDetails", shippingAddress);
+        this.$store.dispatch("storeBillingDetails", billingAddress);
+        return true;
+      }
+      //Pickup point checkout
+      if (this.isActivePickupPoint && !this.isActiveHomeDelivery) {
+        if (!this.isCustomerLogin) {
+          this.$store.dispatch(
+            "storeGuestCustomerDetails",
+            this.guestCustomerInfo
+          );
+          this.$store.dispatch(
+            "storeIsActiveBillToDifferentAddress",
+            this.isActiveBillToDifferentAddress
+          );
+          this.$store.dispatch(
+            "storeIsActiveCreateNewAccount",
+            this.isActiveCreateNewAccount
+          );
+        }
+        this.$store.dispatch(
+          "storePickoupPoint",
+          this.selectedPickupPoints
+        );
+        this.$store.dispatch(
+          "storePickoupPointCheckout",
+          this.isActivePickupPoint
+        );
+        return true;
+      }
+      return false;
+    },
+    /**
+     * Will submit shipping info (legacy step advance; Continue CTA commented out)
      */
     goNextStep() {
-      if (this.validateData()) {
-        if (!this.deliveryNotAvailable) {
-          //Home delivery checkout
-          if (this.isActiveHomeDelivery && !this.isActivePickupPoint) {
-            let shippingAddress = {};
-            let billingAddress = {};
-            if (this.isCustomerLogin) {
-              shippingAddress = this.customerShippingInfo;
-              billingAddress =
-                this.config?.use_shipping_address_as_billing_address ==
-                  this.enums.status.ACTIVE
-                  ? this.customerShippingInfo
-                  : this.customerBillingInfo;
-            } else {
-              shippingAddress = this.guestShippingInfo;
-              billingAddress =
-                this.config?.use_shipping_address_as_billing_address ==
-                  this.enums.status.ACTIVE ||
-                  !this.isActiveBillToDifferentAddress
-                  ? this.guestShippingInfo
-                  : this.guestBillingInfo;
-              //set guest customer details
-              this.$store.dispatch(
-                "storeGuestCustomerDetails",
-                this.guestCustomerInfo
-              );
-              //set billed to different address
-              this.$store.dispatch(
-                "storeIsActiveBillToDifferentAddress",
-                this.isActiveBillToDifferentAddress
-              );
-              //Set create new account in guest checkout
-              this.$store.dispatch(
-                "storeIsActiveCreateNewAccount",
-                this.isActiveCreateNewAccount
-              );
-            }
-            //set home delivery checkout
-            this.$store.dispatch(
-              "storeHomeDeliveryCheckout",
-              this.isActiveHomeDelivery
-            );
-            //set shipping address
-            this.$store.dispatch("storeShippingDetails", shippingAddress);
-            //set billing address
-            this.$store.dispatch("storeBillingDetails", billingAddress);
-            this.$emit("next-step");
-          }
-          //Pickup point checkout
-          if (this.isActivePickupPoint && !this.isActiveHomeDelivery) {
-            if (!this.isCustomerLogin) {
-              //Guest customer info
-              this.$store.dispatch(
-                "storeGuestCustomerDetails",
-                this.guestCustomerInfo
-              );
-              //set billed to different address
-              this.$store.dispatch(
-                "storeIsActiveBillToDifferentAddress",
-                this.isActiveBillToDifferentAddress
-              );
-              //Set create new account in guest checkout
-              this.$store.dispatch(
-                "storeIsActiveCreateNewAccount",
-                this.isActiveCreateNewAccount
-              );
-            }
-            //Store pickup point information
-            this.$store.dispatch(
-              "storePickoupPoint",
-              this.selectedPickupPoints
-            );
-            //set pickup point checkout
-            this.$store.dispatch(
-              "storePickoupPointCheckout",
-              this.isActivePickupPoint
-            );
-
-            this.$emit("next-step");
-          }
-        } else {
-          this.$toast.error(this.$t("Delivery not available in your location"));
-        }
+      if (this.validateAndPersist()) {
+        this.$emit("next-step");
       }
     },
 
@@ -1580,5 +1585,26 @@ export default {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.checkout-cta-stack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.checkout-cta-primary {
+  min-height: 48px;
+  width: 100% !important;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.checkout-cta-secondary {
+  min-height: 44px;
+  width: 100% !important;
+  border-radius: 8px;
 }
 </style>

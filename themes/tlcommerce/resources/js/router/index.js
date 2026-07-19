@@ -134,7 +134,7 @@ const router = createRouter({
     {
       path: "/cart",
       name: "Cart",
-      component: () => import(/* webpackChunkName: "ShippingCart" */ '../views/cart/index.vue'),
+      redirect: { name: "Checkout", query: { step: "cart" } },
     },
     {
       path: "/select/location",

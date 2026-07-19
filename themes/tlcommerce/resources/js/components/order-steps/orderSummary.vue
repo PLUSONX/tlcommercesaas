@@ -2,6 +2,24 @@
   <div class="order-details shadow-card">
     <h3 class="checkout-title">{{ $t("Summary") }}</h3>
     <div class="table-responsive">
+      <!--Coupon Apply Area-->
+      <div v-if="enableApplyCoupon" class="coupon mb-3">
+        <div class="form-group d-flex gap-1">
+          <input class="form-control me-1" type="text" v-model="coupon_code"
+            v-bind:placeholder="$t('Your Coupon')" />
+          <button type="submit" class="btn coupon-btn btn_fill py-0" :disabled="couponApplying"
+            @click.prevent="applyCoupon">
+            <span v-if="couponApplying">
+              <CSpinner component="span" size="sm" aria-hidden="true" />
+              {{ $t("Wait") }}
+            </span>
+            <span v-else>
+              {{ $t("Apply") }}
+            </span>
+          </button>
+        </div>
+      </div>
+      <!--End Coupon apply area-->
       <table class="shop_table w-100">
         <tbody>
           <tr class="font-weight-bold">
@@ -11,7 +29,7 @@
           <tr
             class="products font-weight-regular"
             v-for="tdata in tableData"
-            :key="tdata.id"
+            :key="tdata.id || tdata.uid"
           >
             <td>
               <span class="product-name">{{ tdata.name }}</span>
@@ -68,7 +86,7 @@
           <template
             v-if="
               couponDiscounts.length > 0 &&
-              config?.enable_coupon_in_checkout == this.enums.status.ACTIVE
+              config?.enable_coupon_in_checkout == enums.status.ACTIVE
             "
           >
             <tr
@@ -78,6 +96,9 @@
             >
               <td class="d-flex">
                 <span class="c1">{{ discount.coupon_code }}</span>
+                <a href="#" class="material-icons c1 mt-1"
+                  @click.prevent="removeCoupon(discount.coupon_code)">delete
+                </a>
               </td>
               <td>
                 <span class="woocommerce-Price-amount amount c1">
@@ -110,6 +131,7 @@
   </div>
 </template>
 <script>
+import axios from "axios";
 import { mapState } from "vuex";
 import { CSpinner } from "@coreui/vue";
 export default {
@@ -129,16 +151,31 @@ export default {
   },
   data() {
     return {
-      tableData: this.$store.state.checkoutItems,
-      totalPrice: 0,
+      coupon_code: "",
+      couponApplying: false,
     };
   },
   emits: ["get-total-payable"],
-  computed: mapState({
-    shippingCost: (state) => (state.shippingCost ? state.shippingCost : 0),
-    totalTax: (state) => (state.tax ? state.tax : 0),
-    couponDiscounts: (state) =>
-      state.couponDiscount ? state.couponDiscount : [],
+  computed: {
+    ...mapState({
+      shippingCost: (state) => (state.shippingCost ? state.shippingCost : 0),
+      totalTax: (state) => (state.tax ? state.tax : 0),
+      couponDiscounts: (state) =>
+        state.couponDiscount ? state.couponDiscount : [],
+      checkoutItems: (state) => state.checkoutItems || [],
+      cart: (state) => state.cart || [],
+      isCustomerLogin: (state) => state.isCustomerLogin,
+      customer_id: (state) =>
+        state.customerInfo != null ? state.customerInfo.id : null,
+    }),
+    tableData() {
+      if (Array.isArray(this.checkoutItems) && this.checkoutItems.length > 0) {
+        return this.checkoutItems;
+      }
+      return (this.cart || []).filter(
+        (item) => item.is_available == 1 && item.is_selected
+      );
+    },
     totalUnitPrice() {
       return this.tableData.reduce((accum, item) => {
         return parseFloat(accum) + parseFloat(item.unitPrice * item.quantity);
@@ -159,7 +196,23 @@ export default {
         return 0;
       }
     },
-  }),
+    enableApplyCoupon() {
+      if (
+        this.config?.is_active_coupon == this.enums.status.ACTIVE &&
+        this.config?.enable_coupon_in_checkout == this.enums.status.ACTIVE
+      ) {
+        if (
+          this.couponDiscounts.length > 0 &&
+          this.config?.enable_multiple_coupon_in_checkout ==
+            this.enums.status.IN_ACTIVE
+        ) {
+          return false;
+        }
+        return true;
+      }
+      return false;
+    },
+  },
   watch: {
     totalPayable() {
       this.changeOrderTotal();
@@ -174,6 +227,65 @@ export default {
      */
     changeOrderTotal() {
       this.$emit("get-total-payable", this.totalPayable);
+    },
+    applyCoupon() {
+      let checkCoupon = this.couponDiscounts.find(
+        (coupon) => coupon.coupon_code == this.coupon_code
+      );
+      if (checkCoupon) {
+        this.$toast.error(this.$t("Coupon applied successfully"));
+        return 0;
+      }
+      const products = this.tableData;
+      if (!products.length) {
+        this.$toast.error(this.$t("No item selected for checkout"));
+        return;
+      }
+      this.couponApplying = true;
+      axios
+        .post("/api/v1/ecommerce-core/apply-coupon", {
+          coupon_code: this.coupon_code,
+          products: JSON.stringify(products),
+          customer_id: this.isCustomerLogin ? this.customer_id : null,
+        })
+        .then((response) => {
+          if (response.data.success) {
+            if (response.data.discount > 0) {
+              let coupon_details = {
+                discount: response.data.discount,
+                id: response.data.coupon_id,
+                coupon_code: this.coupon_code,
+                allow_free_shipping: response.data.free_shipping,
+              };
+
+              this.$store
+                .dispatch("storeCouponDiscount", coupon_details)
+                .then(() => {
+                  this.$toast.success(this.$t("Coupon applied successfully"));
+                  this.coupon_code = "";
+                });
+            }
+
+            if (response.data.discount < 1) {
+              this.$toast.error("Coupon is not applied");
+            }
+          }
+
+          if (!response.data.success) {
+            this.$toast.error(response.data.message);
+          }
+
+          this.couponApplying = false;
+        })
+        .catch(() => {
+          this.couponApplying = false;
+          this.$toast.error(this.$t("Something wrong, Please try again"));
+        });
+    },
+    removeCoupon(code) {
+      this.$store.dispatch("removeCouponDiscount", code).then(() => {
+        this.$toast.success(this.$t("Coupon Remove Successfully"));
+      });
     },
   },
 };
@@ -191,7 +303,7 @@ export default {
   color: #ffffff;
   border: none;
   cursor: pointer;
-  border-radius: 0;
+  border-radius: 8px;
 }
 .product-name {
   display: block;

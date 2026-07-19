@@ -17,7 +17,7 @@
             <div ref="splitContentScroll" class="content-split-nudge">
               <router-view v-slot="{ Component, route }">
                 <component v-if="showRouteOutlet && Component" :is="Component"
-                  :key="`${route.name}-${route.fullPath}-${outletKey}`" />
+                  :key="`${route.name}-${outletKey}`" />
               </router-view>
             </div>
 
@@ -74,7 +74,7 @@
           <div class="main_content light-bg">
             <router-view v-slot="{ Component, route }">
               <component v-if="showRouteOutlet && Component" :is="Component"
-                :key="`${route.name}-${route.fullPath}-${outletKey}`" />
+                :key="`${route.name}-${outletKey}`" />
             </router-view>
           </div>
 

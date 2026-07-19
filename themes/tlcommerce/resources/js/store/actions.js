@@ -164,6 +164,18 @@ export default {
     context.commit("setFinalTax", data);
   },
   /**
+   * Persist checkout shipping prep (product packages) for remount survival
+   */
+  storeCheckoutPrep(context, data) {
+    context.commit("storeCheckoutPrep", data);
+  },
+  /**
+   * Clear checkout prep
+   */
+  flushCheckoutPrep(context) {
+    context.commit("flushCheckoutPrep");
+  },
+  /**
    * Store coupon discount
    */
   storeCouponDiscount(context, data) {

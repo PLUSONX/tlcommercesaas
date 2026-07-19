@@ -141,38 +141,31 @@
           {{ $t("Wallet Balance") }}
           <the-currency :amount="wallet_available_balance"></the-currency>
         </p>
-        <button type="submit" class="btn btn_fill m-w-100 justify-content-center" @click.prevent="payWithWallet">
+        <button type="submit" class="btn btn_fill m-w-100 justify-content-center" @click.prevent="requestPlaceOrder(true)">
           {{ $t("Pay with wallet") }}
         </button>
       </div>
       <!--End Wallet Area-->
 
       <!--Action Area-->
-      <div class="col-12">
-        <div class="d-flex flex-wrap justify-content-between">
-          <!-- <button type="button" class="btn btn_border mb-20 m-w-100 justify-content-center"
+      <div class="col-12 checkout-cta-stack">
+        <!-- <button type="button" class="btn btn_border mb-20 m-w-100 justify-content-center"
             @click.prevent="goPreviousStep"> -->
-          <button type="button" class="btn btn_fill mb-20 m-w-100 justify-content-center"
+        <!-- <button type="button" class="btn btn_fill mb-20 m-w-100 justify-content-center"
             @click.prevent="goPreviousStep">
             <span class="material-icons me-2"> arrow_back </span>
             {{ $t("Previous") }}
-          </button>
-          <button type="submit" class="btn btn_fill mb-20 m-w-100 justify-content-center" :disabled="orderCreating"
-            @click.prevent="
-              () => {
-                pay_wallet = false;
-                createOrder();
-              }
-            ">
-            <span v-if="orderCreating">
-              <CSpinner component="span" size="sm" aria-hidden="true" />
-              {{ $t("Please wait") }}
-            </span>
-            <span v-else>
-              {{ $t("Place Order") }}
-            </span>
-          </button>
-        </div>
+          </button> -->
+        <button type="submit" class="btn btn_fill checkout-cta-primary w-100 justify-content-center"
+          :disabled="orderCreating" @click.prevent="requestPlaceOrder(false)">
+          <span v-if="orderCreating">
+            <CSpinner component="span" size="sm" aria-hidden="true" />
+            {{ $t("Please wait") }}
+          </span>
+          <span v-else>
+            {{ $t("Place Order") }}
+          </span>
+        </button>
       </div>
       <!--End action area-->
     </div>
@@ -190,7 +183,7 @@ import { CSpinner } from "@coreui/vue";
 import { trackSocialPixels } from "@/utils/trackSocialPixels";
 export default {
   name: "PaymentMethods",
-  emits: ["previous-step"],
+  emits: ["previous-step", "request-place-order"],
   components: {
     CSpinner,
   },
@@ -328,9 +321,15 @@ export default {
     /**
      * Check out with wallet
      */
+    /**
+     * Ask parent to validate delivery + prep shipping, then call createOrder.
+     */
+    requestPlaceOrder(useWallet = false) {
+      this.pay_wallet = !!useWallet;
+      this.$emit("request-place-order");
+    },
     payWithWallet() {
-      this.pay_wallet = true;
-      this.createOrder();
+      this.requestPlaceOrder(true);
     },
     /**
      * return product image input value
@@ -639,5 +638,20 @@ export default {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+}
+
+.checkout-cta-stack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.checkout-cta-primary {
+  min-height: 48px;
+  width: 100% !important;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-weight: 600;
+  border-radius: 8px;
 }
 </style>

@@ -45,6 +45,10 @@
           class="custom-header-info-btn custom-header-info-btn--default" :aria-label="$t('Store Info')">
           <span class="material-icons">info_outline</span>
         </router-link>
+        <button v-if="isProductsPage" type="button" class="custom-header-icon-btn custom-header-home-btn"
+          :aria-label="$t('Home')" @click="goHome">
+          <span class="material-icons">home</span>
+        </button>
       </div>
     </div>
   </div>
@@ -113,6 +117,9 @@ export default {
     isHomePage() {
       return this.$route.name === "home";
     },
+    isProductsPage() {
+      return this.$route.name === "products";
+    },
     storeName() {
       return this.siteProperties.site_name || this.siteProperties.site_title || "";
     },
@@ -133,6 +140,14 @@ export default {
     },
   },
   methods: {
+    async goHome() {
+      this.closeHeaderOverlays();
+      try {
+        await this.$router.push({ name: "home" });
+      } catch {
+        // Ignore duplicate navigation to home
+      }
+    },
     async goBack() {
       this.closeHeaderOverlays();
 
@@ -226,6 +241,9 @@ export default {
 }
 
 .custom-header-card__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex-shrink: 0;
 }
 
@@ -289,7 +307,8 @@ export default {
   color: #fff !important;
 } */
 
-.custom-header-back-btn .material-icons {
+.custom-header-back-btn .material-icons,
+.custom-header-home-btn .material-icons {
   font-size: 22px;
 }
 

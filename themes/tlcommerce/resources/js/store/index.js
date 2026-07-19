@@ -38,7 +38,13 @@ const store = createStore({
       couponCode: safeJsonParse("couponCode", null),
       mode: safeGetItem("mode") || null,
       preloaderLoading: false,
-      deliveryData: {}
+      deliveryData: {},
+      // Transient checkout prep (survives Checkout remount; cleared with cart flush)
+      checkoutPrep: {
+        productPackages: [],
+        shippingPackages: [],
+        isHomeDelivery: true,
+      },
     };
   },
   mutations,

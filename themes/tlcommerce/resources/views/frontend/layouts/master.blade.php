@@ -283,7 +283,7 @@
 
     <!-- <script src="{{ asset('themes/tlcommerce/js/main.js?v=210') }}"></script> -->
      {{-- Bump ASSET_VERSION in webpack.mix.js whenever this ?v= changes --}}
-     <script src="{{ asset('themes/tlcommerce/js/main.js?v=220') }}"></script>
+     <script src="{{ asset('themes/tlcommerce/js/main.js?v=221') }}"></script>
     <!-- <script src="{{ asset('themes/tlcommerce/public/js/main.js?v=210') }}"></script> -->
 
 

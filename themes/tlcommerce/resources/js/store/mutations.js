@@ -182,6 +182,23 @@ export default {
     localStorage.setItem("tax", JSON.stringify(state.tax));
   },
   /**
+   * Persist product/shipping packages after Details continue
+   */
+  storeCheckoutPrep(state, data) {
+    state.checkoutPrep = {
+      productPackages: data?.productPackages || [],
+      shippingPackages: data?.shippingPackages || [],
+      isHomeDelivery: data?.isHomeDelivery !== false,
+    };
+  },
+  flushCheckoutPrep(state) {
+    state.checkoutPrep = {
+      productPackages: [],
+      shippingPackages: [],
+      isHomeDelivery: true,
+    };
+  },
+  /**
    * Store is_active_create_guest_account
    */
   storeCouponDiscount(state, item) {
@@ -231,6 +248,12 @@ export default {
     //remove checkout Items
     state.checkoutItems = [];
     localStorage.removeItem("checkoutItems");
+
+    state.checkoutPrep = {
+      productPackages: [],
+      shippingPackages: [],
+      isHomeDelivery: true,
+    };
 
     //Remove Billing address
     state.billingDetails = null;
