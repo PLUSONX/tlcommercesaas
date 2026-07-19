@@ -412,14 +412,36 @@ public function success(Request $request)
             return (new PaymentController)->payment_failed();
         }
 
-        // Check payment status
-        $paymentStatus = $paymentDetails['paymentStatus'] ?? '';
-        if ($paymentStatus !== 'CAPTURED' && $paymentStatus !== 'NOT CAPTURED') {
+        // Check payment status — only CAPTURED is paid; NOT CAPTURED = bank decline (e.g. wrong PIN)
+        $paymentStatus = strtoupper(trim($paymentDetails['paymentStatus'] ?? ''));
+        if ($paymentStatus !== 'CAPTURED') {
             \Log::error('Payzah payment not successful', [
                 'payment_id' => $paymentId,
                 'track_id' => $trackId,
                 'status' => $paymentStatus,
             ]);
+
+            // Mark pending transaction as failed and store decline details
+            if ($paymentTransactionId) {
+                $transaction = PaymentTransaction::find($paymentTransactionId);
+                if ($transaction && (int) $transaction->status === 1) {
+                    $info = json_decode($transaction->payment_info, true) ?? [];
+                    $info['payment_id'] = $paymentId;
+                    $info['callback_details'] = $paymentDetails;
+
+                    $transaction->update([
+                        'status' => 3, // failed
+                        'payment_info' => json_encode($info),
+                    ]);
+                }
+            } elseif ($trackId) {
+                PaymentTransaction::whereJsonContains('payment_info->track_id', $trackId)
+                    ->where('status', 1) // only pending
+                    ->update([
+                        'status' => 3, // failed
+                    ]);
+            }
+
             return (new PaymentController)->payment_failed();
         }
 
