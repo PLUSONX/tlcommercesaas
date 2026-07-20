@@ -54,6 +54,15 @@
     $snapchat_integration = DB::table('tl_com_social_media_integrations')
         ->where('provider', 'snapchat_pixel')
         ->first();
+
+    $tlcAssetVersionPath = base_path('themes/tlcommerce/asset-version.json');
+    $assetVersion = '222';
+    if (is_readable($tlcAssetVersionPath)) {
+        $tlcAssetVersionData = json_decode(file_get_contents($tlcAssetVersionPath), true);
+        if (!empty($tlcAssetVersionData['version'])) {
+            $assetVersion = (string) $tlcAssetVersionData['version'];
+        }
+    }
     
     
 @endphp
@@ -193,16 +202,16 @@
 
     <style>:root { --mainC: {{ $theme_primary_color }}; }</style>
 
-    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('back_to_top.css')) }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('header.css')) }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('header_logo.css')) }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('menu.css')) }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('blog.css')) }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('sidebar_options.css')) }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('page_404.css')) }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('subscribe.css')) }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('footer.css')) }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('social_icon.css')) }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('back_to_top.css')) }}?v={{ $assetVersion }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('header.css')) }}?v={{ $assetVersion }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('header_logo.css')) }}?v={{ $assetVersion }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('menu.css')) }}?v={{ $assetVersion }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('blog.css')) }}?v={{ $assetVersion }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('sidebar_options.css')) }}?v={{ $assetVersion }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('page_404.css')) }}?v={{ $assetVersion }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('subscribe.css')) }}?v={{ $assetVersion }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('footer.css')) }}?v={{ $assetVersion }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('social_icon.css')) }}?v={{ $assetVersion }}">
     <!-- Including all google fonts link -->
     @includeIf('theme/tlcommerce::frontend.blog.includes.custom.google-font-link', [
         'body_typography' => $body_typography,
@@ -239,7 +248,7 @@
 <body class="antialiased">
     <div id="app">
     </div>
-    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('custom_css.css')) }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('custom_css.css')) }}?v={{ $assetVersion }}">
     <script>
         try {
             //set site title
@@ -275,15 +284,16 @@
 
     <script>
         window.__TLC_BOOTSTRAP__ = {
-            activeLayout: @json($activeLayoutBootstrap)
+            activeLayout: @json($activeLayoutBootstrap),
+            assetVersion: @json($assetVersion),
         };
     </script>
 
     <!-- <script src="{{ asset('themes/tlcommerce/public/js/main.js?v=210') }}"></script>  -->
 
     <!-- <script src="{{ asset('themes/tlcommerce/js/main.js?v=210') }}"></script> -->
-     {{-- Bump ASSET_VERSION in webpack.mix.js whenever this ?v= changes --}}
-     <script src="{{ asset('themes/tlcommerce/js/main.js?v=221') }}"></script>
+     {{-- Bump version in themes/tlcommerce/asset-version.json on each deploy --}}
+     <script src="{{ asset('themes/tlcommerce/js/main.js?v=' . $assetVersion) }}"></script>
     <!-- <script src="{{ asset('themes/tlcommerce/public/js/main.js?v=210') }}"></script> -->
 
 

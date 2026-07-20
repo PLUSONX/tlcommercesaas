@@ -1,4 +1,4 @@
-const CHUNK_RELOAD_KEY = "tlc_chunk_reload_v220";
+const CHUNK_RELOAD_KEY = `tlc_chunk_reload_${__TLC_ASSET_VERSION__}`;
 
 export function isChunkLoadError(err) {
   const msg = err && (err.message || String(err));

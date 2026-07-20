@@ -2,10 +2,8 @@ const mix = require('laravel-mix');
 const path = require('path');
 const webpack = require('webpack');
 
-// Keep in sync with master.blade.php main.js?v=
-// Bump this on every storefront deploy so browsers + Instagram WebView
-// fetch fresh main.js AND async chunks (Home.js, ProductDetails.js, etc.).
-const ASSET_VERSION = '220';
+// Bump version in asset-version.json on every storefront deploy (Blade reads the same file).
+const ASSET_VERSION = String(require('./asset-version.json').version);
 
 // mix.setPublicPath('public'); // Tells Mix that 'public' is the base inside this folder
 
