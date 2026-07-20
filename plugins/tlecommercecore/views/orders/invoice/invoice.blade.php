@@ -266,10 +266,7 @@
             <tr>
                 <td colspan="3">
                     <div class="payment-image-container mt-4">
-                        @php
-                            $total_payable = $total_amount - $total_discount;
-                        @endphp
-                        @if ($total_payable == $total_paid)
+                        @if (!empty($order_info['is_fully_paid']))
                             @if ($order_info['system_properties']['paid_image'] != null)
                                 <img src="{{ $order_info['system_properties']['paid_image'] }}" class="payment-image"
                                     alt="Paid">

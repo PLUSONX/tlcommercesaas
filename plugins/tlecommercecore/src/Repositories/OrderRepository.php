@@ -2127,14 +2127,10 @@ class OrderRepository
                     // }
                 }
                 //Update payment and delivery status and payment
-                if ($order_product->payment_status != $request['payment_status']) {
-                    $amount = $order_product->total_paid;
-                    if ($request['payment_status'] == config('tlecommercecore.order_payment_status.paid')) {
-                        $amount = $order_product->totalPayableAmount();
-                    } else {
-                        $amount = 0;
-                    }
-                    $order_product->total_paid = $amount;
+                if ($request['payment_status'] == config('tlecommercecore.order_payment_status.paid')) {
+                    $order_product->total_paid = $order_product->totalPayableAmount();
+                } elseif ($request['payment_status'] == config('tlecommercecore.order_payment_status.unpaid')) {
+                    $order_product->total_paid = 0;
                 }
 
                 $order_product->payment_status = $request['payment_status'];
@@ -2716,8 +2712,9 @@ class OrderRepository
         try {
             $order_info = Orders::find($order_id);
 
-            $products = OrderHasProducts::whereIn('id', $order_products)->select(
+            $products = OrderHasProducts::whereIn('id', $order_products)->with('order')->select(
                 [
+                    'id',
                     'product_id',
                     'order_id',
                     'variant_id as variant',
@@ -2727,23 +2724,21 @@ class OrderRepository
                     'total_paid',
                     'order_discount',
                     'payment_status',
+                    'tax',
                 ]
             )->get();
 
-            // $products = OrderHasProducts::whereIn('id', $order_products)->select(
-            //     [
-            //         'product_id',
-            //         'order_id',
-            //         'variant_id as variant',
-            //         'quantity',
-            //         'unit_price',
-            //         'delivery_cost',
-            //         'total_paid',
-            //         'order_discount',
-            //         'payment_status',
-            //         'tax',
-            //     ]
-            // )->get();
+            $paid_status = config('tlecommercecore.order_payment_status.paid');
+            $total_payable = 0;
+            $total_paid_sum = 0;
+            $is_fully_paid = $products->isNotEmpty();
+            foreach ($products as $product) {
+                $total_payable += $product->totalPayableAmount();
+                $total_paid_sum += $product->total_paid;
+                if ($product->payment_status != $paid_status) {
+                    $is_fully_paid = false;
+                }
+            }
 
             $payment_method = null;
 
@@ -2821,6 +2816,9 @@ class OrderRepository
                 'billing_info' => $billing_info,
                 'system_properties' => $system_properties,
                 'products' => $products,
+                'total_payable' => $total_payable,
+                'total_paid' => $total_paid_sum,
+                'is_fully_paid' => $is_fully_paid,
             ];
             return $data;
         } catch (\Exception $e) {
