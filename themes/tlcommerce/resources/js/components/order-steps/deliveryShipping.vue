@@ -787,7 +787,11 @@
 </template>
 <script>
 import axios from "axios";
-import { prepareCheckoutShipping } from "@/utils/checkoutShippingPrep";
+import {
+  prepareCheckoutShipping,
+  applyShippingCostAndTax,
+  buildProductPackages,
+} from "@/utils/checkoutShippingPrep";
 // import { mapState } from "vuex";
 import {
   CModal,
@@ -1214,6 +1218,10 @@ export default {
           return;
         }
 
+        if (!this.isCustomerLogin) {
+          this.persistGuestShippingDetailsToStore();
+        }
+
         axios
           .post("/api/v1/ecommerce-core/get-shipping-options", {
             location: city_id,
@@ -1226,12 +1234,32 @@ export default {
             if (response.data.success) {
               if (response.data.shipping_available) {
                 this.deliveryNotAvailable = false;
+                const shippingPackages = response.data.options || [];
+                applyShippingCostAndTax({
+                  store: this.$store,
+                  config: this.config,
+                  enums: this.enums,
+                  shippingPackages,
+                  isActiveHomeDelivery: this.isActiveHomeDelivery,
+                });
+                const productPackages = buildProductPackages({
+                  shippingPackages,
+                  config: this.config,
+                  enums: this.enums,
+                  isActiveHomeDelivery: this.isActiveHomeDelivery,
+                });
+                this.$emit("shipping-prep-updated", {
+                  shippingPackages,
+                  productPackages,
+                  isActiveHomeDelivery: this.isActiveHomeDelivery,
+                });
               } else {
                 if (response.data.products) {
                   this.shippingNotAvailableProducts = response.data.products;
                   this.notAvailableProductsModal = true;
                 }
                 this.deliveryNotAvailable = true;
+                this.$store.dispatch("setFinalShippingCost", 0);
               }
             } else {
               this.$toast.error(response.data.message);
