@@ -986,6 +986,12 @@ export default {
     "guestShippingInfo.email"() {
       this.persistGuestShippingDetailsToStore();
     },
+    "guestShippingInfo.phone"() {
+      this.persistGuestShippingDetailsToStore();
+    },
+    "guestShippingInfo.address"() {
+      this.persistGuestShippingDetailsToStore();
+    },
   },
   methods: {
     restoreGuestContactFromStore() {

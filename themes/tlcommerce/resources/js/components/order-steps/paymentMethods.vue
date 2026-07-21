@@ -28,7 +28,7 @@
                 <span class="label-title">
                   <img v-if="payment.logo" class="payment-method-logo" :src="cleanImage(payment.logo)"
                     :alt="displayPaymentName(payment)" />
-                  {{ displayPaymentName(payment) }}
+                  <span v-if="showPaymentMethodTitle(payment)">{{ displayPaymentName(payment) }}</span>
                 </span>
               </label>
             </span>
@@ -273,14 +273,30 @@ export default {
         .toLowerCase()
         .replace(/[\s_-]+/g, "");
     },
+    isApplePayPayment(payment) {
+      if (!payment) {
+        return false;
+      }
+      const key = this.normalizePaymentKey(payment.name);
+      return payment.id === 13 || key === "applepay" || key.includes("applepay");
+    },
+    showPaymentMethodTitle(payment) {
+      if (!payment) {
+        return false;
+      }
+      if (this.isApplePayPayment(payment) && payment.logo) {
+        return false;
+      }
+      return true;
+    },
     displayPaymentName(payment) {
       if (!payment) {
         return "";
       }
-      const key = this.normalizePaymentKey(payment.name);
-      if (key === "applepay" || key.includes("applepay")) {
-        return payment.name;
+      if (this.isApplePayPayment(payment)) {
+        return this.$t("Apple Pay");
       }
+      const key = this.normalizePaymentKey(payment.name);
       const knetKeys = [
         "payzah",
         "myfatoorah",

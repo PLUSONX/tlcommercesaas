@@ -37,6 +37,8 @@ import { mapState, mapGetters } from "vuex";
 /** Flat rate shipping option id (tlecommercecore shipping_cost_options.flat_rate) */
 const FLAT_RATE_SHIPPING_OPTION = 1;
 
+const COMPANY_FOOTER_HEIGHT_VAR = "--tl-company-footer-height";
+
 export default {
     name: "CompanyFooter",
 
@@ -112,7 +114,36 @@ export default {
         },
     },
 
+    mounted() {
+        this.syncCompanyFooterHeightVar();
+    },
+
+    updated() {
+        this.syncCompanyFooterHeightVar();
+    },
+
+    beforeUnmount() {
+        this.clearCompanyFooterHeightVar();
+    },
+
     methods: {
+        syncCompanyFooterHeightVar() {
+            this.$nextTick(() => {
+                const el = this.$el;
+                if (!el || typeof el.offsetHeight !== "number") {
+                    return;
+                }
+                document.documentElement.style.setProperty(
+                    COMPANY_FOOTER_HEIGHT_VAR,
+                    `${el.offsetHeight}px`
+                );
+            });
+        },
+
+        clearCompanyFooterHeightVar() {
+            document.documentElement.style.removeProperty(COMPANY_FOOTER_HEIGHT_VAR);
+        },
+
         goToCheckout() {
             this.$router.push("/checkout");
         },

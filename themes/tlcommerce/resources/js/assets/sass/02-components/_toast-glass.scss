@@ -219,6 +219,15 @@
 }
 
 @media screen and (max-width: 768px) {
+  html.split-screen-mobile-locked .v-toast {
+    top: auto !important;
+    bottom: calc(
+      var(--tl-company-footer-height, 88px) + env(safe-area-inset-bottom, 0px) + 0.5em
+    ) !important;
+    left: 0.75em !important;
+    right: 0.75em !important;
+  }
+
   .v-toast__item {
     max-width: 100%;
     width: 100%;

@@ -62,7 +62,8 @@ return [
         'gpay' => 10,
         'payzah' => 11,
         'myfatoorah' => 12,
-        'avariamoney' => 13,
+        'payzah_apple_pay' => 13,
+        'avariamoney' => 14,
         'paymob' => 15,
         'mercado-pago' => 16
     ],

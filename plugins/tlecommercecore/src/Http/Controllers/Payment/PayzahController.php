@@ -29,6 +29,7 @@ class PayzahController extends Controller
     protected $payment_method;
     protected $payment_transaction_id;
     protected $currency = 'KWD';
+    protected $payzahPaymentType = 1;
 
     /**
      * Set credentials for the specific tenant
@@ -38,8 +39,10 @@ class PayzahController extends Controller
         // $tenantId = function_exists('tenant') && tenant() ? tenant('id') : 'No Tenant Found';
         // \Log::info('Current Tenant ID: ' . $tenantId);
 
+        $methodId = session('payment_method_id') ?? config('tlecommercecore.payment_methods.payzah');
+
         $method = DB::table('tl_com_payment_methods')
-            ->where('name', 'payzah') 
+            ->where('id', $methodId)
             ->first();
 
         if ($method) {
@@ -52,6 +55,9 @@ class PayzahController extends Controller
             
             $this->payzah_secret_key = $settings['payzah_secret_key'] ?? null;
             $this->currency = $settings['payzah_currency'] ?? 'KWD';
+
+            $applePayId = config('tlecommercecore.payment_methods.payzah_apple_pay');
+            $this->payzahPaymentType = (int) $this->payment_method_id === (int) $applePayId ? 2 : 1;
 
             // Log::info('payment settings', [
             //     'settings' => json_encode($settings),
@@ -68,7 +74,10 @@ class PayzahController extends Controller
             }
      
         } else {
-            \Log::error('Payzah method not found in tl_com_payment_methods table');
+            \Log::error('Payzah method not found in tl_com_payment_methods table', [
+                'method_id' => $methodId,
+            ]);
+            throw new \Exception('Payzah payment method not found.');
         }
     }
 
@@ -109,6 +118,7 @@ class PayzahController extends Controller
         'order_id' => $orderId,
         'amount' => $payableAmount,
         'payment_method_id' => $this->payment_method_id,
+        'payzah_payment_type' => $this->payzahPaymentType,
         'customer_id' => $customerId,
         'guest_customer_id' => $guestCustomerId,
     ]);
@@ -141,7 +151,7 @@ class PayzahController extends Controller
             'error_url' => $errorUrl,
             'language' => "ENG",
             'currency' => "KD",
-            'payment_type' => 1
+            'payment_type' => $this->payzahPaymentType
         ]);
 
         Log::info('Payzah API response', [
@@ -257,8 +267,10 @@ private function initiatePayzahPayment($paymentData)
  */
 private function storePaymentTransaction($data): void
 {
+    $paymentMethodSlug = \Illuminate\Support\Str::slug(session('payment_method', 'payzah'));
+
     PaymentTransaction::create([
-        'payment_method' => 'payzah',
+        'payment_method' => $paymentMethodSlug,
         'paid_amount'    => $data['amount'],
         'payment_for'    => 'Order ID: ' . $data['order_id'],
         'status'         => 1, // 1 = pending

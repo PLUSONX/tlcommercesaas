@@ -107,6 +107,10 @@ class PaymentController extends Controller
                 return (new \Plugin\TlcommerceCore\Http\Controllers\Payment\MercadoPagoController)->index();
             }
 
+            if (in_array($payment_method, ['payzah', 'apple-pay'], true)) {
+                return app(\Plugin\TlcommerceCore\Http\Controllers\Payment\PayzahController::class)->pay($request);
+            }
+
             return redirect('/404');
         } else {
             return redirect('/404');
