@@ -45,6 +45,10 @@ const store = createStore({
         shippingPackages: [],
         isHomeDelivery: true,
       },
+      // Transient UI guard: prevents unified checkout from resetting while we
+      // are redirecting to the external payment gateway.
+      checkoutLeavingForPayment: false,
+      checkoutLeavingForPaymentStartedAt: null,
     };
   },
   mutations,

@@ -176,6 +176,16 @@ export default {
     context.commit("flushCheckoutPrep");
   },
   /**
+   * Marks that checkout is redirecting to an external gateway.
+   * Used by the unified checkout page to avoid a visible cart reset flash.
+   */
+  setCheckoutLeavingForPayment(context, { leaving = false, startedAt = null } = {}) {
+    context.commit("setCheckoutLeavingForPayment", {
+      leaving,
+      startedAt,
+    });
+  },
+  /**
    * Store coupon discount
    */
   storeCouponDiscount(context, data) {

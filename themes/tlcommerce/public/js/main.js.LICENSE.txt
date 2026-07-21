@@ -735,6 +735,8 @@
 
 /*! ./router */
 
+/*! ./safeStorage */
+
 /*! ./setBreakpoint.js */
 
 /*! ./setGrabCursor.js */
@@ -807,6 +809,8 @@
 
 /*! ./utils.js */
 
+/*! ./utils/assetVersionPurge */
+
 /*! ./utils/chunkLoadRecovery */
 
 /*! ./utils/safeStorage */
@@ -830,6 +834,8 @@
 /*! @/components/product/DetailsGallery.vue */
 
 /*! @/components/ui/BackToTop.vue */
+
+/*! @/components/ui/CompanyFooter.vue */
 
 /*! @/components/ui/Copyright.vue */
 
@@ -1193,6 +1199,10 @@
 
 /*!*************************************************!*\
   !*** ./node_modules/swiper/vue/swiper-slide.js ***!
+  \*************************************************/
+
+/*!*************************************************!*\
+  !*** ./resources/js/utils/assetVersionPurge.js ***!
   \*************************************************/
 
 /*!*************************************************!*\

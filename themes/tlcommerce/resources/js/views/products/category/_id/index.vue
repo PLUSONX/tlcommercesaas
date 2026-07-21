@@ -377,16 +377,6 @@ export default {
   height: auto !important;
   display: block;
   margin: 0 auto;
-
-  @media (max-width: 510px) {
-    width: 95% !important;
-  }
-}
-
-.compact-card :deep(.product-summary) {
-  @media (min-width: 480px) and (max-width: 501px) {
-    padding-left: 12% !important;
-  }
 }
 
 @media (max-width: 500px) {

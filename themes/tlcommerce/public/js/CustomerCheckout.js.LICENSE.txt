@@ -138,6 +138,8 @@
 
 /*! @/components/ui/ProductVariant.vue */
 
+/*! @/utils/checkoutShippingPrep */
+
 /*! @/utils/trackSocialPixels */
 
 /*! @coreui/vue */

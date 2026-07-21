@@ -3,174 +3,157 @@
     'force-mobile-layout': forcedMobile,
     'mobile-content-wrapper': forcedMobile
   }">
-  <div class="row" v-if="!dataLoading">
-          <!--Cart Table-->
-          <div class="col-12" v-if="tableData.length">
-            <div class="shadow-card">
-              <h3 class="checkout-title">{{ $t("Your Cart") }}</h3>
-              <!--Items List-->
-              <div class="row m-0">
-                <div class="align-items-center border-bottom col-12 d-flex justify-content-between pb-10 px-0">
-                  <div class="d-flex gap-2 selector">
-                    <input type="checkbox" class="item-selector text-black" v-model="all_selected"
-                      :checked="all_selected" @click="selectOrDeselectItems" id="all-selector" />
-                    <label class="fz-12 pt-1 text-black" for="all-selector">
-                      {{ $t("SELECT ALL") }}
-                    </label>
-                  </div>
-                  <div class="delete-all">
-                    <router-link to="#" class="d-flex" @click="clearCart">
-                      <span class="material-icons"> delete </span>
-                      <span class="fz-12">{{ $t("DELETE ALL") }}</span>
-                    </router-link>
-                  </div>
-                </div>
+    <div class="row" v-if="!dataLoading">
+      <!--Cart Table-->
+      <div class="col-12" v-if="tableData.length">
+        <div class="shadow-card">
+          <h3 class="checkout-title">{{ $t("Your Cart") }}</h3>
+          <!--Items List-->
+          <div class="row m-0">
+            <div class="align-items-center border-bottom col-12 d-flex justify-content-between pb-10 px-0">
+              <div class="d-flex gap-2 selector">
+                <input type="checkbox" class="item-selector text-black" v-model="all_selected" :checked="all_selected"
+                  @click="selectOrDeselectItems" id="all-selector" />
+                <label class="fz-12 pt-1 text-black" for="all-selector">
+                  {{ $t("SELECT ALL") }}
+                </label>
+              </div>
+              <div class="delete-all">
+                <router-link to="#" class="d-flex" @click="clearCart">
+                  <span class="material-icons"> delete </span>
+                  <span class="fz-12">{{ $t("DELETE ALL") }}</span>
+                </router-link>
+              </div>
+            </div>
 
-                <div class="col-12 mb-2 mt-2 px-0 single-package border-bottom" v-for="tdata in tableData"
-                  :key="tdata.uid" :class="{
-                    disableCart: tdata.is_available == 2,
-                  }">
-                  <div class="row product-content mb-2">
-                    <div class="align-items-center col-4 col-lg-2 d-flex gap-3 image">
-                      <input type="checkbox" v-model="tdata.is_selected" :checked="tdata.is_selected"
-                        class="item-selector" @change="onItemSelectionChange" />
-                      <router-link :to="`/products/${tdata.permalink}`" class="product-img d-flex align-items-center">
-                        <img :src="tdata.image" :alt="tdata.name" class="cart-image-review" />
-                      </router-link>
-                    </div>
-                    <div class="col-lg-10 col-8">
-                      <div class="row">
-                        <div class="col-12 col-lg-8 description px-0">
-                          <router-link :to="`/products/${tdata.permalink}`">
-                            <h5 class="product_name text-capitalize fz-sm-14">
-                              {{ tdata.name }}
-                            </h5>
+            <div class="col-12 px-0 single-package" v-for="tdata in tableData" :key="tdata.uid"
+              :class="{
+                disableCart: tdata.is_available == 2,
+              }">
+              <div class="cart-item d-flex align-items-center gap-2">
+                <input type="checkbox" v-model="tdata.is_selected" :checked="tdata.is_selected" class="item-selector"
+                  @change="onItemSelectionChange" />
+                <router-link :to="`/products/${tdata.permalink}`" class="cart-item__img">
+                  <img :src="tdata.image" :alt="tdata.name" class="cart-image-review" />
+                </router-link>
+                <div class="cart-item__body d-flex flex-column flex-grow-1 min-w-0">
+                  <router-link :to="`/products/${tdata.permalink}`">
+                    <h5 class="product_name text-capitalize mb-0">
+                      {{ tdata.name }}
+                    </h5>
+                  </router-link>
+                  <p class="product-variant mb-0 fz-sm-12" v-if="tdata.variant">
+                    <product-variant :variant="tdata.variant"></product-variant>
+                  </p>
+                  <p class="cart-item__price mb-0">
+                    <the-currency :amount="tdata.unitPrice * tdata.quantity">
+                    </the-currency>
+                  </p>
+                  <div class="extra-addons-wrap d-flex flex-wrap" v-if="tdata.shop_name != null && tdata.shop_slug">
+                    <!-- <p class="product-shop fz-12">
+                          {{ $t("Sold By") }}
+                          <router-link
+                            :to="`/shop/${tdata.shop_slug}`"
+                            target="_blank"
+                            class="c1"
+                          >
+                            {{ tdata.shop_name }}
                           </router-link>
-                          <p class="product-variant mb-1 fz-sm-12" v-if="tdata.variant">
-                            <product-variant :variant="tdata.variant"></product-variant>
-                          </p>
-                          <p class="mb-1 product-variant fz-sm-12">
-                            <span>{{ $t("Unit Price") }}: </span>
-                            <the-currency :amount="tdata.unitPrice">
-                            </the-currency>
-                          </p>
-                          <p class="mb-1 product-price c1 fz-sm-12">
-                            <the-currency :amount="tdata.unitPrice * tdata.quantity">
-                            </the-currency>
-                          </p>
-                          <div class="extra-addons-wrap d-flex flex-wrap"
-                            v-if="tdata.shop_name != null && tdata.shop_slug">
-                            <!-- <p class="product-shop fz-12">
-                              {{ $t("Sold By") }}
-                              <router-link
-                                :to="`/shop/${tdata.shop_slug}`"
-                                target="_blank"
-                                class="c1"
-                              >
-                                {{ tdata.shop_name }}
-                              </router-link>
-                            </p> -->
-                          </div>
-                          <!--Attachment-->
-                          <div class="extra-addons-wrap d-flex flex-wrap mb-1" v-if="tdata.attachment != null">
-                            <div class="product-document">
-                              <p class="font-weight-medium fz-12">
-                                {{ $t("Attachment :") }}
-                                {{ tdata.attachment.file_name }}
-                              </p>
-                            </div>
-                          </div>
-                          <!--End Attachment-->
-                        </div>
-                        <div class="col-12 col-lg-4 d-flex justify-content-lg-end pl-0">
-                          <div
-                            class="align-items-center cart-actions d-flex gap-4 justify-content-between justify-content-lg-end w-100">
-                            <!--Quantity-->
-                            <div class="quantity-input text-center d-flex">
-                              <button
-                                class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
-                                @click.prevent="decrease(tdata.uid)">
-                                <span class="material-icons"> remove </span>
-                              </button>
-                              <input v-model="tdata.quantity" type="number"
-                                class="border-0 text-center font-weight-bold w-100"
-                                @change="clampAndUpdateQuantity(tdata)" />
-                              <button
-                                class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
-                                @click.prevent="increase(tdata.uid)">
-                                <span class="material-icons"> add </span>
-                              </button>
-                            </div>
-                            <!--End Quantity-->
-                            <!--Remove btn-->
-                            <span class="icon-wrap d-flex bg-light btn-circle" @click.prevent="removeItem(tdata.uid)">
-                              <span class="material-icons"> delete </span>
-                            </span>
-                            <!--End remove btn-->
-                          </div>
-                        </div>
-                      </div>
+                        </p> -->
+                  </div>
+                  <!--Attachment-->
+                  <div class="extra-addons-wrap d-flex flex-wrap" v-if="tdata.attachment != null">
+                    <div class="product-document">
+                      <p class="font-weight-medium fz-12 mb-0">
+                        {{ $t("Attachment :") }}
+                        {{ tdata.attachment.file_name }}
+                      </p>
                     </div>
+                  </div>
+                  <!--End Attachment-->
+                  <div class="cart-item__actions d-flex align-items-center justify-content-between">
+                    <!--Quantity-->
+                    <div class="quantity-input text-center d-flex">
+                      <button class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
+                        @click.prevent="decrease(tdata.uid)">
+                        <span class="material-icons"> remove </span>
+                      </button>
+                      <input v-model="tdata.quantity" type="number"
+                        class="border-0 text-center font-weight-bold w-100"
+                        @change="clampAndUpdateQuantity(tdata)" />
+                      <button class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
+                        @click.prevent="increase(tdata.uid)">
+                        <span class="material-icons"> add </span>
+                      </button>
+                    </div>
+                    <!--End Quantity-->
+                    <!--Remove btn-->
+                    <span class="cart-item__delete icon-wrap" @click.prevent="removeItem(tdata.uid)">
+                      <span class="material-icons"> delete </span>
+                    </span>
+                    <!--End remove btn-->
                   </div>
                 </div>
               </div>
-              <!--End Items-->
-              <!--Minimum order amount alert-->
-              <div class="col-12 d-lg-block d-lg-flex d-none flex-wrap my-2">
-                <p class="alert alert-danger text-center w-100" v-if="
-                  !proceedToCheckout &&
-                  config?.enable_minumun_order_amount == 1
-                ">
-                  {{ $t("Minimum Order Amount") }}
-                  <the-currency :amount="config.min_order_amount" tag="span"></the-currency>
-                </p>
-              </div>
-              <!--End minimum order amount alert-->
-              <!--Action Buttons-->
-              <div class="mt-3 col-12 checkout-cta-stack">
+            </div>
+          </div>
+          <!--End Items-->
+          <!--Minimum order amount alert-->
+          <div class="col-12 d-lg-block d-lg-flex d-none flex-wrap my-2">
+            <p class="alert alert-danger text-center w-100" v-if="
+              !proceedToCheckout &&
+              config?.enable_minumun_order_amount == 1
+            ">
+              {{ $t("Minimum Order Amount") }}
+              <the-currency :amount="config.min_order_amount" tag="span"></the-currency>
+            </p>
+          </div>
+          <!--End minimum order amount alert-->
+          <!--Action Buttons-->
+          <!-- <div class="mt-3 col-12 checkout-cta-stack">
                 <router-link to="/products"
                   class="btn btn_border checkout-cta-secondary w-100 justify-content-center">
                   <span class="material-icons me-2"> arrow_back </span>
                   {{ $t("Continue Shopping") }}
-                </router-link>
-                <!-- Checkout removed: Details/Payment unlock when cart items sync -->
-                <!-- <button type="button"
+                </router-link> -->
+          <!-- Checkout removed: Details/Payment unlock when cart items sync -->
+          <!-- <button type="button"
                   class="btn btn_fill checkout-cta-primary w-100 justify-content-center"
                   @click.prevent="createOrder" :disabled="!proceedToCheckout">
                   {{ $t("Checkout") }}
                   <span class="material-icons ms-2"> arrow_forward </span>
                 </button> -->
-              </div>
-              <!--End Action Buttons-->
-            </div>
-          </div>
-          <!--End Cart Table-->
-
-          <!--No Items found-->
-          <div class="col-12" v-if="!tableData.length" style="margin-top: 10px;">
-            <div class="alert alert-danger">
-              <p class="d-flex align-items-center justify-content-between">
-                {{ $t("The Cart is Empty") }}
-                <router-link to="/products" class="ml-4 font-weight-medium btn_underline">
-                  {{ $t("Back to Products") }}
-                </router-link>
-              </p>
-            </div>
-          </div>
-          <!--No Items Found-->
+          <!-- </div> -->
+          <!--End Action Buttons-->
         </div>
+      </div>
+      <!--End Cart Table-->
 
-  <!--Preloader-->
-  <div class="row" v-if="dataLoading">
-    <div class="col-12">
-      <skeleton class="w-100 mb-20" height="350px"></skeleton>
-      <div class="mt-3 d-flex flex-wrap justify-content-between">
-        <skeleton class="justify-content-center m-w-100 mb-20" tag="a" height="40px" width="150px"></skeleton>
-        <skeleton class="justify-content-center m-w-100 mb-20" tag="a" height="40px" width="150px"></skeleton>
+      <!--No Items found-->
+      <div class="col-12" v-if="!tableData.length" style="margin-top: 10px;">
+        <div class="alert alert-danger">
+          <p class="d-flex align-items-center justify-content-between">
+            {{ $t("The Cart is Empty") }}
+            <router-link to="/products" class="ml-4 font-weight-medium btn_underline">
+              {{ $t("Back to Products") }}
+            </router-link>
+          </p>
+        </div>
+      </div>
+      <!--No Items Found-->
+    </div>
+
+    <!--Preloader-->
+    <div class="row" v-if="dataLoading">
+      <div class="col-12">
+        <skeleton class="w-100 mb-20" height="350px"></skeleton>
+        <div class="mt-3 d-flex flex-wrap justify-content-between">
+          <skeleton class="justify-content-center m-w-100 mb-20" tag="a" height="40px" width="150px"></skeleton>
+          <skeleton class="justify-content-center m-w-100 mb-20" tag="a" height="40px" width="150px"></skeleton>
+        </div>
       </div>
     </div>
-  </div>
-  <!--End Preloader-->
+    <!--End Preloader-->
   </div>
 </template>
 
@@ -802,18 +785,12 @@ export default {
   max-width: 100% !important;
 }
 
-.force-mobile-layout .product-content .image,
-.force-mobile-layout .product-content .product-img {
-  min-width: 0 !important;
-  max-width: 100px;
-}
-
-
-
+.force-mobile-layout .cart-item__img,
 .force-mobile-layout .cart-image-review {
-  max-width: 100% !important;
-  height: auto !important;
-  flex-shrink: 1 !important;
+  width: 64px !important;
+  height: 64px !important;
+  max-width: 64px !important;
+  flex-shrink: 0 !important;
 }
 
 .force-mobile-layout .d-none.d-lg-block,
@@ -870,6 +847,61 @@ export default {
   z-index: 99;
 }
 
+.single-package {
+  margin-bottom: 8px;
+}
+
+.cart-item {
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  padding: 8px 10px;
+  background: #fff;
+}
+
+.cart-item__img {
+  display: block;
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cart-item__img .cart-image-review {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cart-item__body {
+  gap: 2px;
+  min-width: 0;
+}
+
+.cart-item__price {
+  color: #3b3b3b;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.cart-item__actions {
+  margin-top: 4px;
+}
+
+.cart-item__delete {
+  color: #e53935;
+  cursor: pointer;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+.cart-item__delete .material-icons {
+  font-size: 22px;
+}
+
 .cart-image {
   width: 90px !important;
   height: 90px !important;
@@ -882,6 +914,14 @@ export default {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #111;
+}
+
+.product-variant {
+  line-height: 1.2;
 }
 
 .product-price {
@@ -892,6 +932,37 @@ export default {
 
 .quantity-input {
   border: 1px solid #e5e5e5;
+  border-radius: 20px;
+  overflow: hidden;
+  height: 28px;
+  align-items: center;
+  min-width: 88px;
+  max-width: 100px;
+}
+
+.quantity-input .material-icons {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.quantity-input button {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.quantity-input input {
+  height: 26px;
+  font-size: 13px;
+  padding: 0;
+  min-width: 0;
+  -moz-appearance: textfield;
+}
+
+.quantity-input input::-webkit-outer-spin-button,
+.quantity-input input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 @media (max-width: 575px) {
@@ -906,8 +977,8 @@ export default {
   }
 
   .quantity-input input {
-    height: 34px;
-    font-size: 14px;
+    height: 26px;
+    font-size: 13px;
   }
 }
 

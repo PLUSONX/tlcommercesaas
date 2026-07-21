@@ -45,33 +45,31 @@
         </div>
         <!-- End Rating -->
 
-        <!-- <div class="row justify-content-between align-items-baseline"> -->
+        <div class="product-title-price-row product-title-price-row--split">
+          <h4 class="product-title">
+            <router-link :to="`/products/${item.slug}`" :title="item.name">
+              {{ item.name }}
+            </router-link>
+          </h4>
 
-        <div
-          class="row product-title-price-row justify-content-between align-items-baseline d-flex flex-column flex-sm-row">
-          <div class="col pe-0 product-title-col">
-            <h4 class="product-title">
-              <router-link :to="`/products/${item.slug}`" :title="item.name">
-                {{ item.name }}
-              </router-link>
-            </h4>
-          </div>
-
-          <div class="col-auto text-start text-sm-end flex-shrink-0 product-price-col">
-
+          <div class="product-price-add-row d-flex align-items-center justify-content-between w-100 gap-2">
             <!-- Price -->
-            <span class="product-price d-flex flex-wrap c1">
+            <span class="product-price d-flex flex-wrap align-items-baseline c1">
               <the-currency :amount="item.price" tag="span" v-if="item.base_price > item.price"></the-currency>
               <the-currency :amount="item.base_price" tag="span" v-else></the-currency>
               <the-currency :amount="item.base_price" tag="del"
                 v-if="!widgetSlider && item.base_price > item.price"></the-currency>
             </span>
             <!-- End Price -->
-          </div>
 
+            <button type="button" class="btn-circle bg-black product-split-add-btn" :disabled="item.quantity < 1"
+              :title="$t('Add To Cart')" @click.prevent="handleAddToCartButton">
+              <span class="material-icons">add</span>
+            </button>
+          </div>
         </div>
 
-        <div class="button-group d-flex align-items-center justify-content-between">
+        <!-- <div class="button-group d-flex align-items-center justify-content-between">
 
           <button type="button" class="btn btn_fill btn-xs rounded" :disabled="item.quantity < 1"
             @click.prevent="handlePlaceOrderButton">
@@ -82,7 +80,7 @@
             @click.prevent="handleAddToCartButton">
             {{ $t("Add To Cart") }}
           </button>
-        </div>
+        </div> -->
 
       </div>
       <!-- End Summary -->
@@ -1171,6 +1169,49 @@ export default {
     line-height: 1;
   }
 
+  .product-split-add-btn {
+    width: 28px;
+    min-width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    line-height: 1;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    .material-icons {
+      font-size: 18px;
+    }
+  }
+
+  .product-title-price-row--split {
+    width: 100%;
+    margin-bottom: 0;
+
+    .product-title {
+      margin-top: 0;
+      margin-bottom: 2px;
+    }
+
+    .product-price {
+      margin-top: 0;
+      line-height: 1.15;
+      flex-wrap: wrap;
+      gap: 2px 6px;
+    }
+  }
+
+  .product-price-add-row {
+    min-width: 0;
+    width: 100%;
+
+    .product-price {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+  }
+
   .product-title {
     font-size: 14px;
     height: auto;
@@ -1232,10 +1273,11 @@ export default {
 
   .product-summary {
     padding: 10px;
-    min-height: 134px;
+    min-height: auto;
+    justify-content: flex-start !important;
 
-    @media (min-width: 480px) and (max-width: 501px) {
-      padding-left: 15% !important;
+    > .star-rating {
+      margin-bottom: 2px;
     }
 
     @media (max-width: 767px) {
@@ -1262,6 +1304,10 @@ export default {
       @media (max-width: 767px) {
         margin: 0;
       }
+    }
+
+    .product-title-price-row--split .product-title {
+      margin: 0 0 2px;
     }
 
     .product-summary .product-price {

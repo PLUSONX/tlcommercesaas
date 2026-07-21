@@ -19,6 +19,12 @@
   max-width: 100% !important;
 }
 
+/* Checkout: State + City stay 50/50 on split-screen desktop only */
+.force-mobile-layout.split-screen-desktop .row:not(.section-header-row):not(.section-content-row)>.checkout-state-city-half {
+  flex: 0 0 50% !important;
+  max-width: 50% !important;
+}
+
 /* Header row: title + action stay side-by-side */
 .force-mobile-layout .section-header-row>[class*="col-"] {
   flex: 0 0 50% !important;

@@ -21,6 +21,8 @@
               </router-view>
             </div>
 
+            <company-footer class="split-screen-company-footer" />
+
             <gdpr v-if="isSplitScreen && isMobile && gdpr_properties != null && gdpr_properties.gdpr_status == 1"
               class="split-screen-gdpr" :properties="gdpr_properties"></gdpr>
 
@@ -223,6 +225,10 @@ const CustomHeader = defineAsyncComponent(() =>
   import("@/components/pageheader/CustomHeader.vue")
 );
 
+const CompanyFooter = defineAsyncComponent(() =>
+  import("@/components/ui/CompanyFooter.vue")
+);
+
 // import ProductPage from '@/views/products/index.vue';
 
 
@@ -265,6 +271,7 @@ export default {
     Preloader,
     BannerFeature,
     CustomHeader,
+    CompanyFooter,
   },
   setup() {
     const data = reactive({
@@ -1226,6 +1233,11 @@ export default {
 
 .split-screen-header-sticky {
   flex-shrink: 0;
+}
+
+.split-screen-company-footer {
+  flex-shrink: 0;
+  width: 100%;
 }
 
 .split-screen-search-inline-host {

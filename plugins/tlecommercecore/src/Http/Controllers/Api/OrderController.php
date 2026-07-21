@@ -779,6 +779,7 @@ class OrderController extends Controller
             return response()->json(
                 [
                     'success' => false,
+                    'message' => translate('Delivery not available in your location', session()->get('api_locale')),
                 ]
             );
         }
@@ -803,6 +804,7 @@ class OrderController extends Controller
             return response()->json(
                 [
                     'success' => false,
+                    'message' => translate('Delivery not available in your location', session()->get('api_locale')),
                 ]
             );
         }

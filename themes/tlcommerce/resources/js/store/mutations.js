@@ -199,6 +199,14 @@ export default {
     };
   },
   /**
+   * Marks that the user is leaving checkout for an external payment gateway.
+   * Used to prevent the unified `/checkout` UI from resetting when cart is flushed.
+   */
+  setCheckoutLeavingForPayment(state, payload) {
+    state.checkoutLeavingForPayment = !!payload?.leaving;
+    state.checkoutLeavingForPaymentStartedAt = payload?.startedAt ?? null;
+  },
+  /**
    * Store is_active_create_guest_account
    */
   storeCouponDiscount(state, item) {

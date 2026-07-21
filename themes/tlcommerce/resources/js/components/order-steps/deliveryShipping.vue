@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="shadow-card mb-30">
     <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
       <h3 class="checkout-title">{{ $t("Delivery & Shipping") }}</h3>
@@ -124,7 +124,7 @@
         </div>
         <!--End Shipping Address-->
         <!--Billing Address-->
-        <div class="row" v-if="
+        <!-- <div class="row" v-if="
           config?.enable_billing_address == enums.status.ACTIVE &&
           config?.use_shipping_address_as_billing_address !=
           enums.status.ACTIVE
@@ -169,7 +169,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
         <!--End Billing Address-->
       </div>
       <!--End Login user Checkout-->
@@ -302,7 +302,7 @@
             class="form-group mb-20 col-lg-6"
             v-if="config?.enable_address_in_checkout == enums.status.ACTIVE"
           > -->
-          <div class="form-group mb-20 col-lg-6">
+          <!-- <div class="form-group mb-20 col-lg-6">
             <label class="font-weight-bold fz-12 mb-2">
               {{ $t("Address") }} <span class="text-danger">*</span>
             </label>
@@ -313,9 +313,9 @@
                 {{ error.shipping_address }}
               </p>
             </div>
-          </div>
+          </div> -->
 
-          <div v-if="config?.enable_post_code_in_checkout == enums.status.ACTIVE" :class="config?.hide_country_state_city_in_checkout == enums.status.ACTIVE
+          <!-- <div v-if="config?.enable_post_code_in_checkout == enums.status.ACTIVE" :class="config?.hide_country_state_city_in_checkout == enums.status.ACTIVE
             ? 'form-group mb-20 col-lg-12'
             : 'form-group mb-20 col-lg-6'
             ">
@@ -330,7 +330,7 @@
                 {{ error.shipping_postal_code }}
               </p>
             </div>
-          </div>
+          </div> -->
 
           <div class="form-group mb-20 col-lg-6" v-if="
             config?.hide_country_state_city_in_checkout !=
@@ -347,7 +347,7 @@
               </p>
             </div>
           </div>
-          <div class="form-group mb-20 col-lg-6" v-if="
+          <div class="form-group mb-20 col-lg-6 checkout-state-city-half" v-if="
             config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
           ">
             <label class="font-weight-bold fz-12 mb-2">
@@ -361,7 +361,7 @@
               </p>
             </div>
           </div>
-          <div class="form-group mb-20 col-lg-6" v-if="
+          <div class="form-group mb-20 col-lg-6 checkout-state-city-half" v-if="
             config?.hide_country_state_city_in_checkout != enums.status.ACTIVE
           ">
             <label class="font-weight-bold fz-12 mb-2">
@@ -372,6 +372,19 @@
             <div v-for="error in errors" :key="error.shipping_city">
               <p class="text-danger validation-error" v-if="error.shipping_city">
                 {{ error.shipping_city }}
+              </p>
+            </div>
+          </div>
+
+          <div class="form-group mb-20 col-lg-6">
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("Address") }} <span class="text-danger">*</span>
+            </label>
+            <input type="text" class="theme-input-style" v-bind:placeholder="$t('Address')"
+              v-model="guestShippingInfo.address" />
+            <div v-for="error in errors" :key="error.shipping_address">
+              <p class="text-danger validation-error" v-if="error.shipping_address">
+                {{ error.shipping_address }}
               </p>
             </div>
           </div>
@@ -389,7 +402,7 @@
         </div>
         <!--End Guest Shipping Address-->
         <!--Bill to different Address-->
-        <div class="row" v-if="
+        <!-- <div class="row" v-if="
           config?.use_shipping_address_as_billing_address !=
           enums.status.ACTIVE &&
           config?.enable_billing_address == enums.status.ACTIVE
@@ -407,10 +420,10 @@
               </label>
             </div>
           </div>
-        </div>
+        </div> -->
         <!--End Bill to different Address-->
         <!--Guest Billing Address-->
-        <div class="row guest-billing-address" v-if="
+        <!-- <div class="row guest-billing-address" v-if="
           config?.enable_billing_address == enums.status.ACTIVE &&
           config?.use_shipping_address_as_billing_address !=
           enums.status.ACTIVE &&
@@ -525,7 +538,7 @@
               </p>
             </div>
           </div>
-        </div>
+        </div> -->
         <!--End Guest Billing Address-->
       </div>
       <!--End Guest Checkout -->
@@ -774,6 +787,7 @@
 </template>
 <script>
 import axios from "axios";
+import { prepareCheckoutShipping } from "@/utils/checkoutShippingPrep";
 // import { mapState } from "vuex";
 import {
   CModal,
@@ -784,7 +798,7 @@ import {
 } from "@coreui/vue";
 export default {
   name: "deliveryShipping",
-  emits: ["next-step", "previous-step"],
+  emits: ["next-step", "previous-step", "shipping-prep-updated"],
   components: {
     CModal,
     CModalHeader,
@@ -867,15 +881,34 @@ export default {
 
     }
 
+    if (!this.isCustomerLogin) {
+      this.restoreGuestContactFromStore();
+    }
+
     // this.getPreviousData();
     this.getCounties();
-    this.$store.dispatch("setFinalShippingCost", 0);
+
+    const persistedCityId = this.$store.state.shippingDetails?.city?.id;
+    const hasCheckoutItems = (this.$store.state.checkoutItems || []).length > 0;
+    const shouldKeepShippingCost =
+      this.isActiveHomeDelivery &&
+      !this.isActivePickupPoint &&
+      persistedCityId &&
+      hasCheckoutItems;
+
+    if (!shouldKeepShippingCost) {
+      this.$store.dispatch("setFinalShippingCost", 0);
+    }
+
     if (
       this.isCustomerLogin &&
       this.customerShippingInfo != null &&
       this.isActiveHomeDelivery
     ) {
       this.getShippingOptions();
+      if (this.customerShippingInfo?.city?.id) {
+        this.refreshShippingRatesFromStore();
+      }
     }
 
   },
@@ -929,13 +962,75 @@ export default {
 
 
     "guestShippingInfo.city"() {
+      if (this.isRestoringShipping) {
+        return;
+      }
       this.getShippingOptions();
     },
     isActivePickupPoint() {
       this.getShippingOptions();
     },
+    "guestCustomerInfo.name"() {
+      this.persistGuestCustomerInfoToStore();
+    },
+    "guestCustomerInfo.email"() {
+      this.persistGuestCustomerInfoToStore();
+    },
+    "guestShippingInfo.name"() {
+      this.persistGuestShippingDetailsToStore();
+    },
+    "guestShippingInfo.email"() {
+      this.persistGuestShippingDetailsToStore();
+    },
   },
   methods: {
+    restoreGuestContactFromStore() {
+      const stored = this.$store.state.guestCustomerInfo;
+      if (stored) {
+        this.guestCustomerInfo = {
+          name: stored.name || "",
+          email: stored.email || "",
+          password: "",
+          confirm_password: "",
+        };
+      }
+
+      if (this.guestCustomerInfo.name && !this.guestShippingInfo.name) {
+        this.guestShippingInfo.name = this.guestCustomerInfo.name;
+      }
+      if (this.guestCustomerInfo.email && !this.guestShippingInfo.email) {
+        this.guestShippingInfo.email = this.guestCustomerInfo.email;
+      }
+
+      if (this.guestShippingInfo.name && !this.guestCustomerInfo.name) {
+        this.guestCustomerInfo.name = this.guestShippingInfo.name;
+      }
+      if (this.guestShippingInfo.email && !this.guestCustomerInfo.email) {
+        this.guestCustomerInfo.email = this.guestShippingInfo.email;
+      }
+    },
+    persistGuestCustomerInfoToStore() {
+      if (this.isCustomerLogin || this.isRestoringShipping) {
+        return;
+      }
+      this.$store.dispatch("storeGuestCustomerDetails", {
+        name: this.guestCustomerInfo.name || "",
+        email: this.guestCustomerInfo.email || "",
+        password: "",
+        confirm_password: "",
+      });
+    },
+    persistGuestShippingDetailsToStore() {
+      if (this.isCustomerLogin || this.isRestoringShipping) {
+        return;
+      }
+      if (!this.isActiveHomeDelivery) {
+        return;
+      }
+      this.$store.dispatch("storeShippingDetails", {
+        ...this.guestShippingInfo,
+      });
+    },
     /**
      * Will get previously save data
      */
@@ -1030,6 +1125,50 @@ export default {
       this.loading = false;
     },
     /**
+     * Re-fetch shipping packages and totals when city is restored from Vuex.
+     */
+    async refreshShippingRatesFromStore() {
+      if (!this.isActiveHomeDelivery || this.isActivePickupPoint) {
+        return;
+      }
+
+      const checkoutItems = this.$store.state.checkoutItems || [];
+      if (!checkoutItems.length) {
+        return;
+      }
+
+      let city_id = null;
+      if (this.isCustomerLogin && this.customerShippingInfo?.city?.id) {
+        city_id = this.customerShippingInfo.city.id;
+      } else if (!this.isCustomerLogin && this.guestShippingInfo?.city?.id) {
+        city_id = this.guestShippingInfo.city.id;
+      } else if (this.$store.state.shippingDetails?.city?.id) {
+        city_id = this.$store.state.shippingDetails.city.id;
+      }
+
+      if (!city_id) {
+        return;
+      }
+
+      if (!this.isCustomerLogin && this.guestShippingInfo?.city?.id) {
+        this.$store.dispatch("storeShippingDetails", this.guestShippingInfo);
+      }
+
+      const result = await prepareCheckoutShipping({
+        store: this.$store,
+        config: this.config,
+        enums: this.enums,
+      });
+
+      if (result.success) {
+        this.$emit("shipping-prep-updated", {
+          shippingPackages: result.shippingPackages,
+          productPackages: result.productPackages,
+          isActiveHomeDelivery: result.isActiveHomeDelivery,
+        });
+      }
+    },
+    /**
      * Calculate shipping cost
      */
     getShippingOptions() {
@@ -1039,9 +1178,19 @@ export default {
       if (this.isActivePickupPoint && !this.isActiveHomeDelivery) {
         this.$store.dispatch("setFinalShippingCost", 0);
         this.deliveryNotAvailable = false;
+        return;
       }
       //Home Delivery
       if (!this.isActivePickupPoint && this.isActiveHomeDelivery) {
+        if (this.isRestoringShipping) {
+          return;
+        }
+
+        const checkoutItems = this.$store.state.checkoutItems || [];
+        if (!checkoutItems.length) {
+          return;
+        }
+
         let city_id = null;
         let post_code = null;
         //Logged customer city id & post code
@@ -1061,11 +1210,16 @@ export default {
               : null;
         }
 
+        if (!city_id) {
+          return;
+        }
+
         axios
           .post("/api/v1/ecommerce-core/get-shipping-options", {
             location: city_id,
             post_code: post_code,
-            products: JSON.stringify(this.$store.state.checkoutItems),
+            products: JSON.stringify(checkoutItems),
+            coupons: JSON.stringify(this.$store.state.couponDiscount || []),
             shipping_type: "home_delivery",
           })
           .then((response) => {
@@ -1083,7 +1237,7 @@ export default {
               this.$toast.error(response.data.message);
             }
           })
-          .catch((error) => {
+          .catch(() => {
             this.$store.dispatch("setFinalShippingCost", 0);
             this.deliveryNotAvailable = true;
           });
@@ -1521,7 +1675,7 @@ export default {
                 if (match) {
                   this.guestShippingInfo.state = match;
 
-                  // Now that state is rebound → load cities
+                  // Now that state is rebound â†’ load cities
                   this.getCities("shipping_info");
                 }
               }
@@ -1555,6 +1709,8 @@ export default {
             }
 
             if (origin === "shipping_info") {
+              const wasRestoring = this.isRestoringShipping;
+
               this.guestShippingInfo.cities_options = response.data.data.cities;
 
               if (this.guestShippingInfo.city?.id) {
@@ -1569,6 +1725,12 @@ export default {
               }
 
               this.isRestoringShipping = false;
+
+              if (wasRestoring) {
+                this.$nextTick(() => {
+                  this.refreshShippingRatesFromStore();
+                });
+              }
             }
           }
         })
@@ -1606,5 +1768,13 @@ export default {
   min-height: 44px;
   width: 100% !important;
   border-radius: 8px;
+}
+
+.shadow-card {
+  overflow: visible;
+}
+
+.checkout-state-city-half {
+  overflow: visible;
 }
 </style>

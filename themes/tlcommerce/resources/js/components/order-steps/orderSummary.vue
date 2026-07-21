@@ -3,7 +3,7 @@
     <h3 class="checkout-title">{{ $t("Summary") }}</h3>
     <div class="table-responsive">
       <!--Coupon Apply Area-->
-      <div v-if="enableApplyCoupon" class="coupon mb-3">
+      <div v-if="showCouponAboveTotals" class="coupon mb-3">
         <div class="form-group d-flex gap-1">
           <input class="form-control me-1" type="text" v-model="coupon_code"
             v-bind:placeholder="$t('Your Coupon')" />
@@ -127,6 +127,25 @@
           <!--End Total Payable Amount-->
         </tbody>
       </table>
+
+      <!--Coupon Apply Area-->
+      <div v-if="showCouponBelowTotals" class="coupon coupon-below-total mt-3">
+        <div class="form-group d-flex gap-1">
+          <input class="form-control me-1" type="text" v-model="coupon_code"
+            v-bind:placeholder="$t('Your Coupon')" />
+          <button type="submit" class="btn coupon-btn btn_fill py-0" :disabled="couponApplying"
+            @click.prevent="applyCoupon">
+            <span v-if="couponApplying">
+              <CSpinner component="span" size="sm" aria-hidden="true" />
+              {{ $t("Wait") }}
+            </span>
+            <span v-else>
+              {{ $t("Apply") }}
+            </span>
+          </button>
+        </div>
+      </div>
+      <!--End Coupon apply area-->
     </div>
   </div>
 </template>
@@ -147,6 +166,10 @@ export default {
     enums: {
       type: Object,
       required: true,
+    },
+    couponBelowPayableTotal: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -211,6 +234,12 @@ export default {
         return true;
       }
       return false;
+    },
+    showCouponAboveTotals() {
+      return this.enableApplyCoupon && !this.couponBelowPayableTotal;
+    },
+    showCouponBelowTotals() {
+      return this.enableApplyCoupon && this.couponBelowPayableTotal;
     },
   },
   watch: {
@@ -304,6 +333,9 @@ export default {
   border: none;
   cursor: pointer;
   border-radius: 8px;
+}
+.coupon-below-total {
+  width: 100%;
 }
 .product-name {
   display: block;

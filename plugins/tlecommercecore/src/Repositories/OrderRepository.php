@@ -41,10 +41,25 @@ use Plugin\TlcommerceCore\Models\LocationWiseShippingRateCountry;
 use Plugin\TlcommerceCore\Http\Resources\SingleShippingRateCollection;
 use Plugin\TlcommerceCore\Models\Country;
 use Plugin\TlcommerceCore\Models\LocationWiseShippingRate;
+use Plugin\Coupon\Models\Coupons;
+use Plugin\Coupon\Models\CouponProducts;
+use Plugin\Coupon\Models\CouponExcludeProducts;
+use Plugin\Coupon\Models\CouponUsage;
+use Plugin\TlcommerceCore\Models\ProductHasCategories;
 
 
 class OrderRepository
 {
+    /**
+     * Server-validated coupons for the current checkout attempt (set during hardening).
+     *
+     * @var array{total: float|int, coupons: array<int, array>}
+     */
+    protected $validatedCheckoutCoupons = [
+        'total' => 0,
+        'coupons' => [],
+    ];
+
     /**
      * Will return checkout configuration
      *
@@ -1163,6 +1178,476 @@ class OrderRepository
         }
     }
     /**
+     * Resolve catalog unit/old price for a product line (ignores client prices).
+     *
+     * @param int $productId
+     * @param string|null $variantCode
+     * @return array{unitPrice: float|int, oldPrice: float|int}|null
+     */
+    protected function resolveCheckoutLinePrices($productId, $variantCode = null)
+    {
+        $product = Product::with(['single_price', 'variations'])->find($productId);
+        if ($product == null) {
+            return null;
+        }
+
+        $oldPrice = 0;
+        $unitPrice = 0;
+
+        if (!empty($variantCode)) {
+            $variant_price = ProductAttribute::resolveVariantPrice($productId, $variantCode);
+            if ($variant_price == null) {
+                return null;
+            }
+            $oldPrice = $variant_price->unit_price;
+            $applicable_discount = $product->applicableDiscount();
+            if ($applicable_discount != null && ($applicable_discount['discount_amount'] ?? 0) > 0) {
+                if ($applicable_discount['discountType'] == config('tlecommercecore.amount_type.flat')) {
+                    $discount = $applicable_discount['discount_amount'];
+                } else {
+                    $discount = ($oldPrice * $applicable_discount['discount_amount']) / 100;
+                }
+                $unitPrice = $oldPrice - $discount;
+            } else {
+                $unitPrice = $oldPrice;
+            }
+        } else {
+            if ($product->has_variant == config('tlecommercecore.product_variant.single')) {
+                $oldPrice = $product->single_price != null ? $product->single_price->unit_price : 0;
+            } else {
+                $oldPrice = ($product->variations != null && count($product->variations) > 0)
+                    ? $product->variations[0]->unit_price
+                    : 0;
+            }
+            $unitPrice = $product->unit_price;
+        }
+
+        return [
+            'unitPrice' => $unitPrice,
+            'oldPrice' => $oldPrice,
+        ];
+    }
+
+    /**
+     * Resolve city / postcode / zone for shipping rating from the checkout request.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return array{is_home_delivery: bool, city_id: mixed, post_code: mixed, zone_id: mixed}
+     */
+    protected function resolveCheckoutDeliveryContext($request)
+    {
+        $is_home_delivery = !$request->has('pickup_point') || empty($request['pickup_point']) || $request['pickup_point'] === 'null';
+        $city_id = null;
+        $post_code = null;
+        $zone_id = null;
+
+        if ($is_home_delivery && $request->has('shipping_address') && $request['shipping_address'] !== null && $request['shipping_address'] !== '') {
+            $shipping_address = $request['shipping_address'];
+            // Guest: JSON object; logged-in: address id
+            if (is_string($shipping_address) && str_starts_with(trim($shipping_address), '{')) {
+                $decoded = json_decode($shipping_address, true);
+                if (is_array($decoded)) {
+                    $city_id = $decoded['city_id'] ?? ($decoded['city']['id'] ?? null);
+                    $post_code = $decoded['postal_code'] ?? null;
+                }
+            } elseif (is_numeric($shipping_address)) {
+                $address = CustomerAddress::find($shipping_address);
+                if ($address != null) {
+                    $city_id = $address->city_id;
+                    $post_code = $address->postal_code;
+                }
+            }
+        }
+
+        if (!$is_home_delivery && $request->has('pickup_point') && !empty($request['pickup_point'])) {
+            $zone_id = DB::table('tl_pick_up_points')->where('id', $request['pickup_point'])->value('zone');
+        }
+
+        return [
+            'is_home_delivery' => $is_home_delivery,
+            'city_id' => $city_id,
+            'post_code' => $post_code,
+            'zone_id' => $zone_id,
+        ];
+    }
+
+    /**
+     * Pick a shipping option for a rated package. Prefer client rate id only if it exists in options.
+     *
+     * @param array $package
+     * @param mixed $clientRateId
+     * @return array
+     */
+    protected function pickShippingOptionForPackage(array $package, $clientRateId = null)
+    {
+        $default = $package['default_option'] ?? [];
+        $options = $package['options'] ?? [];
+
+        // Normalize options to a list of option arrays
+        $optionList = [];
+        if (is_array($options)) {
+            if (isset($options['shipping_cost']) || array_key_exists('id', $options)) {
+                $optionList = [$options];
+            } else {
+                foreach ($options as $opt) {
+                    if (is_array($opt)) {
+                        $optionList[] = $opt;
+                    }
+                }
+            }
+        }
+
+        if ($clientRateId !== null && $clientRateId !== '' && $clientRateId !== 'null') {
+            foreach ($optionList as $opt) {
+                if (isset($opt['id']) && (string) $opt['id'] === (string) $clientRateId) {
+                    return $opt;
+                }
+            }
+        }
+
+        if (is_array($default) && (isset($default['shipping_cost']) || array_key_exists('id', $default))) {
+            return $default;
+        }
+
+        if (count($optionList) > 0) {
+            return $optionList[0];
+        }
+
+        return [
+            'id' => null,
+            'shipping_cost' => 0,
+        ];
+    }
+
+    /**
+     * Rebuild checkout products with server prices + re-rated shipping. Rejects unavailable shipping.
+     *
+     * Client may supply identity fields (product_id, uid, quantity, variant*).
+     * unitPrice, oldPrice, shipping_cost, shipping_rate_id, and tax are overwritten.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param array $clientProducts
+     * @return array|false
+     */
+    protected function hardenCheckoutProducts($request, array $clientProducts)
+    {
+        if (count($clientProducts) < 1) {
+            return false;
+        }
+
+        $ctx = $this->resolveCheckoutDeliveryContext($request);
+        $is_home_delivery = $ctx['is_home_delivery'];
+
+        if ($is_home_delivery && empty($ctx['city_id'])) {
+            \Log::warning('hardenCheckoutProducts: missing city for home delivery');
+            return false;
+        }
+
+        $cartShaped = [];
+        $identityByUid = [];
+
+        foreach ($clientProducts as $line) {
+            $productId = $line['product_id'] ?? ($line['id'] ?? null);
+            $uid = $line['uid'] ?? null;
+            $quantity = isset($line['quantity']) ? (int) $line['quantity'] : 0;
+            $variantCode = $line['variant_code'] ?? null;
+
+            if (empty($productId) || empty($uid) || $quantity < 1) {
+                return false;
+            }
+
+            $prices = $this->resolveCheckoutLinePrices($productId, $variantCode);
+            if ($prices == null) {
+                return false;
+            }
+
+            $identityByUid[(string) $uid] = [
+                'product_id' => $productId,
+                'uid' => $uid,
+                'quantity' => $quantity,
+                'variant_code' => $variantCode,
+                'variant' => $line['variant'] ?? null,
+                'image' => $line['image'] ?? null,
+                'attatchment' => $line['attatchment'] ?? null,
+                'client_shipping_rate_id' => $line['shipping_rate_id'] ?? null,
+                'unitPrice' => $prices['unitPrice'],
+                'oldPrice' => $prices['oldPrice'],
+            ];
+
+            $cartShaped[] = [
+                'id' => $productId,
+                'uid' => $uid,
+                'quantity' => $quantity,
+                'unitPrice' => $prices['unitPrice'],
+                'oldPrice' => $prices['oldPrice'],
+                'variant_code' => $variantCode,
+                'variant' => $line['variant'] ?? null,
+                'image' => $line['image'] ?? null,
+                'attachment' => null,
+            ];
+        }
+
+        $customerId = auth('jwt-customer')->check() ? auth('jwt-customer')->user()->id : null;
+        if (!$this->resolveValidatedCheckoutCoupons($request, $cartShaped, $customerId)) {
+            \Log::warning('hardenCheckoutProducts: coupon validation failed');
+            return false;
+        }
+
+        $coupons = json_encode($this->validatedCheckoutCoupons['coupons']);
+
+        $shippingRequest = new \Illuminate\Http\Request();
+        $shippingRequest->merge([
+            'shipping_type' => $is_home_delivery ? 'home_delivery' : 'pickup_delivery',
+            'location' => $ctx['city_id'],
+            'post_code' => $ctx['post_code'],
+            'products' => json_encode($cartShaped),
+            'coupons' => $coupons,
+            'zone_id' => $ctx['zone_id'],
+        ]);
+
+        $rating = $this->shippingOptions($shippingRequest);
+        if (
+            !is_array($rating)
+            || empty($rating['success'])
+            || empty($rating['shipping_available'])
+            || empty($rating['options'])
+            || !is_array($rating['options'])
+        ) {
+            \Log::warning('hardenCheckoutProducts: shipping unavailable or rating failed', [
+                'rating' => is_array($rating) ? [
+                    'success' => $rating['success'] ?? null,
+                    'shipping_available' => $rating['shipping_available'] ?? null,
+                ] : null,
+            ]);
+            return false;
+        }
+
+        $packagesByUid = [];
+        foreach ($rating['options'] as $package) {
+            if (!is_array($package) || !isset($package['id'])) {
+                continue;
+            }
+            $packagesByUid[(string) $package['id']] = $package;
+        }
+
+        $hardened = [];
+        foreach ($identityByUid as $uid => $identity) {
+            if (!isset($packagesByUid[$uid])) {
+                return false;
+            }
+            $package = $packagesByUid[$uid];
+            $chosen = $this->pickShippingOptionForPackage(
+                $package,
+                $is_home_delivery ? $identity['client_shipping_rate_id'] : null
+            );
+
+            $shippingCost = $is_home_delivery
+                ? (float) ($chosen['shipping_cost'] ?? 0)
+                : 0;
+            $shippingRateId = $is_home_delivery ? ($chosen['id'] ?? null) : null;
+            $tax = SettingsRepository::getEcommerceSetting('enable_tax_in_checkout') == config('settings.general_status.active')
+                ? (float) ($package['tax'] ?? 0)
+                : 0;
+
+            $hardened[] = [
+                'uid' => $identity['uid'],
+                'product_id' => $identity['product_id'],
+                'quantity' => $identity['quantity'],
+                'unitPrice' => $identity['unitPrice'],
+                'oldPrice' => $identity['oldPrice'],
+                'variant_code' => $identity['variant_code'],
+                'variant' => $identity['variant'],
+                'image' => $identity['image'],
+                'attatchment' => $identity['attatchment'],
+                'shipping_cost' => $shippingCost,
+                'shipping_rate_id' => $shippingRateId,
+                'tax' => $tax,
+            ];
+        }
+
+        return $hardened;
+    }
+
+    /**
+     * Validate checkout coupons against DB rules and server-priced cart lines.
+     *
+     * @param \Illuminate\Http\Request|array $request
+     * @param array $cartShaped
+     * @param int|null $customerId
+     * @return bool
+     */
+    protected function resolveValidatedCheckoutCoupons($request, array $cartShaped, $customerId = null)
+    {
+        $this->validatedCheckoutCoupons = [
+            'total' => 0,
+            'coupons' => [],
+        ];
+
+        $raw = is_array($request)
+            ? ($request['coupon_discounts'] ?? '[]')
+            : ($request['coupon_discounts'] ?? $request['coupons'] ?? '[]');
+
+        if (is_array($raw)) {
+            $applied = $raw;
+        } else {
+            $applied = json_decode($raw, true);
+        }
+
+        if (!is_array($applied) || count($applied) < 1) {
+            return true;
+        }
+
+        if (!isActivePluging('coupon')) {
+            return false;
+        }
+
+        $totalCartPrice = array_reduce($cartShaped, function ($sum, $item) {
+            $sum += ($item['unitPrice'] ?? 0) * ($item['quantity'] ?? 0);
+            return $sum;
+        }, 0);
+
+        $validated = [];
+        $totalDiscount = 0;
+
+        foreach ($applied as $row) {
+            $couponId = $row['id'] ?? null;
+            $couponCode = $row['coupon_code'] ?? null;
+            if ($couponId === null || $couponCode === null || $couponCode === '') {
+                return false;
+            }
+
+            $couponDetails = Coupons::where('id', $couponId)->where('code', $couponCode)->first();
+            if ($couponDetails == null) {
+                return false;
+            }
+
+            if (!$this->isCheckoutCouponEligible($couponDetails, $cartShaped, $totalCartPrice, $customerId)) {
+                return false;
+            }
+
+            $discountedAmount = $this->computeCouponDiscountForCart($couponDetails, $cartShaped);
+            if ($discountedAmount <= 0) {
+                return false;
+            }
+
+            $validated[] = [
+                'discount' => $discountedAmount,
+                'id' => $couponDetails->id,
+                'coupon_code' => $couponDetails->code,
+                'allow_free_shipping' => $couponDetails->free_shipping,
+            ];
+            $totalDiscount += $discountedAmount;
+        }
+
+        $this->validatedCheckoutCoupons = [
+            'total' => $totalDiscount,
+            'coupons' => $validated,
+        ];
+
+        return true;
+    }
+
+    protected function isCheckoutCouponEligible($couponDetails, array $cartShaped, $totalCartPrice, $customerId = null)
+    {
+        $today = Carbon::now()->toDateString();
+        if ($couponDetails->expire_date != null && $couponDetails->expire_date < $today) {
+            return false;
+        }
+
+        if ($couponDetails->alowed_email != null) {
+            if ($customerId == null) {
+                return false;
+            }
+            $customerDetails = Customers::where('id', $customerId)->first();
+            if ($customerDetails == null || $customerDetails->email != $couponDetails->alowed_email) {
+                return false;
+            }
+        }
+
+        $perCouponUsage = $couponDetails->usage_limit_per_coupon;
+        if ($perCouponUsage != null) {
+            $previousUsage = CouponUsage::where('coupon_id', $couponDetails->id)->count();
+            if ($previousUsage >= $perCouponUsage) {
+                return false;
+            }
+        }
+
+        $couponUsagePerUser = $couponDetails->usage_limit_per_user;
+        if ($couponUsagePerUser != null && $customerId != null) {
+            $previousUserUsage = CouponUsage::where('coupon_id', $couponDetails->id)
+                ->where('customer_id', $customerId)
+                ->count();
+            if ($previousUserUsage >= $couponUsagePerUser) {
+                return false;
+            }
+        }
+
+        if ($couponDetails->minimum_spend_amount != null && $couponDetails->minimum_spend_amount > $totalCartPrice) {
+            return false;
+        }
+
+        if ($couponDetails->maximum_spend_amount != null && $couponDetails->maximum_spend_amount < $totalCartPrice) {
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function computeCouponDiscountForCart($couponDetails, array $cartShaped)
+    {
+        $cartItems = array_map(function ($product) {
+            return $product['id'];
+        }, $cartShaped);
+
+        $applicableProductId = $cartItems;
+
+        $selectedProducts = CouponProducts::where('coupon_id', $couponDetails->id)->pluck('product_id')->toArray();
+        if (count($selectedProducts) > 0) {
+            $applicableProductId = array_intersect($applicableProductId, $selectedProducts);
+            $applicableProductId = array_values($applicableProductId);
+        }
+
+        $selectedCategories = $couponDetails->categories->pluck('category_id');
+        if (count($selectedCategories) > 0) {
+            $applicableProductId = ProductHasCategories::whereIn('product_id', $cartItems)->whereIn('category_id', $selectedCategories)->pluck('product_id');
+        }
+
+        $selectedBrands = $couponDetails->brands->pluck('brand_id');
+        if (count($selectedBrands) > 0) {
+            $applicableProductId = Product::whereIn('id', $cartItems)->whereIn('brand', $selectedBrands)->pluck('id');
+        }
+
+        $excludeProducts = CouponExcludeProducts::where('coupon_id', $couponDetails->id)->pluck('product_id')->toArray();
+        if (count($excludeProducts) > 0) {
+            $applicableProductId = array_diff($cartItems, $excludeProducts);
+        }
+
+        $discountedAmount = 0;
+        if ($couponDetails->discount_type == config('tlecommercecore.amount_type.flat')) {
+            $discountedAmount = $couponDetails->discount_amount;
+        }
+        if ($couponDetails->discount_type != config('tlecommercecore.amount_type.flat')) {
+            $totalPrice = 0;
+            foreach ($cartShaped as $item) {
+                foreach ($applicableProductId as $productId) {
+                    if ($productId == $item['id']) {
+                        $temp = $item['unitPrice'] * $item['quantity'];
+                        $totalPrice += $temp;
+                    }
+                }
+            }
+            $discountedAmount = ($totalPrice * $couponDetails->discount_amount) / 100;
+        }
+
+        return $discountedAmount;
+    }
+
+    protected function getValidatedCheckoutCouponTotal()
+    {
+        return (float) ($this->validatedCheckoutCoupons['total'] ?? 0);
+    }
+
+    /**
      * Will create customer order
      *
      * @param Object $request
@@ -1176,7 +1661,17 @@ class OrderRepository
             \Log::info('customer Checkout Respository Method!!!');
 
             $products = json_decode($request['products'], true);
-            $total_payable_amount = self::totalOrderAmount($products) - self::calculateOrderDiscount($request);
+            if (!is_array($products)) {
+                return false;
+            }
+
+            $products = $this->hardenCheckoutProducts($request, $products);
+            if ($products === false) {
+                return false;
+            }
+
+            $checkoutCouponDiscount = $this->getValidatedCheckoutCouponTotal();
+            $total_payable_amount = self::totalOrderAmount($products) - $checkoutCouponDiscount;
             DB::beginTransaction();
             $shipping_type = $request->has('pickup_point') ? config('tlecommercecore.order_type.local_pickup') : config('tlecommercecore.order_type.home_delivery');
             $order = new Orders;
@@ -1185,7 +1680,7 @@ class OrderRepository
             $order->sub_total = self::calculateOrderSubTotal($products);
             $order->total_tax = self::calculateOrderTotalTax($products);
             $order->total_delivery_cost = self::calculateOrderTotalShippingCost($products);
-            $order->total_discount = self::calculateOrderDiscount($request);
+            $order->total_discount = $checkoutCouponDiscount;
             $order->total_order_amount = self::totalOrderAmount($products);
             $order->total_payable_amount = $total_payable_amount;
             $order->payment_method = $request['payment_id'] == 'null' ? null : $request['payment_id'];
@@ -1208,7 +1703,7 @@ class OrderRepository
                 $wallet_transaction->customer_id = auth('jwt-customer')->user()->id;
                 $wallet_transaction->added_by = null;
                 $wallet_transaction->document = null;
-                $wallet_transaction->recharge_amount = self::totalOrderAmount($products) - self::calculateOrderDiscount($request);
+                $wallet_transaction->recharge_amount = $total_payable_amount;
                 $wallet_transaction->status = config('tlecommercecore.wallet_transaction_status.accept');
                 $wallet_transaction->payment_method_id = null;
                 $wallet_transaction->transaction_id = null;
@@ -1249,6 +1744,20 @@ class OrderRepository
     {
         try {
             \Log::info('Guest Checkout Respository Method!!!');
+
+            $products = json_decode($request['products'], true);
+            if (!is_array($products)) {
+                return false;
+            }
+
+            // Rate + overwrite amounts before any DB writes so unavailable shipping fails closed.
+            $products = $this->hardenCheckoutProducts($request, $products);
+            if ($products === false) {
+                return false;
+            }
+
+            $checkoutCouponDiscount = $this->getValidatedCheckoutCouponTotal();
+            $total_payable_amount = self::totalOrderAmount($products) - $checkoutCouponDiscount;
 
             DB::beginTransaction();
             $shipping_address = $request->has('shipping_address') ? json_decode($request['shipping_address'], true) : [];
@@ -1371,8 +1880,6 @@ class OrderRepository
             // \Log::info('Respository Method: out billing address region!!!');
 
 
-            $products = json_decode($request['products'], true);
-            $total_payable_amount = self::totalOrderAmount($products) - self::calculateOrderDiscount($request);
             $shipping_type = $request->has('pickup_point') ? config('tlecommercecore.order_type.local_pickup') : config('tlecommercecore.order_type.home_delivery');
             $order = new Orders;
             $order->order_code = self::generateOrderCode();
@@ -1381,9 +1888,9 @@ class OrderRepository
             $order->sub_total = self::calculateOrderSubTotal($products);
             $order->total_tax = self::calculateOrderTotalTax($products);
             $order->total_delivery_cost = self::calculateOrderTotalShippingCost($products);
-            $order->total_discount = self::calculateOrderDiscount($request);
+            $order->total_discount = $checkoutCouponDiscount;
             $order->total_order_amount = self::totalOrderAmount($products);
-            $order->total_payable_amount = self::totalOrderAmount($products) - self::calculateOrderDiscount($request);
+            $order->total_payable_amount = $total_payable_amount;
             $order->payment_method = $request['payment_id'];
             $order->pickup_point_id = $request->has('pickup_point') ? $request['pickup_point'] : NULL;
             $order->shipping_address = $shipping_address_id;
@@ -1700,8 +2207,8 @@ class OrderRepository
     public function storeCouponUsageInfo($request, $order_id, $customer_id = null)
     {
         if (isActivePluging('coupon')) {
-            $applied_coupons = json_decode($request['coupon_discounts'], true);
-            if (sizeof($applied_coupons) > 0) {
+            $applied_coupons = $this->validatedCheckoutCoupons['coupons'] ?? [];
+            if (is_array($applied_coupons) && sizeof($applied_coupons) > 0) {
                 foreach ($applied_coupons as $coupon) {
                     $coupon_usage = new \Plugin\Coupon\Models\CouponUsage();
                     $coupon_usage->customer_id = $customer_id;

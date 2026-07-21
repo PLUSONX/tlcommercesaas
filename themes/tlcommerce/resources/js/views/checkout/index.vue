@@ -1,10 +1,17 @@
 <template>
   <div class="" :class="{
     'force-mobile-layout': forcedMobile,
-    'mobile-content-wrapper': forcedMobile
+    'mobile-content-wrapper': forcedMobile,
+    'split-screen-desktop': isSplitScreen && !isMobile
   }">
     <!-- <page-header class="pt-3 pb-3" :items="bItems" /> -->
     <div class="shipping-info light-bg pt-60 pb-60">
+      <div v-if="checkoutLeavingForPayment" class="checkout-leaving-overlay" role="status" aria-live="polite">
+        <div class="checkout-leaving-overlay__content">
+          <span class="material-icons me-2">autorenew</span>
+          Redirecting to payment...
+        </div>
+      </div>
       <div class="custom-container2">
         <form action="#" @submit.prevent>
           <div class="row">
@@ -14,8 +21,7 @@
               : 'col-12'">
               <!-- Cart -->
               <section id="checkout-cart" class="checkout-section mb-20" :class="sectionClass('cart')">
-                <cart-step @next-step="goToDetails"
-                  @checkout-items-synced="onCheckoutItemsSynced"></cart-step>
+                <cart-step @next-step="goToDetails" @checkout-items-synced="onCheckoutItemsSynced"></cart-step>
               </section>
 
               <!-- Shipping / Details -->
@@ -32,8 +38,16 @@
                   </div>
                   <delivery-shipping v-else ref="deliveryShipping" :enums="enums" :config="configuration"
                     :customer-address="customerAddress" :is-customer-login="isCustomerLogin"
-                    :pickup-points="pickupPoints" @next-step="goToPayment"
-                    @previous-step="goToCart"></delivery-shipping>
+                    :pickup-points="pickupPoints" @next-step="goToPayment" @previous-step="goToCart"
+                    @shipping-prep-updated="onShippingPrepUpdated"></delivery-shipping>
+                </div>
+              </section>
+
+              <!-- Summary (forced mobile / split-screen only) -->
+              <section v-if="showOrderSummary && forcedMobile" id="checkout-summary" class="checkout-section mb-20">
+                <div class="checkout-section__body">
+                  <order-summary :enums="enums" :config="configuration" :coupon-below-payable-total="forcedMobile"
+                    @get-total-payable="calculateTotalPayable"></order-summary>
                 </div>
               </section>
 
@@ -50,18 +64,17 @@
                     <skeleton class="w-100" height="200px"></skeleton>
                   </div>
                   <template v-else>
-                    <shipping-rate-picker
+                    <!-- <shipping-rate-picker
                       v-if="showRatePicker"
                       :config="configuration"
                       :enums="enums"
                       :shipping-packages="shippingPackages"
                       :is-active-home-delivery="prepIsHomeDelivery"
                       @packages-updated="onPackagesUpdated"
-                    ></shipping-rate-picker>
+                    ></shipping-rate-picker> -->
                     <payment-methods ref="paymentMethods" :enums="enums" :config="configuration"
                       :product-packages="product_packages" :is-customer-login="isCustomerLogin"
-                      :total-payable-amount="totalPayableAmount"
-                      @previous-step="focusSection('details')"
+                      :total-payable-amount="totalPayableAmount" @previous-step="focusSection('details')"
                       @request-place-order="finalizeAndPlaceOrder"></payment-methods>
                   </template>
                 </div>
@@ -69,9 +82,9 @@
             </div>
 
             <!-- Single shared order summary -->
-            <div v-if="showOrderSummary" :class="forcedMobile ? 'col-12 mt-20' : 'col-lg-4'">
+            <div v-if="showOrderSummary && !forcedMobile" class="col-lg-4">
               <div class="checkout-summary-sticky">
-                <order-summary :enums="enums" :config="configuration"
+                <order-summary :enums="enums" :config="configuration" :coupon-below-payable-total="false"
                   @get-total-payable="calculateTotalPayable"></order-summary>
               </div>
             </div>
@@ -133,6 +146,7 @@ export default {
         payment: false,
       },
       pendingPaymentPrep: false,
+      shippingRatesRestoreAttempted: false,
     };
   },
   computed: {
@@ -143,6 +157,10 @@ export default {
       checkoutItems: (state) => state.checkoutItems,
       storedCheckoutPrep: (state) => state.checkoutPrep,
       cart: (state) => state.cart,
+      checkoutLeavingForPayment: (state) => state.checkoutLeavingForPayment,
+      checkoutLeavingForPaymentStartedAt: (state) =>
+        state.checkoutLeavingForPaymentStartedAt,
+      shippingDetails: (state) => state.shippingDetails,
     }),
 
     ...mapGetters("layout", ["isSplitScreen", "isMobile"]),
@@ -181,6 +199,9 @@ export default {
   watch: {
     hasCartItems(hasItems) {
       if (!hasItems) {
+        if (this.checkoutLeavingForPayment) {
+          return;
+        }
         this.resetCheckoutToEmptyCart();
       }
     },
@@ -188,7 +209,7 @@ export default {
   beforeMount() {
     this.restorePrepFromStore();
     this.resolveInitialStep();
-    if (!this.hasCartItems) {
+    if (!this.hasCartItems && !this.checkoutLeavingForPayment) {
       this.resetCheckoutToEmptyCart();
     }
   },
@@ -198,8 +219,28 @@ export default {
     if (this.pendingPaymentPrep) {
       this.ensurePaymentPrep();
     }
+
+    // Safety: avoid leaving the overlay stuck if the external redirect is cancelled.
+    // We only rely on a short TTL because the redirect typically unloads the SPA.
+    if (
+      this.checkoutLeavingForPayment &&
+      this.checkoutLeavingForPaymentStartedAt
+    ) {
+      const MAX_MS = 15000;
+      const elapsed = Date.now() - this.checkoutLeavingForPaymentStartedAt;
+      const remaining = Math.max(0, MAX_MS - elapsed);
+
+      setTimeout(() => {
+        this.$store.dispatch("setCheckoutLeavingForPayment", {
+          leaving: false,
+          startedAt: null,
+        });
+      }, remaining);
+    }
+
     this.$nextTick(() => {
       this.scrollToSection(this.currentStep, false);
+      this.tryRestoreShippingRates();
     });
   },
   methods: {
@@ -360,7 +401,7 @@ export default {
     unlockShippingAndPayment({ scroll = false } = {}) {
       if (
         this.configuration?.enable_guest_checkout ==
-          this.enums.status.IN_ACTIVE &&
+        this.enums.status.IN_ACTIVE &&
         !this.isCustomerLogin
       ) {
         return;
@@ -406,7 +447,7 @@ export default {
       }
       if (
         this.configuration?.enable_guest_checkout ==
-          this.enums.status.IN_ACTIVE &&
+        this.enums.status.IN_ACTIVE &&
         !this.isCustomerLogin
       ) {
         this.$toast.error(this.$t("Please login to complete checkout"));
@@ -429,6 +470,27 @@ export default {
       this.prepIsHomeDelivery = !!result.isActiveHomeDelivery;
       this.persistPrepToStore();
       return true;
+    },
+    onShippingPrepUpdated(payload) {
+      if (!payload) {
+        return;
+      }
+      this.shippingPackages = payload.shippingPackages || [];
+      this.product_packages = payload.productPackages || [];
+      this.prepIsHomeDelivery = payload.isActiveHomeDelivery !== false;
+      this.persistPrepToStore();
+    },
+    async tryRestoreShippingRates() {
+      if (this.shippingRatesRestoreAttempted) {
+        return;
+      }
+      const cityId = this.shippingDetails?.city?.id;
+      const items = this.checkoutItems || [];
+      if (!cityId || !items.length) {
+        return;
+      }
+      this.shippingRatesRestoreAttempted = true;
+      await this.runShippingPrep();
     },
     async ensurePaymentPrep() {
       this.pendingPaymentPrep = false;
@@ -517,7 +579,7 @@ export default {
       if (
         this.currentStep !== "cart" &&
         this.configuration?.enable_guest_checkout ==
-          this.enums.status.IN_ACTIVE &&
+        this.enums.status.IN_ACTIVE &&
         !this.isCustomerLogin
       ) {
         this.$toast.error(this.$t("Please login to complete checkout"));
@@ -576,6 +638,29 @@ export default {
 </script>
 
 <style scoped>
+.checkout-leaving-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(255, 255, 255, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.checkout-leaving-overlay__content {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  padding: 18px 22px;
+  font-weight: 600;
+  color: #212529;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .force-mobile-layout .row>[class*="col-"] {
   flex: 0 0 100% !important;
   max-width: 100% !important;
@@ -618,6 +703,14 @@ export default {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   overflow: hidden;
   scroll-margin-top: 16px;
+}
+
+.force-mobile-layout #checkout-details.checkout-section {
+  overflow: visible;
+}
+
+.force-mobile-layout.split-screen-desktop #checkout-details.checkout-section {
+  overflow: visible;
 }
 
 .checkout-section.is-active {

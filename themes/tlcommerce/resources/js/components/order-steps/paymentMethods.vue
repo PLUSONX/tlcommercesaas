@@ -18,7 +18,7 @@
       <div class="col-12">
         <label class="font-weight-bold fz-12 mb-2">{{
           $t("Payment method")
-          }}</label>
+        }}</label>
         <ul class="list-unstyled form-selector-list mb-3">
           <li class="single-form-selector" v-for="(payment, index) in paymentMethods" :key="index">
             <span class="custom-radio-btn">
@@ -27,8 +27,8 @@
                   v-model="selected_payment_method" @click="takeBankDetails" @input="!pay_wallet" />
                 <span class="label-title">
                   <img v-if="payment.logo" class="payment-method-logo" :src="cleanImage(payment.logo)"
-                    :alt="payment.name" />
-                  {{ payment.name }}
+                    :alt="displayPaymentName(payment)" />
+                  {{ displayPaymentName(payment) }}
                 </span>
               </label>
             </span>
@@ -141,7 +141,8 @@
           {{ $t("Wallet Balance") }}
           <the-currency :amount="wallet_available_balance"></the-currency>
         </p>
-        <button type="submit" class="btn btn_fill m-w-100 justify-content-center" @click.prevent="requestPlaceOrder(true)">
+        <button type="submit" class="btn btn_fill m-w-100 justify-content-center"
+          @click.prevent="requestPlaceOrder(true)">
           {{ $t("Pay with wallet") }}
         </button>
       </div>
@@ -163,8 +164,11 @@
             {{ $t("Please wait") }}
           </span>
           <span v-else>
-            {{ $t("Place Order") }}
+            {{ $t("Checkout") }}
           </span>
+          <!-- <span v-else>
+            {{ $t("Place Order") }}
+          </span> -->
         </button>
       </div>
       <!--End action area-->
@@ -263,6 +267,31 @@ export default {
       if (!img) return '';
       // console.log("img: ", img.replace(/^\/public/, ''));
       return img.replace(/^\/public/, '');
+    },
+    normalizePaymentKey(name) {
+      return (name || "")
+        .toLowerCase()
+        .replace(/[\s_-]+/g, "");
+    },
+    displayPaymentName(payment) {
+      if (!payment) {
+        return "";
+      }
+      const key = this.normalizePaymentKey(payment.name);
+      if (key === "applepay" || key.includes("applepay")) {
+        return payment.name;
+      }
+      const knetKeys = [
+        "payzah",
+        "myfatoorah",
+        "upayments",
+        "upayment",
+        "upaymentkw",
+      ];
+      if (knetKeys.includes(key) || payment.id === 11 || payment.id === 12) {
+        return this.$t("KNET");
+      }
+      return payment.name;
     },
     /**
      * Get active Payment methods
@@ -451,6 +480,12 @@ export default {
         .then((response) => {
           if (response.data.success) {
             if (response.data.response_url) {
+              // Prevent unified `/checkout` UI from resetting while we leave
+              // the SPA to an external payment gateway.
+              this.$store.dispatch("setCheckoutLeavingForPayment", {
+                leaving: true,
+                startedAt: Date.now(),
+              });
               this.$store.dispatch("flushCartData").then(() => {
                 window.location.href = response.data.response_url;
               });
@@ -459,7 +494,9 @@ export default {
             }
           } else {
             this.orderCreating = false;
-            this.$toast.error("Order create failed");
+            this.$toast.error(
+              response.data.message || "Order create failed"
+            );
           }
         })
         .catch((error) => {
@@ -571,12 +608,20 @@ export default {
         .then((response) => {
           if (response.data.success) {
             if (response.data.response_url) {
+              // Prevent unified `/checkout` UI from resetting while we leave
+              // the SPA to an external payment gateway.
+              this.$store.dispatch("setCheckoutLeavingForPayment", {
+                leaving: true,
+                startedAt: Date.now(),
+              });
               this.$store.dispatch("flushCartData").then(() => {
                 window.location.href = response.data.response_url;
               });
             }
           } else {
-            this.$toast.error("Order create failed");
+            this.$toast.error(
+              response.data.message || "Order create failed"
+            );
           }
           this.orderCreating = false;
         })

@@ -236,6 +236,7 @@ class SettingsRepository
         try {
             $data = [
                 'shipping_option'                         => getEcommerceSetting('shipping_option') != null ? getEcommerceSetting('shipping_option') : config('tlecommercecore.shipping_cost_options.profile_wise_rate'),
+                'flat_rate_shipping_cost'                 => getEcommerceSetting('flat_rate_shipping_cost') != null ? (float) getEcommerceSetting('flat_rate_shipping_cost') : 0,
                 'hide_country_state_city_in_checkout'     => self::getEcommerceSetting('hide_country_state_city_in_checkout') != null && self::getEcommerceSetting('hide_country_state_city_in_checkout') == config('settings.general_status.in_active') ? config('settings.general_status.in_active') : config('settings.general_status.active'),
                 'post_code_required_in_checkout'          => self::getEcommerceSetting('post_code_required_in_checkout') != null && self::getEcommerceSetting('post_code_required_in_checkout') == config('settings.general_status.in_active') ? config('settings.general_status.in_active') : config('settings.general_status.active'),
                 'enable_tax_in_checkout'                  => self::getEcommerceSetting('enable_tax_in_checkout') == config('settings.general_status.active') ? config('settings.general_status.active') : config('settings.general_status.in_active'),
