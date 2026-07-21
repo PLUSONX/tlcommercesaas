@@ -39,6 +39,7 @@ use Plugin\TlcommerceCore\Http\Controllers\Payment\MyFatoorahController;
  * Payzah payment
  */
 Route::get('/payzah/pay', [PayzahController::class, 'pay'])->name('payzah.pay');
+Route::get('/apple-pay/pay', [PayzahController::class, 'pay'])->name('payzah.apple-pay.pay');
 
 Route::prefix('payment')->group(function () {
     Route::post('/payzah/success', [PayzahController::class, 'success'])
@@ -439,7 +440,7 @@ Route::post(getAdminPrefix() . '/product-review-details', [ProductController::cl
 /**
  * Payment page
  */
-Route::get('/payment/{id}/pay', [PaymentController::class, 'createPayment']);
+Route::get('/{id}/pay', [PaymentController::class, 'createPayment']);
 
 /**
  * Stripe payment
