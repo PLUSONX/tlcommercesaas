@@ -206,6 +206,38 @@ export default {
     state.checkoutLeavingForPayment = !!payload?.leaving;
     state.checkoutLeavingForPaymentStartedAt = payload?.startedAt ?? null;
   },
+  setProductPageSuppressCompanyFooter(state, value) {
+    state.productPageSuppressCompanyFooter = !!value;
+  },
+  /**
+   * Update quantity on an existing cart line (PDP sync, cart page).
+   */
+  setCartLineQuantity(state, item) {
+    if (!item || item.uid == null) {
+      return;
+    }
+    let minItem = parseInt(item.min_item, 10);
+    if (!minItem || minItem <= 0 || Number.isNaN(minItem)) {
+      minItem = 1;
+    }
+    let maxItem = parseInt(item.max_item, 10);
+    if (!maxItem || maxItem <= 0 || Number.isNaN(maxItem)) {
+      maxItem = parseInt(item.quantity, 10) || minItem;
+    }
+    if (minItem >= maxItem) {
+      minItem = 1;
+    }
+    let qty = parseInt(item.quantity, 10);
+    if (!Number.isFinite(qty)) {
+      qty = minItem;
+    }
+    qty = Math.max(minItem, Math.min(maxItem, qty));
+
+    state.cart = state.cart.map((row) =>
+      row.uid === item.uid ? { ...row, quantity: qty } : row
+    );
+    localStorage.setItem("cart", JSON.stringify(state.cart));
+  },
   /**
    * Store is_active_create_guest_account
    */

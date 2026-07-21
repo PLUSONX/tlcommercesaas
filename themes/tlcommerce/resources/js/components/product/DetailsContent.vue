@@ -183,16 +183,12 @@
         <!-- Quantity Input -->
         <div class="quantity-input text-center d-flex">
           <button class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
-            :disabled="quantityValue <= min_qty" @click.prevent="quantityValue > 1 ? quantityValue-- : null">
+            :disabled="quantityValue <= min_qty" @click.prevent="decreaseQuantity">
             <base-icon-svg name="minus" :height="12" :width="12" />
           </button>
           <input v-model="quantityValue" type="number" class="border-0 text-center font-weight-bold w-100" />
           <button class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
-            :disabled="product.quantity < 1 || quantityValue == max_qty" @click.prevent="
-              quantityValue > 0 && quantityValue <= product.quantity - 1
-                ? quantityValue++
-                : null
-              ">
+            :disabled="product.quantity < 1 || quantityValue >= max_qty" @click.prevent="increaseQuantity">
             <base-icon-svg name="plus" :height="12" :width="12" />
           </button>
         </div>
@@ -306,6 +302,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    quantitySeed: {
+      type: Number,
+      default: null,
+    },
   },
   data() {
     return {
@@ -397,6 +397,19 @@ export default {
 
   }),
   watch: {
+    quantitySeed: {
+      handler(value) {
+        if (value == null || value === "") {
+          return;
+        }
+        const parsed = parseInt(value, 10);
+        if (!Number.isFinite(parsed) || parsed === this.quantityValue) {
+          return;
+        }
+        this.quantityValue = parsed;
+      },
+      immediate: true,
+    },
     quantityValue() {
       //Check minimum qty
       if (this.quantityValue < parseInt(this.min_qty)) {
@@ -415,6 +428,16 @@ export default {
     this.$emit("quantity-change", this.quantityValue);
   },
   methods: {
+    decreaseQuantity() {
+      if (this.quantityValue > this.min_qty) {
+        this.quantityValue--;
+      }
+    },
+    increaseQuantity() {
+      if (this.quantityValue < this.max_qty) {
+        this.quantityValue++;
+      }
+    },
 
     cleanImage(img) {
       if (!img) return '';

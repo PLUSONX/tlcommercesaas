@@ -22,6 +22,7 @@
 
 <script>
 import { trackSocialPixels } from "@/utils/trackSocialPixels";
+import { resolveOrderQuantity } from "@/utils/cartLineMatch";
 
 export default {
   name: "CustomFooter",
@@ -164,7 +165,7 @@ export default {
         variant_code: this.item.selectedVariant ?? null,
         unitPrice: this.item.price,
         oldPrice: this.item.oldPrice,
-        quantity: this.quantityValue ?? this.item.quantity ?? 1,
+        quantity: resolveOrderQuantity(this.quantityValue),
         attachment: this.attachment ?? null,
         max_item: this.max_qty,
         min_item: this.min_qty,
@@ -219,7 +220,7 @@ export default {
         variant_code: this.item.selectedVariant ?? null,
         unitPrice: this.item.price,
         oldPrice: this.item.oldPrice,
-        quantity: this.quantityValue ?? this.item.quantity ?? 1,
+        quantity: resolveOrderQuantity(this.quantityValue),
         attachment: this.attachment ?? null,
         max_item: this.max_qty,
         min_item: this.min_qty,

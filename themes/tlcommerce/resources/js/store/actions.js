@@ -103,6 +103,41 @@ export default {
     context.commit("updateCart", data);
   },
   /**
+   * Update a single cart line quantity (PDP, cart UI).
+   */
+  updateCartLineQuantity(context, item) {
+    const state = context.state;
+    const payload = { ...item, quantity: item.quantity };
+
+    if (state.isCustomerLogin) {
+      context.commit("showPreloader", true);
+      const formData = new FormData();
+      formData.append("item", JSON.stringify(payload));
+      return axios
+        .post("/api/v1/ecommerce-core/customer/cart/update-cart-item", formData, {
+          headers: {
+            Authorization: `Bearer ${state.customerToken}`,
+          },
+        })
+        .then((response) => {
+          context.commit("showPreloader", false);
+          if (response.data.success) {
+            context.commit("setCartLineQuantity", payload);
+            context.dispatch("flushCouponData");
+          } else {
+            $toast.error(state.$t("Cross the available quantity"));
+          }
+        })
+        .catch(() => {
+          context.commit("showPreloader", false);
+          $toast.error(state.$t("Action failed. Please try again"));
+        });
+    }
+
+    context.commit("setCartLineQuantity", payload);
+    context.dispatch("flushCouponData");
+  },
+  /**
    * Home delivery checkout action
    */
   storeHomeDeliveryCheckout(context, data) {

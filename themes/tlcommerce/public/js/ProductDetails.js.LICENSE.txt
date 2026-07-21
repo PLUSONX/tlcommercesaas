@@ -42,6 +42,8 @@
 
 /*! @/components/widget/WidgetTopSellingProduct.vue */
 
+/*! @/utils/cartLineMatch */
+
 /*! @coreui/vue */
 
 /*! axios */

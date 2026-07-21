@@ -21,7 +21,7 @@
               </router-view>
             </div>
 
-            <company-footer class="split-screen-company-footer" />
+            <company-footer v-if="showSplitScreenCompanyFooter" class="split-screen-company-footer" />
 
             <gdpr v-if="isSplitScreen && isMobile && gdpr_properties != null && gdpr_properties.gdpr_status == 1"
               class="split-screen-gdpr" :properties="gdpr_properties"></gdpr>
@@ -459,6 +459,8 @@ export default {
           : 0,
       compareItem: (state) =>
         Array.isArray(state.compareItems) ? state.compareItems.length : 0,
+      productPageSuppressCompanyFooter: (state) =>
+        state.productPageSuppressCompanyFooter,
     }),
 
     ...mapState('layout', {
@@ -482,6 +484,10 @@ export default {
 
     layoutClass() {
       return this.isSplitScreen ? 'layout-split-screen' : 'layout__two';
+    },
+
+    showSplitScreenCompanyFooter() {
+      return !this.productPageSuppressCompanyFooter;
     },
 
     containerStyle() {

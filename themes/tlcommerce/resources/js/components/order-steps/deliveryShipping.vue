@@ -368,7 +368,7 @@
               {{ $t("City") }} <span class="text-danger">*</span>
             </label>
             <v-select :options="guestShippingInfo.cities_options" v-model="guestShippingInfo.city" label="name"
-              :clearable="false" @option:selected="goNextStep"></v-select>
+              :clearable="false"></v-select>
             <div v-for="error in errors" :key="error.shipping_city">
               <p class="text-danger validation-error" v-if="error.shipping_city">
                 {{ error.shipping_city }}

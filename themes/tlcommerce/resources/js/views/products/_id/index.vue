@@ -40,10 +40,11 @@
                       :networks="product.shareOptions" :key="galleryKey" />
                   </div>
                   <div class="col-lg-7">
-                    <details-content :product="product" @goto-section="goSec"
+                    <details-content :product="product" :quantity-seed="orderQuantity"
+                      @goto-section="goSec"
                       @color-variant-images="colorVariantImages"
                       @variant-updating="variantUpdating = $event"
-                      @quantity-change="orderQuantity = $event" />
+                      @quantity-change="onOrderQuantityChange" />
                   </div>
                 </template>
                 <div class="row" v-else>
@@ -260,10 +261,11 @@
                     :networks="product.shareOptions" :key="galleryKey" />
                 </div>
                 <div class="col-lg-7">
-                  <details-content :product="product" @goto-section="goSec"
+                  <details-content :product="product" :quantity-seed="orderQuantity"
+                    @goto-section="goSec"
                     @color-variant-images="colorVariantImages"
                     @variant-updating="variantUpdating = $event"
-                    @quantity-change="orderQuantity = $event" />
+                    @quantity-change="onOrderQuantityChange" />
                 </div>
               </template>
               <div class="row" v-else>
@@ -444,7 +446,7 @@
 
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState, mapGetters, mapMutations } from "vuex";
 import { Pagination } from "swiper";
 const axios = require("axios").default;
 import enums from "../../../enums/enums";
@@ -491,6 +493,7 @@ const SingleShop = defineAsyncComponent(() =>
 );
 
 import CustomFooter from '@/components/ui/CustomFooter.vue'
+import { isProductLineInCart, findProductCartLine } from '@/utils/cartLineMatch'
 
 import {
   CTabContent,
@@ -557,6 +560,8 @@ export default {
       productLoading: true,
       variantUpdating: false,
       orderQuantity: 1,
+      _skipCartQuantitySync: false,
+      _orderQuantitySyncTimer: null,
       _isUnmounted: false,
       requestCancelSource: null,
     };
@@ -564,6 +569,7 @@ export default {
   computed: {
     ...mapState({
       site_config: (state) => state.siteSettings,
+      cart: (state) => state.cart,
     }),
 
     ...mapGetters('layout', [
@@ -581,8 +587,16 @@ export default {
       return this.isSplitScreenDesktop;
     },
 
+    isCurrentProductInCart() {
+      return isProductLineInCart(this.cart, this.product);
+    },
+
     showProductStickyFooter() {
-      return !!this.productData && (this.isSplitScreen || this.isMobile);
+      return (
+        !!this.productData &&
+        (this.isSplitScreen || this.isMobile) &&
+        !this.isCurrentProductInCart
+      );
     },
 
     splitContentFooterStyle() {
@@ -602,7 +616,7 @@ export default {
 
     productData() {
       return this.product ?? null
-    }
+    },
 
 
   },
@@ -615,6 +629,41 @@ export default {
     };
   },
   watch: {
+    showProductStickyFooter: {
+      handler(value) {
+        this.syncProductPageCompanyFooter(value);
+      },
+      immediate: true,
+    },
+    product: {
+      handler() {
+        this.syncOrderQuantityFromProduct();
+      },
+    },
+    "product.selectedVariant"() {
+      this.syncOrderQuantityFromProduct();
+    },
+    cart: {
+      handler() {
+        if (!this.product || !this.isCurrentProductInCart) {
+          return;
+        }
+        const line = findProductCartLine(this.cart, this.product);
+        if (!line) {
+          return;
+        }
+        const cartQty = parseInt(line.quantity, 10) || 1;
+        if (cartQty === parseInt(this.orderQuantity, 10)) {
+          return;
+        }
+        this._skipCartQuantitySync = true;
+        this.orderQuantity = cartQty;
+        this.$nextTick(() => {
+          this._skipCartQuantitySync = false;
+        });
+      },
+      deep: true,
+    },
     $route(to, from) {
       if (to.name !== "product") {
         return;
@@ -636,6 +685,11 @@ export default {
   },
   beforeUnmount() {
     this._isUnmounted = true;
+    if (this._orderQuantitySyncTimer) {
+      clearTimeout(this._orderQuantitySyncTimer);
+      this._orderQuantitySyncTimer = null;
+    }
+    this.setProductPageSuppressCompanyFooter(false);
     this.requestCancelSource?.cancel("navigated away");
     window.removeEventListener("scroll", this.scrollHandler);
     this.productLoading = true;
@@ -643,6 +697,86 @@ export default {
     this.relatedProducts = [];
   },
   methods: {
+    ...mapMutations(["setProductPageSuppressCompanyFooter"]),
+
+    syncProductPageCompanyFooter(showCustomFooter) {
+      if (this.$route.name !== "product") {
+        this.setProductPageSuppressCompanyFooter(false);
+        return;
+      }
+      this.setProductPageSuppressCompanyFooter(!!showCustomFooter);
+    },
+
+    defaultOrderQuantity() {
+      const product = this.product;
+      if (!product) {
+        return 1;
+      }
+      if (
+        product.min_item_on_purchase != null &&
+        parseInt(product.min_item_on_purchase, 10) > 0
+      ) {
+        return parseInt(product.min_item_on_purchase, 10);
+      }
+      return 1;
+    },
+
+    syncOrderQuantityFromProduct() {
+      if (!this.product) {
+        return;
+      }
+      this._skipCartQuantitySync = true;
+      const line = findProductCartLine(this.cart, this.product);
+      if (line) {
+        this.orderQuantity = parseInt(line.quantity, 10) || 1;
+      } else {
+        this.orderQuantity = this.defaultOrderQuantity();
+      }
+      this.$nextTick(() => {
+        this._skipCartQuantitySync = false;
+      });
+    },
+
+    onOrderQuantityChange(value) {
+      this.orderQuantity = value;
+      this.queueSyncOrderQuantityToCart();
+    },
+
+    queueSyncOrderQuantityToCart() {
+      if (this._orderQuantitySyncTimer) {
+        clearTimeout(this._orderQuantitySyncTimer);
+      }
+      this._orderQuantitySyncTimer = setTimeout(() => {
+        this._orderQuantitySyncTimer = null;
+        this.syncOrderQuantityToCart();
+      }, 300);
+    },
+
+    syncOrderQuantityToCart() {
+      if (
+        this._skipCartQuantitySync ||
+        !this.isCurrentProductInCart ||
+        !this.product
+      ) {
+        return;
+      }
+      const line = findProductCartLine(this.cart, this.product);
+      if (!line) {
+        return;
+      }
+      const qty = parseInt(this.orderQuantity, 10);
+      if (!Number.isFinite(qty)) {
+        return;
+      }
+      if (parseInt(line.quantity, 10) === qty) {
+        return;
+      }
+      this.$store.dispatch("updateCartLineQuantity", {
+        ...line,
+        quantity: qty,
+      });
+    },
+
     beginRequestCycle() {
       this.requestCancelSource?.cancel("navigated away");
       this.requestCancelSource = axios.CancelToken.source();
@@ -663,6 +797,7 @@ export default {
         return;
       }
       this.beginRequestCycle();
+      this.orderQuantity = 1;
       axios
         .post(
           "/api/v1/ecommerce-core/product-details",
@@ -684,6 +819,7 @@ export default {
             document.title = response.data.data.name;
             this.product = response.data.data;
             this.productLoading = false;
+            this.syncOrderQuantityFromProduct();
           } else {
             this.productLoading = false;
           }
