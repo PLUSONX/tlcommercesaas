@@ -57,7 +57,8 @@ class PayzahController extends Controller
             $this->currency = $settings['payzah_currency'] ?? 'KWD';
 
             $applePayId = config('tlecommercecore.payment_methods.payzah_apple_pay');
-            $this->payzahPaymentType = (int) $this->payment_method_id === (int) $applePayId ? 2 : 1;
+            // Payzah: 1 = K-Net direct, 3 = transit hosted page (Apple Pay + all methods)
+            $this->payzahPaymentType = (int) $this->payment_method_id === (int) $applePayId ? 3 : 1;
 
             // Log::info('payment settings', [
             //     'settings' => json_encode($settings),
@@ -151,20 +152,27 @@ class PayzahController extends Controller
             'error_url' => $errorUrl,
             'language' => "ENG",
             'currency' => "KD",
-            'payment_type' => $this->payzahPaymentType
+            'payment_type' => (string) $this->payzahPaymentType,
         ]);
 
         Log::info('Payzah API response', [
             'response' => $payzahResponse
         ]);
 
+        $redirectPayload = $this->resolvePayzahRedirectUrl($payzahResponse);
+
+        Log::info('Payzah redirect resolved', [
+            'redirect_url_type' => $redirectPayload['type'],
+            'payment_url' => $redirectPayload['url'],
+        ]);
+
         // Store Payzah payment details in database
         $this->storePaymentTransaction([
             'order_id'    => $orderId,
             'track_id'    => $trackId,
-            'payment_id'  => $payzahResponse['data']['PaymentID'],
+            'payment_id'  => $payzahResponse['data']['PaymentID'] ?? null,
             'amount'      => $payableAmount,
-            'payment_url' => $payzahResponse['data']['direct_url'],
+            'payment_url' => $redirectPayload['url'],
             'customer_id'    => $customerId ?? null,
             'guest_customer' => $guestCustomerId ?? null,
         ]);
@@ -189,7 +197,7 @@ class PayzahController extends Controller
         // ]);
 
         // Redirect to Payzah payment page
-        return redirect($payzahResponse['data']['direct_url']);
+        return redirect($redirectPayload['url']);
 
     } catch (\Exception $e) {
         Log::error('Payzah payment failed', [
@@ -200,6 +208,34 @@ class PayzahController extends Controller
         // return redirect()->route('checkout')->with('error', 'Payment initialization failed');
         return back()->with('error', 'Payment initialization failed');
     }
+}
+
+/**
+ * Resolve Payzah redirect URL from init response (transit vs direct flow).
+ *
+ * @return array{type: string, url: string}
+ */
+private function resolvePayzahRedirectUrl(array $payzahResponse): array
+{
+    $data = $payzahResponse['data'] ?? [];
+
+    if ((int) $this->payzahPaymentType === 3) {
+        $url = $data['transit_url'] ?? null;
+        if (!$url) {
+            Log::error('Payzah transit_url missing', ['response_data' => $data]);
+            throw new \Exception('Payzah payment initialization failed: transit_url missing');
+        }
+
+        return ['type' => 'transit', 'url' => $url];
+    }
+
+    $url = $data['direct_url'] ?? null;
+    if (!$url) {
+        Log::error('Payzah direct_url missing', ['response_data' => $data]);
+        throw new \Exception('Payzah payment initialization failed: direct_url missing');
+    }
+
+    return ['type' => 'direct', 'url' => $url];
 }
 
 /**

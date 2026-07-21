@@ -64,7 +64,7 @@
     <div class="instruction">
         <a href="https://payzah.com/" target="_blank" class="btn-link">Payzah</a>
         <p>
-            Customer can pay with Apple Pay / card via Payzah (credit card direct flow).
+            Customer is redirected to Payzah’s transit hosted page (all methods, including Apple Pay).
         </p>
         <p class="semi-bold">
             Configuration instruction for Apple Pay (Payzah)
