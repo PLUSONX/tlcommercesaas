@@ -242,6 +242,14 @@ import {
   CModalBody,
 } from "@coreui/vue";
 
+function readBootstrapSiteProperties() {
+  try {
+    return window.__TLC_BOOTSTRAP__?.siteProperties ?? null;
+  } catch (e) {
+    return null;
+  }
+}
+
 export default {
   name: "MainLayout",
   components: {
@@ -274,14 +282,17 @@ export default {
     CompanyFooter,
   },
   setup() {
+    const store = useStore();
     const data = reactive({
-      site_properties: {},
+      site_properties:
+        store.state.siteProperties ||
+        readBootstrapSiteProperties() ||
+        {},
       languages: [],
       currencies: [],
       megaCategories: [],
     });
 
-    const store = useStore();
     getSiteProperties();
     getMegacategories();
 

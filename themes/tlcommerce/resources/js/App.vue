@@ -34,6 +34,10 @@ export default {
             "--mainC",
             themeColor.theme_primary_color
           );
+          document.documentElement.style.setProperty(
+            "--color-primary",
+            themeColor.theme_primary_color
+          );
         }
       } catch (e) {
         // Blade already injects --mainC before Vue mounts.

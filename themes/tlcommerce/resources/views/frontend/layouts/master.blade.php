@@ -200,7 +200,10 @@
     <link rel="stylesheet" href="/themes/tlcommerce/public/blog/css/font-awesome.min.css">
     <link rel="stylesheet" href="{{ asset('/themes/tlcommerce/public/css/custom_app.css') }}"> -->
 
-    <style>:root { --mainC: {{ $theme_primary_color }}; }</style>
+    <style>:root {
+        --mainC: {{ $theme_primary_color }};
+        --color-primary: {{ $theme_primary_color }};
+    }</style>
 
     <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('back_to_top.css')) }}?v={{ $assetVersion }}">
     <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('header.css')) }}?v={{ $assetVersion }}">
@@ -286,6 +289,8 @@
         window.__TLC_BOOTSTRAP__ = {
             activeLayout: @json($activeLayoutBootstrap),
             assetVersion: @json($assetVersion),
+            siteProperties: @json($siteProperties),
+            themePrimaryColor: @json($theme_primary_color),
         };
     </script>
 

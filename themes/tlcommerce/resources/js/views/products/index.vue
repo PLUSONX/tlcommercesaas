@@ -39,18 +39,19 @@
 
         </div>
 
-      </div>
-      <div class="row g-0 mobile-gap-10" v-if="productsLoading">
+        <div class="row g-0 mobile-gap-10" v-if="productsLoading">
 
-        <div class="col-6" v-for="(item, index) in productSkeletons" :key="index">
-          <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
+          <div class="col-6" v-for="(item, index) in productSkeletons" :key="index">
+            <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
+          </div>
         </div>
-      </div>
-      <div class="row g-0 mobile-gap-10" v-else>
+        <div class="row g-0 mobile-gap-10" v-else>
 
-        <div v-for="product in paginatedItems" :key="product.id" class="col-6 compact-card">
-          <single-product :item="product" styleEight />
+          <div v-for="product in paginatedItems" :key="product.id" class="col-6 compact-card">
+            <single-product :item="product" styleEight />
+          </div>
         </div>
+
       </div>
 
     </div>

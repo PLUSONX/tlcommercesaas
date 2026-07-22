@@ -280,7 +280,7 @@ export default {
   position: absolute;
   inset: 3px;
   border-radius: 50%;
-  background-color: var(--color-primary);
+  background-color: var(--mainC);
   opacity: 0;
   transition: opacity 0.2s ease;
   z-index: 0;
@@ -288,7 +288,7 @@ export default {
 
 .custom-header-icon-btn:hover {
   background-color: #fff !important;
-  border-color: var(--color-primary) !important;
+  border-color: var(--mainC) !important;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
   transform: translateY(-1px);
   /* color: #fff !important; */
@@ -330,8 +330,8 @@ export default {
 
 .custom-header-info-btn--default:hover {
   background: #ffffff;
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  border-color: var(--mainC);
+  color: var(--mainC);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
   transform: translateY(-1px);
 }
@@ -359,7 +359,7 @@ export default {
   position: absolute;
   inset: 3px;
   border-radius: 50%;
-  background-color: var(--color-primary);
+  background-color: var(--mainC);
   opacity: 0;
   transition: opacity 0.2s ease;
   z-index: 0;
@@ -367,7 +367,7 @@ export default {
 
 .custom-header-toolbar :deep(.custom-header__cart.btn-circle:hover) {
   background-color: #fff !important;
-  border-color: var(--color-primary) !important;
+  border-color: var(--mainC) !important;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
   transform: translateY(-1px);
 }
@@ -396,7 +396,7 @@ export default {
   font-weight: 600;
   line-height: 1;
   color: #fff;
-  background-color: var(--color-primary, #e53e3e);
+  background-color: var(--mainC, #e53e3e);
   border: 2px solid #fff;
   border-radius: 999px;
   right: -4px;
@@ -430,7 +430,7 @@ export default {
   position: absolute;
   inset: 3px;
   border-radius: 50%;
-  background-color: var(--color-primary);
+  background-color: var(--mainC);
   opacity: 0;
   transition: opacity 0.2s ease;
   z-index: 0;
@@ -466,7 +466,7 @@ export default {
 
 .custom-header-card__left :deep(.custom-header__offcanvas .hamburger:hover) {
   background-color: #fff !important;
-  border-color: var(--color-primary) !important;
+  border-color: var(--mainC) !important;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
   transform: translateY(-1px);
 }
@@ -510,7 +510,7 @@ export default {
   position: absolute;
   inset: 3px;
   border-radius: 50%;
-  background-color: var(--color-primary);
+  background-color: var(--mainC);
   opacity: 0;
   transition: opacity 0.2s ease;
   z-index: 0;
@@ -518,7 +518,7 @@ export default {
 
 .custom-header-toolbar :deep(.custom-header__search.search-form-wrapper > button:hover) {
   background-color: #fff !important;
-  border: 1px solid var(--color-primary) !important;
+  border: 1px solid var(--mainC) !important;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
   transform: translateY(-1px);
   /* color: #fff !important; */

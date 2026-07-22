@@ -244,7 +244,7 @@ export default {
 
 .banner-feature__toolbar :deep(.banner-feature__search.search-form-wrapper > button:hover) {
 
-  background-color: var(--color-primary) !important;
+  background-color: var(--mainC) !important;
 
   border: 1px solid #fff !important;
 
@@ -446,7 +446,7 @@ export default {
 
 .banner-feature__toolbar :deep(.banner-feature__search.search-form-wrapper > button.bg-transparent.border-0:hover) {
 
-  background-color: var(--color-primary) !important;
+  background-color: var(--mainC) !important;
 
   border: 1px solid #fff !important;
 

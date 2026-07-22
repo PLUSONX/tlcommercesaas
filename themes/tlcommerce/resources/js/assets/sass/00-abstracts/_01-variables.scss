@@ -1,6 +1,4 @@
-:root {
-    --mainC: #ef2543;
-}
+// --mainC and --color-primary are set in master.blade.php (first paint) and refreshed via App.vue API call.
 
 // Colors
 $c1: var(--mainC);
