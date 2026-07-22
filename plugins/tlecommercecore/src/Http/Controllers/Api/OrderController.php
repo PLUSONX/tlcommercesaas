@@ -536,8 +536,13 @@ class OrderController extends Controller
 
         //check  variant product available stock
         if ($product_details->has_variant == config('tlecommercecore.product_variant.variable')) {
-            $variantCode = $item['variant_code'] ?? null;
-            if (empty($variantCode)) {
+            $variantCode = $item['variant_code'] ?? '';
+
+            if (!ProductAttribute::validateMultiSelectVariantCode($item['id'], $variantCode)) {
+                return config('settings.general_status.in_active');
+            }
+
+            if ($variantCode === '') {
                 return config('settings.general_status.in_active');
             }
 

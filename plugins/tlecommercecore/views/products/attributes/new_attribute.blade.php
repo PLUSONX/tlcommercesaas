@@ -44,7 +44,7 @@
                     </div>
                     <div class="form-row mb-20">
                         <div class="col-sm-4">
-                            <label class="font-14 bold black">{{ translate('Multi Select Limit') }}</label>
+                            <label class="font-14 bold black">{{ translate('Total Selections Required') }}</label>
                         </div>
                         <div class="col-sm-8">
                             <input type="number" name="multi_select_limit" id="multi_select_limit"

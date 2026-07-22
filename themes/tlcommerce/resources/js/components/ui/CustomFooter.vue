@@ -23,6 +23,7 @@
 <script>
 import { trackSocialPixels } from "@/utils/trackSocialPixels";
 import { resolveOrderQuantity } from "@/utils/cartLineMatch";
+import { findInvalidMultiSelectAttribute } from "@/utils/variantSelection";
 
 const COMPANY_FOOTER_HEIGHT_VAR = "--tl-company-footer-height";
 
@@ -134,25 +135,11 @@ export default {
       document.documentElement.style.removeProperty(COMPANY_FOOTER_HEIGHT_VAR);
     },
 
-    getSelectedOptionIds(attr) {
-      const key = String(attr.id);
-      const segment = (this.item.selectedVariant || "")
-        .split("/")
-        .filter(Boolean)
-        .find((part) => part.split(":")[0] === key);
-
-      if (!segment) {
-        return [];
-      }
-
-      return (segment.split(":")[1] || "").split(",").filter(Boolean);
-    },
-
     validateMultiSelectSelections() {
-      const invalidAttribute = (this.item.attribute || []).find((attr) => {
-        return attr.multi_select &&
-          this.getSelectedOptionIds(attr).length !== parseInt(attr.multi_select_limit);
-      });
+      const invalidAttribute = findInvalidMultiSelectAttribute(
+        this.item.attribute,
+        this.item.selectedVariant
+      );
 
       if (!invalidAttribute) {
         return true;

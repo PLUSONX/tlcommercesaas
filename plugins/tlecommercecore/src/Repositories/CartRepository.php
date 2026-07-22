@@ -5,6 +5,7 @@ namespace Plugin\TlcommerceCore\Repositories;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Plugin\TlcommerceCore\Models\CartItem;
+use Plugin\TlcommerceCore\Models\ProductAttribute;
 
 class CartRepository
 {
@@ -19,6 +20,9 @@ class CartRepository
     {
         try {
             $item = json_decode($request['item'], true);
+            if (!ProductAttribute::validateMultiSelectVariantCode($item['id'], $item['variant_code'] ?? '')) {
+                return false;
+            }
             DB::beginTransaction();
             $cart_item = CartItem::where('customer_id', $customer_id)
                 ->where('product_id', $item['id'])
@@ -121,6 +125,9 @@ class CartRepository
     {
         try {
             $item = json_decode($request['item'], true);
+            if (!ProductAttribute::validateMultiSelectVariantCode($item['id'], $item['variant_code'] ?? '')) {
+                return false;
+            }
             DB::beginTransaction();
             $cart_item = CartItem::where('customer_id', $customer_id)
                 ->where('uid', $item['uid'])

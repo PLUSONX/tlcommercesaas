@@ -1194,6 +1194,10 @@ class OrderRepository
         $oldPrice = 0;
         $unitPrice = 0;
 
+        if (!ProductAttribute::validateMultiSelectVariantCode($productId, $variantCode ?? '')) {
+            return null;
+        }
+
         if (!empty($variantCode)) {
             $variant_price = ProductAttribute::resolveVariantPrice($productId, $variantCode);
             if ($variant_price == null) {

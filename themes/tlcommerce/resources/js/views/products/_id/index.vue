@@ -18,7 +18,7 @@
               <!-- <li @click.prevent="goSec('quickConnect')">
               {{ $t("Quick Connect") }}
             </li> -->
-              <li @click.prevent="goSec('productDetails')">
+              <li v-if="showProductDetailsSection" @click.prevent="goSec('productDetails')">
                 {{ $t("Product Details") }}
               </li>
               <!-- <li @click.prevent="goSec('recommendations')">
@@ -121,10 +121,10 @@
               </div>
               <!--End Product widgets-->
               <!--Product details tabs-->
-              <div class="col-lg-9">
+              <div class="col-lg-9" v-if="showProductDetailsSection">
                 <div class="overview-wrap" ref="productDetails">
                   <CNav variant="tabs" role="tablist" class="product-description-tabs bg-light">
-                    <CNavItem>
+                    <CNavItem v-if="hasProductOverviewContent">
                       <CNavLink href="javascript:void(0);" :active="tabPaneActiveKey === 1" @click="
                         () => {
                           tabPaneActiveKey = 1;
@@ -133,9 +133,7 @@
                         {{ $t("Product Overview") }}
                       </CNavLink>
                     </CNavItem>
-                    <CNavItem v-if="
-                      site_config?.enable_product_reviews == enums.status.ACTIVE
-                    ">
+                    <CNavItem v-if="hasProductReviewsTab">
                       <CNavLink href="javascript:void(0);" :active="tabPaneActiveKey === 2" @click="
                         () => {
                           tabPaneActiveKey = 2;
@@ -146,25 +144,25 @@
                     </CNavItem>
                   </CNav>
                   <CTabContent>
-                    <CTabPane role="tabpanel" aria-labelledby="home-tab" click="product-overview"
-                      :visible="tabPaneActiveKey === 1">
-                      <div v-if="product.description" v-html="product.description"></div>
-                      <div class="no-review-wrapper text-center py-5" v-else>
-                        <h2>{{ $t("No Details Found") }}</h2>
-                        <p>
-                          {{
-                            $t("There are currently no details for this product")
-                          }}
-                        </p>
-                      </div>
+                    <CTabPane
+                      v-if="hasProductOverviewContent"
+                      role="tabpanel"
+                      aria-labelledby="home-tab"
+                      click="product-overview"
+                      :visible="tabPaneActiveKey === 1"
+                    >
+                      <div v-if="hasMeaningfulHtml(product.description)" v-html="product.description"></div>
                       <div v-if="product.pdf_specifications">
                         <a :href="product.pdf_specifications" target="_blank">Download Pdf Specifications</a>
                       </div>
                     </CTabPane>
-                    <CTabPane role="tabpanel" click="buyer-review " aria-labelledby="profile-tab"
-                      :visible="tabPaneActiveKey === 2" v-if="
-                        site_config?.enable_product_reviews == enums.status.ACTIVE
-                      ">
+                    <CTabPane
+                      v-if="hasProductReviewsTab"
+                      role="tabpanel"
+                      click="buyer-review "
+                      aria-labelledby="profile-tab"
+                      :visible="tabPaneActiveKey === 2"
+                    >
                       <ProductReview :product-id="product.id" :config="site_config" :key="product.id"></ProductReview>
                     </CTabPane>
                   </CTabContent>
@@ -239,7 +237,7 @@
             <li @click.prevent="goSec('quickConnect')">
               {{ $t("Quick Connect") }}
             </li>
-            <li @click.prevent="goSec('productDetails')">
+            <li v-if="showProductDetailsSection" @click.prevent="goSec('productDetails')">
               {{ $t("Product Details") }}
             </li>
             <li @click.prevent="goSec('recommendations')">
@@ -344,10 +342,10 @@
 
 
             <!--Product details tabs-->
-            <div class="col-lg-9">
+            <div class="col-lg-9" v-if="showProductDetailsSection">
               <div class="overview-wrap" ref="productDetails">
                 <CNav variant="tabs" role="tablist" class="product-description-tabs bg-light">
-                  <CNavItem>
+                  <CNavItem v-if="hasProductOverviewContent">
                     <CNavLink href="javascript:void(0);" :active="tabPaneActiveKey === 1" @click="
                       () => {
                         tabPaneActiveKey = 1;
@@ -356,9 +354,7 @@
                       {{ $t("Product Overview") }}
                     </CNavLink>
                   </CNavItem>
-                  <CNavItem v-if="
-                    site_config.enable_product_reviews == enums.status.ACTIVE
-                  ">
+                  <CNavItem v-if="hasProductReviewsTab">
                     <CNavLink href="javascript:void(0);" :active="tabPaneActiveKey === 2" @click="
                       () => {
                         tabPaneActiveKey = 2;
@@ -369,25 +365,25 @@
                   </CNavItem>
                 </CNav>
                 <CTabContent>
-                  <CTabPane role="tabpanel" aria-labelledby="home-tab" click="product-overview"
-                    :visible="tabPaneActiveKey === 1">
-                    <div v-if="product.description" v-html="product.description"></div>
-                    <div class="no-review-wrapper text-center py-5" v-else>
-                      <h2>{{ $t("No Details Found") }}</h2>
-                      <p>
-                        {{
-                          $t("There are currently no details for this product")
-                        }}
-                      </p>
-                    </div>
+                  <CTabPane
+                    v-if="hasProductOverviewContent"
+                    role="tabpanel"
+                    aria-labelledby="home-tab"
+                    click="product-overview"
+                    :visible="tabPaneActiveKey === 1"
+                  >
+                    <div v-if="hasMeaningfulHtml(product.description)" v-html="product.description"></div>
                     <div v-if="product.pdf_specifications">
                       <a :href="product.pdf_specifications" target="_blank">Download Pdf Specifications</a>
                     </div>
                   </CTabPane>
-                  <CTabPane role="tabpanel" click="buyer-review " aria-labelledby="profile-tab"
-                    :visible="tabPaneActiveKey === 2" v-if="
-                      site_config.enable_product_reviews == enums.status.ACTIVE
-                    ">
+                  <CTabPane
+                    v-if="hasProductReviewsTab"
+                    role="tabpanel"
+                    click="buyer-review "
+                    aria-labelledby="profile-tab"
+                    :visible="tabPaneActiveKey === 2"
+                  >
                     <ProductReview :product-id="product.id" :config="site_config" :key="product.id"></ProductReview>
                   </CTabPane>
                 </CTabContent>
@@ -618,6 +614,30 @@ export default {
       return this.product ?? null
     },
 
+    hasProductOverviewContent() {
+      if (!this.product) {
+        return false;
+      }
+      return (
+        this.hasMeaningfulHtml(this.product.description) ||
+        !!this.product.pdf_specifications
+      );
+    },
+
+    hasProductReviewsTab() {
+      if (
+        this.site_config?.enable_product_reviews != this.enums.status.ACTIVE ||
+        !this.product
+      ) {
+        return false;
+      }
+      return parseInt(this.product.total_reviews, 10) > 0;
+    },
+
+    showProductDetailsSection() {
+      return this.hasProductOverviewContent || this.hasProductReviewsTab;
+    },
+
 
   },
   // computed: mapState({
@@ -638,6 +658,7 @@ export default {
     product: {
       handler() {
         this.syncOrderQuantityFromProduct();
+        this.syncProductDetailsTab();
       },
     },
     "product.selectedVariant"() {
@@ -820,6 +841,7 @@ export default {
             this.product = response.data.data;
             this.productLoading = false;
             this.syncOrderQuantityFromProduct();
+            this.syncProductDetailsTab();
           } else {
             this.productLoading = false;
           }
@@ -931,10 +953,31 @@ export default {
     },
     goSec(sec) {
       this.$nextTick(() => {
-        let element = this.$refs[sec];
-        let top = element.offsetTop;
+        const element = this.$refs[sec];
+        if (!element) {
+          return;
+        }
+        const top = element.offsetTop;
         window.scrollTo(0, top - 110);
       });
+    },
+
+    hasMeaningfulHtml(value) {
+      if (!value || typeof value !== "string") {
+        return false;
+      }
+      const text = value
+        .replace(/<[^>]*>/g, "")
+        .replace(/&nbsp;/gi, " ")
+        .trim();
+      return text.length > 0;
+    },
+
+    syncProductDetailsTab() {
+      if (!this.showProductDetailsSection) {
+        return;
+      }
+      this.tabPaneActiveKey = this.hasProductOverviewContent ? 1 : 2;
     },
 
     scrollHandler() {

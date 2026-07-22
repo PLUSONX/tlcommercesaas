@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Database\Eloquent\Model;
 use Plugin\TlcommerceCore\Models\AttributeValues;
 use Plugin\TlcommerceCore\Models\ProductHasChoices;
+use Plugin\TlcommerceCore\Models\ProductHasChoiceOption;
 use Plugin\TlcommerceCore\Models\VariantProductPrice;
 use Plugin\TlcommerceCore\Models\ProductAttributeTranslation;
 
@@ -128,5 +129,63 @@ class ProductAttribute extends Model
         return $variants->first(function ($variant) use ($productId, $skuCode, $multiSelectIds) {
             return static::skuVariantCode($productId, $variant->variant, $multiSelectIds) === $skuCode;
         });
+    }
+
+    /**
+     * Validate multi-select segments in a variant code (duplicates allowed).
+     *
+     * @param int $productId
+     * @param string|null $variantCode
+     * @return bool
+     */
+    public static function validateMultiSelectVariantCode($productId, $variantCode)
+    {
+        $choiceIds = ProductHasChoices::where('product_id', $productId)->pluck('choice_id');
+        $multiSelectAttributes = static::whereIn('id', $choiceIds)
+            ->where('multi_select', true)
+            ->get();
+
+        if ($multiSelectAttributes->isEmpty()) {
+            return true;
+        }
+
+        $segments = collect(explode('/', (string) $variantCode))
+            ->filter()
+            ->mapWithKeys(function ($segment) {
+                $parts = explode(':', $segment, 2);
+                return [(string) $parts[0] => $parts[1] ?? ''];
+            });
+
+        foreach ($multiSelectAttributes as $attribute) {
+            $limit = (int) $attribute->multi_select_limit;
+            if ($limit < 1) {
+                return false;
+            }
+
+            $segment = $segments->get((string) $attribute->id, '');
+            $selectedIds = array_values(array_filter(explode(',', $segment), function ($id) {
+                return $id !== '';
+            }));
+
+            if (count($selectedIds) !== $limit) {
+                return false;
+            }
+
+            $validOptionIds = ProductHasChoiceOption::where('product_id', $productId)
+                ->where('choice_id', $attribute->id)
+                ->pluck('option_id')
+                ->map(function ($id) {
+                    return (string) $id;
+                })
+                ->all();
+
+            foreach ($selectedIds as $optionId) {
+                if (!in_array((string) $optionId, $validOptionIds, true)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }

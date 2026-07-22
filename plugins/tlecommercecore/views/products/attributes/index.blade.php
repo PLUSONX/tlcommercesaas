@@ -32,7 +32,7 @@
                                 <th>{{ translate('Values') }}</th>
                                 <th>{{ translate('Status') }}</th>
                                 <th>{{ translate('Multi Select') }}</th>
-                                <th>{{ translate('Multi Select Limit') }}</th>
+                                <th>{{ translate('Total Selections Required') }}</th>
                                 <th>{{ translate('Actions') }}</th>
                             </tr>
                         </thead>

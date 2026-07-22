@@ -16,14 +16,21 @@
     <h1 class="product-title">{{ product.name }}</h1>
     <!--End Title-->
     <!-- Rating -->
-    <div class="align-items-center d-flex rating-wrap" v-if="config?.enable_product_reviews == enums.status.ACTIVE">
+    <div
+      class="align-items-center d-flex rating-wrap"
+      v-if="
+        config?.enable_product_reviews == enums.status.ACTIVE &&
+        (config?.enable_product_star_rating == enums.status.ACTIVE ||
+          product.total_reviews > 0)
+      "
+    >
       <div class="d-flex align-items-center mr-15" v-if="config?.enable_product_star_rating == enums.status.ACTIVE">
         <div class="product-rating-wrapper">
           <i :data-star="product.rating" :title="product.rating"></i>
         </div>
         <h4 class="ms-3 mb-0 c1 mt3px">{{ product.rating }}</h4>
       </div>
-      <div class="rating-text-wrap mt5px flex-wrap d-flex">
+      <div class="rating-text-wrap mt5px flex-wrap d-flex" v-if="product.total_reviews > 0">
         <span class="c1 review-count" @click="gotoSec">
           ({{ product.total_reviews }}) {{ $t("Reviews") }}
         </span>
@@ -85,17 +92,23 @@
           <!-- Option List: split-screen list-cards (desktop + mobile) -->
           <template v-if="isSplitScreen">
             <div class="option-list-cards d-flex flex-column">
-              <button
+              <component
+                :is="attr.multi_select ? 'div' : 'button'"
                 v-for="(option, j) in attr.options"
                 :key="option.id"
-                type="button"
+                :type="attr.multi_select ? undefined : 'button'"
                 class="option-list-card text-start"
-                :class="{ 'is-selected': isOptionSelected(attr, option) }"
-                :aria-pressed="isOptionSelected(attr, option)"
-                :disabled="isOptionSelectionDisabled(attr, option)"
-                @click.prevent="updateSelectedVariant(attr, option)"
+                :class="{
+                  'is-selected': attr.multi_select
+                    ? getOptionSelectionCount(attr, option) > 0
+                    : isOptionSelected(attr, option),
+                  'option-list-card--multi-select': attr.multi_select,
+                }"
+                :aria-pressed="attr.multi_select
+                  ? getOptionSelectionCount(attr, option) > 0
+                  : isOptionSelected(attr, option)"
+                @click.prevent="!attr.multi_select && updateSelectedVariant(attr, option)"
               >
-
                 <template v-if="attr.title == 'color'">
                   <span
                     class="option-list-card__swatch"
@@ -123,21 +136,110 @@
                     <strong>{{ option.title }}</strong>
                   </span>
                 </template>
-              </button>
+
+                <div
+                  v-if="attr.multi_select"
+                  class="multi-select-option-qty"
+                  @click.stop
+                >
+                  <button
+                    type="button"
+                    class="multi-select-option-qty__btn"
+                    :disabled="getOptionSelectionCount(attr, option) === 0"
+                    @click.prevent="decreaseOptionSelection(attr, option)"
+                  >
+                    −
+                  </button>
+                  <span class="multi-select-option-qty__count">{{
+                    getOptionSelectionCount(attr, option)
+                  }}</span>
+                  <button
+                    type="button"
+                    class="multi-select-option-qty__btn"
+                    :disabled="!canAddOptionSelection(attr)"
+                    @click.prevent="increaseOptionSelection(attr, option)"
+                  >
+                    +
+                  </button>
+                </div>
+              </component>
             </div>
           </template>
           <!-- Option List: default chips -->
           <template v-else>
             <div class="checkbox-group d-flex flex-wrap">
               <div v-for="(option, j) in attr.options" :key="option.id">
-                <label class="custom-checkbox--two position-relative"
-                  :for="`p${product.id}-${attr.id}-option-${option.id}`">
-                  <input :id="`p${product.id}-${attr.id}-option-${option.id}`"
-                    :type="attr.multi_select ? 'checkbox' : 'radio'"
-                    :name="`product_${product.id}_${attr.id}`" :value="option"
+                <div
+                  v-if="attr.multi_select"
+                  class="multi-select-option d-flex align-items-center"
+                  :class="{
+                    'is-selected': getOptionSelectionCount(attr, option) > 0,
+                  }"
+                >
+                  <span
+                    class="multi-select-option__label checkmark text-capitalize"
+                    :class="{
+                      'p-0': attr.title == 'color',
+                      'text-uppercase': attr.title == 'size',
+                    }"
+                    :style="attr.title == 'color'
+                      ? {
+                        backgroundColor: option.value,
+                        height: '50px',
+                        width: '50px',
+                      }
+                      : null"
+                  >
+                    <template v-if="attr.title == 'color'">
+                      <img
+                        :src="cleanImage(option.image)"
+                        :alt="`${option.name}`"
+                        v-if="option.image"
+                      />
+                      <p v-else>{{ option.name }}</p>
+                    </template>
+                    <template v-else-if="attr.title == 'size'">
+                      <strong class="text-uppercase">{{ option.title }}</strong>
+                    </template>
+                    <template v-else>
+                      <strong>{{ option.title }}</strong>
+                    </template>
+                  </span>
+                  <div class="multi-select-option-qty">
+                    <button
+                      type="button"
+                      class="multi-select-option-qty__btn"
+                      :disabled="getOptionSelectionCount(attr, option) === 0"
+                      @click.prevent="decreaseOptionSelection(attr, option)"
+                    >
+                      −
+                    </button>
+                    <span class="multi-select-option-qty__count">{{
+                      getOptionSelectionCount(attr, option)
+                    }}</span>
+                    <button
+                      type="button"
+                      class="multi-select-option-qty__btn"
+                      :disabled="!canAddOptionSelection(attr)"
+                      @click.prevent="increaseOptionSelection(attr, option)"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <label
+                  v-else
+                  class="custom-checkbox--two position-relative"
+                  :for="`p${product.id}-${attr.id}-option-${option.id}`"
+                >
+                  <input
+                    :id="`p${product.id}-${attr.id}-option-${option.id}`"
+                    type="radio"
+                    :name="`product_${product.id}_${attr.id}`"
+                    :value="option"
                     :checked="isOptionSelected(attr, option)"
-                    :disabled="isOptionSelectionDisabled(attr, option)"
-                    v-on:change="updateSelectedVariant(attr, option)" />
+                    v-on:change="updateSelectedVariant(attr, option)"
+                  />
 
                   <template v-if="attr.title == 'color'">
                     <span class="checkmark p-0" :style="{
@@ -288,6 +390,17 @@ const axios = require("axios").default;
 import Countdown from "../ui/Countdown.vue";
 import { mapState, mapGetters } from "vuex";
 import enums from "../../enums/enums";
+import {
+  addOptionSelection,
+  applySingleOptionSelection,
+  canAddOptionSelection as canAddOptionSelectionUtil,
+  findInvalidMultiSelectAttribute,
+  getOptionSelectionCount as getOptionSelectionCountUtil,
+  getSelectedOptionIds as getSelectedOptionIdsUtil,
+  removeOneOptionSelection,
+  selectedOptionCount as selectedOptionCountUtil,
+  stripMultiSelectSegments,
+} from "@/utils/variantSelection";
 export default {
   emits: ["goto-section", "color-variant-images", "variant-updating", "quantity-change"],
   components: {
@@ -454,44 +567,32 @@ export default {
       this.$emit("color-variant-images", color_id);
     },
     getSelectedOptionIds(attr) {
-      const key = String(attr.id);
-      const segment = (this.product.selectedVariant || "")
-        .split("/")
-        .filter(Boolean)
-        .find((part) => part.split(":")[0] === key);
-
-      if (!segment) {
-        return [];
-      }
-
-      return (segment.split(":")[1] || "").split(",").filter(Boolean);
+      return getSelectedOptionIdsUtil(attr, this.product.selectedVariant);
     },
     selectedOptionCount(attr) {
-      return this.getSelectedOptionIds(attr).length;
+      return selectedOptionCountUtil(attr, this.product.selectedVariant);
     },
-    isOptionSelectionDisabled(attr, option) {
-      if (!attr.multi_select || this.isOptionSelected(attr, option)) {
-        return false;
-      }
-      const limit = parseInt(attr.multi_select_limit);
-      return limit > 0 && this.selectedOptionCount(attr) >= limit;
+    getOptionSelectionCount(attr, option) {
+      return getOptionSelectionCountUtil(
+        attr,
+        option,
+        this.product.selectedVariant
+      );
+    },
+    canAddOptionSelection(attr) {
+      return canAddOptionSelectionUtil(attr, this.product.selectedVariant);
     },
     initializeMultiSelectAttributes() {
-      const multiSelectIds = (this.product.attribute || [])
-        .filter((attr) => attr.multi_select)
-        .map((attr) => String(attr.id));
-
-      this.product.selectedVariant = (this.product.selectedVariant || "")
-        .split("/")
-        .filter(Boolean)
-        .filter((segment) => !multiSelectIds.includes(segment.split(":")[0]))
-        .join("/");
+      this.product.selectedVariant = stripMultiSelectSegments(
+        this.product.attribute,
+        this.product.selectedVariant
+      );
     },
     validateMultiSelectSelections() {
-      const invalidAttribute = (this.product.attribute || []).find((attr) => {
-        return attr.multi_select &&
-          this.selectedOptionCount(attr) !== parseInt(attr.multi_select_limit);
-      });
+      const invalidAttribute = findInvalidMultiSelectAttribute(
+        this.product.attribute,
+        this.product.selectedVariant
+      );
 
       if (!invalidAttribute) {
         return true;
@@ -502,54 +603,29 @@ export default {
       );
       return false;
     },
-    /**
-     * Apply chosen option to selectedVariant immediately (optimistic)
-     */
-    applyOptionToSelectedVariant(attr, option) {
-      const key = String(attr.id);
-      const parts = (this.product.selectedVariant || "")
-        .split("/")
-        .filter(Boolean);
-
-      if (attr.multi_select) {
-        const selectedIds = this.getSelectedOptionIds(attr);
-        const optionId = String(option.id);
-        const selectedIndex = selectedIds.indexOf(optionId);
-
-        if (selectedIndex >= 0) {
-          selectedIds.splice(selectedIndex, 1);
-        } else {
-          const limit = parseInt(attr.multi_select_limit);
-          if (limit > 0 && selectedIds.length >= limit) {
-            return false;
-          }
-          selectedIds.push(optionId);
-        }
-
-        selectedIds.sort((first, second) =>
-          first.localeCompare(second, undefined, { numeric: true })
+    increaseOptionSelection(attr, option) {
+      const result = addOptionSelection(
+        attr,
+        option,
+        this.product.selectedVariant
+      );
+      if (!result.added) {
+        this.$toast.error(
+          `${this.$t("You can select up to")} ${attr.multi_select_limit} ${attr.title}`
         );
-
-        const next = parts.filter((part) => part.split(":")[0] !== key);
-        if (selectedIds.length > 0) {
-          next.push(`${key}:${selectedIds.join(",")}`);
-        }
-        this.product.selectedVariant = next.join("/");
-        return true;
+        return;
       }
-
-      let found = false;
-      const next = parts.map((p) => {
-        const [c] = p.split(":");
-        if (String(c) === key) {
-          found = true;
-          return `${c}:${option.id}`;
-        }
-        return p;
-      });
-      if (!found) next.push(`${key}:${option.id}`);
-      this.product.selectedVariant = next.join("/");
-      return true;
+      this.product.selectedVariant = result.selectedVariant;
+    },
+    decreaseOptionSelection(attr, option) {
+      const result = removeOneOptionSelection(
+        attr,
+        option,
+        this.product.selectedVariant
+      );
+      if (result.removed) {
+        this.product.selectedVariant = result.selectedVariant;
+      }
     },
     /**
      * Get product variant price
@@ -559,17 +635,15 @@ export default {
       if (attr.id == "color" || attr.title == "color") {
         this.colorVariantImages(option.id);
       }
-      const selectionUpdated = this.applyOptionToSelectedVariant(attr, option);
-      if (!selectionUpdated) {
-        this.$toast.error(
-          `${this.$t("You can select up to")} ${attr.multi_select_limit} ${attr.title}`
-        );
-        return;
-      }
-
       if (attr.multi_select) {
         return;
       }
+
+      this.product.selectedVariant = applySingleOptionSelection(
+        attr,
+        option,
+        this.product.selectedVariant
+      );
 
       this.variantUpdating = true;
       this.$emit("variant-updating", true);
@@ -823,6 +897,10 @@ export default {
     background-color: rgba($c1, 0.04);
   }
 
+  &--multi-select {
+    cursor: default;
+  }
+
   &.is-selected {
     border-color: $c1;
     background-color: rgba($c1, 0.08);
@@ -855,6 +933,52 @@ export default {
   &__label {
     flex: 1;
     line-height: 1.3;
+    font-size: 14px;
+  }
+}
+
+.multi-select-option {
+  gap: 8px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+
+  &.is-selected .multi-select-option__label {
+    border-color: $c1;
+  }
+
+  &__label {
+    min-width: 48px;
+    text-align: center;
+  }
+}
+
+.multi-select-option-qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+
+  &__btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    line-height: 1;
+    font-size: 16px;
+    padding: 0;
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  }
+
+  &__count {
+    min-width: 18px;
+    text-align: center;
+    font-weight: 600;
     font-size: 14px;
   }
 }
