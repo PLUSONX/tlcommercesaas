@@ -19,6 +19,7 @@ use Plugin\TlcommerceCore\Models\PaymentTransaction;
 use Illuminate\Support\Facades\Http;
 use Plugin\TlcommerceCore\Models\Orders;
 use Plugin\TlcommerceCore\Models\OrderHasProducts;
+use Plugin\TlcommerceCore\Repositories\EcommerceNotification;
 
 class PayzahController extends Controller
 {
@@ -538,6 +539,13 @@ public function success(Request $request)
 
         //updating order payment status
         $this->updateOrderTransaction($orderId);
+
+        $order = Orders::find($orderId);
+        if ($order) {
+            $message = 'Order payment completed by Payzah';
+            EcommerceNotification::sendCustomerOrderPaymentCompletedNotification($orderId, $message);
+            EcommerceNotification::sendNewOrderNotification($order);
+        }
 
         //Redirect order success page
         $redirect_url = '/order-success' . '/' . $orderId;

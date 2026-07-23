@@ -1936,7 +1936,7 @@ class OrderRepository
 
             // \Log::info('Respository Method: before sending notification to admin!!!');
 
-            EcommerceNotification::sendNewOrderNotification($order);
+            // EcommerceNotification::sendNewOrderNotification($order);
 
             // EcommerceNotification::sendOrderInvoiceNotification($order->id, $customer_id);
 
