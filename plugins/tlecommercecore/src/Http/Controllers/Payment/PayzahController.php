@@ -145,8 +145,17 @@ class PayzahController extends Controller
             'errorUrl' => $errorUrl,
         ]);
 
+        $customerPayload = $this->buildPayzahCustomerPayload((int) $orderId);
+
+        Log::info('Payzah customer payload', [
+            'keys' => array_keys($customerPayload),
+            'has_name' => isset($customerPayload['customer_name']),
+            'has_email' => isset($customerPayload['customer_email']),
+            'has_phone' => isset($customerPayload['customer_phone']),
+        ]);
+
         // Call Payzah API
-        $payzahResponse = $this->initiatePayzahPayment([
+        $payzahResponse = $this->initiatePayzahPayment(array_merge([
             'trackid' => $trackId,
             'amount' => $payableAmount,
             'success_url' => $successUrl,
@@ -154,7 +163,7 @@ class PayzahController extends Controller
             'language' => "ENG",
             'currency' => "KD",
             'payment_type' => (string) $this->payzahPaymentType,
-        ]);
+        ], $customerPayload));
 
         Log::info('Payzah API response', [
             'response' => $payzahResponse
@@ -209,6 +218,72 @@ class PayzahController extends Controller
         // return redirect()->route('checkout')->with('error', 'Payment initialization failed');
         return back()->with('error', 'Payment initialization failed');
     }
+}
+
+/**
+ * Build optional Payzah customer fields from the pending order.
+ *
+ * @return array<string, string>
+ */
+private function buildPayzahCustomerPayload(int $orderId): array
+{
+    $order = Orders::with(['customer_info', 'guest_customer', 'billing_details', 'shipping_details'])
+        ->find($orderId);
+
+    if (!$order) {
+        Log::warning('Payzah customer payload: order not found', ['order_id' => $orderId]);
+        return [];
+    }
+
+    $name = null;
+    $email = null;
+    $phone = null;
+
+    if ($order->billing_details != null) {
+        $name = $order->billing_details->name ?? null;
+        $phone = $order->billing_details->phone ?? null;
+    }
+
+    if (!$name && $order->shipping_details != null) {
+        $name = $order->shipping_details->name ?? null;
+        if (!$phone) {
+            $phone = $order->shipping_details->phone ?? null;
+        }
+    }
+
+    if ($order->customer_info != null) {
+        $email = $order->customer_info->email ?? null;
+        if (!$name) {
+            $name = $order->customer_info->name ?? null;
+        }
+        if (!$phone) {
+            $phone = $order->customer_info->phone ?? null;
+        }
+    } elseif ($order->guest_customer != null) {
+        $email = $order->guest_customer->email ?? null;
+        if (!$name) {
+            $name = $order->guest_customer->name ?? null;
+        }
+    }
+
+    $payload = [];
+
+    if (!empty($name)) {
+        $payload['customer_name'] = $name;
+    }
+    if (!empty($email)) {
+        $payload['customer_email'] = $email;
+    }
+    if (!empty($phone)) {
+        $payload['customer_phone'] = $phone;
+    }
+    if (!empty($order->order_code)) {
+        $payload['udf1'] = (string) $order->order_code;
+    } else {
+        $payload['udf1'] = (string) $orderId;
+    }
+
+    return $payload;
 }
 
 /**
