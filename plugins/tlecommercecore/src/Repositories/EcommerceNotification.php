@@ -57,7 +57,14 @@ class EcommerceNotification
 
         if (!$order || !$notifiable_customer) return;
 
-        // Build the HTML Table (The "_table_" content)
+        $link = '';
+        if ($customer_id > 0) {
+            $link = '/dashboard/order-details/' . $order_id;
+        } elseif ($guest_customer_id > 0) {
+            $link = '/guest/order-details/' . $order_id;
+        }
+
+        // Build the HTML Table (The "_order_details_" content)
         $product_rows = '';
         foreach ($order->products as $item) {
             $price = number_format($item->unit_price, 2) . " KD";
@@ -98,24 +105,32 @@ class EcommerceNotification
 
         \Log::info('EcommerceNotifcation Method: before mail_data!!!');
 
-        Log::info("Mail Data", [
-            '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
-            '_site_link_' =>url('/'),
-            '_footer_text_'     => getGeneralSetting('copyright_text'),
-            'keywords'          => getEmailTemplateVariables(6, true)
-            ]);
+        $mail_title = 'Your order has been placed!';
+        $message = 'Thank you for your order. Payment has been received.';
+        $btn_title = 'Track Your Order';
 
-        // Prepare CLEAN data for Template ID 6
-        $mail_data = [
-            'template_id'       => 6,
-            'subject'           => "Invoice for Order #" . $order->order_code,
-            '_customer_name_'   => $notifiable_customer->name,
-            '_order_code_'      => $order->order_code,
-            '_table_'           => $invoice_table_html,
-            '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
+        Log::info("Mail Data", [
+            'template_id'       => 10,
+            '_system_logo_url_' => self::getMailLogoUrl(),
             '_site_link_'       => url('/'),
             '_footer_text_'     => getGeneralSetting('copyright_text'),
-            'keywords'          => getEmailTemplateVariables(6, true)
+            'keywords'          => getEmailTemplateVariables(10, true),
+        ]);
+
+        $mail_data = [
+            'template_id'       => 10,
+            'keywords'          => getEmailTemplateVariables(10, true),
+            'subject'           => 'Invoice for Order #' . $order->order_code,
+            '_system_logo_url_' => self::getMailLogoUrl(),
+            '_site_link_'       => url('/'),
+            '_footer_text_'     => getGeneralSetting('copyright_text'),
+            '_order_code_'      => $order->order_code,
+            '_order_details_'   => $invoice_table_html,
+            '_tracking_url_'    => url('/') . $link,
+            '_customer_name_'   => $notifiable_customer->name,
+            '_message_'         => $message,
+            '_btn_title_'       => $btn_title,
+            '_mail_title_'      => $mail_title,
         ];
         
 
@@ -1123,5 +1138,20 @@ class EcommerceNotification
         if ($notifiable_seller != null) {
             Notification::send($notifiable_seller, new ProductApprovalNotification($seller_data));
         }
+    }
+
+    /**
+     * Absolute logo URL for tenant email templates.
+     */
+    private static function getMailLogoUrl(): string
+    {
+        $logoId = getGeneralSetting('admin_logo') ?: getGeneralSetting('white_background_logo');
+        $logo = asset(getFilePath($logoId));
+        if (getGeneralSetting('tenant_id') != null) {
+            $logo = str_replace('/tenancy/assets', '', $logo);
+            $logo = str_replace('public/', '', $logo);
+        }
+
+        return $logo;
     }
 }
