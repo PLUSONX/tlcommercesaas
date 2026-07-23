@@ -22,8 +22,7 @@
     @if (isset($settings_details['favicon']))
         <link rel="shortcut icon" href="{{ project_asset($settings_details['favicon']) }}">
     @else
-        <link rel="shortcut icon" href="{{ asset('backend/assets/img/favicon.png') }}">
-        <!-- <link rel="shortcut icon" href="{{ asset('/public/backend/assets/img/favicon.png') }}"> -->
+        <link rel="icon" type="image/png" href="/themes/default/public/assets/favicon.png">
     @endif
 
     <!-- Web Fonts -->

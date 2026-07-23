@@ -29,6 +29,10 @@
     display: none;
   }
 
+  .whatsapp-float {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    right: calc(16px + env(safe-area-inset-right, 0px));
+  }
 
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -313,7 +317,8 @@ button{cursor:pointer;font-family:inherit;border:none}
 .dv-order-eta { font-size: 11px; font-weight: 700; color: var(--o); }
 
 .pay-methods { display: flex; gap: 8px; margin-bottom: 20px; }
-.pay-method { background: #fff; color: #000; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 12px; }
+.pay-method { background: #fff; color: #000; padding: 0px 0px; border-radius: 8px; font-weight: 700; font-size: 12px; }
+.pay-method img { display: block; height: 30px; width: auto; max-width: 72px; object-fit: contain; border-radius: 8px; }
 .pay-tx { display: flex; justify-content: space-between; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; font-size: 12px; color: #fff; margin-bottom: 6px; }
 
 .analytics-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -338,6 +343,14 @@ button{cursor:pointer;font-family:inherit;border:none}
 
 .int-grid-mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .int-box { background: rgba(255,255,255,0.05); height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid rgba(255,255,255,0.1); }
+
+.feat-int-tile { background: rgba(255,255,255,.06); border-radius: 12px; padding: 16px; text-align: center; border: 1px solid rgba(255,255,255,.07); }
+.feat-int-tile--accent { background: rgba(255,122,0,.12); border-color: rgba(255,122,0,.2); }
+.feat-int-tile-icon { font-size: 24px; margin-bottom: 6px; line-height: 1; }
+.feat-int-tile-logo { display: flex; align-items: center; justify-content: center; min-height: 24px; margin-bottom: 6px; }
+.feat-int-tile-logo img { display: block; max-height: 24px; width: auto; max-width: 100%; object-fit: contain; }
+.feat-int-tile-name { font-size: 12px; color: rgba(255,255,255,.5); font-weight: 600; }
+.feat-int-tile-name--accent { color: var(--orange); }
 
 .tmpl-row-mini { display: flex; gap: 12px; justify-content: center; padding-top: 20px; }
 .tmpl-box-mini { width: 60px; height: 80px; background: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 3px solid transparent; }
@@ -369,7 +382,8 @@ button{cursor:pointer;font-family:inherit;border:none}
     transition: all 0.25s; cursor: pointer;
   }
   .int-card:hover { border-color: rgba(255,122,0,0.3); box-shadow: 0 4px 16px rgba(255,122,0,0.08); transform: translateY(-2px); }
-  .int-icon { font-size: 28px; margin-bottom: 8px; }
+  .int-icon { font-size: 28px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; min-height: 28px; }
+  .int-icon img { display: block; max-height: 28px; width: auto; max-width: 100%; object-fit: contain; }
   .int-name { font-size: 12px; font-weight: 700; color: var(--black); }
   .int-cat-label { font-size: 10px; color: var(--gray-400); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.05em; }
 
@@ -841,6 +855,40 @@ footer{background:var(--ink2);padding:72px 0 36px}
 .social-icon:hover{background:var(--o);color:#fff;border-color:var(--o)}
 .social-icon svg{width:15px;height:15px}
 
+/* ── WHATSAPP FLOAT ── */
+.whatsapp-float{
+  position:fixed;
+  bottom:24px;
+  right:24px;
+  z-index:600;
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:#25D366;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:var(--sh3);
+  transition:transform .18s ease,background .18s ease,box-shadow .18s ease;
+}
+.whatsapp-float:hover{background:#1ebe57;transform:scale(1.06);box-shadow:0 12px 32px rgba(37,211,102,.35)}
+.whatsapp-float:focus-visible{outline:2px solid var(--o);outline-offset:3px}
+.whatsapp-float svg{width:28px;height:28px;flex-shrink:0}
+
+/* ══════════════════════════════════════
+   CONTACT FORM MODAL
+══════════════════════════════════════ */
+.contact-modal{position:fixed;inset:0;z-index:700;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s ease,visibility .22s ease}
+.contact-modal.is-open{opacity:1;visibility:visible;pointer-events:auto}
+.contact-modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.5)}
+.contact-modal-dialog{position:relative;z-index:1;width:100%;max-width:520px;max-height:calc(100vh - 48px);overflow-y:auto;transform:scale(.96) translateY(8px);transition:transform .22s ease}
+.contact-modal.is-open .contact-modal-dialog{transform:scale(1) translateY(0)}
+.contact-modal-close{position:absolute;top:14px;right:14px;z-index:2;width:34px;height:34px;border:none;border-radius:50%;background:var(--surface);color:var(--muted);font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--sh1);transition:background .15s,color .15s}
+.contact-modal-close:hover{background:var(--o-glow);color:var(--o)}
+.contact-modal .contact-form-card{margin:0;padding:36px 36px 32px}
+body.modal-open{overflow:hidden}
+
 /* ══════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════ */
@@ -875,6 +923,10 @@ footer{background:var(--ink2);padding:72px 0 36px}
   .templates-scroll{grid-template-columns:1fr 1fr}
   #contact .container{padding-left:16px;padding-right:16px}
   #contact .contact-form-card{padding:24px 18px}
+  .contact-modal{padding:16px}
+  .contact-modal .contact-form-card{padding:24px 18px 20px}
+  .contact-modal-dialog{max-height:calc(100vh - 32px)}
+  .contact-modal .form-row{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -905,6 +957,7 @@ footer{background:var(--ink2);padding:72px 0 36px}
       </ul>
       <div class="nav-ctas">
         <!-- <a href="#" class="nav-signin">Sign in</a> -->
+        <button type="button" class="btn btn-ghost btn-sm" id="openDemoModal">Demo</button>
         <a href="admin/login" class="btn btn-primary btn-sm">Sign in</a>
       </div>
     </div>
@@ -952,12 +1005,12 @@ footer{background:var(--ink2);padding:72px 0 36px}
           <div class="hf-value">14,230KD</div>
           <div class="hf-sub">↑ 18.4% vs yesterday</div>
         </div>
-        <div class="hero-float hf2" style="z-index: 999 !important;">>
+        <div class="hero-float hf2" style="z-index: 999 !important;">
           <div class="hf-label">Live Orders</div>
           <div class="hf-value">42</div>
           <div style="margin-top:5px"><span class="hf-pill">Streaming live</span></div>
         </div>
-        <div class="hero-float hf3" style="z-index: 999 !important;">>
+        <div class="hero-float hf3" style="z-index: 999 !important;">
           <div class="hf-label">Avg. Delivery</div>
           <div class="hf-value">26 min</div>
           <div class="hf-sub">↓ 5 min faster</div>
@@ -1008,8 +1061,8 @@ footer{background:var(--ink2);padding:72px 0 36px}
               </div>
               <div class="hdf-kpi-row">
                 <div class="hdf-kpi"><div class="hdf-kpi-label">Orders</div><div class="hdf-kpi-val">312</div><div class="hdf-kpi-delta">↑ 14%</div></div>
-                <div class="hdf-kpi"><div class="hdf-kpi-label">Revenue</div><div class="hdf-kpi-val">$14.2K</div><div class="hdf-kpi-delta">↑ 22%</div></div>
-                <div class="hdf-kpi"><div class="hdf-kpi-label">Avg. Value</div><div class="hdf-kpi-val">$45.6</div><div class="hdf-kpi-delta">↑ 6%</div></div>
+                <div class="hdf-kpi"><div class="hdf-kpi-label">Revenue</div><div class="hdf-kpi-val">4200KD</div><div class="hdf-kpi-delta">↑ 22%</div></div>
+                <div class="hdf-kpi"><div class="hdf-kpi-label">Avg. Value</div><div class="hdf-kpi-val">45.6KD</div><div class="hdf-kpi-delta">↑ 6%</div></div>
                 <div class="hdf-kpi"><div class="hdf-kpi-label">New Users</div><div class="hdf-kpi-val">41</div><div class="hdf-kpi-delta">↑ 28%</div></div>
               </div>
               <div class="hdf-charts-row">
@@ -1365,13 +1418,19 @@ footer{background:var(--ink2);padding:72px 0 36px}
           </div>
           <div class="panel-visual">
             <div class="pay-methods">
-              <div class="pay-method">💳 Visa</div>
-              <div class="pay-method">🌐 KNET</div>
-              <div class="pay-method">🍎 Pay</div>
+              <!-- <div class="pay-method">💳 Visa</div> -->
+              <div class="pay-method"><img src="{{ asset('/themes/default/Visa.jpg') }}" alt="VISA"></div>
+              <div class="pay-method"><img src="{{ asset('/themes/default/Mastercard.png') }}" alt="MASTERCARD"></div>
+              <div class="pay-method"><img src="{{ asset('/themes/default/knet.jpg') }}" alt="KNET"></div>
+              <div class="pay-method"><img src="{{ asset('/themes/default/Apple_Pay-Logo.wine.png') }}" alt="Apple Pay"></div>
             </div>
             <div class="pay-recent">
-              <div class="pay-tx"><span>Order #2847 · Visa</span><strong>+$28.50</strong></div>
-              <div class="pay-tx"><span>Order #2846 · KNET</span><strong>+$19.80</strong></div>
+              <div class="pay-tx"><span>Order #2847 · Visa</span><strong>+28.50KD</strong></div>
+              <div class="pay-tx"><span>Order #2846 · KNET</span><strong>+19.80KD</strong></div>
+              <div class="pay-tx"><span>Order #2846 · Apple Pay</span><strong>+31.80KD</strong></div>
+              <div class="pay-tx"><span>Order #2846 · MasterCard</span><strong>+91.40KD</strong></div>
+              <div class="pay-tx"><span>Order #2846 · Apple Pay</span><strong>+25.30KD</strong></div>
+              <div class="pay-tx"><span>Order #2846 · Apple Pay</span><strong>+61.50KD</strong></div>
             </div>
           </div>
         </div>
@@ -1384,7 +1443,7 @@ footer{background:var(--ink2);padding:72px 0 36px}
           </div>
           <div class="panel-visual">
             <div class="analytics-kpis">
-              <div class="akpi"><div class="akpi-val">$84.2K</div><div class="akpi-lbl">Revenue</div></div>
+              <div class="akpi"><div class="akpi-val">2200KD</div><div class="akpi-lbl">Revenue</div></div>
               <div class="akpi"><div class="akpi-val">3,240</div><div class="akpi-lbl">Orders</div></div>
               <div class="akpi"><div class="akpi-val">68%</div><div class="akpi-lbl">Repeat</div></div>
             </div>
@@ -1450,9 +1509,29 @@ footer{background:var(--ink2);padding:72px 0 36px}
           </div>
            <div class="panel-visual">
             <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
-              <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:16px;text-align:center;border:1px solid rgba(255,255,255,.07)"><div style="font-size:24px;margin-bottom:6px">📦</div><div style="font-size:12px;color:rgba(255,255,255,.5);font-weight:600">Marx</div></div>
-              <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:16px;text-align:center;border:1px solid rgba(255,255,255,.07)"><div style="font-size:24px;margin-bottom:6px">📧</div><div style="font-size:12px;color:rgba(255,255,255,.5);font-weight:600">Whapex</div></div>
-              <div style="background:rgba(255,122,0,.12);border-radius:12px;padding:16px;text-align:center;border:1px solid rgba(255,122,0,.2)"><div style="font-size:24px;margin-bottom:6px">🔗</div><div style="font-size:12px;color:var(--orange);font-weight:600">+ more</div></div>
+
+              <div class="feat-int-tile">
+                <div class="feat-int-tile-logo">
+                  <img src="{{ asset('/themes/default/marks_logo.png') }}" alt="Marx">
+                </div>
+                <div class="feat-int-tile-name">Marx</div>
+              </div>
+
+              <div class="feat-int-tile">
+                <div class="feat-int-tile-logo">
+                  <img src="{{ asset('/themes/default/whapexlogo.png') }}" alt="Marx">
+                </div>
+                <div class="feat-int-tile-name">Whapex</div>
+              </div>
+
+              <!-- <div class="feat-int-tile">
+                <div class="feat-int-tile-icon">📧</div>
+                <div class="feat-int-tile-name">Whapex</div>
+              </div> -->
+              <div class="feat-int-tile feat-int-tile--accent">
+                <div class="feat-int-tile-icon">🔗</div>
+                <div class="feat-int-tile-name feat-int-tile-name--accent">+ more</div>
+              </div>
             </div>
           </div>
           <!-- <div class="panel-visual">
@@ -1903,13 +1982,13 @@ footer{background:var(--ink2);padding:72px 0 36px}
       <div class="int-cat">Operations</div> -->
     </div>
     <div class="integrations-grid fade-up delay-2">
-      <div class="int-card"  data-cat="Payments"><div class="int-icon">💳</div><div class="int-name">Payzah</div><div class="int-cat-label">Payments</div></div>
-      <div class="int-card"  data-cat="Payments"><div class="int-icon">🔵</div><div class="int-name">MyFatoorah</div><div class="int-cat-label">Payments</div></div>
-      <div class="int-card"  data-cat="Payments"><div class="int-icon">🌐</div><div class="int-name">KNET</div><div class="int-cat-label">Payments</div></div>
+      <div class="int-card"  data-cat="Payments"><div class="int-icon"><img src="{{ asset('/themes/default/payzah_logo.png') }}" alt="Payzah"></div><div class="int-name">Payzah</div><div class="int-cat-label">Payments</div></div>
+      <div class="int-card"  data-cat="Payments"><div class="int-icon"><img src="{{ asset('/themes/default/myfatoorahjfif.jpg') }}" alt="MyFatoorah"></div><div class="int-name">MyFatoorah</div><div class="int-cat-label">Payments</div></div>
+      <div class="int-card"  data-cat="Payments"><div class="int-icon"><img src="{{ asset('/themes/default/knet.jpg') }}" alt="KNET"></div><div class="int-name">KNET</div><div class="int-cat-label">Payments</div></div>
       <div class="int-card"  data-cat="Logistics"><div class="int-icon">🚚</div><div class="int-name">Aramex</div><div class="int-cat-label">Logistics</div></div>
       <div class="int-card" data-cat="Logistics"><div class="int-icon">📦</div><div class="int-name">Armada</div><div class="int-cat-label">Logistics</div></div>
-      <div class="int-card" data-cat="CRM"><div class="int-icon">💬</div><div class="int-name">Whapex</div><div class="int-cat-label">CRM</div></div>
-      <div class="int-card" data-cat="CRM"><div class="int-icon">📊</div><div class="int-name">Marx</div><div class="int-cat-label">CRM</div></div>
+      <div class="int-card" data-cat="CRM"><div class="int-icon"><img src="{{ asset('/themes/default/whapexlogo.png') }}" alt="Whapex"></div><div class="int-name">Whapex</div><div class="int-cat-label">CRM</div></div>
+      <div class="int-card" data-cat="CRM"><div class="int-icon"><img src="{{ asset('/themes/default/marks_logo.png') }}" alt="Marx"></div><div class="int-name">Marx</div><div class="int-cat-label">CRM</div></div>
     </div>
     <!-- <div style="text-align:center;margin-top:32px" class="fade-up delay-3">
       <a href="#" style="font-size:14px;font-weight:600;color:var(--orange);border-bottom:1.5px solid rgba(255,122,0,0.3);padding-bottom:2px">View all 40+ integrations →</a>
@@ -2145,7 +2224,7 @@ footer{background:var(--ink2);padding:72px 0 36px}
       </div>
       <div class="fade-up d2 contact-form-col">
         <div class="contact-form-card">
-            <div class="form-title">Request an audience</div>
+            <div class="form-title">Request a meeting</div>
             <div class="form-body">
                 <div class="form-row">
                     <div class="form-group">
@@ -2298,6 +2377,69 @@ footer{background:var(--ink2);padding:72px 0 36px}
   </div>
 </footer>
 
+<div id="contactFormModal" class="contact-modal" aria-hidden="true">
+  <div class="contact-modal-backdrop" data-close-modal></div>
+  <div class="contact-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle">
+    <button type="button" class="contact-modal-close" data-close-modal aria-label="Close">&times;</button>
+    <div class="contact-form-card">
+      <div class="form-title" id="contactModalTitle">Request a demo</div>
+      <div class="form-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input class="form-input" type="text" id="modal_first_name" placeholder="Khalid"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input class="form-input" type="text" id="modal_last_name" placeholder="Hassan"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Business Email</label>
+          <input class="form-input" type="email" id="modal_email" placeholder="you@restaurant.com"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Business Name</label>
+          <input class="form-input" type="text" id="modal_business_name" placeholder="Your restaurant or brand"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Business Type</label>
+          <select class="form-select" id="modal_business_type">
+            <option>Restaurant</option>
+            <option>Cloud Kitchen</option>
+            <option>Café</option>
+            <option>Multi-Branch Chain</option>
+            <option>Retail Food Brand</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-textarea" id="modal_message" placeholder="Tell us about your ordering needs…"></textarea>
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:15px;padding:14px" type="button" id="modal_submitBtn">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="16" height="16">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a
+  href="https://wa.me/96596667390?text=Hi%20Platepilot%2C%20I%27d%20like%20to%20learn%20more%20about%20your%20platform."
+  class="whatsapp-float"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Chat with us on WhatsApp"
+>
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.881 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   /* ── NAV SCROLL EFFECT ── */
@@ -2366,6 +2508,42 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+
+  /* ── CONTACT FORM MODAL (opened via header Demo button) ── */
+  const contactModal = document.getElementById('contactFormModal');
+
+  function openContactModal() {
+    if (!contactModal) return;
+    contactModal.classList.add('is-open');
+    contactModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    const firstInput = contactModal.querySelector('.form-input');
+    if (firstInput) firstInput.focus();
+  }
+
+  function closeContactModal() {
+    if (!contactModal) return;
+    contactModal.classList.remove('is-open');
+    contactModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+  }
+
+  if (contactModal) {
+    contactModal.querySelectorAll('[data-close-modal]').forEach(el => {
+      el.addEventListener('click', closeContactModal);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && contactModal.classList.contains('is-open')) {
+        closeContactModal();
+      }
+    });
+  }
+
+  const openDemoModalBtn = document.getElementById('openDemoModal');
+  if (openDemoModalBtn && contactModal) {
+    openDemoModalBtn.addEventListener('click', openContactModal);
+  }
 });
 
 
@@ -2424,42 +2602,64 @@ new Chart(document.getElementById('revenueChart'), {
 </script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    document.getElementById('submitBtn').addEventListener('click', function () {
-        const btn = this;
+    function bindContactFormSubmit(btnId, fieldIds) {
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
 
-        const data = {
-            firstName:    document.getElementById('first_name').value,
-            lastName:     document.getElementById('last_name').value,
-            email:         document.getElementById('email').value,
-            businessName: document.getElementById('business_name').value,
-            businessType: document.getElementById('business_type').value,
-            message:       document.getElementById('message').value,
-        };
+        btn.addEventListener('click', function () {
+            const data = {
+                firstName:    document.getElementById(fieldIds.firstName).value,
+                lastName:     document.getElementById(fieldIds.lastName).value,
+                email:        document.getElementById(fieldIds.email).value,
+                businessName: document.getElementById(fieldIds.businessName).value,
+                businessType: document.getElementById(fieldIds.businessType).value,
+                message:      document.getElementById(fieldIds.message).value,
+            };
 
-        // console.log("data: ", data);
+            // console.log("data: ", data);
 
-        btn.disabled = true;
-        btn.innerHTML = 'Sending…';
+            btn.disabled = true;
+            btn.innerHTML = 'Sending…';
 
-        axios.post('/sent-message', data, {
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        })
-        .then(function (response) {
-            btn.innerHTML = '✓ Sent!';
-            // Optional: reset fields
-            ['first_name','last_name','email','business_name','message'].forEach(id => {
-                document.getElementById(id).value = '';
+            axios.post('/sent-message', data, {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(function (response) {
+                btn.innerHTML = '✓ Sent!';
+                fieldIds.resetFields.forEach(id => {
+                    document.getElementById(id).value = '';
+                });
+                document.getElementById(fieldIds.businessType).selectedIndex = 0;
+            })
+            .catch(function (error) {
+                console.error(error);
+                btn.disabled = false;
+                btn.innerHTML = 'Submit';
+                alert('Something went wrong. Please try again.');
             });
-            document.getElementById('business_type').selectedIndex = 0;
-        })
-        .catch(function (error) {
-            console.error(error);
-            btn.disabled = false;
-            btn.innerHTML = 'Submit';
-            alert('Something went wrong. Please try again.');
         });
+    }
+
+    bindContactFormSubmit('submitBtn', {
+        firstName: 'first_name',
+        lastName: 'last_name',
+        email: 'email',
+        businessName: 'business_name',
+        businessType: 'business_type',
+        message: 'message',
+        resetFields: ['first_name', 'last_name', 'email', 'business_name', 'message']
+    });
+
+    bindContactFormSubmit('modal_submitBtn', {
+        firstName: 'modal_first_name',
+        lastName: 'modal_last_name',
+        email: 'modal_email',
+        businessName: 'modal_business_name',
+        businessType: 'modal_business_type',
+        message: 'modal_message',
+        resetFields: ['modal_first_name', 'modal_last_name', 'modal_email', 'modal_business_name', 'modal_message']
     });
 </script>
 </body>
