@@ -206,6 +206,12 @@ export default {
     state.checkoutLeavingForPayment = !!payload?.leaving;
     state.checkoutLeavingForPaymentStartedAt = payload?.startedAt ?? null;
   },
+  requestCheckoutPlaceOrder(state) {
+    state.checkoutPlaceOrderRequestId += 1;
+  },
+  setCheckoutOrderCreating(state, value) {
+    state.checkoutOrderCreating = !!value;
+  },
   setProductPageSuppressCompanyFooter(state, value) {
     state.productPageSuppressCompanyFooter = !!value;
   },

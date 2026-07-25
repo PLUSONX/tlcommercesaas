@@ -49,6 +49,8 @@ const store = createStore({
       // are redirecting to the external payment gateway.
       checkoutLeavingForPayment: false,
       checkoutLeavingForPaymentStartedAt: null,
+      checkoutPlaceOrderRequestId: 0,
+      checkoutOrderCreating: false,
       /** PDP split-screen: hide CompanyFooter while CustomFooter (add to cart) is shown */
       productPageSuppressCompanyFooter: false,
     };

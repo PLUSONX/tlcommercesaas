@@ -220,6 +220,12 @@ export default {
       startedAt,
     });
   },
+  requestCheckoutPlaceOrder(context) {
+    context.commit("requestCheckoutPlaceOrder");
+  },
+  setCheckoutOrderCreating(context, value) {
+    context.commit("setCheckoutOrderCreating", value);
+  },
   /**
    * Store coupon discount
    */

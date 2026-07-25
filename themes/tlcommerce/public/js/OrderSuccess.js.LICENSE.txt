@@ -48,6 +48,8 @@
 
 /*! @/components/ui/ProductVariant.vue */
 
+/*! @/utils/formatVariantDisplay */
+
 /*! @/utils/trackSocialPixels */
 
 /*! @coreui/vue */
@@ -57,6 +59,10 @@
 /*! vue */
 
 /*! vuex */
+
+/*!****************************************************!*\
+  !*** ./resources/js/utils/formatVariantDisplay.js ***!
+  \****************************************************/
 
 /*!*******************************************************!*\
   !*** ./resources/js/components/ui/ProductVariant.vue ***!

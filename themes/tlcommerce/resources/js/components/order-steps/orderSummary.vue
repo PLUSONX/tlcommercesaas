@@ -5,8 +5,7 @@
       <!--Coupon Apply Area-->
       <div v-if="showCouponAboveTotals" class="coupon mb-3">
         <div class="form-group d-flex gap-1">
-          <input class="form-control me-1" type="text" v-model="coupon_code"
-            v-bind:placeholder="$t('Your Coupon')" />
+          <input class="form-control me-1" type="text" v-model="coupon_code" v-bind:placeholder="$t('Your Coupon')" />
           <button type="submit" class="btn coupon-btn btn_fill py-0" :disabled="couponApplying"
             @click.prevent="applyCoupon">
             <span v-if="couponApplying">
@@ -26,23 +25,19 @@
             <td>{{ $t("Product") }}</td>
             <td>{{ $t("Total") }}</td>
           </tr>
-          <tr
-            class="products font-weight-regular"
-            v-for="tdata in tableData"
-            :key="tdata.id || tdata.uid"
-          >
+          <tr class="products font-weight-regular" v-for="tdata in tableData" :key="tdata.id || tdata.uid">
             <td>
-              <span class="product-name">{{ tdata.name }}</span>
-              <span> x{{ tdata.quantity }}</span>
+              <span class="product-line">
+                <span class="product-name">{{ tdata.name }}</span>
+                <span class="product-qty">x{{ tdata.quantity }}</span>
+              </span>
             </td>
             <td>
-              <the-currency
-                :amount="tdata.unitPrice * tdata.quantity"
-              ></the-currency>
+              <the-currency :amount="tdata.unitPrice * tdata.quantity"></the-currency>
             </td>
           </tr>
 
-          <tr class="font-weight-bold">
+          <!-- <tr class="font-weight-bold">
             <td>{{ $t("Subtotal") }}</td>
             <td>
               <span class="woocommerce-Price-amount amount">
@@ -52,12 +47,9 @@
                 </bdi>
               </span>
             </td>
-          </tr>
+          </tr> -->
           <!--Tax-->
-          <tr
-            class="shipping-cost font-weight-regular"
-            v-if="config?.enable_tax_in_checkout == enums.status.ACTIVE"
-          >
+          <tr class="shipping-cost font-weight-regular" v-if="config?.enable_tax_in_checkout == enums.status.ACTIVE">
             <td>{{ $t("Tax") }}</td>
             <td>
               <span class="woocommerce-Price-amount amount">
@@ -83,21 +75,14 @@
           </tr>
           <!--End Shipping Cost-->
           <!--Discount-->
-          <template
-            v-if="
-              couponDiscounts.length > 0 &&
-              config?.enable_coupon_in_checkout == enums.status.ACTIVE
-            "
-          >
-            <tr
-              class="order-savings font-weight-regular"
-              v-for="(discount, index) in couponDiscounts"
-              :key="index"
-            >
+          <template v-if="
+            couponDiscounts.length > 0 &&
+            config?.enable_coupon_in_checkout == enums.status.ACTIVE
+          ">
+            <tr class="order-savings font-weight-regular" v-for="(discount, index) in couponDiscounts" :key="index">
               <td class="d-flex">
                 <span class="c1">{{ discount.coupon_code }}</span>
-                <a href="#" class="material-icons c1 mt-1"
-                  @click.prevent="removeCoupon(discount.coupon_code)">delete
+                <a href="#" class="material-icons c1 mt-1" @click.prevent="removeCoupon(discount.coupon_code)">delete
                 </a>
               </td>
               <td>
@@ -131,8 +116,7 @@
       <!--Coupon Apply Area-->
       <div v-if="showCouponBelowTotals" class="coupon coupon-below-total mt-3">
         <div class="form-group d-flex gap-1">
-          <input class="form-control me-1" type="text" v-model="coupon_code"
-            v-bind:placeholder="$t('Your Coupon')" />
+          <input class="form-control me-1" type="text" v-model="coupon_code" v-bind:placeholder="$t('Your Coupon')" />
           <button type="submit" class="btn coupon-btn btn_fill py-0" :disabled="couponApplying"
             @click.prevent="applyCoupon">
             <span v-if="couponApplying">
@@ -227,7 +211,7 @@ export default {
         if (
           this.couponDiscounts.length > 0 &&
           this.config?.enable_multiple_coupon_in_checkout ==
-            this.enums.status.IN_ACTIVE
+          this.enums.status.IN_ACTIVE
         ) {
           return false;
         }
@@ -321,6 +305,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "../../assets/sass/00-abstracts/01-variables";
+
 .coupon-btn {
   display: inline-flex;
   align-items: center;
@@ -334,15 +319,27 @@ export default {
   cursor: pointer;
   border-radius: 8px;
 }
+
 .coupon-below-total {
   width: 100%;
 }
+
+.product-line {
+  display: inline-flex;
+  align-items: baseline;
+  max-width: 100%;
+  gap: 4px;
+}
+
 .product-name {
-  display: block;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-qty {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 </style>

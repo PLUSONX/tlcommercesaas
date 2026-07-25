@@ -5,11 +5,30 @@
         <h3 class="checkout-title">{{ $t("Payment method") }}:</h3>
       </div>
       <!--Order Note-->
-      <div class="col-lg-12" v-if="config?.enable_order_note_in_checkout == enums.status.ACTIVE">
+      <div class="col-lg-12 order-note-collapse" v-if="config?.enable_order_note_in_checkout == enums.status.ACTIVE">
         <div class="form-group mb-20">
-          <label class="font-weight-bold fz-12 mb-2">
-            {{ $t("Order Note") }}</label>
-          <textarea class="theme-input-style" v-model="additional_order_note">
+          <button
+            type="button"
+            class="order-note-toggle font-weight-bold fz-12"
+            :aria-expanded="showOrderNote"
+            aria-controls="order-note-field"
+            @click="toggleOrderNote"
+          >
+            <span class="order-note-toggle__label">
+              {{ $t("Order Note") }}
+              <span class="order-note-toggle__optional">({{ $t("Optional") }})</span>
+            </span>
+            <span class="material-icons order-note-toggle__icon">
+              {{ showOrderNote ? "expand_less" : "expand_more" }}
+            </span>
+          </button>
+          <textarea
+            v-show="showOrderNote"
+            id="order-note-field"
+            ref="orderNoteField"
+            class="theme-input-style mt-2"
+            v-model="additional_order_note"
+          >
           </textarea>
         </div>
       </div>
@@ -219,6 +238,7 @@ export default {
     return {
       loading: true,
       paymentMethods: [],
+      showOrderNote: false,
       additional_order_note: "",
       selected_payment_method: null,
       wallet_available_balance: 0,
@@ -263,6 +283,12 @@ export default {
     }
   },
   methods: {
+    toggleOrderNote() {
+      this.showOrderNote = !this.showOrderNote;
+      if (this.showOrderNote) {
+        this.$nextTick(() => this.$refs.orderNoteField?.focus());
+      }
+    },
     cleanImage(img) {
       if (!img) return '';
       // console.log("img: ", img.replace(/^\/public/, ''));
@@ -373,6 +399,10 @@ export default {
       this.pay_wallet = !!useWallet;
       this.$emit("request-place-order");
     },
+    setOrderCreating(value) {
+      this.orderCreating = value;
+      this.$store.dispatch("setCheckoutOrderCreating", value);
+    },
     payWithWallet() {
       this.requestPlaceOrder(true);
     },
@@ -386,15 +416,15 @@ export default {
      * Create new order
      */
     createOrder() {
-      this.orderCreating = true;
+      this.setOrderCreating(true);
       if (this.isCraftedFlamesDemoStore) {
         this.$toast.error(this.$t("Checkout is unavailable in demo mode"));
-        this.orderCreating = false;
+        this.setOrderCreating(false);
         return null;
       }
       if (this.selected_payment_method == null && !this.pay_wallet) {
         this.$toast.error(this.$t("Please select a payment option"));
-        this.orderCreating = false;
+        this.setOrderCreating(false);
         return null;
       }
       if (this.isCustomerLogin) {
@@ -506,17 +536,17 @@ export default {
                 window.location.href = response.data.response_url;
               });
             } else {
-              this.orderCreating = false;
+              this.setOrderCreating(false);
             }
           } else {
-            this.orderCreating = false;
+            this.setOrderCreating(false);
             this.$toast.error(
               response.data.message || "Order create failed"
             );
           }
         })
         .catch((error) => {
-          this.orderCreating = false;
+          this.setOrderCreating(false);
           if (error.response.status == 422) {
             var errors = error.response.data.errors;
             if (this.selected_payment_method.id + "" == "9") {
@@ -639,10 +669,10 @@ export default {
               response.data.message || "Order create failed"
             );
           }
-          this.orderCreating = false;
+          this.setOrderCreating(false);
         })
         .catch((error) => {
-          this.orderCreating = false;
+          this.setOrderCreating(false);
           if (error.response.status == 422) {
             var errors = error.response.data.errors;
             var errormessage = "";
@@ -714,5 +744,30 @@ export default {
   padding-bottom: 12px;
   font-weight: 600;
   border-radius: 8px;
+}
+
+.order-note-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+
+.order-note-toggle__optional {
+  font-weight: 400;
+  opacity: 0.65;
+  margin-left: 4px;
+}
+
+.order-note-toggle__icon {
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
 }
 </style>

@@ -18,6 +18,8 @@
 
 /*! ./node_modules/vue-loader/dist/exportHelper.js */
 
+/*! @coreui/vue */
+
 /*! vue */
 
 /*! vuex */

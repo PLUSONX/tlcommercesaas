@@ -160,6 +160,7 @@ export default {
       checkoutLeavingForPayment: (state) => state.checkoutLeavingForPayment,
       checkoutLeavingForPaymentStartedAt: (state) =>
         state.checkoutLeavingForPaymentStartedAt,
+      checkoutPlaceOrderRequestId: (state) => state.checkoutPlaceOrderRequestId,
       shippingDetails: (state) => state.shippingDetails,
     }),
 
@@ -204,6 +205,9 @@ export default {
         }
         this.resetCheckoutToEmptyCart();
       }
+    },
+    checkoutPlaceOrderRequestId() {
+      this.finalizeAndPlaceOrder();
     },
   },
   beforeMount() {

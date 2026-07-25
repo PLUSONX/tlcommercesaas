@@ -5,8 +5,7 @@
         </template>
 
         <template v-else>
-            <div class="company-footer__checkout-inner"
-                :class="{ 'company-footer__checkout-inner--no-cta': isCheckoutRoute }">
+            <div class="company-footer__checkout-inner">
                 <div class="company-footer__cart-icon-wrap" aria-hidden="true">
                     <span class="material-icons company-footer__cart-icon">shopping_cart</span>
                     <span class="company-footer__cart-badge">{{ cartItemCount }}</span>
@@ -22,9 +21,17 @@
                     </div>
                 </div>
 
-                <button v-if="showCheckoutButton" type="button" class="btn btn_fill rounded company-footer__checkout-btn"
-                    @click="goToCheckout">
-                    {{ $t("Check out") }}
+                <button v-if="showFooterCheckoutButton" type="button"
+                    class="btn btn_fill rounded company-footer__checkout-btn"
+                    :disabled="isCheckoutRoute && checkoutOrderCreating"
+                    @click="onFooterCheckoutClick">
+                    <span v-if="isCheckoutRoute && checkoutOrderCreating">
+                        <CSpinner component="span" size="sm" aria-hidden="true" />
+                        {{ $t("Please wait") }}
+                    </span>
+                    <span v-else>
+                        {{ isCheckoutRoute ? $t("Checkout") : $t("Check out") }}
+                    </span>
                 </button>
             </div>
         </template>
@@ -33,6 +40,7 @@
 
 <script>
 import { mapState, mapGetters } from "vuex";
+import { CSpinner } from "@coreui/vue";
 
 /** Flat rate shipping option id (tlecommercecore shipping_cost_options.flat_rate) */
 const FLAT_RATE_SHIPPING_OPTION = 1;
@@ -42,11 +50,16 @@ const COMPANY_FOOTER_HEIGHT_VAR = "--tl-company-footer-height";
 export default {
     name: "CompanyFooter",
 
+    components: {
+        CSpinner,
+    },
+
     computed: {
         ...mapState({
             siteSettings: (state) => state.siteSettings,
             cart: (state) => state.cart,
             shippingCost: (state) => (state.shippingCost ? state.shippingCost : 0),
+            checkoutOrderCreating: (state) => state.checkoutOrderCreating,
         }),
         ...mapGetters(["cartItemCount"]),
 
@@ -54,8 +67,8 @@ export default {
             return this.$route?.name === "Checkout";
         },
 
-        showCheckoutButton() {
-            return this.hasCartItems && !this.isCheckoutRoute;
+        showFooterCheckoutButton() {
+            return this.hasCartItems;
         },
 
         appliedShippingCost() {
@@ -147,6 +160,14 @@ export default {
         goToCheckout() {
             this.$router.push("/checkout");
         },
+
+        onFooterCheckoutClick() {
+            if (this.isCheckoutRoute) {
+                this.$store.dispatch("requestCheckoutPlaceOrder");
+                return;
+            }
+            this.goToCheckout();
+        },
     },
 };
 </script>
@@ -194,10 +215,6 @@ export default {
     gap: 12px;
     width: 100%;
     max-width: 100%;
-}
-
-.company-footer__checkout-inner--no-cta .company-footer__totals {
-    flex: 1 1 auto;
 }
 
 .company-footer__cart-icon-wrap {

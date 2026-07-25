@@ -112,6 +112,8 @@
 
 /*! @/components/ui/ShowingPerPage.vue */
 
+/*! @/utils/formatVariantDisplay */
+
 /*! @/views/dashboard.vue */
 
 /*! @coreui/vue */
@@ -129,6 +131,10 @@
 /*!***************************************************!*\
   !*** ./resources/js/components/ui/OrderSteps.vue ***!
   \***************************************************/
+
+/*!****************************************************!*\
+  !*** ./resources/js/utils/formatVariantDisplay.js ***!
+  \****************************************************/
 
 /*!******************************************************!*\
   !*** ./resources/js/components/ui/OrderTracking.vue ***!
