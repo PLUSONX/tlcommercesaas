@@ -58,8 +58,8 @@ class PayzahController extends Controller
             $this->currency = $settings['payzah_currency'] ?? 'KWD';
 
             $applePayId = config('tlecommercecore.payment_methods.payzah_apple_pay');
-            // Payzah: 1 = K-Net direct, 3 = transit hosted page (Apple Pay + all methods)
-            $this->payzahPaymentType = (int) $this->payment_method_id === (int) $applePayId ? 3 : 1;
+            // Payzah: 1 = K-Net direct, 2 = Apple Pay direct (same pgaction page as KNET)
+            $this->payzahPaymentType = (int) $this->payment_method_id === (int) $applePayId ? 2 : 1;
 
             // Log::info('payment settings', [
             //     'settings' => json_encode($settings),
@@ -207,7 +207,7 @@ class PayzahController extends Controller
         // ]);
 
         // Redirect to Payzah payment page
-        return redirect($redirectPayload['url']);
+        return Redirect::away($redirectPayload['url']);
 
     } catch (\Exception $e) {
         Log::error('Payzah payment failed', [
@@ -287,23 +287,13 @@ private function buildPayzahCustomerPayload(int $orderId): array
 }
 
 /**
- * Resolve Payzah redirect URL from init response (transit vs direct flow).
+ * Resolve Payzah redirect URL from init response (direct pgaction flow).
  *
  * @return array{type: string, url: string}
  */
 private function resolvePayzahRedirectUrl(array $payzahResponse): array
 {
     $data = $payzahResponse['data'] ?? [];
-
-    if ((int) $this->payzahPaymentType === 3) {
-        $url = $data['transit_url'] ?? null;
-        if (!$url) {
-            Log::error('Payzah transit_url missing', ['response_data' => $data]);
-            throw new \Exception('Payzah payment initialization failed: transit_url missing');
-        }
-
-        return ['type' => 'transit', 'url' => $url];
-    }
 
     $url = $data['direct_url'] ?? null;
     if (!$url) {
