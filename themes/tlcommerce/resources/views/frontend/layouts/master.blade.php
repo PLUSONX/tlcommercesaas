@@ -56,7 +56,7 @@
         ->first();
 
     $tlcAssetVersionPath = base_path('themes/tlcommerce/asset-version.json');
-    $assetVersion = '222';
+    $assetVersion = '1';
     if (is_readable($tlcAssetVersionPath)) {
         $tlcAssetVersionData = json_decode(file_get_contents($tlcAssetVersionPath), true);
         if (!empty($tlcAssetVersionData['version'])) {
@@ -193,9 +193,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap"
     rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ asset('backend/assets/plugins/fontawsome/css/all.min.css') }}">
-    <link rel="stylesheet" href=" {{ asset('themes/default/public/assets/css/font-awesome.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('themes/default/public/assets/css/custom_app.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/assets/plugins/fontawsome/css/all.min.css') }}?v={{ $assetVersion }}">
+    <link rel="stylesheet" href=" {{ asset('themes/default/public/assets/css/font-awesome.min.css') }}?v={{ $assetVersion }}">
+    <link rel="stylesheet" href="{{ asset('themes/default/public/assets/css/custom_app.css') }}?v={{ $assetVersion }}">
     <!-- <link rel="stylesheet" href="{{ asset('/public/backend/assets/plugins/fontawsome/css/all.min.css') }}">
     <link rel="stylesheet" href="/themes/tlcommerce/public/blog/css/font-awesome.min.css">
     <link rel="stylesheet" href="{{ asset('/themes/tlcommerce/public/css/custom_app.css') }}"> -->
