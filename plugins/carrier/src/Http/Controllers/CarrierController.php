@@ -25,11 +25,7 @@ class CarrierController extends Controller
      */
     public function carriers()
     {
-        return view('plugin/carrier::pages.index')->with(
-            [
-                'couriers' => $this->carrier_repository->couriers()
-            ]
-        );
+        return redirect()->route('plugin.tlcommercecore.shipping.hub', ['tab' => 'carriers']);
     }
     /**
      * Will store new courier service
@@ -72,7 +68,7 @@ class CarrierController extends Controller
         $res = $this->carrier_repository->deleteCourier($request['id']);
         if ($res == true) {
             toastNotification('success', translate('Courier deleted successfully'), 'Success');
-            return redirect()->route('plugin.carrier.list');
+            return redirect()->route('plugin.tlcommercecore.shipping.hub', ['tab' => 'carriers']);
         } else {
             toastNotification('error', translate('Action failed'), 'Failed');
             return redirect()->back();

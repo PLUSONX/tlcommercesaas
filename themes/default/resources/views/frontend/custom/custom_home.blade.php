@@ -879,7 +879,7 @@ footer{background:var(--ink2);padding:72px 0 36px}
 /* ══════════════════════════════════════
    CONTACT FORM MODAL
 ══════════════════════════════════════ */
-.contact-modal{position:fixed;inset:0;z-index:700;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s ease,visibility .22s ease}
+.contact-modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s ease,visibility .22s ease}
 .contact-modal.is-open{opacity:1;visibility:visible;pointer-events:auto}
 .contact-modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.5)}
 .contact-modal-dialog{position:relative;z-index:1;width:100%;max-width:520px;max-height:calc(100vh - 48px);overflow-y:auto;transform:scale(.96) translateY(8px);transition:transform .22s ease}
@@ -887,6 +887,7 @@ footer{background:var(--ink2);padding:72px 0 36px}
 .contact-modal-close{position:absolute;top:14px;right:14px;z-index:2;width:34px;height:34px;border:none;border-radius:50%;background:var(--surface);color:var(--muted);font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--sh1);transition:background .15s,color .15s}
 .contact-modal-close:hover{background:var(--o-glow);color:var(--o)}
 .contact-modal .contact-form-card{margin:0;padding:36px 36px 32px}
+.contact-modal .login-form-card{margin:0}
 body.modal-open{overflow:hidden}
 
 /* ══════════════════════════════════════
@@ -925,10 +926,13 @@ body.modal-open{overflow:hidden}
   #contact .contact-form-card{padding:24px 18px}
   .contact-modal{padding:16px}
   .contact-modal .contact-form-card{padding:24px 18px 20px}
+  .contact-modal .login-form-card{padding:24px 18px 20px}
   .contact-modal-dialog{max-height:calc(100vh - 32px)}
   .contact-modal .form-row{grid-template-columns:1fr}
 }
 </style>
+@include('core::base.auth._partials.login-styles')
+<link rel="stylesheet" href="{{ asset('backend/assets/css/toaster.min.css') }}">
 </head>
 <body>
 
@@ -958,7 +962,7 @@ body.modal-open{overflow:hidden}
       <div class="nav-ctas">
         <!-- <a href="#" class="nav-signin">Sign in</a> -->
         <button type="button" class="btn btn-ghost btn-sm" id="openDemoModal">Demo</button>
-        <a href="admin/login" class="btn btn-primary btn-sm">Sign in</a>
+        <button type="button" class="btn btn-primary btn-sm" id="openLoginModal">Sign in</button>
       </div>
     </div>
   </div>
@@ -2377,6 +2381,15 @@ body.modal-open{overflow:hidden}
   </div>
 </footer>
 
+<div id="loginModal" class="contact-modal" aria-hidden="true">
+  <div class="contact-modal-backdrop" data-close-login-modal></div>
+  <div class="contact-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
+    <button type="button" class="contact-modal-close" data-close-login-modal aria-label="Close">&times;</button>
+    <span id="loginModalTitle" class="sr-only">{{ translate('Sign in') }}</span>
+    @include('core::base.auth._partials.login-form', ['idPrefix' => 'loginModal_'])
+  </div>
+</div>
+
 <div id="contactFormModal" class="contact-modal" aria-hidden="true">
   <div class="contact-modal-backdrop" data-close-modal></div>
   <div class="contact-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="contactModalTitle">
@@ -2544,6 +2557,46 @@ document.addEventListener('DOMContentLoaded', () => {
   if (openDemoModalBtn && contactModal) {
     openDemoModalBtn.addEventListener('click', openContactModal);
   }
+
+  /* ── LOGIN MODAL ── */
+  const loginModal = document.getElementById('loginModal');
+
+  function openLoginModal() {
+    if (!loginModal) return;
+    loginModal.classList.add('is-open');
+    loginModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    const firstInput = loginModal.querySelector('#loginModal_email');
+    if (firstInput) firstInput.focus();
+  }
+
+  function closeLoginModal() {
+    if (!loginModal) return;
+    loginModal.classList.remove('is-open');
+    loginModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+  }
+
+  if (loginModal) {
+    loginModal.querySelectorAll('[data-close-login-modal]').forEach(el => {
+      el.addEventListener('click', closeLoginModal);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && loginModal.classList.contains('is-open')) {
+        closeLoginModal();
+      }
+    });
+  }
+
+  const openLoginModalBtn = document.getElementById('openLoginModal');
+  if (openLoginModalBtn && loginModal) {
+    openLoginModalBtn.addEventListener('click', openLoginModal);
+  }
+
+  @if ($errors->has('email') || $errors->has('password'))
+  openLoginModal();
+  @endif
 });
 
 
@@ -2662,5 +2715,8 @@ new Chart(document.getElementById('revenueChart'), {
         resetFields: ['modal_first_name', 'modal_last_name', 'modal_email', 'modal_business_name', 'modal_message']
     });
 </script>
+<script src="{{ asset('backend/assets/js/toaster.min.js') }}"></script>
+{!! Toastr::message() !!}
+@include('core::base.auth._partials.login-scripts', ['idPrefix' => 'loginModal_'])
 </body>
 </html>

@@ -501,8 +501,8 @@ class OrderRepository
                 DB::raw('GROUP_CONCAT(DISTINCT(tl_com_orders.order_code)) as order_code'),
                 DB::raw('GROUP_CONCAT(DISTINCT(tl_com_orders.created_at)) as created_at'),
                 DB::raw('GROUP_CONCAT(DISTINCT(tl_com_orders.read_at)) as read_at'),
-                DB::raw('GROUP_CONCAT(DISTINCT(tl_com_orders.delivery_status)) as delivery_status'),
-                DB::raw('GROUP_CONCAT(DISTINCT(tl_com_orders.payment_status)) as payment_status'),
+                DB::raw('MAX(tl_com_ordered_products.delivery_status) as delivery_status'),
+                DB::raw('MAX(tl_com_ordered_products.payment_status) as payment_status'),
                 DB::raw('GROUP_CONCAT(DISTINCT(tl_com_customers.name)) as customer_name'),
                 DB::raw('GROUP_CONCAT(DISTINCT(tl_com_guest_customer.name)) as guest_customer'),
                 DB::raw('GROUP_CONCAT(DISTINCT(tl_com_customers.id)) as customer_id'),
@@ -2811,51 +2811,151 @@ class OrderRepository
     public function updateOrderDeliveryStatus($order_id, $status)
     {
         try {
-            DB::beginTransaction();
-            $order = Orders::where('id', $order_id)->first();
-            $message = 'Delivery status is updated';
-            if ($order != null) {
-                $order->delivery_status = $status;
-                $order->save();
-                DB::table('tl_com_ordered_products')
-                    ->where('order_id', $order_id)
-                    ->update(
-                        [
-                            'delivery_status' => $status
-                        ]
-                    );
-                $package_ids =  DB::table('tl_com_ordered_products')->where('order_id', $order_id)->pluck('id');
+            $status = (int) $status;
+            $connection = OrderHasProducts::query()->getConnection();
 
-                foreach ($package_ids as $id) {
-                    $this->insertOrderTrackingData($order_id, $id, $message);
-                }
-                //Send notification
-                $message = "Your order status updated";
-                $btn_title = "Track Your Order";
-                $mail_title = "Payment received";
-                if ($order->customer_id != null) {
-            
-                    EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, 0, $$message, $btn_title, $mail_title);
+            Log::info('updateOrderDeliveryStatus method called', [
+                'order_id' => $order_id,
+                'delivery_status' => $status,
+            ]);
 
-                } elseif ($order->guest_customer_id != null) {
+            Log::info('updateOrderDeliveryStatus: connection', [
+                'connection' => $connection->getName(),
+                'database'   => $connection->getDatabaseName(),
+                'order_id'   => $order_id,
+                'status'     => $status,
+            ]);
 
-                    EcommerceNotification::sendOrderStatusNotification($order->id, 0, $order->guest_customer_id, $$message, $btn_title, $mail_title);
+            $notificationContext = null;
 
-                } else {
-                    Log::warning("Order has neither customer_id nor guest_customer_id", ['order_id' => $order_id]);
+            $result = $connection->transaction(function () use ($order_id, $status, &$notificationContext) {
+                $order = Orders::where('id', $order_id)->first();
+                if ($order == null) {
+                    Log::warning('updateOrderDeliveryStatus: order not found', ['order_id' => $order_id]);
                     return false;
                 }
-                // EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $message, $btn_title, $mail_title);
-                DB::commit();
+
+                $guestCustomerId = (int) ($order->guest_customer_id ?? 0);
+                if ($guestCustomerId === 0) {
+                    $guestCustomer = GuestCustomers::where('order_id', $order_id)->first();
+                    if ($guestCustomer != null) {
+                        $guestCustomerId = (int) $guestCustomer->id;
+                    }
+                }
+
+                $notificationContext = [
+                    'order_id' => $order->id,
+                    'customer_id' => (int) ($order->customer_id ?? 0),
+                    'guest_customer_id' => $guestCustomerId,
+                ];
+
+                $trackingMessage = 'Delivery status is updated';
+                $package_ids = OrderHasProducts::where('order_id', $order_id)->pluck('id');
+
+                foreach ($package_ids as $id) {
+                    $this->insertOrderTrackingData($order_id, $id, $trackingMessage);
+                }
+
+                $lineItemsAffected = OrderHasProducts::where('order_id', $order_id)
+                    ->update(['delivery_status' => $status]);
+
+                $orderAffected = Orders::where('id', $order_id)
+                    ->update(['delivery_status' => $status]);
+
+                Log::info('updateOrderDeliveryStatus: rows affected', [
+                    'line_items' => $lineItemsAffected,
+                    'order'      => $orderAffected,
+                ]);
+
+                $lineItemCount = OrderHasProducts::where('order_id', $order_id)->count();
+                $syncedLineItems = OrderHasProducts::where('order_id', $order_id)
+                    ->where('delivery_status', $status)
+                    ->count();
+                $orderDeliveryStatus = (int) Orders::where('id', $order_id)->value('delivery_status');
+
+                if ($lineItemCount === 0 || $syncedLineItems !== $lineItemCount || $orderDeliveryStatus !== $status) {
+                    Log::warning('updateOrderDeliveryStatus: sync verification failed', [
+                        'order_id'          => $order_id,
+                        'line_item_count'   => $lineItemCount,
+                        'synced_line_items' => $syncedLineItems,
+                        'order_status'      => $orderDeliveryStatus,
+                        'expected_status'   => $status,
+                        'bulk_line_items'   => $lineItemsAffected,
+                        'bulk_order'        => $orderAffected,
+                    ]);
+                    return false;
+                }
+
                 return true;
+            });
+
+            if (!$result) {
+                return false;
             }
-            DB::rollBack();
-            return false;
+
+            Log::info('updateOrderDeliveryStatus: persisted', [
+                'order_id' => $order_id,
+                'order_delivery_status' => Orders::where('id', $order_id)->value('delivery_status'),
+                'line_items_max_status' => OrderHasProducts::where('order_id', $order_id)->max('delivery_status'),
+            ]);
+
+            if ($notificationContext != null) {
+                $message = "Your order status updated";
+                $btn_title = "Track Your Order";
+                $mail_title = "Order Status Updated";
+
+                if ($notificationContext['customer_id'] > 0) {
+                    Log::info('updateOrderDeliveryStatus: sending notification to customer', [
+                        'order_id' => $order_id,
+                        'customer_id' => $notificationContext['customer_id'],
+                    ]);
+
+                    EcommerceNotification::sendOrderStatusNotification(
+                        $notificationContext['order_id'],
+                        $notificationContext['customer_id'],
+                        0,
+                        $message,
+                        $btn_title,
+                        $mail_title
+                    );
+                } elseif ($notificationContext['guest_customer_id'] > 0) {
+                    Log::info('updateOrderDeliveryStatus: sending notification to guest', [
+                        'order_id' => $order_id,
+                        'guest_customer_id' => $notificationContext['guest_customer_id'],
+                    ]);
+
+                    EcommerceNotification::sendOrderStatusNotification(
+                        $notificationContext['order_id'],
+                        0,
+                        $notificationContext['guest_customer_id'],
+                        $message,
+                        $btn_title,
+                        $mail_title
+                    );
+                } else {
+                    Log::warning('updateOrderDeliveryStatus: no notification recipient', ['order_id' => $order_id]);
+                }
+            }
+
+            Log::info('updateOrderDeliveryStatus: success', [
+                'order_id' => $order_id,
+                'delivery_status' => $status,
+            ]);
+
+            return true;
         } catch (\Exception $e) {
-            DB::rollBack();
+            Log::error('updateOrderDeliveryStatus Exception: ' . $e->getMessage(), [
+                'order_id' => $order_id,
+                'status'   => $status,
+                'trace'    => $e->getTraceAsString(),
+            ]);
             return false;
         } catch (\Error $e) {
-            DB::rollBack();
+            Log::error('updateOrderDeliveryStatus Error: ' . $e->getMessage(), [
+                'order_id' => $order_id,
+                'status'   => $status,
+                'trace'    => $e->getTraceAsString(),
+            ]);
             return false;
         }
     }
@@ -2898,12 +2998,45 @@ class OrderRepository
     public function updateOrderPaymentStatus($order_id, $status)
     {
         try {
-            DB::beginTransaction();
-            $order = Orders::where('id', $order_id)->first();
-            if ($order != null) {
+            $status = (int) $status;
+            $connection = OrderHasProducts::query()->getConnection();
+
+            Log::info('updateOrderPaymentStatus method called', [
+                'order_id' => $order_id,
+                'payment_status' => $status,
+            ]);
+
+            Log::info('updateOrderPaymentStatus: connection', [
+                'connection' => $connection->getName(),
+                'database'   => $connection->getDatabaseName(),
+                'order_id'   => $order_id,
+                'status'     => $status,
+            ]);
+
+            $notificationContext = null;
+
+            $result = $connection->transaction(function () use ($order_id, $status, &$notificationContext) {
+                $order = Orders::where('id', $order_id)->first();
+                if ($order == null) {
+                    Log::warning('updateOrderPaymentStatus: order not found', ['order_id' => $order_id]);
+                    return false;
+                }
+
+                if ($order->customer_id == null && $order->guest_customer_id == null) {
+                    Log::warning("Order has neither customer_id nor guest_customer_id", ['order_id' => $order_id]);
+                    return false;
+                }
+
+                $notificationContext = [
+                    'order_id' => $order->id,
+                    'customer_id' => (int) ($order->customer_id ?? 0),
+                    'guest_customer_id' => (int) ($order->guest_customer_id ?? 0),
+                ];
+
                 $order_products = OrderHasProducts::where('order_id', $order->id)->get();
+                $updated_count = 0;
                 foreach ($order_products as $product) {
-                    if ($product->payment_status != $status) {
+                    if ((int) $product->payment_status !== $status) {
                         $message = 'Payment status is updated';
                         $amount = $product->total_paid;
                         if ($status == config('tlecommercecore.order_payment_status.paid')) {
@@ -2917,35 +3050,115 @@ class OrderRepository
                         $product->payment_status = $status;
                         $product->save();
                         $this->insertOrderTrackingData($order_id, $product->id, $message);
+                        $updated_count++;
                     }
                 }
-                //Send notification
+
+                $lineItemsAffected = OrderHasProducts::where('order_id', $order_id)
+                    ->update(['payment_status' => $status]);
+
+                $orderAffected = Orders::where('id', $order_id)
+                    ->update(['payment_status' => $status]);
+
+                Log::info('updateOrderPaymentStatus: line items processed', [
+                    'order_id' => $order_id,
+                    'payment_status' => $status,
+                    'products_updated' => $updated_count,
+                    'total_products' => $order_products->count(),
+                ]);
+
+                Log::info('updateOrderPaymentStatus: rows affected', [
+                    'line_items' => $lineItemsAffected,
+                    'order'      => $orderAffected,
+                ]);
+
+                $lineItemCount = OrderHasProducts::where('order_id', $order_id)->count();
+                $syncedLineItems = OrderHasProducts::where('order_id', $order_id)
+                    ->where('payment_status', $status)
+                    ->count();
+                $orderPaymentStatus = (int) Orders::where('id', $order_id)->value('payment_status');
+
+                if ($lineItemCount === 0 || $syncedLineItems !== $lineItemCount || $orderPaymentStatus !== $status) {
+                    Log::warning('updateOrderPaymentStatus: sync verification failed', [
+                        'order_id'          => $order_id,
+                        'line_item_count'   => $lineItemCount,
+                        'synced_line_items' => $syncedLineItems,
+                        'order_status'      => $orderPaymentStatus,
+                        'expected_status'   => $status,
+                        'bulk_line_items'   => $lineItemsAffected,
+                        'bulk_order'        => $orderAffected,
+                    ]);
+                    return false;
+                }
+
+                return true;
+            });
+
+            if (!$result) {
+                return false;
+            }
+
+            Log::info('updateOrderPaymentStatus: persisted', [
+                'order_id' => $order_id,
+                'order_payment_status' => Orders::where('id', $order_id)->value('payment_status'),
+                'line_items_max_status' => OrderHasProducts::where('order_id', $order_id)->max('payment_status'),
+            ]);
+
+            if ($notificationContext != null) {
                 $message = "Your order payment status updated";
                 $btn_title = "Track Your Order";
                 $mail_title = "Payment Status Updated";
-                if ($order->customer_id != null) {
-            
-                    EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, 0, $$message, $btn_title, $mail_title);
 
-                } elseif ($order->guest_customer_id != null) {
+                if ($notificationContext['customer_id'] > 0) {
+                    Log::info('updateOrderPaymentStatus: sending notification to customer', [
+                        'order_id' => $order_id,
+                        'customer_id' => $notificationContext['customer_id'],
+                    ]);
 
-                    EcommerceNotification::sendOrderStatusNotification($order->id, 0, $order->guest_customer_id, $$message, $btn_title, $mail_title);
+                    EcommerceNotification::sendOrderStatusNotification(
+                        $notificationContext['order_id'],
+                        $notificationContext['customer_id'],
+                        0,
+                        $message,
+                        $btn_title,
+                        $mail_title
+                    );
+                } elseif ($notificationContext['guest_customer_id'] > 0) {
+                    Log::info('updateOrderPaymentStatus: sending notification to guest', [
+                        'order_id' => $order_id,
+                        'guest_customer_id' => $notificationContext['guest_customer_id'],
+                    ]);
 
-                } else {
-                    Log::warning("Order has neither customer_id nor guest_customer_id", ['order_id' => $order_id]);
-                    return false;
+                    EcommerceNotification::sendOrderStatusNotification(
+                        $notificationContext['order_id'],
+                        0,
+                        $notificationContext['guest_customer_id'],
+                        $message,
+                        $btn_title,
+                        $mail_title
+                    );
                 }
-                // EcommerceNotification::sendOrderStatusNotification($order->id, $order->customer_id, $$message, $btn_title, $mail_title);
-                DB::commit();
-                return true;
             }
-            DB::rollBack();
-            return false;
+
+            Log::info('updateOrderPaymentStatus: success', [
+                'order_id' => $order_id,
+                'payment_status' => $status,
+            ]);
+
+            return true;
         } catch (\Exception $e) {
-            DB::rollBack();
+            Log::error('updateOrderPaymentStatus Exception: ' . $e->getMessage(), [
+                'order_id' => $order_id,
+                'status'   => $status,
+                'trace'    => $e->getTraceAsString(),
+            ]);
             return false;
         } catch (\Error $e) {
-            DB::rollBack();
+            Log::error('updateOrderPaymentStatus Error: ' . $e->getMessage(), [
+                'order_id' => $order_id,
+                'status'   => $status,
+                'trace'    => $e->getTraceAsString(),
+            ]);
             return false;
         }
     }

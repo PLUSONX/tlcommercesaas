@@ -33,11 +33,25 @@ class CustomerController extends Controller
      */
     public function customers(Request $request)
     {
+        $active_tab = $request->get('tab', 'customers');
+
+        if ($active_tab === 'guest') {
+            $guest_customers = $this->customer_repository->guestCustomerList($request);
+
+            return view('plugin/tlecommercecore::customers.index')->with(
+                [
+                    'guest_customers' => $guest_customers,
+                    'active_tab' => $active_tab,
+                ]
+            );
+        }
+
         $customers = $this->customer_repository->customerList($request);
 
         return view('plugin/tlecommercecore::customers.index')->with(
             [
-                'customers' => $customers
+                'customers' => $customers,
+                'active_tab' => $active_tab,
             ]
         );
     }

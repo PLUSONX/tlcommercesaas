@@ -5,6 +5,52 @@
 @section('custom_css')
     <link rel="stylesheet" href="{{ asset('backend/assets/plugins/daterangepicker/daterangepicker.css') }}">
     <!-- <link rel="stylesheet" href="{{ asset('/public/backend/assets/plugins/daterangepicker/daterangepicker.css') }}"> -->
+    <style>
+        .ajax-inline-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 90, 31, 0.25);
+            border-top-color: #FF5A1F;
+            border-radius: 50%;
+            animation: ajax-inline-spin 0.65s linear infinite;
+            vertical-align: middle;
+        }
+
+        .ajax-inline-spinner-lg {
+            width: 28px;
+            height: 28px;
+            border-width: 3px;
+        }
+
+        @keyframes ajax-inline-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .ajax-loading-spinner {
+            color: #FF5A1F;
+        }
+
+        .payment-status-spinner {
+            display: inline-block;
+        }
+
+        .delivery-status-label {
+            cursor: pointer;
+        }
+
+        .delivery-status-select {
+            width: auto;
+            min-width: 120px;
+            padding: 4px 8px;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .delivery-status-spinner {
+            display: inline-block;
+        }
+    </style>
 @endsection
 @section('main_content')
     <div class="row">
@@ -356,6 +402,20 @@
                         <tbody>
                             @if ($orders->count() > 0)
                                 @foreach ($orders as $key => $order)
+                                    @php
+                                        $shippingCourierOrder = \Plugin\TlcommerceCore\Models\ShippingCourierOrders::where('order_id', $order->id)->first();
+                                        $deliveryStatuses = config('tlecommercecore.order_delivery_status');
+                                        $currentDelivery = (int) $order->delivery_status;
+                                        $deliveryBadgeMap = [
+                                            $deliveryStatuses['pending'] => ['class' => 'badge-pending', 'label' => translate('Pending'), 'icon' => 'fa-check-circle'],
+                                            $deliveryStatuses['processing'] => ['class' => 'badge-processing', 'label' => translate('Processing'), 'icon' => 'fa-exclamation-circle'],
+                                            $deliveryStatuses['ready_to_ship'] => ['class' => 'badge-ready', 'label' => translate('Ready To Ship'), 'icon' => 'fa-exclamation-circle'],
+                                            $deliveryStatuses['shipped'] => ['class' => 'badge-shipped', 'label' => translate('Shipped'), 'icon' => 'fa-exclamation-circle'],
+                                            $deliveryStatuses['delivered'] => ['class' => 'badge-delivered', 'label' => translate('Delivered'), 'icon' => 'fa-exclamation-circle'],
+                                            $deliveryStatuses['cancelled'] => ['class' => 'badge-cancelled', 'label' => translate('Cancelled'), 'icon' => 'fa-exclamation-circle'],
+                                        ];
+                                        $currentDeliveryBadge = $deliveryBadgeMap[$currentDelivery] ?? ['class' => 'badge-pending', 'label' => translate('Pending'), 'icon' => 'fa-check-circle'];
+                                    @endphp
                                     <tr>
                                         <!-- <td style="width: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                             <div class="d-flex align-items-center ">
@@ -403,45 +463,49 @@
                                         <td class="text-center" style="width: 20px;">{!! currencyExchange($order->total_payable_amount) !!}</td>
 
                                         <td class="text-center">
-                                            @if ($order->payment_status == config('tlecommercecore.order_payment_status.paid'))
-                                                <span class="badge-payment badge-paid">
-                                                    <i class="fa fa-check-circle mr-1"></i> {{ translate('Paid') }}
+                                            @php
+                                                $paidStatus = config('tlecommercecore.order_payment_status.paid');
+                                                $unpaidStatus = config('tlecommercecore.order_payment_status.unpaid');
+                                                $isPaid = (int) $order->payment_status === (int) $paidStatus;
+                                            @endphp
+                                            <div class="payment-status-inline"
+                                                data-order-id="{{ $order->id }}"
+                                                data-status="{{ $order->payment_status }}">
+                                                <span class="payment-status-label badge-payment {{ $isPaid ? 'badge-paid' : 'badge-unpaid' }}"
+                                                    title="{{ translate('Click to change') }}">
+                                                    @if ($isPaid)
+                                                        <i class="fa fa-check-circle mr-1"></i> {{ translate('Paid') }}
+                                                    @else
+                                                        <i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Unpaid') }}
+                                                    @endif
                                                 </span>
-                                            @endif
-
-                                            @if ($order->payment_status == config('tlecommercecore.order_payment_status.unpaid'))
-                                                <span class="badge-payment badge-unpaid">
-                                                    <i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Unpaid') }}
-                                                </span>
-                                            @endif
+                                                <select class="payment-status-select theme-input-style" style="display:none;">
+                                                    <option value="{{ $paidStatus }}" @selected($isPaid)>{{ translate('Paid') }}</option>
+                                                    <option value="{{ $unpaidStatus }}" @selected(!$isPaid)>{{ translate('Unpaid') }}</option>
+                                                </select>
+                                                <span class="payment-status-spinner ajax-inline-spinner" style="display:none;"></span>
+                                            </div>
                                         </td>
 
                                         <td class="text-center">
-                                            @if ($order->delivery_status == config('tlecommercecore.order_delivery_status.pending'))
-                                                <span class="badge-payment badge-pending">
-                                                    <i class="fa fa-check-circle mr-1"></i> {{ translate('Pending') }}
+                                            <div class="delivery-status-inline"
+                                                data-order-id="{{ $order->id }}"
+                                                data-status="{{ $currentDelivery }}"
+                                                data-has-courier="{{ $shippingCourierOrder ? '1' : '0' }}">
+                                                <span class="delivery-status-label badge-payment {{ $currentDeliveryBadge['class'] }}"
+                                                    title="{{ translate('Click to change') }}">
+                                                    <i class="fa {{ $currentDeliveryBadge['icon'] }} mr-1"></i> {{ $currentDeliveryBadge['label'] }}
                                                 </span>
-                                            @elseif ($order->delivery_status == config('tlecommercecore.order_delivery_status.processing'))
-                                                <span class="badge-payment badge-processing">
-                                                    <i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Processing') }}
-                                                </span>
-                                            @elseif ($order->delivery_status == config('tlecommercecore.order_delivery_status.ready_to_ship'))
-                                                <span class="badge-payment badge-ready">
-                                                    <i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Ready To Ship') }}
-                                                </span>
-                                            @elseif ($order->delivery_status == config('tlecommercecore.order_delivery_status.shipped'))
-                                                <span class="badge-payment badge-shipped">
-                                                    <i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Shipped') }}
-                                                </span>
-                                            @elseif ($order->delivery_status == config('tlecommercecore.order_delivery_status.delivered'))
-                                                <span class="badge-payment badge-delivered">
-                                                    <i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Delivered') }}
-                                                </span>
-                                            @elseif ($order->delivery_status == config('tlecommercecore.order_delivery_status.cancelled'))
-                                                <span class="badge-payment badge-cancelled">
-                                                    <i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Cancelled') }}
-                                                </span>
-                                            @endif
+                                                <select class="delivery-status-select theme-input-style" style="display:none;">
+                                                    <option value="{{ $deliveryStatuses['pending'] }}" @selected($currentDelivery === (int) $deliveryStatuses['pending'])>{{ translate('Pending') }}</option>
+                                                    <option value="{{ $deliveryStatuses['processing'] }}" @selected($currentDelivery === (int) $deliveryStatuses['processing'])>{{ translate('Processing') }}</option>
+                                                    <option value="{{ $deliveryStatuses['ready_to_ship'] }}" @selected($currentDelivery === (int) $deliveryStatuses['ready_to_ship'])>{{ translate('Ready To Ship') }}</option>
+                                                    <option value="{{ $deliveryStatuses['shipped'] }}" @selected($currentDelivery === (int) $deliveryStatuses['shipped'])>{{ translate('Shipped') }}</option>
+                                                    <option value="{{ $deliveryStatuses['delivered'] }}" @selected($currentDelivery === (int) $deliveryStatuses['delivered'])>{{ translate('Delivered') }}</option>
+                                                    <option value="{{ $deliveryStatuses['cancelled'] }}" @selected($currentDelivery === (int) $deliveryStatuses['cancelled'])>{{ translate('Cancelled') }}</option>
+                                                </select>
+                                                <span class="delivery-status-spinner ajax-inline-spinner" style="display:none;"></span>
+                                            </div>
                                         </td>
                                         
 
@@ -481,10 +545,6 @@
                                                 </div>
                                                 
                                             @endif
-
-                                            @php
-                                                $shippingCourierOrder = \Plugin\TlcommerceCore\Models\ShippingCourierOrders::where('order_id', $order->id)->first();
-                                            @endphp
 
                                             @if ($order->delivery_status == config('tlecommercecore.order_delivery_status.ready_to_ship')
                                                 ||
@@ -639,9 +699,11 @@
                             <label class="font-14 bold black">{{ translate('Select Available Couriers') }}<span
                                         class="text text-danger">*</span></label>
 
-                            <select class="theme-input-style" name="available_couriers" id="available_couriers">
+                            <div id="available-couriers-wrap">
+                                <select class="theme-input-style" name="available_couriers" id="available_couriers">
 
-                            </select>
+                                </select>
+                            </div>
 
                         </div>
 
@@ -698,6 +760,39 @@
     <script>
         (function($) {
             "use strict";
+
+            function setAjaxButtonLoading($btn, loading) {
+                if (loading) {
+                    if (!$btn.data('original-html')) {
+                        $btn.data('original-html', $btn.html());
+                    }
+                    $btn.prop('disabled', true).html('<span class="ajax-inline-spinner"></span>');
+                } else if ($btn.data('original-html')) {
+                    $btn.html($btn.data('original-html')).prop('disabled', false);
+                    $btn.removeData('original-html');
+                }
+            }
+
+            function setAjaxContainerLoading($container, loading) {
+                if (loading) {
+                    $container.html('<div class="ajax-loading-spinner text-center py-3"><span class="ajax-inline-spinner ajax-inline-spinner-lg"></span></div>');
+                }
+            }
+
+            function showCourierLoading() {
+                $('#available_couriers').hide();
+                if (!$('#courier-loading-spinner').length) {
+                    $('#available-couriers-wrap').append('<div id="courier-loading-spinner" class="ajax-loading-spinner text-center py-2"><span class="ajax-inline-spinner"></span></div>');
+                } else {
+                    $('#courier-loading-spinner').show();
+                }
+            }
+
+            function hideCourierLoading() {
+                $('#courier-loading-spinner').hide();
+                $('#available_couriers').show();
+            }
+
             /**
              * Cancel order
              *
@@ -789,15 +884,24 @@
                 $(".item-id").prop("checked", false);
                 $(".select-all").prop("checked", false);
                 e.preventDefault();
-                let id = $(this).data('order');
+                let $btn = $(this);
+                let id = $btn.data('order');
+                setAjaxButtonLoading($btn, true);
+                setAjaxContainerLoading($('.order-details-content'), true);
+                $('#status-details-modal').modal('show');
+
                 $.post('{{ route('plugin.tlcommercecore.orders.status.details') }}', {
                     _token: '{{ csrf_token() }}',
                     id: id
                 }, function(data) {
                     $('.order-details-content').html(data);
                     changeCurrencyFont();
-                    $('#status-details-modal').modal('show');
-                })
+                }).fail(function() {
+                    $('.order-details-content').html('<div class="alert alert-danger">{{ translate('Failed to load order details') }}</div>');
+                    toastr.error('{{ translate('Failed to load order details') }}');
+                }).always(function() {
+                    setAjaxButtonLoading($btn, false);
+                });
             });
 
 
@@ -819,6 +923,9 @@
                 // let orderId = $(this).data('order');
                 let orderId = $(this).data('id');
                 let displayContainer = $('#order-status-display');
+                setAjaxContainerLoading(displayContainer, true);
+                $("#track-order-modal").modal('show');
+
                 $.ajax({
                     url: '{{ route("plugin.carrier.order.updates") }}',
                     type: 'GET',
@@ -865,55 +972,47 @@
                     }
                 });
 
-                $("#track-order-modal").modal('show');
-
             });
             
 
             /**
              * Open shipping modal
              **/
-            $('.shipping-modal-open-button').on('click', function(e) {
-                e.preventDefault();
-                
-                let orderId = $(this).data('id');
-
-                // console.log("orderId: ", orderId);
-
+            function openOrderShippingModal(orderId) {
                 $('#modal_order_id').val(orderId);
-
-                $('#available_couriers').html('<option value="">Loading...</option>');
+                $('#available_couriers').html('');
+                showCourierLoading();
+                $("#order-shipping-modal").modal('show');
 
                 $.ajax({
                     url: '{{ route("plugin.active.carrier.list") }}',
                     type: 'GET',
                     success: function(response) {
                         if (response.couriers) {
-                            // console.log("couriers: ", response.couriers);
-                            
-                            // 2. Prepare the initial placeholder
                             let options = '<option value="">Select a Courier</option>';
 
-                            // 3. Loop through the array to build the list
                             response.couriers.forEach(function(courier) {
                                 options += `<option value="${courier.id}">${courier.name}</option>`;
                             });
 
-                            // 4. Update the specific select tag by its ID
                             $('#available_couriers').html(options);
-
                         } else {
-                            // shippingForm.html('<p class="text-danger">No active carriers found</p>');
+                            $('#available_couriers').html('<option value="">{{ translate('No active carriers found') }}</option>');
                         }
                     },
                     error: function() {
-                        // courierSelect.html('<option value="">Error loading carriers</option>');
-                        toastr.error('Failed to fetch shipping carriers.'); // If you use Toastr
+                        $('#available_couriers').html('<option value="">{{ translate('Error loading carriers') }}</option>');
+                        toastr.error('Failed to fetch shipping carriers.');
+                    },
+                    complete: function() {
+                        hideCourierLoading();
                     }
                 });
+            }
 
-                $("#order-shipping-modal").modal('show');
-
+            $('.shipping-modal-open-button').on('click', function(e) {
+                e.preventDefault();
+                openOrderShippingModal($(this).data('order'));
             });
 
             /**
@@ -932,7 +1031,7 @@
                 let formData = form.serialize();
 
                 // 4. Visual feedback: Disable button to prevent double-clicks
-                submitBtn.prop('disabled', true).text('Submitting...');
+                setAjaxButtonLoading(submitBtn, true);
 
                 $.ajax({
                     type: "POST",
@@ -958,8 +1057,7 @@
                         toastr.error('Failed to submit request. Please try again.');
                     },
                     complete: function() {
-                        // Re-enable button
-                        submitBtn.prop('disabled', false).text('Submit Request');
+                        setAjaxButtonLoading(submitBtn, false);
                     }
                 });
             });
@@ -996,6 +1094,264 @@
             }, cb);
 
             cb(start, end);
+
+            /**
+             * Inline payment status dropdown
+             **/
+            var paymentStatusPaid = {{ config('tlecommercecore.order_payment_status.paid') }};
+            var paymentStatusUnpaid = {{ config('tlecommercecore.order_payment_status.unpaid') }};
+
+            function revertPaymentStatusInline($wrapper) {
+                var currentStatus = String($wrapper.data('status'));
+                $wrapper.find('.payment-status-spinner').hide();
+                $wrapper.find('.payment-status-select').val(currentStatus).hide().prop('disabled', false);
+                $wrapper.find('.payment-status-label').show();
+            }
+
+            function showPaymentStatusSpinner($wrapper) {
+                $wrapper.find('.payment-status-label').hide();
+                $wrapper.find('.payment-status-select').hide();
+                $wrapper.find('.payment-status-spinner').show();
+            }
+
+            function updatePaymentStatusLabel($wrapper, status) {
+                var $label = $wrapper.find('.payment-status-label');
+                var isPaid = String(status) === String(paymentStatusPaid);
+
+                $label.removeClass('badge-paid badge-unpaid')
+                    .addClass(isPaid ? 'badge-paid' : 'badge-unpaid');
+
+                if (isPaid) {
+                    $label.html('<i class="fa fa-check-circle mr-1"></i> {{ translate('Paid') }}');
+                } else {
+                    $label.html('<i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Unpaid') }}');
+                }
+
+                $wrapper.data('status', status);
+            }
+
+            $('#conditionTable').on('click', '.payment-status-label', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var $wrapper = $(this).closest('.payment-status-inline');
+                var currentStatus = String($wrapper.data('status'));
+
+                $('.payment-status-inline').not($wrapper).each(function() {
+                    revertPaymentStatusInline($(this));
+                });
+                $('.delivery-status-inline').each(function() {
+                    revertDeliveryStatusInline($(this));
+                });
+
+                $wrapper.find('.payment-status-label').hide();
+                var $select = $wrapper.find('.payment-status-select');
+                $select.val(currentStatus).show().focus();
+            });
+
+            $('#conditionTable').on('change', '.payment-status-select', function() {
+                var $select = $(this);
+                var $wrapper = $select.closest('.payment-status-inline');
+                var orderId = $wrapper.data('order-id');
+                var previousStatus = String($wrapper.data('status'));
+                var newStatus = String($select.val());
+
+                if (newStatus === previousStatus) {
+                    revertPaymentStatusInline($wrapper);
+                    return;
+                }
+
+                $select.prop('disabled', true);
+                showPaymentStatusSpinner($wrapper);
+
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                    },
+                    type: 'POST',
+                    url: '{{ route('plugin.tlcommercecore.orders.payment.status.update') }}',
+                    data: {
+                        order_id: orderId,
+                        payment_status: newStatus
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            updatePaymentStatusLabel($wrapper, newStatus);
+                            revertPaymentStatusInline($wrapper);
+                            toastr.success('{{ translate('Payment status updated successfully') }}');
+                        } else {
+                            $select.val(previousStatus);
+                            revertPaymentStatusInline($wrapper);
+                            toastr.error('{{ translate('Update Failed ') }}');
+                        }
+                    },
+                    error: function() {
+                        $select.val(previousStatus);
+                        revertPaymentStatusInline($wrapper);
+                        toastr.error('{{ translate('Update Failed ') }}');
+                    },
+                    complete: function() {
+                        $select.prop('disabled', false);
+                        $wrapper.find('.payment-status-spinner').hide();
+                    }
+                });
+            });
+
+            $('#conditionTable').on('blur', '.payment-status-select', function() {
+                var $select = $(this);
+                var $wrapper = $select.closest('.payment-status-inline');
+                setTimeout(function() {
+                    if ($select.is(':visible') && !$select.prop('disabled')) {
+                        revertPaymentStatusInline($wrapper);
+                    }
+                }, 150);
+            });
+
+            /**
+             * Inline delivery status dropdown
+             **/
+            var deliveryStatusConfig = {
+                pending: {{ config('tlecommercecore.order_delivery_status.pending') }},
+                processing: {{ config('tlecommercecore.order_delivery_status.processing') }},
+                readyToShip: {{ config('tlecommercecore.order_delivery_status.ready_to_ship') }},
+                shipped: {{ config('tlecommercecore.order_delivery_status.shipped') }},
+                delivered: {{ config('tlecommercecore.order_delivery_status.delivered') }},
+                cancelled: {{ config('tlecommercecore.order_delivery_status.cancelled') }}
+            };
+
+            var deliveryStatusLabels = {
+                '{{ config('tlecommercecore.order_delivery_status.pending') }}': {
+                    class: 'badge-pending',
+                    html: '<i class="fa fa-check-circle mr-1"></i> {{ translate('Pending') }}'
+                },
+                '{{ config('tlecommercecore.order_delivery_status.processing') }}': {
+                    class: 'badge-processing',
+                    html: '<i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Processing') }}'
+                },
+                '{{ config('tlecommercecore.order_delivery_status.ready_to_ship') }}': {
+                    class: 'badge-ready',
+                    html: '<i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Ready To Ship') }}'
+                },
+                '{{ config('tlecommercecore.order_delivery_status.shipped') }}': {
+                    class: 'badge-shipped',
+                    html: '<i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Shipped') }}'
+                },
+                '{{ config('tlecommercecore.order_delivery_status.delivered') }}': {
+                    class: 'badge-delivered',
+                    html: '<i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Delivered') }}'
+                },
+                '{{ config('tlecommercecore.order_delivery_status.cancelled') }}': {
+                    class: 'badge-cancelled',
+                    html: '<i class="fa fa-exclamation-circle mr-1"></i> {{ translate('Cancelled') }}'
+                }
+            };
+
+            var deliveryBadgeClasses = 'badge-pending badge-processing badge-ready badge-shipped badge-delivered badge-cancelled';
+
+            function revertDeliveryStatusInline($wrapper) {
+                var currentStatus = String($wrapper.data('status'));
+                $wrapper.find('.delivery-status-spinner').hide();
+                $wrapper.find('.delivery-status-select').val(currentStatus).hide().prop('disabled', false);
+                $wrapper.find('.delivery-status-label').show();
+            }
+
+            function showDeliveryStatusSpinner($wrapper) {
+                $wrapper.find('.delivery-status-label').hide();
+                $wrapper.find('.delivery-status-select').hide();
+                $wrapper.find('.delivery-status-spinner').show();
+            }
+
+            function updateDeliveryStatusLabel($wrapper, status) {
+                var $label = $wrapper.find('.delivery-status-label');
+                var statusKey = String(status);
+                var meta = deliveryStatusLabels[statusKey] || deliveryStatusLabels[String(deliveryStatusConfig.pending)];
+
+                $label.removeClass(deliveryBadgeClasses).addClass(meta.class);
+                $label.html(meta.html);
+                $wrapper.data('status', status);
+            }
+
+            $('#conditionTable').on('click', '.delivery-status-label', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var $wrapper = $(this).closest('.delivery-status-inline');
+                var currentStatus = String($wrapper.data('status'));
+
+                $('.delivery-status-inline').not($wrapper).each(function() {
+                    revertDeliveryStatusInline($(this));
+                });
+                $('.payment-status-inline').each(function() {
+                    revertPaymentStatusInline($(this));
+                });
+
+                $wrapper.find('.delivery-status-label').hide();
+                var $select = $wrapper.find('.delivery-status-select');
+                $select.val(currentStatus).show().focus();
+            });
+
+            $('#conditionTable').on('change', '.delivery-status-select', function() {
+                var $select = $(this);
+                var $wrapper = $select.closest('.delivery-status-inline');
+                var orderId = $wrapper.data('order-id');
+                var previousStatus = String($wrapper.data('status'));
+                var newStatus = String($select.val());
+
+                if (newStatus === previousStatus) {
+                    revertDeliveryStatusInline($wrapper);
+                    return;
+                }
+
+                $select.prop('disabled', true);
+                showDeliveryStatusSpinner($wrapper);
+
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                    },
+                    type: 'POST',
+                    url: '{{ route('plugin.tlcommercecore.orders.delivery.status.update') }}',
+                    data: {
+                        order_id: orderId,
+                        delivery_status: newStatus
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            updateDeliveryStatusLabel($wrapper, newStatus);
+                            revertDeliveryStatusInline($wrapper);
+                            toastr.success('{{ translate('Delivery status updated successfully') }}');
+
+                            if (newStatus === String(deliveryStatusConfig.readyToShip)
+                                && parseInt($wrapper.data('has-courier'), 10) !== 1) {
+                                openOrderShippingModal(orderId);
+                            }
+                        } else {
+                            $select.val(previousStatus);
+                            revertDeliveryStatusInline($wrapper);
+                            toastr.error('{{ translate('Update Failed ') }}');
+                        }
+                    },
+                    error: function() {
+                        $select.val(previousStatus);
+                        revertDeliveryStatusInline($wrapper);
+                        toastr.error('{{ translate('Update Failed ') }}');
+                    },
+                    complete: function() {
+                        $select.prop('disabled', false);
+                        $wrapper.find('.delivery-status-spinner').hide();
+                    }
+                });
+            });
+
+            $('#conditionTable').on('blur', '.delivery-status-select', function() {
+                var $select = $(this);
+                var $wrapper = $select.closest('.delivery-status-inline');
+                setTimeout(function() {
+                    if ($select.is(':visible') && !$select.prop('disabled')) {
+                        revertDeliveryStatusInline($wrapper);
+                    }
+                }, 150);
+            });
         })(jQuery);
     </script>
 @endsection
@@ -1095,6 +1451,18 @@ button.btn-orange:active:focus {
     border-radius: 4px;
     font-size: 12px;
     font-weight: 500;
+    display: inline-block;
+}
+
+.payment-status-label {
+    cursor: pointer;
+}
+
+.payment-status-select {
+    width: 90px;
+    min-width: 90px;
+    padding: 4px 8px;
+    font-size: 12px;
     display: inline-block;
 }
 

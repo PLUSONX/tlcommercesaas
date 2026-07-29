@@ -17,6 +17,21 @@
          overflow: hidden;
          text-overflow: ellipsis;
      }
+
+     .ajax-inline-spinner {
+         display: inline-block;
+         width: 14px;
+         height: 14px;
+         border: 2px solid rgba(255, 90, 31, 0.25);
+         border-top-color: #FF5A1F;
+         border-radius: 50%;
+         animation: ajax-inline-spin 0.65s linear infinite;
+         vertical-align: middle;
+     }
+
+     @keyframes ajax-inline-spin {
+         to { transform: rotate(360deg); }
+     }
  </style>
  <form id="order-status-update-form">
      <p class="text-error"></p>
@@ -171,6 +186,19 @@
  <script>
      (function($) {
          "use strict";
+
+         function setAjaxButtonLoading($btn, loading) {
+             if (loading) {
+                 if (!$btn.data('original-html')) {
+                     $btn.data('original-html', $btn.html());
+                 }
+                 $btn.prop('disabled', true).html('<span class="ajax-inline-spinner"></span>');
+             } else if ($btn.data('original-html')) {
+                 $btn.html($btn.data('original-html')).prop('disabled', false);
+                 $btn.removeData('original-html');
+             }
+         }
+
          $("#order-comment").summernote({
              tabsize: 2,
              height: 200,
@@ -298,6 +326,9 @@
              }
 
              if (errors.length == 0) {
+                 let $updateBtn = $('.update-order-status');
+                 setAjaxButtonLoading($updateBtn, true);
+
                  $.ajax({
                      headers: {
                          'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
@@ -317,6 +348,9 @@
                      },
                      error: function(response) {
                          toastr.error('{{ translate('Update Failed ') }}');
+                     },
+                     complete: function() {
+                         setAjaxButtonLoading($updateBtn, false);
                      }
                  });
              }

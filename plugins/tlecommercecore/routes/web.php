@@ -15,6 +15,7 @@ use Plugin\TlcommerceCore\Http\Controllers\CustomerController;
 use Plugin\TlcommerceCore\Http\Controllers\LocationController;
 use Plugin\TlcommerceCore\Http\Controllers\SettingsController;
 use Plugin\TlcommerceCore\Http\Controllers\ShippingController;
+use Plugin\TlcommerceCore\Http\Controllers\ShippingHubController;
 use Plugin\TlcommerceCore\Http\Controllers\MarketingController;
 use Plugin\TlcommerceCore\Http\Controllers\SocialMediaController;
 use Plugin\TlcommerceCore\Http\Controllers\ProductTagsController;
@@ -228,6 +229,8 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
      * Shipping modules routes
      */
     Route::group(['prefix' => 'shipping'], function () {
+        Route::get('/hub', [ShippingHubController::class, 'index'])->name('plugin.tlcommercecore.shipping.hub');
+
         Route::middleware(['can:Manage Shipping & Delivery'])->group(function () {
             //shipping and delivery
             Route::get('configuration', [ShippingController::class, 'shippingAndDelivery'])->name('plugin.tlcommercecore.shipping.configuration');
@@ -351,6 +354,8 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
     Route::group(['prefix' => 'orders'], function () {
         Route::middleware(['can:Manage Inhouse Orders'])->group(function () {
             Route::get('/inhouse-orders', [OrderController::class, 'inhouseOrders'])->name('plugin.tlcommercecore.orders.inhouse');
+            Route::post('/update-order-payment-status', [OrderController::class, 'updateOrderPaymentStatus'])->name('plugin.tlcommercecore.orders.payment.status.update');
+            Route::post('/update-order-delivery-status', [OrderController::class, 'updateOrderDeliveryStatus'])->name('plugin.tlcommercecore.orders.delivery.status.update');
         });
         Route::post('/order-status-details', [OrderController::class, 'orderStatusDetails'])->name('plugin.tlcommercecore.orders.status.details');
         Route::get('/order-details/{id}', [OrderController::class, 'orderDetails'])->name('plugin.tlcommercecore.orders.details')->middleware(['can:Manage Order Details']);

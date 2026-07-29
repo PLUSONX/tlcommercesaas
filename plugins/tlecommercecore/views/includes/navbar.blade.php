@@ -314,7 +314,7 @@
         auth()->user()->can('Manage Carriers') ||
         auth()->user()->can('Manage Locations'))
     <li style="padding-left: 0 !important;"
-        class="hide-menu {{ Request::routeIs($shipping_carrier_active_link_file_links, $shipping_delivery_boy_active_link_file_links, $shipping_pickup_point_active_link_file_links, ['plugin.tlcommercecore.shipping.profile.manage', 'plugin.tlcommercecore.shipping.profile.form', 'plugin.tlcommercecore.shipping.configuration', 'plugin.tlcommercecore.shipping.locations.cities.edit', 'plugin.tlcommercecore.shipping.locations.cities.add.new', 'plugin.tlcommercecore.shipping.locations.cities.list', 'plugin.tlcommercecore.shipping.locations.states.edit', 'plugin.tlcommercecore.shipping.locations.states.new.add', 'plugin.tlcommercecore.shipping.locations.states.list', 'plugin.tlcommercecore.shipping.locations.country.edit', 'plugin.tlcommercecore.shipping.locations.country.new', 'plugin.tlcommercecore.shipping.locations.country.list']) ? 'active sub-menu-opened' : '' }}">
+        class="hide-menu {{ Request::routeIs($shipping_carrier_active_link_file_links, $shipping_delivery_boy_active_link_file_links, $shipping_pickup_point_active_link_file_links, ['plugin.tlcommercecore.shipping.hub', 'plugin.tlcommercecore.shipping.profile.manage', 'plugin.tlcommercecore.shipping.profile.form', 'plugin.tlcommercecore.shipping.configuration', 'plugin.tlcommercecore.shipping.locations.cities.edit', 'plugin.tlcommercecore.shipping.locations.cities.add.new', 'plugin.tlcommercecore.shipping.locations.cities.list', 'plugin.tlcommercecore.shipping.locations.states.edit', 'plugin.tlcommercecore.shipping.locations.states.new.add', 'plugin.tlcommercecore.shipping.locations.states.list', 'plugin.tlcommercecore.shipping.locations.country.edit', 'plugin.tlcommercecore.shipping.locations.country.new', 'plugin.tlcommercecore.shipping.locations.country.list', 'plugin.carrier.list']) ? 'active sub-menu-opened' : '' }}">
         <a href="#">
             <x-lucide-truck style="width: 20px; height: 20px; margin-left: 8px;" />
             <span class="link-title ml-2">{{ translate('Shippings') }}</span>
@@ -326,40 +326,10 @@
                         href="{{ route('plugin.tlcommercecore.shipping.configuration') }}">{{ translate('Shipping & Delivery') }}</a>
                 </li>
             @endif
-            @if ($isactivateCarrier)
-                 @if (auth()->user()->can('Manage Carriers'))
-                     @includeIf('plugin/carrier::includes.submenu.shipping')
-                 @endif
-             @endif
-            @if (auth()->user()->can('Manage Locations'))
-                <li class="{{ Request::routeIs([
-                    'plugin.tlcommercecore.shipping.locations.cities.edit',
-                    'plugin.tlcommercecore.shipping.locations.cities.add.new',
-                    'plugin.tlcommercecore.shipping.locations.cities.list',
-                    'plugin.tlcommercecore.shipping.locations.states.edit',
-                    'plugin.tlcommercecore.shipping.locations.states.new.add',
-                    'plugin.tlcommercecore.shipping.locations.states.list',
-                    'plugin.tlcommercecore.shipping.locations.country.edit',
-                    'plugin.tlcommercecore.shipping.locations.country.new',
-                    'plugin.tlcommercecore.shipping.locations.country.list',
-                ]) ? 'sub-menu-opened' : '' }}">
-                    <a class="pl-2" href="#">
-                        <span class="link-title">{{ translate('Locations') }}</span>
-                    </a>
-                    <ul class="nav sub-menu">
-                        <li class="{{ Request::routeIs(['plugin.tlcommercecore.shipping.locations.country.edit', 'plugin.tlcommercecore.shipping.locations.country.new', 'plugin.tlcommercecore.shipping.locations.country.list']) ? 'active' : '' }}">
-                            <a class="pl-2"
-                                href="{{ route('plugin.tlcommercecore.shipping.locations.country.list') }}">{{ translate('Countries') }}</a>
-                        </li>
-                        <li class="{{ Request::routeIs(['plugin.tlcommercecore.shipping.locations.states.edit', 'plugin.tlcommercecore.shipping.locations.states.new.add', 'plugin.tlcommercecore.shipping.locations.states.list']) ? 'active' : '' }}">
-                            <a class="pl-2"
-                                href="{{ route('plugin.tlcommercecore.shipping.locations.states.list') }}">{{ translate('States') }}</a>
-                        </li>
-                        <li class="{{ Request::routeIs(['plugin.tlcommercecore.shipping.locations.cities.edit', 'plugin.tlcommercecore.shipping.locations.cities.add.new', 'plugin.tlcommercecore.shipping.locations.cities.list']) ? 'active' : '' }}">
-                            <a class="pl-2"
-                                href="{{ route('plugin.tlcommercecore.shipping.locations.cities.list') }}">{{ translate('Cities') }}</a>
-                        </li>
-                    </ul>
+            @if (($isactivateCarrier && auth()->user()->can('Manage Carriers')) || auth()->user()->can('Manage Locations'))
+                <li class="{{ Request::routeIs(['plugin.tlcommercecore.shipping.hub', 'plugin.tlcommercecore.shipping.locations.cities.edit', 'plugin.tlcommercecore.shipping.locations.cities.add.new', 'plugin.tlcommercecore.shipping.locations.cities.list', 'plugin.tlcommercecore.shipping.locations.states.edit', 'plugin.tlcommercecore.shipping.locations.states.new.add', 'plugin.tlcommercecore.shipping.locations.states.list', 'plugin.tlcommercecore.shipping.locations.country.edit', 'plugin.tlcommercecore.shipping.locations.country.new', 'plugin.tlcommercecore.shipping.locations.country.list', 'plugin.carrier.list']) ? 'active' : '' }}">
+                    <a class="pl-2"
+                        href="{{ route('plugin.tlcommercecore.shipping.hub') }}">{{ translate('Carriers & Locations') }}</a>
                 </li>
             @endif
         </ul>

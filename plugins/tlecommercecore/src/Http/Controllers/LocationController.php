@@ -25,11 +25,10 @@ class LocationController extends Controller
      */
     public function countries(Request $request)
     {
-        return view('plugin/tlecommercecore::shipping.locations.country.index')->with(
-            [
-                'countries' => $this->location_repository->countryList($request),
-            ]
-        );
+        return redirect()->route('plugin.tlcommercecore.shipping.hub', array_merge(
+            ['tab' => 'locations', 'location' => 'countries'],
+            $request->query()
+        ));
     }
     /**
      * Will return new country page
@@ -51,7 +50,7 @@ class LocationController extends Controller
         $res = $this->location_repository->storeCountry($request);
         if ($res == true) {
             toastNotification('success', translate('Country added successfully'), 'Success');
-            return redirect()->route('plugin.tlcommercecore.shipping.locations.country.list');
+            return redirect()->route('plugin.tlcommercecore.shipping.hub', ['tab' => 'locations', 'location' => 'countries']);
         } else {
             toastNotification('error', translate('Country store failed'), 'Failed');
             return redirect()->back();
@@ -68,7 +67,7 @@ class LocationController extends Controller
         $res = $this->location_repository->deleteCountry($request->id);
         if ($res == true) {
             toastNotification('success', translate('Country deleted successfully'), 'Success');
-            return redirect()->route('plugin.tlcommercecore.shipping.locations.country.list');
+            return redirect()->route('plugin.tlcommercecore.shipping.hub', ['tab' => 'locations', 'location' => 'countries']);
         } else {
             toastNotification('error', translate('Country delete failed'), 'Failed');
             return redirect()->back();
@@ -128,11 +127,10 @@ class LocationController extends Controller
      */
     public function states(Request $request)
     {
-        return view('plugin/tlecommercecore::shipping.locations.state.index')->with(
-            [
-                'states' => $this->location_repository->statesList($request)
-            ]
-        );
+        return redirect()->route('plugin.tlcommercecore.shipping.hub', array_merge(
+            ['tab' => 'locations', 'location' => 'states'],
+            $request->query()
+        ));
     }
     /**
      * Will redirect new state form page
@@ -158,7 +156,7 @@ class LocationController extends Controller
         $res = $this->location_repository->storeState($request);
         if ($res == true) {
             toastNotification('success', translate('State added successfully'), 'Success');
-            return redirect()->route('plugin.tlcommercecore.shipping.locations.states.list');
+            return redirect()->route('plugin.tlcommercecore.shipping.hub', ['tab' => 'locations', 'location' => 'states']);
         } else {
             toastNotification('error', translate('Action failed'), 'Failed');
             return redirect()->back();
@@ -175,7 +173,7 @@ class LocationController extends Controller
         $res = $this->location_repository->deleteState($request->id);
         if ($res == true) {
             toastNotification('success', translate('State deleted successfully'), 'Success');
-            return redirect()->route('plugin.tlcommercecore.shipping.locations.states.list');
+            return redirect()->route('plugin.tlcommercecore.shipping.hub', ['tab' => 'locations', 'location' => 'states']);
         } else {
             toastNotification('error', translate('Action failed'), 'Failed');
             return redirect()->back();
@@ -235,11 +233,10 @@ class LocationController extends Controller
      */
     public function cities(Request $request)
     {
-        return view('plugin/tlecommercecore::shipping.locations.cities.index')->with(
-            [
-                'cities' => $this->location_repository->citiesList($request)
-            ]
-        );
+        return redirect()->route('plugin.tlcommercecore.shipping.hub', array_merge(
+            ['tab' => 'locations', 'location' => 'cities'],
+            $request->query()
+        ));
     }
     /**
      * Will redirect new city page
@@ -265,7 +262,7 @@ class LocationController extends Controller
         $res = $this->location_repository->storeCity($request);
         if ($res == true) {
             toastNotification('success', translate('City added successfully'), 'Success');
-            return redirect()->route('plugin.tlcommercecore.shipping.locations.cities.list');
+            return redirect()->route('plugin.tlcommercecore.shipping.hub', ['tab' => 'locations', 'location' => 'cities']);
         } else {
             toastNotification('error', translate('Action failed'), 'Failed');
             return redirect()->back();
@@ -282,7 +279,7 @@ class LocationController extends Controller
         $res = $this->location_repository->deleteCity($request->id);
         if ($res == true) {
             toastNotification('success', translate('City deleted successfully'), 'Success');
-            return redirect()->route('plugin.tlcommercecore.shipping.locations.cities.list');
+            return redirect()->route('plugin.tlcommercecore.shipping.hub', ['tab' => 'locations', 'location' => 'cities']);
         } else {
             toastNotification('error', translate('Action failed'), 'Failed');
             return redirect()->back();

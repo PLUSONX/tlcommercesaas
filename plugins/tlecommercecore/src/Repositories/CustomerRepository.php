@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Crypt;
 use Plugin\TlcommerceCore\Models\Orders;
 use Plugin\TlcommerceCore\Models\Customers;
+use Plugin\TlcommerceCore\Models\GuestCustomers;
 use Plugin\TlcommerceCore\Models\CustomerAddress;
 use Plugin\TlcommerceCore\Models\CustomerFeedback;
 use Plugin\TlcommerceCore\Models\CustomerReview;
@@ -79,6 +80,53 @@ class CustomerRepository
                     ->withQueryString();
             }
             return $customers;
+        } catch (\Exception $e) {
+        }
+    }
+
+    /**
+     * Will return guest customer list
+     *
+     * @param Object $request
+     * @return Collections
+     */
+    public function guestCustomerList($request)
+    {
+        try {
+            $query = GuestCustomers::query()
+                ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_guest_customer.order_id')
+                ->select([
+                    'tl_com_guest_customer.id',
+                    'tl_com_guest_customer.name',
+                    'tl_com_guest_customer.email',
+                    'tl_com_guest_customer.order_id',
+                    'tl_com_guest_customer.created_at',
+                    'tl_com_orders.order_code',
+                ])
+                ->orderBy('tl_com_guest_customer.id', 'DESC');
+
+            if ($request->has('join_date') && $request['join_date'] != null) {
+                $date_range = explode(' to ', $request['join_date']);
+                if (sizeof($date_range) > 1) {
+                    $query = $query->whereBetween('tl_com_guest_customer.created_at', $date_range);
+                }
+            }
+
+            if ($request->has('search') && $request['search'] != null) {
+                $search = $request['search'];
+                $query = $query->where(function ($q) use ($search) {
+                    $q->where('tl_com_guest_customer.name', 'like', '%' . $search . '%')
+                        ->orWhere('tl_com_guest_customer.email', 'like', '%' . $search . '%');
+                });
+            }
+
+            $per_page = $request->has('per_page') && $request['per_page'] != null ? $request['per_page'] : 10;
+
+            if ($per_page != null && $per_page == 'all') {
+                return $query->paginate($query->get()->count())->withQueryString();
+            }
+
+            return $query->paginate($per_page)->withQueryString();
         } catch (\Exception $e) {
         }
     }

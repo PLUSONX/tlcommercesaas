@@ -102,6 +102,63 @@ class OrderController extends Controller
             );
         }
     }
+
+    /**
+     * Will update payment status of an order (all line items)
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return mixed
+     */
+    public function updateOrderPaymentStatus(Request $request)
+    {
+        $validStatuses = array_values(config('tlecommercecore.order_payment_status'));
+
+        $request->validate([
+            'order_id' => 'required|integer',
+            'payment_status' => 'required|in:' . implode(',', $validStatuses),
+        ]);
+
+        $res = $this->order_repository->updateOrderPaymentStatus($request['order_id'], $request['payment_status']);
+
+        if ($res) {
+            return response()->json([
+                'success' => true,
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+        ]);
+    }
+
+    /**
+     * Will update delivery status of an order (all line items)
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return mixed
+     */
+    public function updateOrderDeliveryStatus(Request $request)
+    {
+        $validStatuses = array_values(config('tlecommercecore.order_delivery_status'));
+
+        $request->validate([
+            'order_id' => 'required|integer',
+            'delivery_status' => 'required|in:' . implode(',', $validStatuses),
+        ]);
+
+        $res = $this->order_repository->updateOrderDeliveryStatus($request['order_id'], $request['delivery_status']);
+
+        if ($res) {
+            return response()->json([
+                'success' => true,
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+        ]);
+    }
+
     /**
      * Will cancel an order
      *

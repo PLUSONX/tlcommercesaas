@@ -7,6 +7,9 @@
     <!-- <link rel="stylesheet" href="{{ asset('/public/backend/assets/plugins/daterangepicker/daterangepicker.css') }}"> -->
 @endsection
 @section('main_content')
+    @php
+        $active_tab = isset($active_tab) ? $active_tab : request()->get('tab', 'customers');
+    @endphp
     <div class="row">
         <div class="col-12">
             <div class="card bg-transparent mb-20">
@@ -20,6 +23,25 @@
 
             </div>
         </div>
+
+        <div class="col-12 mb-20">
+            <ul class="nav nav-tabs" id="customersTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link {{ $active_tab === 'customers' ? 'active' : '' }}"
+                        href="{{ route('plugin.tlcommercecore.customers.list', ['tab' => 'customers']) }}">
+                        {{ translate('Customers') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $active_tab === 'guest' ? 'active' : '' }}"
+                        href="{{ route('plugin.tlcommercecore.customers.list', ['tab' => 'guest']) }}">
+                        {{ translate('Guest Customers') }}
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        @if ($active_tab === 'customers')
         <div class="col-12 mb-20">
             <div class="card p-2" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="mb-2">
@@ -27,6 +49,7 @@
                 </div>
                 <div class="px-2 filter-area d-flex align-items-center">
                     <form method="get" action="{{ route('plugin.tlcommercecore.customers.list') }}">
+                        <input type="hidden" name="tab" value="customers">
 
                         <div class="row">
 
@@ -70,7 +93,7 @@
                             <div class="col-md-4 mb-3 d-flex align-items-end" style="gap: 5px">
 
                                 <a class="btn btn-danger long w-100" style="background: white !important; color: black !important; border: 1px solid black; border-radius: 6px !important; box-shadow: none !important;"
-                                    href="{{ route('plugin.tlcommercecore.customers.list') }}">{{ translate('Clear') }}</a>
+                                    href="{{ route('plugin.tlcommercecore.customers.list', ['tab' => 'customers']) }}">{{ translate('Clear') }}</a>
                                 <button type="submit" class="btn long w-100 btn-orange">{{ translate('Filter') }}</button>
 
                             </div>
@@ -197,9 +220,103 @@
             </div>
         </div>
 
+        @else
+        <div class="col-12 mb-20">
+            <div class="card p-2" style="border-radius: 12px !important; overflow: hidden !important;">
+                <div class="px-2 filter-area d-flex align-items-center">
+                    <form method="get" action="{{ route('plugin.tlcommercecore.customers.list') }}">
+                        <input type="hidden" name="tab" value="guest">
+
+                        <div class="row">
+
+                            <div class="col-md-4 mb-3">
+                                <label class="font-16 bold black d-block mb-2">{{ translate('Page') }}</label>
+                                <select class="theme-input-style w-100" name="per_page">
+                                    <option value="">{{ translate('Per page') }}</option>
+                                    <option value="20" @selected(request()->has('per_page') && request()->get('per_page') == '20')>20</option>
+                                    <option value="50" @selected(request()->has('per_page') && request()->get('per_page') == '50')>50</option>
+                                    <option value="all" @selected(request()->has('per_page') && request()->get('per_page') == 'all')>All</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="font-16 bold black d-block mb-2">{{ translate('Joined Date') }}</label>
+                                <input type="text" class="theme-input-style w-100" id="guestJoinDateRange"
+                                    placeholder="Filter by join date" name="join_date" readonly>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="font-16 bold black d-block mb-2">{{ translate('Name or Email') }}</label>
+                                <input type="text" name="search" class="theme-input-style w-100"
+                                    value="{{ request()->has('search') ? request()->get('search') : '' }}"
+                                    placeholder="Enter name or email">
+                            </div>
+
+                            <div class="col-md-4 mb-3 d-flex align-items-end" style="gap: 5px">
+                                <a class="btn btn-danger long w-100" style="background: white !important; color: black !important; border: 1px solid black; border-radius: 6px !important; box-shadow: none !important;"
+                                    href="{{ route('plugin.tlcommercecore.customers.list', ['tab' => 'guest']) }}">{{ translate('Clear') }}</a>
+                                <button type="submit" class="btn long w-100 btn-orange">{{ translate('Filter') }}</button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mb-20">
+            <div class="card" style="border-radius: 12px !important; overflow: hidden !important;">
+                <div class="table-responsive">
+                    <table id="guestCustomerTable" class="hoverable text-nowrap border-top2">
+                        <thead style="background: #F3F4F6;">
+                            <tr>
+                                <th>#</th>
+                                <th>{{ translate('Name') }}</th>
+                                <th>{{ translate('Email') }}</th>
+                                <th>{{ translate('Order') }}</th>
+                                <th>{{ translate('Created Date') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if ($guest_customers->count() > 0)
+                                @foreach ($guest_customers as $key => $guest_customer)
+                                    <tr>
+                                        <td>{{ $guest_customers->firstItem() + $key }}</td>
+                                        <td>{{ $guest_customer->name }}</td>
+                                        <td>{{ $guest_customer->email }}</td>
+                                        <td>
+                                            @if ($guest_customer->order_id && $guest_customer->order_code)
+                                                <a href="{{ route('plugin.tlcommercecore.orders.details', ['id' => $guest_customer->order_id]) }}">
+                                                    {{ $guest_customer->order_code }}
+                                                </a>
+                                            @else
+                                                —
+                                            @endif
+                                        </td>
+                                        <td>{{ $guest_customer->created_at ? date('d M, Y', strtotime($guest_customer->created_at)) : '—' }}</td>
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="5">
+                                        <p class="alert alert-danger text-center">{{ translate('Nothing Found') }}</p>
+                                    </td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                    <div class="pgination px-3">
+                        {!! $guest_customers->withQueryString()->onEachSide(1)->links('pagination::bootstrap-5-custom') !!}
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
             
     </div>
 
+    @if ($active_tab === 'customers')
     <!--Delete Modal-->
     <div id="delete-modal" class="delete-modal modal fade show" aria-modal="true">
         <div class="modal-dialog modal-sm modal-dialog-centered">
@@ -307,6 +424,7 @@
     </div>
     <!--End customer modal-->
     @include('core::base.media.partial.media_modal')
+    @endif
 @endsection
 @section('custom_scripts')
     <script src="{{ asset('backend/assets/plugins/moment/moment.min.js') }}"></script>
@@ -318,6 +436,7 @@
     <script>
         (function($) {
             "use strict";
+            @if ($active_tab === 'customers')
             initDropzone()
             $(document).ready(function() {
                 is_for_browse_file = true
@@ -521,6 +640,34 @@
                 }
             }, cb);
             cb(start, end);
+            @else
+            function guestCb(start, end) {
+                let initVal = '{{ request()->has('join_date') ? request()->get('join_date') : '' }}';
+                $('#guestJoinDateRange').val(initVal);
+            }
+            var guestStart = moment().subtract(0, 'days');
+            var guestEnd = moment();
+            $('#guestJoinDateRange').on('apply.daterangepicker', function(ev, picker) {
+                let val = picker.startDate.format('YYYY-MM-DD') + ' to ' + picker.endDate.format(
+                    'YYYY-MM-DD')
+                $('#guestJoinDateRange').val(val);
+            });
+            $('#guestJoinDateRange').daterangepicker({
+                startDate: guestStart,
+                endDate: guestEnd,
+                showCustomRangeLabel: true,
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
+                        'month').endOf('month')]
+                }
+            }, guestCb);
+            guestCb(guestStart, guestEnd);
+            @endif
 
         })(jQuery);
     </script>
