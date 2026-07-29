@@ -2,6 +2,7 @@
 import { createI18n } from 'vue-i18n'
 import axios from "axios";
 import { safeGetItem } from "./utils/safeStorage";
+import store from "./store";
 
 const LOCALE_TIMEOUT_MS = 8000;
 
@@ -28,6 +29,8 @@ function applyDocumentDirection(language, langCode) {
     if (langCode) {
         html.setAttribute("lang", langCode);
     }
+
+    store.commit("layout/SET_IS_RTL", isRtl);
 }
 
 function setI18nLanguage(lang) {

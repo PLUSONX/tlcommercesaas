@@ -133,12 +133,11 @@
                             <label class="font-14 bold black">{{ translate('Permalink') }} </label>
                         </div>
                         <div class="col-md-12">
-                            <a href="{{ url('/products') }}/{{ $product_details->permalink }}" style="color: #ff5A1f;"
+                            <a href="{{ url('/products') }}/{{ $product_details->permalink }}"
                                 target="_blank">{{ url('') }}/products/
                                 <span id="permalink" >{{ $product_details->permalink }}
                                 </span>
-                                <span style="background-color: #ff5A1f; border-radius: 8px; box-shadow: none !important;"
-                                    class="btn custom-btn ml-1 permalink-edit-btn">
+                                <span class="btn custom-btn ml-1 permalink-edit-btn">
                                     {{ translate('Edit') }}
                                 </span>
                             </a>

@@ -1,7 +1,10 @@
 <template>
   <div
     class="product-page-root"
-    :class="{ 'has-product-footer': showProductStickyFooter }"
+    :class="{
+      'has-product-footer': showProductStickyFooter,
+      'product-page--rtl': isSplitScreen && isRtl,
+    }"
   >
     <div v-if="isSplitScreen && !isMobile" class="page-container split-screen-product-layout">
       <div class="productDetails split-screen-product-scroll" :class="{
@@ -571,8 +574,9 @@ export default {
     ...mapGetters('layout', [
       'isSplitScreen',
       'isMobile',
+      'isRtl',
       'contentColumnPercent',
-      'contentPosition',
+      'effectiveContentPosition',
     ]),
 
     isSplitScreenDesktop() {
@@ -600,7 +604,7 @@ export default {
 
       const style = { width: `${this.contentColumnPercent}%` };
 
-      if (this.contentPosition === 'right') {
+      if (this.effectiveContentPosition === 'right') {
         style.right = '0';
         style.left = 'auto';
       } else {
@@ -1255,5 +1259,20 @@ export default {
     left: 0 !important;
     right: auto !important;
   }
+}
+
+/* RTL — explicit swap (split-screen content column is direction: ltr) */
+.product-page--rtl .product-details-hash-menu ul {
+  direction: rtl;
+  text-align: right;
+}
+
+.product-page--rtl .product-description-tabs {
+  direction: rtl;
+}
+
+.product-page--rtl .overview-wrap :deep(.tab-content) {
+  direction: rtl;
+  text-align: right;
 }
 </style>

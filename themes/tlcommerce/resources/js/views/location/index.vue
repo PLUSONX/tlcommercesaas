@@ -1,6 +1,6 @@
 <template>
 
-    <div :class="mtClass">
+    <div :class="[mtClass, { 'location-page--rtl': isRtl }]">
 
         <!-- Back to Homepage Button (fixed top-left) -->
         <!-- <router-link to="/" class="back-home-btn">
@@ -79,7 +79,7 @@
                     <div class="location-header-row">
                         <h3 class="product_header mb-0">{{ $t("Deliver To") }}</h3>
                         <router-link to="/" class="back-home-btn">
-                            <span class="material-icons">arrow_back</span>
+                            <span class="material-icons">{{ isRtl ? 'arrow_forward' : 'arrow_back' }}</span>
                             <span class="back-home-btn__label">{{ $t("Home") }}</span>
                         </router-link>
                     </div>
@@ -230,7 +230,7 @@ export default {
     },
 
     computed: {
-        ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+        ...mapGetters('layout', ['isSplitScreen', 'isMobile', 'isRtl']),
 
         forcedMobile() {
             if (this.isSplitScreen && !this.isMobile) return true;
@@ -805,7 +805,7 @@ export default {
     font-weight: 700;
     padding: 2px 8px;
     border-radius: 50px;
-    margin-left: 4px;
+    margin-inline-start: 4px;
 }
 
 /* ── Cities Grid ─────────────────────────────────────────────── */
@@ -983,6 +983,55 @@ export default {
 /* Spacing fix for icons next to labels */
 .state-icon,
 .city-tile__icon {
-    margin-right: 8px;
+    margin-inline-end: 8px;
+}
+
+/* RTL — explicit swap (split-screen content column is direction: ltr) */
+.location-page--rtl .location-header-row {
+    flex-direction: row-reverse;
+    direction: ltr;
+}
+
+.location-page--rtl .product_header,
+.location-page--rtl .address-content,
+.location-page--rtl .address-details,
+.location-page--rtl .address-location,
+.location-page--rtl .city-tile,
+.location-page--rtl .selected-location-badge,
+.location-page--rtl .cities-loading {
+    direction: rtl;
+    text-align: right;
+}
+
+.location-page--rtl .selection-indicator {
+    right: auto;
+    left: 1rem;
+}
+
+/* State card header — swap label cluster and chevron */
+.location-page--rtl .state-tile__header {
+    flex-direction: row-reverse;
+    direction: ltr;
+}
+
+.location-page--rtl .state-tile__label {
+    flex: 0 1 auto;
+    flex-direction: row-reverse;
+    direction: ltr;
+    justify-content: flex-end;
+    text-align: right;
+}
+
+.location-page--rtl .cities-grid {
+    direction: rtl;
+}
+
+.location-page--rtl .change-location-btn {
+    padding: 0 6px 0 0;
+}
+
+.location-page--rtl .city-tile__check {
+    margin-left: 0;
+    margin-right: auto;
 }
 </style>

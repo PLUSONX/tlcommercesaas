@@ -1,10 +1,13 @@
 <template>
   <div class="custom-header">
-    <div class="custom-header-card" :class="{ 'custom-header-card--compact': showCompactToolbar }">
-      <div class="custom-header-card__left">
+    <div class="custom-header-card" :class="{
+      'custom-header-card--compact': showCompactToolbar,
+      'custom-header-card--rtl': isRtl,
+    }">
+      <div class="custom-header-card__left" :class="leftRtlClass">
         <button v-if="!isHomePage" type="button" class="custom-header-icon-btn custom-header-back-btn"
           :aria-label="$t('Back')" @click="goBack">
-          <span class="material-icons">arrow_back</span>
+          <span class="material-icons">{{ isRtl ? 'arrow_forward' : 'arrow_back' }}</span>
         </button>
         <template v-else-if="showCompactToolbar && isHomePage">
           <the-offcanvas :user-info="customerInfo" :menu-items="offcanvas.menuItems"
@@ -36,6 +39,14 @@
           </router-link>
           <search-form class="custom-header__search" style-two mobile-style
             overlay-teleport=".split-screen-search-inline-host" />
+          <language-currency-switcher
+            class="custom-header__langcurrency"
+            :currencies="currencies"
+            :languages="languages"
+            :data-loading="dataLoading"
+            :use-fixed-dropdown="true"
+            @change-language-currency="setCurrencyLanguage"
+          />
           <router-link :to="{ name: 'storeInfo' }" class="custom-header-icon-btn custom-header-info-btn"
             :aria-label="$t('Store Info')">
             <span class="material-icons">info_outline</span>
@@ -59,6 +70,7 @@ import offcanvas from "@/fakeDB/offcanvas.json";
 import TheLogo from "@/components/global/TheLogo.vue";
 import TheOffcanvas from "@/components/menu/TheOffcanvas.vue";
 import SearchForm from "@/components/ui/SearchForm.vue";
+import LanguageCurrencySwitcher from "./LanguageCurrencySwitcher.vue";
 import { mapState, mapGetters } from "vuex";
 
 export default {
@@ -67,7 +79,9 @@ export default {
     TheLogo,
     TheOffcanvas,
     SearchForm,
+    LanguageCurrencySwitcher,
   },
+  emits: ["change-language-currency"],
   props: {
     siteProperties: {
       type: Object,
@@ -93,6 +107,18 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    currencies: {
+      type: Array,
+      default: () => [],
+    },
+    languages: {
+      type: Array,
+      default: () => [],
+    },
+    dataLoading: {
+      type: Boolean,
+      default: false,
+    },
   },
   inject: {
     resetRouteOutlet: {
@@ -109,7 +135,7 @@ export default {
     ...mapState({
       customerInfo: (state) => state.customerInfo,
     }),
-    ...mapGetters("layout", ["isSplitScreen", "isMobile"]),
+    ...mapGetters("layout", ["isSplitScreen", "isMobile", "isRtl"]),
     ...mapGetters(["cartItemCount"]),
     showCompactToolbar() {
       return this.isSplitScreen && this.isMobile;
@@ -137,6 +163,16 @@ export default {
     },
     cartCountLabel() {
       return this.cartItemCount > 99 ? "99+" : String(this.cartItemCount);
+    },
+    leftRtlClass() {
+      if (!this.isRtl) return null;
+      if (this.showCompactToolbar && this.isHomePage) {
+        return "custom-header-card__left--rtl-compact";
+      }
+      if (this.isHomePage) {
+        return "custom-header-card__left--rtl-home";
+      }
+      return "custom-header-card__left--rtl-back";
     },
   },
   methods: {
@@ -184,6 +220,9 @@ export default {
         .querySelector(".split-screen-search-inline-host")
         ?.classList.remove("is-open");
     },
+    setCurrencyLanguage(lang, currency) {
+      this.$emit("change-language-currency", lang, currency);
+    },
   },
 };
 </script>
@@ -194,6 +233,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  direction: ltr;
   background: #f8f9fa;
   border: 1px solid #e2e2e2;
   padding: 12px 16px;
@@ -216,8 +256,38 @@ export default {
   --header-logo-max-height: 32px;
 }
 
+.custom-header-card--rtl {
+  flex-direction: row-reverse;
+}
+
+/* RTL brand section — align to physical right edge of content column */
+.custom-header-card--rtl .custom-header-card__left {
+  flex: 0 1 auto;
+  justify-content: flex-end;
+}
+
+/* Compact home: DOM hamburger → logo; reverse + flex-end keeps hamburger outermost right */
+.custom-header-card--rtl .custom-header-card__left--rtl-compact {
+  flex-direction: row-reverse;
+}
+
+/* Desktop home: DOM logo → text; reverse so logo is rightmost, text to its left */
+.custom-header-card--rtl .custom-header-card__left--rtl-home {
+  flex-direction: row-reverse;
+}
+
+/* Back / products: single control flush right */
+.custom-header-card--rtl .custom-header-card__left--rtl-back {
+  flex-direction: row;
+}
+
 .custom-header-card__text {
   min-width: 0;
+}
+
+html.rtl .custom-header-card__text {
+  direction: rtl;
+  text-align: right;
 }
 
 .custom-header-card__name {
@@ -251,6 +321,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
+  direction: ltr;
 }
 
 /* Circular icon buttons — white background on hover, white icon via primary overlay ring */
@@ -399,7 +470,7 @@ export default {
   background-color: var(--mainC, #e53e3e);
   border: 2px solid #fff;
   border-radius: 999px;
-  right: -4px;
+  inset-inline-end: -4px;
   top: -4px;
   box-sizing: border-box;
   pointer-events: none;
@@ -552,6 +623,53 @@ export default {
   color: #fff !important;
   fill: #fff !important;
 } */
+
+/* Compact toolbar: language/currency switcher */
+.custom-header-toolbar :deep(.custom-header__langcurrency .langcurrency-trigger) {
+  position: relative;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  background-color: #fff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  isolation: isolate;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.custom-header-toolbar :deep(.custom-header__langcurrency .langcurrency-trigger::after) {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background-color: var(--mainC);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 0;
+}
+
+.custom-header-toolbar :deep(.custom-header__langcurrency .langcurrency-trigger:hover) {
+  background-color: #fff !important;
+  border-color: var(--mainC) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+  transform: translateY(-1px);
+}
+
+.custom-header-toolbar :deep(.custom-header__langcurrency .langcurrency-trigger:hover::after) {
+  opacity: 1;
+}
+
+.custom-header-toolbar :deep(.custom-header__langcurrency .langcurrency-trigger .material-icons) {
+  position: relative;
+  z-index: 1;
+  font-size: 18px !important;
+}
+
+.custom-header-toolbar :deep(.custom-header__langcurrency .langcurrency-wrap) {
+  display: flex;
+  align-items: center;
+}
 
 /* Compact info uses .custom-header-icon-btn hover rules above */
 </style>

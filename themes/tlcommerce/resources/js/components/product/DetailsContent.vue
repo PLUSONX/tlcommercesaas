@@ -1,6 +1,9 @@
 <template>
   <!-- Product Details Content -->
-  <div class="product-details-content">
+  <div
+    class="product-details-content"
+    :class="{ 'product-details-content--rtl': isSplitScreen && isRtl }"
+  >
     <!--Flash deal info-->
     <div class="d-flex flash-deal flex-wrap justify-content-between mb-20 p-2 text-white"
       v-if="product.has_deal != null">
@@ -496,7 +499,7 @@ export default {
         : this.product.quantity;
     },
 
-    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+    ...mapGetters('layout', ['isSplitScreen', 'isMobile', 'isRtl']),
 
     isSplitScreenDesktop() {
       return this.isSplitScreen;
@@ -1115,5 +1118,130 @@ export default {
 
 .mt-25 {
   margin-top: 25px;
+}
+
+/* RTL — explicit swap (split-screen content column is direction: ltr) */
+.product-details-content--rtl {
+  .product-title,
+  .product-summary-section,
+  h6 {
+    direction: rtl;
+    text-align: right;
+  }
+
+  .rating-wrap {
+    width: 100%;
+    direction: rtl;
+    justify-content: flex-start;
+
+    > .d-flex.align-items-center {
+      flex-direction: row-reverse;
+      direction: ltr;
+    }
+
+    .rating-text-wrap {
+      direction: rtl;
+      text-align: right;
+    }
+
+    [data-star] {
+      text-align: right;
+    }
+  }
+
+  .product-price .price {
+    direction: ltr;
+    text-align: right;
+    justify-content: flex-end;
+  }
+
+  .unit-price .price del {
+    margin-left: 0;
+    margin-right: 20px;
+  }
+
+  .price-range {
+    width: 100%;
+    text-align: right;
+
+    .price {
+      width: 100%;
+      justify-content: flex-end;
+
+      h3 {
+        margin-right: 0 !important;
+        margin-left: 20px;
+      }
+
+      del {
+        margin-right: 0 !important;
+        margin-left: 0;
+      }
+    }
+  }
+
+  .option-choice-form {
+    width: 100%;
+    direction: rtl;
+    text-align: right;
+  }
+
+  .option-choice-form .mb-3 {
+    width: 100%;
+  }
+
+  .option-label {
+    display: block;
+    width: 100%;
+    direction: rtl;
+    text-align: right;
+  }
+
+  .multi-select-count {
+    display: inline-block;
+    width: 100%;
+    text-align: right;
+    margin-left: 0;
+    margin-inline-start: 0;
+  }
+
+  .option-list-cards {
+    width: 100%;
+    align-self: stretch;
+  }
+
+  .option-list-card {
+    direction: rtl;
+    text-align: right !important;
+    justify-content: flex-start;
+
+    &__label {
+      text-align: right;
+      flex: 1 1 auto;
+    }
+  }
+
+  .multi-select-option-qty {
+    margin-left: 0;
+    margin-right: auto;
+    direction: ltr;
+  }
+
+  .product-details-quantity .d-flex {
+    flex-direction: row-reverse;
+    direction: ltr;
+    justify-content: flex-end;
+  }
+
+  .attach-input-wrapper {
+    flex-direction: row-reverse;
+    direction: ltr;
+    justify-content: flex-end;
+  }
+
+  .attach-input-wrapper h6 {
+    margin-right: 0;
+    margin-left: 10px;
+  }
 }
 </style>

@@ -2,7 +2,8 @@
   <!-- Split-screen layout (desktop + mobile) -->
   <template v-if="isSplitScreen">
     <!--Product Page style-->
-    <div v-if="styleEight" class="single-product-item single-product--split d-inline-block style--eight">
+    <div v-if="styleEight" class="single-product-item single-product--split d-inline-block style--eight"
+      :class="{ 'single-product--rtl': isRtl }">
       <div class="position-relative overflow-hidden">
         <!-- Thumb -->
         <router-link :to="`/products/${item.slug}`" class="d-block">
@@ -88,7 +89,8 @@
     <!--End Product Page style-->
 
     <!--Product search style-->
-    <div class="single-product-item style--eight d-flex flex-column m-0" v-else-if="small">
+    <div class="single-product-item style--eight d-flex flex-column m-0" v-else-if="small"
+      :class="{ 'single-product--rtl': isRtl }">
       <div class="position-relative overflow-hidden d-flex">
         <!-- Thumb -->
         <router-link :to="`/products/${item.slug}`" class="d-block pr-10">
@@ -120,7 +122,8 @@
     <!--End Product search style-->
 
     <!--Compare Product search style-->
-    <div class="single-product-item style--eight d-flex flex-column m-0" v-else-if="compareSearch">
+    <div class="single-product-item style--eight d-flex flex-column m-0" v-else-if="compareSearch"
+      :class="{ 'single-product--rtl': isRtl }">
       <div class="position-relative overflow-hidden d-flex">
         <!-- Thumb -->
         <v-lazy-image class="w-100" :src="cleanImage(item.thumbnail_image)" :alt="item.name" />
@@ -150,7 +153,7 @@
     <!-- Wishlist style-->
     <CTableRow v-else-if="wishlistStyle">
       <CTableDataCell>
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center" :class="{ 'single-product--rtl': isRtl }">
           <div class="product-img">
             <router-link :to="`/products/${item.slug}`">
               <v-lazy-image class="w-100" :src="cleanImage(item.thumbnail_image)" :alt="item.name" />
@@ -188,7 +191,7 @@
     <!-- End Wishlist style-->
 
     <!--Compare page style-->
-    <div class="compare-style-product" v-else-if="compareStyle">
+    <div class="compare-style-product" v-else-if="compareStyle" :class="{ 'single-product--rtl': isRtl }">
       <button class="btn btn_bordered" v-bind:title="$t('Add To Cart')" :disabled="item.quantity < 1" v-on="item.has_variant == 2
         ? { click: () => addToCart() }
         : { click: () => productQuickView() }
@@ -199,7 +202,8 @@
     <!--End compare page style-->
 
     <!--Home page style-->
-    <div v-else class="single-product-item single-product--split d-flex flex-column">
+    <div v-else class="single-product-item single-product--split d-flex flex-column"
+      :class="{ 'single-product--rtl': isRtl }">
       <div class="position-relative overflow-hidden">
         <!-- Thumb -->
         <router-link :to="`/products/${item.slug}`" class="d-block">
@@ -628,7 +632,7 @@ export default {
       site_config: (state) => state.siteSettings,
       currency: (state) => state.currency,
     }),
-    ...mapGetters("layout", ["isSplitScreen", "isMobile"]),
+    ...mapGetters("layout", ["isSplitScreen", "isMobile", "isRtl"]),
     min_qty() {
       return this.item.min_qty != null && parseInt(this.item.min_qty) > 0
         ? parseInt(this.item.min_qty)
@@ -1578,6 +1582,71 @@ export default {
         max-width: 100% !important;
       }
     }
+  }
+}
+
+/* RTL — explicit swap (split-screen content column is direction: ltr) */
+.single-product--rtl.single-product-item {
+  .product-title {
+    direction: rtl;
+    text-align: right;
+  }
+
+  .product-price-add-row {
+    flex-direction: row-reverse;
+    direction: ltr;
+  }
+
+  .product-price {
+    direction: ltr;
+    text-align: right;
+    justify-content: flex-end;
+  }
+
+  .product-price del {
+    margin-left: 0;
+    margin-right: 12px;
+  }
+
+  .product-summary > .star-rating {
+    align-self: flex-end;
+  }
+
+  .product-summary.text-center {
+    text-align: right !important;
+    direction: rtl;
+  }
+
+  .product-summary.text-center .product-price {
+    display: block;
+    width: 100%;
+    text-align: right;
+  }
+
+  .badge-container {
+    right: auto;
+    left: 0;
+  }
+}
+
+.single-product--rtl.single-product-item .position-relative.d-flex {
+  flex-direction: row-reverse;
+}
+
+.single-product--rtl.single-product-item .p-0.ml-10 {
+  margin-left: 0;
+  margin-right: 10px;
+  direction: rtl;
+  text-align: right;
+}
+
+.single-product--rtl.d-flex.align-items-center {
+  flex-direction: row-reverse;
+  direction: ltr;
+
+  .product-name {
+    direction: rtl;
+    text-align: right;
   }
 }
 </style>

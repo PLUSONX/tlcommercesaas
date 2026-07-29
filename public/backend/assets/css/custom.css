@@ -29,7 +29,7 @@
 .page-item .page-link:hover {
     z-index: 3;
     color: #fff;
-    background-color: #6045e2;
+    background-color: #ff7545;
     border-color: transparent;
 }
 
@@ -41,7 +41,7 @@
 .page-item.active .page-link {
     z-index: 3;
     color: #fff;
-    background-color: #6045e2;
+    background-color: #ff5A1f;
     border-color: transparent;
 }
 
@@ -284,20 +284,83 @@ div#filtered_media {
 }
 
 /*Custom btn*/
-.custom-btn {
+.custom-btn,
+.btn.custom-btn {
     padding: 5px 12px;
     font-weight: 500;
     line-height: 1;
     font-size: 14px;
     position: relative;
     cursor: pointer;
-    color: #ffffff;
-    border: none;
+    background: #ff5A1f !important;
+    border: 1px solid #e64a10 !important;
+    color: #ffffff !important;
     text-transform: capitalize;
     outline: 0 !important;
-    -webkit-box-shadow: 0 5px 10px rgb(4 0 252 / 20%) !important;
-    box-shadow: 0 5px 10px rgb(4 0 252 / 20%) !important;
-    border-radius: 0px;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+    border-radius: 6px !important;
+    transition: background 0.2s ease;
+}
+
+.custom-btn:hover,
+.btn.custom-btn:hover {
+    background: #ff7545 !important;
+    border-color: #e07b00 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+
+.custom-btn:focus,
+.custom-btn:active,
+.btn.custom-btn:focus,
+.btn.custom-btn:active {
+    background: #ff7545 !important;
+    border-color: #e07b00 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* Permalink URL — orange gradient text */
+.permalink-input-group a {
+    background: linear-gradient(90deg, #ff8c00, #ff4500);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: #ff5A1f;
+    text-decoration: none;
+    font-weight: 500;
+    box-shadow: none !important;
+}
+
+.permalink-input-group a:hover {
+    background: linear-gradient(90deg, #ff4500, #ff8c00);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: #ff5A1f;
+    text-decoration: underline;
+}
+
+/* Edit pill inside permalink link — solid orange, not gradient */
+.permalink-input-group a .custom-btn,
+.permalink-input-group a .permalink-edit-btn {
+    background: #ff5A1f !important;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    -webkit-text-fill-color: #fff !important;
+    color: #fff !important;
+    border: 1px solid #e64a10 !important;
+    box-shadow: none !important;
+}
+
+.permalink-input-group a .custom-btn:hover,
+.permalink-input-group a .permalink-edit-btn:hover {
+    background: #ff7545 !important;
+    -webkit-text-fill-color: #fff !important;
+    color: #fff !important;
+    border-color: #e07b00 !important;
 }
 
 /*Tree view css*/
@@ -481,6 +544,111 @@ button.btn-orange:active:focus {
     outline: none !important;
 }
 
+/* Orange gradient action buttons — all admin primary .btn variants */
+body[class*="admin-"] a.btn.long:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary):not(.btn-orange),
+body[class*="admin-"] button.btn.long:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary):not(.btn-orange),
+body[class*="admin-"] input.btn.long:not(.btn-danger):not(.btn-white):not(.btn-info):not(.btn-secondary):not(.btn-orange),
+body[class*="admin-"] button.btn.sm:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary):not(.btn-orange) {
+    background: linear-gradient(90deg, #ff8c00, #ff4500) !important;
+    border-color: #e64a10 !important;
+    color: #fff !important;
+    transition: background 0.2s ease;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+}
+
+body[class*="admin-"] a.btn.long:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary):not(.btn-orange):hover,
+body[class*="admin-"] button.btn.long:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary):not(.btn-orange):hover,
+body[class*="admin-"] input.btn.long:not(.btn-danger):not(.btn-white):not(.btn-info):not(.btn-secondary):not(.btn-orange):hover,
+body[class*="admin-"] button.btn.sm:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary):not(.btn-orange):hover {
+    background: linear-gradient(90deg, #ff4500, #ff8c00) !important;
+    border-color: #e07b00 !important;
+    color: #fff !important;
+    box-shadow: none !important;
+}
+
+body[class*="admin-"] a.btn.long:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary):not(.btn-orange):focus,
+body[class*="admin-"] a.btn.long:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary):not(.btn-orange):active,
+body[class*="admin-"] a.btn.long:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary):not(.btn-orange):active:focus,
+body[class*="admin-"] button.btn.long:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary):not(.btn-orange):focus,
+body[class*="admin-"] button.btn.long:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary):not(.btn-orange):active,
+body[class*="admin-"] button.btn.long:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary):not(.btn-orange):active:focus,
+body[class*="admin-"] input.btn.long:not(.btn-danger):not(.btn-white):not(.btn-info):not(.btn-secondary):not(.btn-orange):focus,
+body[class*="admin-"] input.btn.long:not(.btn-danger):not(.btn-white):not(.btn-info):not(.btn-secondary):not(.btn-orange):active,
+body[class*="admin-"] input.btn.long:not(.btn-danger):not(.btn-white):not(.btn-info):not(.btn-secondary):not(.btn-orange):active:focus,
+body[class*="admin-"] button.btn.sm:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary):not(.btn-orange):focus,
+body[class*="admin-"] button.btn.sm:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary):not(.btn-orange):active,
+body[class*="admin-"] button.btn.sm:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary):not(.btn-orange):active:focus {
+    background: linear-gradient(90deg, #ff4500, #ff8c00) !important;
+    border-color: #e07b00 !important;
+    box-shadow: none !important;
+    outline: none !important;
+    color: #fff !important;
+}
+
+/* Theme/plugin card icon area — orange instead of default purple */
+body[class*="admin-"] .app-items .app-item .app-icon {
+    background: linear-gradient(90deg, #ff8c00, #ff4500) !important;
+}
+
+/* Theme cards — rounded corners (Themes page only) */
+body[class*="admin-"] .theme-items .app-item {
+    border-radius: 8px !important;
+    overflow: hidden;
+    border: 1px solid #e8e8e8;
+}
+
+body[class*="admin-"] .theme-items .app-item .app-icon img {
+    display: block;
+    width: 100%;
+}
+
+body[class*="admin-"] .theme-items .app-item:hover .app-name {
+    color: #ff5A1f !important;
+}
+
+/* Manage Widgets page — rounded cards */
+body[class*="admin-"] .widgets-page .card {
+    border-radius: 8px !important;
+    overflow: hidden;
+}
+
+body[class*="admin-"] .widgets-page .widget-item.widget-border {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Confirmation modals — keep default theme primary on submit buttons */
+body[class*="admin-"] .modal[class*="delete"] button.btn.long[type="submit"]:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary),
+body[class*="admin-"] .modal[class*="delete"] input.btn.long[type="submit"]:not(.btn-danger):not(.btn-white):not(.btn-info):not(.btn-secondary),
+body[class*="admin-"] .modal[class*="delete"] button[type="submit"]:not(.btn-danger),
+body[class*="admin-"] .modal[class*="delete"] input[type="submit"]:not(.btn-danger),
+body[class*="admin-"] .delete-modal button.btn.long[type="submit"]:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary),
+body[class*="admin-"] .delete-modal input.btn.long[type="submit"]:not(.btn-danger):not(.btn-white):not(.btn-info):not(.btn-secondary),
+body[class*="admin-"] .delete-modal button[type="submit"]:not(.btn-danger),
+body[class*="admin-"] .delete-modal input[type="submit"]:not(.btn-danger) {
+    background-color: #6045e2 !important;
+    background-image: none !important;
+    border-color: #6045e2 !important;
+    box-shadow: 0 5px 10px rgba(4, 0, 252, 0.2) !important;
+    color: #fff !important;
+}
+
+body[class*="admin-"] .modal[class*="delete"] button.btn.long[type="submit"]:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary):hover,
+body[class*="admin-"] .modal[class*="delete"] input.btn.long[type="submit"]:not(.btn-danger):not(.btn-white):not(.btn-info):not(.btn-secondary):hover,
+body[class*="admin-"] .modal[class*="delete"] button[type="submit"]:not(.btn-danger):hover,
+body[class*="admin-"] .modal[class*="delete"] input[type="submit"]:not(.btn-danger):hover,
+body[class*="admin-"] .delete-modal button.btn.long[type="submit"]:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary):hover,
+body[class*="admin-"] .delete-modal input.btn.long[type="submit"]:not(.btn-danger):not(.btn-white):not(.btn-info):not(.btn-secondary):hover,
+body[class*="admin-"] .delete-modal button[type="submit"]:not(.btn-danger):hover,
+body[class*="admin-"] .delete-modal input[type="submit"]:not(.btn-danger):hover {
+    background-color: #6045e2 !important;
+    background-image: none !important;
+    border-color: #6045e2 !important;
+    box-shadow: 0 5px 10px rgba(4, 0, 252, 0.2) !important;
+    color: #fff !important;
+}
+
 /* Orange gradient links — shared admin style */
 a.btn-link:not(.text-danger),
 button.btn-link:not(.text-danger),
@@ -533,4 +701,298 @@ input.submit-add-to-menu:active {
     border-color: #e07b00 !important;
     color: #fff !important;
     outline: none !important;
+}
+
+/* Admin header RTL support */
+.header .header-user-info {
+    margin-left: 60px;
+}
+
+.admin-rtl .header,
+.admin-rtl_dark .header {
+    flex-direction: row-reverse;
+}
+
+.admin-rtl .header .w-100 .row,
+.admin-rtl_dark .header .w-100 .row {
+    flex-direction: row-reverse;
+}
+
+.admin-rtl .header .nav,
+.admin-rtl_dark .header .nav {
+    flex-direction: row-reverse;
+}
+
+.admin-rtl .header .header-user-info,
+.admin-rtl_dark .header .header-user-info {
+    margin-left: 0;
+    margin-right: 60px;
+}
+
+.admin-rtl .header .nav > li.ml-3,
+.admin-rtl_dark .header .nav > li.ml-3 {
+    margin-left: 0 !important;
+    margin-right: 1rem;
+}
+
+.admin-rtl .header .pl-20,
+.admin-rtl_dark .header .pl-20 {
+    padding-left: 0 !important;
+    padding-right: 20px;
+}
+
+.admin-rtl .header .dropdown-menu.style--three .dropdown-item img,
+.admin-rtl_dark .header .dropdown-menu.style--three .dropdown-item img {
+    margin-right: 0 !important;
+    margin-left: 0.5rem;
+}
+
+/* Admin sidebar RTL: Lucide icons before Arabic menu labels */
+.admin-rtl .sidebar .sidebar-body li:has(> a svg),
+.admin-rtl_dark .sidebar .sidebar-body li:has(> a svg) {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.admin-rtl .sidebar .sidebar-body li > a:has(svg),
+.admin-rtl_dark .sidebar .sidebar-body li > a:has(svg) {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+    padding-right: 0;
+}
+
+.admin-rtl .sidebar .sidebar-body li > a:has(svg) .link-title,
+.admin-rtl_dark .sidebar .sidebar-body li > a:has(svg) .link-title {
+    order: 1;
+    flex: 1;
+    text-align: right;
+    margin-left: 0 !important;
+    margin-right: 0;
+}
+
+.admin-rtl .sidebar .sidebar-body li > a:has(svg) svg,
+.admin-rtl_dark .sidebar .sidebar-body li > a:has(svg) svg {
+    order: 2;
+    margin-left: 8px !important;
+    margin-right: 0 !important;
+    flex-shrink: 0;
+}
+
+.admin-rtl .sidebar .sidebar-body .sub-menu a.pl-2,
+.admin-rtl_dark .sidebar .sidebar-body .sub-menu a.pl-2 {
+    padding-left: 0 !important;
+    padding-right: 0.5rem;
+}
+
+.admin-rtl .sidebar .sidebar-header .sidebar-toogle-pin,
+.admin-rtl_dark .sidebar .sidebar-header .sidebar-toogle-pin {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+/* Sidebar pin: align with menu icon column */
+.sidebar .sidebar-header .sidebar-toogle-pin {
+    margin-left: 8px !important;
+    margin-right: 0;
+    display: flex;
+    align-items: center;
+}
+
+/* General settings form RTL */
+.admin-rtl .general-settings-page h4,
+.admin-rtl_dark .general-settings-page h4,
+.admin-rtl .general-settings-form .form-row label,
+.admin-rtl_dark .general-settings-form .form-row label,
+.admin-rtl .general-settings-page .invalid-input,
+.admin-rtl_dark .general-settings-page .invalid-input {
+    text-align: right !important;
+}
+
+.admin-rtl .general-settings-form .form-row > .col-md-4,
+.admin-rtl_dark .general-settings-form .form-row > .col-md-4 {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+.admin-rtl .general-settings-form .form-row label,
+.admin-rtl_dark .general-settings-form .form-row label {
+    display: block;
+    width: 100%;
+}
+
+.admin-rtl .general-settings-page .d-flex.justify-content-start,
+.admin-rtl_dark .general-settings-page .d-flex.justify-content-start {
+    justify-content: flex-end !important;
+}
+
+.admin-rtl .general-settings-form .image-box .d-flex,
+.admin-rtl_dark .general-settings-form .image-box .d-flex {
+    justify-content: flex-end;
+}
+
+.admin-rtl .general-settings-page .general-settings-submit,
+.admin-rtl_dark .general-settings-page .general-settings-submit {
+    text-align: left;
+}
+
+.admin-rtl .general-settings-page .offset-md-2,
+.admin-rtl_dark .general-settings-page .offset-md-2 {
+    margin-left: 0;
+    margin-right: 16.666667%;
+}
+
+.admin-rtl .general-settings-page select.theme-input-style,
+.admin-rtl_dark .general-settings-page select.theme-input-style {
+    background-position: left 12px bottom 10px;
+    padding-right: 0.75rem;
+    padding-left: 2rem;
+}
+
+.admin-rtl .general-settings-page .preview-image-wrapper .remove-btn,
+.admin-rtl_dark .general-settings-page .preview-image-wrapper .remove-btn {
+    right: auto;
+    left: -5px;
+}
+
+.admin-rtl .general-settings-page .theme-input-style,
+.admin-rtl_dark .general-settings-page .theme-input-style,
+.admin-rtl .general-settings-page textarea.theme-input-style,
+.admin-rtl_dark .general-settings-page textarea.theme-input-style,
+.admin-rtl .general-settings-page .select2-container--classic .select2-selection--single .select2-selection__rendered,
+.admin-rtl_dark .general-settings-page .select2-container--classic .select2-selection--single .select2-selection__rendered {
+    text-align: right;
+}
+
+.admin-rtl .general-settings-page .select2-container--classic .select2-selection--single,
+.admin-rtl_dark .general-settings-page .select2-container--classic .select2-selection--single {
+    text-align: right;
+}
+
+.admin-rtl .general-settings-page .note-editor .note-editable,
+.admin-rtl_dark .general-settings-page .note-editor .note-editable {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Orange gradient toggles — all admin switch variants */
+.switch input:checked ~ .control {
+    background-color: #fff0e6 !important;
+    border-color: #ff5A1f !important;
+}
+
+.switch input:checked ~ .control:after,
+.switch input:checked ~ .control .check {
+    background: linear-gradient(90deg, #ff8c00, #ff4500) !important;
+}
+
+.switch.glow input:checked ~ .control:after,
+.switch.glow input:checked ~ .control .check {
+    box-shadow: 0 5px 10px rgba(255, 90, 31, 0.45) !important;
+}
+
+.switch.primary input:checked ~ .control,
+.switch.brand input:checked ~ .control,
+.switch.success input:checked ~ .control,
+.switch.info input:checked ~ .control,
+.switch.warning input:checked ~ .control,
+.switch.danger input:checked ~ .control {
+    background-color: #fff0e6 !important;
+    border-color: #ff5A1f !important;
+}
+
+.switch.primary input:checked ~ .control:after,
+.switch.brand input:checked ~ .control:after,
+.switch.success input:checked ~ .control:after,
+.switch.info input:checked ~ .control:after,
+.switch.warning input:checked ~ .control:after,
+.switch.danger input:checked ~ .control:after {
+    background: linear-gradient(90deg, #ff8c00, #ff4500) !important;
+    box-shadow: 0 5px 10px rgba(255, 90, 31, 0.45) !important;
+}
+
+/* Orange pill filter buttons — shared admin style (inhouse orders pattern) */
+.filter-area .btn-filter-item {
+    background: transparent !important;
+    color: #FF5A1F !important;
+    border: 1px solid #FF5A1F !important;
+    border-radius: 20px;
+    padding: 4px 15px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-right: 8px;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+}
+
+.filter-area .btn-filter-item:hover {
+    border-color: #fff !important;
+    color: #fff !important;
+    background: #FF5A1F !important;
+}
+
+.filter-area .btn-filter-item.active {
+    background-color: #FF5A1F !important;
+    border-color: #FF5A1F;
+    color: #fff !important;
+}
+
+.pagination .page-item .page-link {
+    color: #ff5A1f;
+    border-color: #dee2e6;
+}
+
+/* Blog-style list pagination — override theme purple .pagination ul li */
+.pagination ul li {
+    border-color: rgba(255, 90, 31, 0.35) !important;
+}
+
+.pagination ul li.current {
+    background-color: #ff5A1f !important;
+    border-color: #ff5A1f !important;
+}
+
+.pagination ul li.current a {
+    color: #fff !important;
+}
+
+.pagination ul li a:hover {
+    color: #ff5A1f !important;
+}
+
+/* Orange admin content links — override theme purple .text-primary / a:hover */
+body[class*="admin-"] .main-content a.text-primary,
+body[class*="admin-"] .main-content a.text-success,
+body[class*="admin-"] .main-content a.text-warning {
+    color: #ff5A1f !important;
+}
+
+body[class*="admin-"] .main-content a.text-primary:hover,
+body[class*="admin-"] .main-content a.text-success:hover,
+body[class*="admin-"] .main-content a.text-warning:hover {
+    color: #ff7545 !important;
+}
+
+body[class*="admin-"] .main-content a:not(.btn):not(.btn-filter-item):not(.btn-orange):not(.btn-link):not(.text-danger):not(.header-icon):not(.notification-icon):not(.dropdown-item):not(.theme_option_link):not(.parent-menu) {
+    color: #ff5A1f;
+}
+
+body[class*="admin-"] .main-content a:not(.btn):not(.btn-filter-item):not(.btn-orange):not(.btn-link):not(.text-danger):not(.header-icon):not(.notification-icon):not(.dropdown-item):not(.theme_option_link):not(.parent-menu):hover {
+    color: #ff7545 !important;
+}
+
+/* Theme Options sidebar — default black menu links */
+body[class*="admin-"] .theme-option-sidebar a.theme_option_link:not(.active),
+body[class*="admin-"] .theme-option-sidebar a.parent-menu:not(.active) {
+    color: #333 !important;
+}
+
+body[class*="admin-"] .theme-option-sidebar a.theme_option_link:not(.active) span,
+body[class*="admin-"] .theme-option-sidebar a.parent-menu:not(.active) span {
+    color: #333 !important;
 }

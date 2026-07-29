@@ -73,7 +73,7 @@
 @section('main_content')
     <!-- Main Content -->
 
-    <div class="row">
+    <div class="row widgets-page">
         <div class="col-md-5" id="widget-section">
             <div class="card p-0">
                 <a href="#allWidgets" class="px-4 py-3 card-body d-flex justify-content-between" data-toggle="collapse"

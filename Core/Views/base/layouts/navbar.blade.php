@@ -18,7 +18,7 @@
     <!--End search options-->
     <!-- Sidebar Header -->
     <div class="sidebar-header d-none d-lg-block pt-0">
-        <div class="sidebar-toogle-pin" style="margin-left: 8px;">
+        <div class="sidebar-toogle-pin">
             <!-- <i class="icofont-tack-pin"></i> -->
              <x-lucide-pin class="icofont-tack-pin link-title" style="width: 20px; height: 20px;" />
         </div>

@@ -1,6 +1,6 @@
 <template>
     <!-- <div class="p-1"> -->
-    <div>
+    <div :class="{ 'delivery-page--rtl': isRtl }">
         <div class="delivery-container">
 
             <div v-if="!isCustomerLogin" class="delivery-card">
@@ -8,7 +8,7 @@
                 <div class="delivery-field" @click="goToLocation">
                     <div class="delivery-field__left">
                         <span class="material-icons delivery-field__icon">motorcycle</span>
-                        <span class="delivery-field__label">{{ $t("Select Delivery Location") }}</span>
+                        <span class="delivery-field__label">{{ selectDeliveryLocationLabel }}</span>
                     </div>
 
                     <div class="delivery-field__location" v-if="selectedCity">
@@ -16,12 +16,12 @@
                         <span class="delivery-field__city">
                             {{ selectedCity.name }}<template v-if="selectedState">, {{ selectedState.name }}</template>
                         </span>
-                        <span class="material-icons delivery-field__chevron">chevron_right</span>
+                        <span class="material-icons delivery-field__chevron">{{ isRtl ? 'chevron_left' : 'chevron_right' }}</span>
                     </div>
 
                     <div class="delivery-field__location delivery-field__location--empty" v-else>
-                        <span class="delivery-field__prompt">{{ $t("Tap to choose") }}</span>
-                        <span class="material-icons delivery-field__chevron">chevron_right</span>
+                        <span class="delivery-field__prompt">{{ tapToChooseLabel }}</span>
+                        <span class="material-icons delivery-field__chevron">{{ isRtl ? 'chevron_left' : 'chevron_right' }}</span>
                     </div>
                 </div>
 
@@ -30,7 +30,7 @@
                 <div class="delivery-arrival">
                     <div class="d-flex align-items-center">
                         <span class="material-icons mr-2">schedule</span>
-                        <span class="text-muted small">{{ $t('Earliest Arrival') }}</span>
+                        <span class="text-muted small">{{ earliestArrivalLabel }}</span>
                     </div>
                     <div v-if="earliestArrival" class="arrival-time">
                         <strong>{{ earliestArrival }}</strong>
@@ -166,6 +166,7 @@ export default {
     },
 
     computed: {
+        ...mapGetters('layout', ['isRtl']),
         selectedCity() {
             return this.$store.state.shippingDetails?.city || null;
         },
@@ -179,6 +180,15 @@ export default {
             const cityId = this.selectedCity?.id || "";
             const stateId = this.selectedState?.id || "";
             return `${cityId}-${stateId}`;
+        },
+        selectDeliveryLocationLabel() {
+            return this.localizedLabel("Select Delivery Location", "اختر موقع التوصيل");
+        },
+        tapToChooseLabel() {
+            return this.localizedLabel("Tap to choose", "اضغط للاختيار");
+        },
+        earliestArrivalLabel() {
+            return this.localizedLabel("Earliest Arrival", "أقرب وقت للوصول");
         },
     },
 
@@ -199,6 +209,11 @@ export default {
     },
 
     methods: {
+        localizedLabel(key, arFallback) {
+            const translated = this.$t(key);
+            if (!this.isRtl) return translated;
+            return /[\u0600-\u06FF]/.test(translated) ? translated : arFallback;
+        },
 
         fetchEarliestArrival() {
             this.loadingEarliestArrival = true;
@@ -323,7 +338,7 @@ export default {
 }
 
 .mr-2 {
-    margin-right: 8px;
+    margin-inline-end: 8px;
 }
 
 .material-icons {
@@ -334,6 +349,55 @@ export default {
 
 .delivery-field__pin {
     color: #4a90e2;
+}
+
+/* RTL — explicit swap (split-screen content column is direction: ltr) */
+.delivery-page--rtl .delivery-field,
+.delivery-page--rtl .delivery-arrival {
+    flex-direction: row-reverse;
+    direction: ltr;
+}
+
+.delivery-page--rtl .delivery-field__left {
+    flex: 0 1 auto;
+    flex-direction: row-reverse;
+    direction: ltr;
+    justify-content: flex-end;
+}
+
+.delivery-page--rtl .delivery-field__location {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: none;
+    flex-direction: row-reverse;
+    direction: ltr;
+    justify-content: flex-end;
+}
+
+.delivery-page--rtl .delivery-field__label,
+.delivery-page--rtl .delivery-field__prompt,
+.delivery-page--rtl .delivery-arrival .text-muted {
+    direction: rtl;
+    text-align: right;
+    white-space: normal;
+    overflow: visible;
+    unicode-bidi: plaintext;
+}
+
+.delivery-page--rtl .delivery-field__city {
+    direction: rtl;
+    text-align: right;
+}
+
+.delivery-page--rtl .arrival-time {
+    direction: ltr;
+    text-align: left;
+    flex-shrink: 0;
+}
+
+.delivery-page--rtl .delivery-arrival > .d-flex {
+    flex-direction: row-reverse;
+    direction: ltr;
 }
 </style>
 

@@ -77,7 +77,9 @@ try {
   app.component("v-select", vSelect);
   app.component('the-not-found', NotFound);
   app.component('skeleton', Skeleton);
-  app.mount("#app");
+  router.isReady().then(() => {
+    app.mount("#app");
+  });
 } catch (err) {
   console.error("[tlcommerce] boot failed", err);
   showBootFallback(err && err.message);

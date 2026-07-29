@@ -11,7 +11,7 @@
                             $storeName = $logo_details['system_name'] ?? getGeneralSetting('system_name');
                             $storeDomain = clean_domain(request()->getHost());
                         @endphp
-                        <div class="user-info d-none d-sm-block" style="margin-left: 60px;"> 
+                        <div class="user-info header-user-info d-none d-sm-block">
                             <h4 class="user-name mb-0" style="font-size: 18px; font-weight: 600;">{{ auth()->user()->name }}</h4>
 
                             <a href="{{ url('/') }}" target="_blank" title="{{ translate('Visit store') }}" class="d-flex align-items-center mt-1 text-decoration-none" style="gap: 5px; color: #6c757d; font-size: 14px;">
@@ -45,6 +45,29 @@
                             </li>
 
                             <li class="ml-3">
+                                <!-- Main Header Language -->
+                                <div class="main-header-notification">
+                                    <a href="#" class="header-icon notification-icon" data-toggle="dropdown"
+                                        title="Language Options">
+                                        @if (isset($active_lang->code))
+                                            <img src="{{ asset('flags/') . '/' . $active_lang->code . '.png' }}"
+                                                class="w-20" alt="{{ $active_lang->code }}">
+                                        @endif
+                                    </a>
+                                    <div id="lang-change" class="dropdown-menu style--three">
+                                        @foreach ($active_langs as $lang)
+                                            <a href="#" class="dropdown-item" data-lan="{{ $lang->code }}">
+                                                <img src="{{ asset('flags/') . '/' . $lang->code . '.png' }}"
+                                                    class="mr-2 w-20" alt="{{ $lang->code }}">
+                                                {{ $lang->native_name }}
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <!-- End Main Header Language -->
+                            </li>
+
+                            <li class="ml-3">
                                 @auth
                                     <div class="main-header-user dropdown">
                                         <a href="javascript:void(0);" class="user-profile d-flex align-items-center" data-toggle="dropdown">
@@ -62,6 +85,8 @@
                                     </div>
                                 @endauth
                             </li>
+
+                            
 
                             <li class="d-lg-none">
                                 <div class="header-toogle-menu">

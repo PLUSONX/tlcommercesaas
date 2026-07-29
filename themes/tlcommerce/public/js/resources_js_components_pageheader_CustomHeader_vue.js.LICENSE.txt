@@ -20,6 +20,8 @@
 
 /*! ./CustomHeader.vue?vue&type=template&id=a450f454&scoped=true */
 
+/*! ./LanguageCurrencySwitcher.vue */
+
 /*! ./MenuDropdown.vue */
 
 /*! ./MenuItem.vue */

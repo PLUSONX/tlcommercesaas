@@ -11,7 +11,8 @@
               <div class="split-screen-search-inline-host"></div>
               <custom-header :key="$route.fullPath" :site-properties="data.site_properties" :mode="mode"
                 :header-logo-style="headerLogoStyle" :cart-item="cartItem" :header-style="headerStyle"
-                :header-menu-style="headerMenuStyle" />
+                :header-menu-style="headerMenuStyle" :currencies="data.currencies" :languages="data.languages"
+                :data-loading="MenuItemsLoading" @change-language-currency="setCurrencyLanguage" />
             </div>
 
             <div ref="splitContentScroll" class="content-split-nudge">
@@ -30,7 +31,9 @@
 
           <div class="split-screen-feature" :class="featureSideClass" :style="featureStyle">
             <BannerFeature v-if="isSplitScreen && !isMobile" :settings="splitScreenSettings" :imagePath="featureImagePath"
-              :cart-item="cartItem" :header-style="headerStyle" :header-menu-style="headerMenuStyle" />
+              :cart-item="cartItem" :header-style="headerStyle" :header-menu-style="headerMenuStyle"
+              :currencies="data.currencies" :languages="data.languages" :data-loading="MenuItemsLoading"
+              @change-language-currency="setCurrencyLanguage" />
 
             <!-- Dark Light Switcher -->
             <div class="floating-mode-switcher-wrap" v-if="dark_light_status == '1'">
@@ -482,7 +485,7 @@ export default {
     ...mapGetters('layout', [
       'isSplitScreen',
       'splitScreenSettings',
-      'contentPosition',
+      'effectiveContentPosition',
       'featureImagePath',
       'splitRatio',
       'isMobile',
@@ -505,7 +508,7 @@ export default {
       if (!this.isSplitScreen || this.isMobile) return {};
 
       const { content, feature } = this.splitRatio;
-      const columns = this.contentPosition === 'left'
+      const columns = this.effectiveContentPosition === 'left'
         ? `${content}fr ${feature}fr`
         : `${feature}fr ${content}fr`;
 
@@ -517,11 +520,11 @@ export default {
     },
 
     contentSideClass() {
-      return this.contentPosition === 'left' ? 'order-1' : 'order-2';
+      return this.effectiveContentPosition === 'left' ? 'order-1' : 'order-2';
     },
 
     featureSideClass() {
-      return this.contentPosition === 'left' ? 'order-2' : 'order-1';
+      return this.effectiveContentPosition === 'left' ? 'order-2' : 'order-1';
     },
 
     contentStyle() {
@@ -1216,6 +1219,7 @@ export default {
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
+  direction: ltr;
 }
 
 .layout-split-screen {

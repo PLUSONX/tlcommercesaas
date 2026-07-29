@@ -1,10 +1,10 @@
 <template>
-  <div class="order-details shadow-card">
+  <div class="order-details shadow-card" :class="{ 'order-summary--rtl': isRtl }">
     <h3 class="checkout-title">{{ $t("Summary") }}</h3>
     <div class="table-responsive">
       <!--Coupon Apply Area-->
       <div v-if="showCouponAboveTotals" class="coupon mb-3">
-        <div class="form-group d-flex gap-1">
+        <div class="form-group order-summary__coupon d-flex gap-1">
           <input class="form-control me-1" type="text" v-model="coupon_code" v-bind:placeholder="$t('Your Coupon')" />
           <button type="submit" class="btn coupon-btn btn_fill py-0" :disabled="couponApplying"
             @click.prevent="applyCoupon">
@@ -115,7 +115,7 @@
 
       <!--Coupon Apply Area-->
       <div v-if="showCouponBelowTotals" class="coupon coupon-below-total mt-3">
-        <div class="form-group d-flex gap-1">
+        <div class="form-group order-summary__coupon d-flex gap-1">
           <input class="form-control me-1" type="text" v-model="coupon_code" v-bind:placeholder="$t('Your Coupon')" />
           <button type="submit" class="btn coupon-btn btn_fill py-0" :disabled="couponApplying"
             @click.prevent="applyCoupon">
@@ -135,7 +135,7 @@
 </template>
 <script>
 import axios from "axios";
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import { CSpinner } from "@coreui/vue";
 export default {
   name: "OrderSummary",
@@ -175,6 +175,7 @@ export default {
       customer_id: (state) =>
         state.customerInfo != null ? state.customerInfo.id : null,
     }),
+    ...mapGetters('layout', ['isRtl']),
     tableData() {
       if (Array.isArray(this.checkoutItems) && this.checkoutItems.length > 0) {
         return this.checkoutItems;
@@ -341,5 +342,60 @@ export default {
 .product-qty {
   flex-shrink: 0;
   white-space: nowrap;
+}
+
+/* RTL — explicit swap (split-screen content column is direction: ltr) */
+.order-summary--rtl .checkout-title {
+  direction: rtl;
+  text-align: right;
+}
+
+.order-summary--rtl .shop_table {
+  direction: rtl;
+}
+
+.order-summary--rtl .shop_table td:first-child {
+  direction: rtl;
+  text-align: right;
+  padding-left: 9px;
+  padding-right: 0;
+}
+
+.order-summary--rtl .shop_table td:last-child {
+  direction: ltr;
+  text-align: left;
+  padding-left: 0;
+  padding-right: 9px;
+}
+
+.order-summary--rtl .product-line {
+  direction: rtl;
+  flex-direction: row-reverse;
+}
+
+.order-summary--rtl .product-name {
+  direction: rtl;
+  text-align: right;
+}
+
+.order-summary--rtl .order-summary__coupon {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+
+.order-summary--rtl .order-summary__coupon .form-control {
+  direction: rtl;
+  text-align: right;
+}
+
+.order-summary--rtl .order-summary__coupon .form-control.me-1 {
+  margin-right: 0 !important;
+  margin-inline-end: 0.25rem;
+}
+
+.order-summary--rtl .order-savings td.d-flex {
+  flex-direction: row-reverse;
+  direction: ltr;
+  justify-content: flex-start;
 }
 </style>

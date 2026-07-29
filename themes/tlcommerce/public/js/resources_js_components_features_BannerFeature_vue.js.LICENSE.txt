@@ -32,6 +32,8 @@
 
 /*! @/components/menu/TheOffcanvas.vue */
 
+/*! @/components/pageheader/LanguageCurrencySwitcher.vue */
+
 /*! @/components/ui/SearchForm.vue */
 
 /*! @/fakeDB/offcanvas.json */

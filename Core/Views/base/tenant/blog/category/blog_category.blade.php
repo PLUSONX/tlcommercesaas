@@ -20,13 +20,13 @@
                         <h3 class="font-24">{{ translate('Blog Categories') }}</h3>
                         <div class="d-flex flex-wrap">
                             <a href="{{ route('core.add.blog.category') }}"
-                                class="btn long mt-3">{{ translate('Add Blog Category') }}</a>
+                                class="btn long btn-orange mt-3">{{ translate('Add Blog Category') }}</a>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
                     {{-- Category Filter Buttons --}}
-                    <div class="filter_button row mb-4 pl-3">
+                    <div class="filter-area d-flex align-items-center mb-4">
                         @php
                             $count = ['tl_blog_categories.id', '!=', null];
                             if (request()->search) {
@@ -38,12 +38,14 @@
                                 $all_blog_request = '';
                                 $search = '';
                             }
+                            $category_status = request()->input('status');
                         @endphp
-                        <a href="{{ route('core.blog.category') . $all_blog_request }}" class="btn sm btn-dark sm mx-1">
+                        <a href="{{ route('core.blog.category') . $all_blog_request }}"
+                            class="btn-filter-item {{ !$category_status || $category_status == 'search_text' ? 'active' : '' }}">
                             {{ translate('All') }}( {{ count(getCategory(null, $search)) }} )</a>
 
                         <a href="{{ route('core.blog.category') . '?status=featured' . $if_search }}"
-                            class="btn sm btn-primary sm mx-1">
+                            class="btn-filter-item {{ $category_status == 'featured' ? 'active' : '' }}">
                             {{ translate('Featured') }}({{ count(getCategory([['is_featured', '1']], $search)) }})</a>
 
                         @if (request()->input('search'))
@@ -409,7 +411,7 @@
                                 <option value="">{{ translate('Bulk Action') }}</option>
                                 <option value="delete_all">{{ translate('Delete selection') }}</option>
                             </select>
-                            <button class="btn sm" onclick="bulkDeleteConfirmation()">{{ translate('Apply') }}</button>
+                            <button class="btn sm btn-orange" onclick="bulkDeleteConfirmation()">{{ translate('Apply') }}</button>
                         </div>`;
 
                     $(bulk_actions_dropdown).insertAfter("#category_table_wrapper #category_table_length");

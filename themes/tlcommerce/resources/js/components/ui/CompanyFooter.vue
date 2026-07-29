@@ -1,5 +1,8 @@
 <template>
-    <footer class="company-footer" :class="hasCartItems ? 'company-footer--checkout' : 'company-footer--designer'">
+    <footer class="company-footer" :class="[
+        hasCartItems ? 'company-footer--checkout' : 'company-footer--designer',
+        { 'company-footer--rtl': isRtl },
+    ]">
         <template v-if="!hasCartItems">
             <span class="c1">Designed by <a :href="designerUrl" target="_blank" rel="noopener">{{ designerName }}</a></span>
         </template>
@@ -30,7 +33,7 @@
                         {{ $t("Please wait") }}
                     </span>
                     <span v-else>
-                        {{ isCheckoutRoute ? $t("Checkout") : $t("Check out") }}
+                        {{ $t("Checkout") }}
                     </span>
                 </button>
             </div>
@@ -62,6 +65,7 @@ export default {
             checkoutOrderCreating: (state) => state.checkoutOrderCreating,
         }),
         ...mapGetters(["cartItemCount"]),
+        ...mapGetters("layout", ["isRtl"]),
 
         isCheckoutRoute() {
             return this.$route?.name === "Checkout";
@@ -279,5 +283,37 @@ export default {
 
 .company-footer__checkout-btn:active {
     opacity: 0.92;
+}
+
+/* RTL — explicit swap (split-screen content column is direction: ltr) */
+.company-footer--rtl.company-footer--designer {
+    direction: rtl;
+    text-align: right;
+    justify-content: flex-end;
+}
+
+.company-footer--rtl .company-footer__checkout-inner {
+    flex-direction: row-reverse;
+    direction: ltr;
+}
+
+.company-footer--rtl .company-footer__totals {
+    direction: rtl;
+    text-align: right;
+}
+
+.company-footer--rtl .company-footer__subtotal {
+    direction: ltr;
+    text-align: right;
+}
+
+.company-footer--rtl .company-footer__delivery-fee {
+    direction: rtl;
+    text-align: right;
+}
+
+.company-footer--rtl .company-footer__cart-badge {
+    right: auto;
+    left: 0;
 }
 </style>

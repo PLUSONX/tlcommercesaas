@@ -20,7 +20,7 @@
                         <h3 class="font-24">{{ translate('All Blogs') }}</h3>
                         @can('Create Blog')
                             <div class="d-flex flex-wrap">
-                                <a href="{{ route('core.add.blog') }}" class="btn long">
+                                <a href="{{ route('core.add.blog') }}" class="btn long btn-orange">
                                     {{ translate('Add Blog') }}</a>
                             </div>
                         @endcan
@@ -28,39 +28,41 @@
                 </div>
                 <div class="card-body">
                     {{-- Blog Filter Buttons --}}
-                    <div class="filter_button row mb-4 pl-3">
+                    <div class="filter-area d-flex align-items-center mb-4">
                         @php
                             $count = ['tl_blogs.id', '!=', null];
                             $search = request()->search ?? '';
                             $if_search = request()->search ? '&search=' . $search : '';
                             $all_blog_request = request()->search ? '?status=search_text&search=' . $search : '';
+                            $blog_status = request()->input('status');
                         @endphp
 
-                        <a href="{{ route('core.blog') . $all_blog_request }}" class="btn sm btn-dark mx-1 my-1">
+                        <a href="{{ route('core.blog') . $all_blog_request }}"
+                            class="btn-filter-item {{ !$blog_status || $blog_status == 'search_text' ? 'active' : '' }}">
                             {{ translate('All') }}({{ getBlogCount([$count], $search) }})</a>
 
                         <a href="{{ route('core.blog') . '?status=mine' . $if_search }}"
-                            class="btn sm btn-dark sm mx-1 my-1">
+                            class="btn-filter-item {{ $blog_status == 'mine' ? 'active' : '' }}">
                             {{ translate('Mine') }}({{ getBlogCount([['tl_blogs.user_id', '=', Auth::user()->id]], $search) }})</a>
 
                         <a href="{{ route('core.blog') . '?status=publish' . $if_search }}"
-                            class="btn sm btn-success sm mx-1 my-1">
+                            class="btn-filter-item {{ $blog_status == 'publish' ? 'active' : '' }}">
                             {{ translate('Published') }}({{ getBlogCount([['tl_blogs.is_publish', '=', config('settings.blog_status.publish')], ['tl_blogs.publish_at', '<', currentDateTime()]], $search) }})</a>
 
                         <a href="{{ route('core.blog') . '?status=schedule' . $if_search }}"
-                            class="btn sm btn-info mx-1 my-1">
+                            class="btn-filter-item {{ $blog_status == 'schedule' ? 'active' : '' }}">
                             {{ translate('Scheduled') }}({{ getBlogCount([['tl_blogs.publish_at', '>', currentDateTime()]], $search) }})</a>
 
                         <a href="{{ route('core.blog') . '?status=draft' . $if_search }}"
-                            class="btn sm btn-warning mx-1 my-1">
+                            class="btn-filter-item {{ $blog_status == 'draft' ? 'active' : '' }}">
                             {{ translate('Drafts') }}({{ getBlogCount([['tl_blogs.is_publish', '=', config('settings.blog_status.draft')]], $search) }})</a>
 
                         <a href="{{ route('core.blog') . '?status=pending' . $if_search }}"
-                            class="btn sm btn-primary mx-1 my-1">
+                            class="btn-filter-item {{ $blog_status == 'pending' ? 'active' : '' }}">
                             {{ translate('Pending') }}({{ getBlogCount([['tl_blogs.is_publish', '=', config('settings.blog_status.pending')]], $search) }})</a>
 
                         <a href="{{ route('core.blog') . '?status=featured' . $if_search }}"
-                            class="btn sm btn-primary mx-1 my-1">
+                            class="btn-filter-item {{ $blog_status == 'featured' ? 'active' : '' }}">
                             {{ translate('Featured') }}({{ getBlogCount([['tl_blogs.is_featured', '=', 1]], $search) }})</a>
 
                         @if (request()->input('search'))
@@ -112,7 +114,7 @@
                                             </td>
                                         @endcan
                                         <td>
-                                            <img src="{{ asset(getFilePath($blog->image)) }}" class="img-45"
+                                            <img src="{{ asset(preg_replace('#^/public#', '', getFilePath($blog->image))) }}" class="img-45"
                                                 alt="">
                                         </td>
                                         <td>
@@ -507,7 +509,7 @@
                                 <option value="">{{ translate('Bulk Action') }}</option>
                                 <option value="delete_all">{{ translate('Delete selection') }}</option>
                             </select>
-                            <button class="btn sm" onclick="bulkDeleteConfirmation()">{{ translate('Apply') }}</button>
+                            <button class="btn sm btn-orange" onclick="bulkDeleteConfirmation()">{{ translate('Apply') }}</button>
                         </div>`;
 
                     let bulk_permission = '{{ auth()->user()->can("Delete Blog") }}';

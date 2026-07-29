@@ -1,5 +1,5 @@
 <template>
-  <div class="shadow-card mb-30">
+  <div class="shadow-card mb-30" :class="{ 'payment-methods--rtl': isRtl }">
     <div class="row" v-if="!loading">
       <div class="col-12">
         <h3 class="checkout-title">{{ $t("Payment method") }}:</h3>
@@ -38,7 +38,7 @@
         <label class="font-weight-bold fz-12 mb-2">{{
           $t("Payment method")
         }}</label>
-        <ul class="list-unstyled form-selector-list mb-3">
+        <ul class="list-unstyled form-selector-list payment-methods__options mb-3">
           <li class="single-form-selector" v-for="(payment, index) in paymentMethods" :key="index">
             <span class="custom-radio-btn">
               <label>
@@ -201,7 +201,7 @@
 </template>
 <script>
 import axios from "axios";
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
 import { CSpinner } from "@coreui/vue";
 import { trackSocialPixels } from "@/utils/trackSocialPixels";
 export default {
@@ -268,6 +268,7 @@ export default {
           ? state.shippingDetails.city.id
           : null,
     }),
+    ...mapGetters('layout', ['isRtl']),
     currentHost() {
       return window.location.hostname.replace(/^www\./, "");
     },
@@ -769,5 +770,90 @@ export default {
   font-size: 20px;
   line-height: 1;
   flex-shrink: 0;
+}
+
+/* RTL — explicit swap (split-screen content column is direction: ltr) */
+.payment-methods--rtl .checkout-title,
+.payment-methods--rtl .col-12 > label.font-weight-bold {
+  direction: rtl;
+  text-align: right;
+  display: block;
+  width: 100%;
+}
+
+.payment-methods--rtl .order-note-toggle {
+  flex-direction: row-reverse;
+  direction: ltr;
+  text-align: right;
+}
+
+.payment-methods--rtl .order-note-toggle__label {
+  direction: rtl;
+  text-align: right;
+}
+
+.payment-methods--rtl .order-note-toggle__optional {
+  margin-left: 0;
+  margin-inline-start: 4px;
+}
+
+.payment-methods--rtl .theme-input-style,
+.payment-methods--rtl .form-group label {
+  direction: rtl;
+  text-align: right;
+}
+
+.payment-methods--rtl .form-group label {
+  display: block;
+  width: 100%;
+}
+
+.payment-methods--rtl .payment-methods__options {
+  direction: rtl;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.payment-methods--rtl .payment-methods__options > .single-form-selector {
+  width: auto;
+  max-width: 100%;
+  flex: 0 1 auto;
+  margin-right: 0 !important;
+  margin-inline-end: 10px;
+  margin-bottom: 10px;
+}
+
+.payment-methods--rtl .payment-methods__options .custom-radio-btn {
+  display: inline-block;
+  width: auto;
+}
+
+.payment-methods--rtl .payment-methods__options .custom-radio-btn label {
+  flex-direction: row-reverse;
+  direction: ltr;
+  justify-content: flex-start;
+  width: auto;
+}
+
+.payment-methods--rtl .payment-methods__options .label-title {
+  flex: 0 1 auto;
+  min-width: 0;
+  direction: rtl;
+  text-align: right;
+  justify-content: flex-end;
+}
+
+.payment-methods--rtl .payment-method-logo {
+  margin-inline-end: 0;
+}
+
+.payment-methods--rtl .bank-t-info h5,
+.payment-methods--rtl .col-12 > p {
+  direction: rtl;
+  text-align: right;
+}
+
+.payment-methods--rtl .col-12.text-center {
+  direction: rtl;
 }
 </style>

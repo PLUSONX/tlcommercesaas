@@ -1,7 +1,8 @@
 <template>
   <div :class="{
     'force-mobile-layout': forcedMobile,
-    'mobile-content-wrapper': forcedMobile
+    'mobile-content-wrapper': forcedMobile,
+    'cart-step--rtl': isRtl
   }">
     <div class="row" v-if="!dataLoading">
       <!--Cart Table-->
@@ -10,7 +11,7 @@
           <h3 class="checkout-title">{{ $t("Your Cart") }}</h3>
           <!--Items List-->
           <div class="row m-0">
-            <div class="align-items-center border-bottom col-12 d-flex justify-content-between pb-10 px-0">
+            <div class="cart-step__toolbar align-items-center border-bottom col-12 d-flex justify-content-between pb-10 px-0">
               <div class="d-flex gap-2 selector">
                 <input type="checkbox" class="item-selector text-black" v-model="all_selected" :checked="all_selected"
                   @click="selectOrDeselectItems" id="all-selector" />
@@ -219,7 +220,7 @@ export default {
       couponDiscounts: (state) => state.couponDiscount ? state.couponDiscount : [],
     }),
 
-    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+    ...mapGetters('layout', ['isSplitScreen', 'isMobile', 'isRtl']),
 
     forcedMobile() {
       if (this.isSplitScreen && !this.isMobile) {
@@ -1006,5 +1007,81 @@ export default {
   min-height: 44px;
   width: 100% !important;
   border-radius: 8px;
+}
+
+/* RTL — explicit swap (split-screen content column is direction: ltr) */
+.cart-step--rtl .cart-step__toolbar {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+
+.cart-step--rtl .cart-step__toolbar .selector {
+  flex: 0 1 auto;
+  flex-direction: row-reverse;
+  direction: ltr;
+  justify-content: flex-end;
+}
+
+.cart-step--rtl .cart-step__toolbar .selector label {
+  direction: rtl;
+  text-align: right;
+}
+
+.cart-step--rtl .cart-step__toolbar .delete-all {
+  flex: 0 1 auto;
+}
+
+.cart-step--rtl .cart-step__toolbar .delete-all .d-flex {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+
+.cart-step--rtl .cart-step__toolbar .delete-all .fz-12 {
+  direction: rtl;
+  text-align: right;
+}
+
+.cart-step--rtl .cart-item {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+
+.cart-step--rtl .cart-item__body {
+  direction: rtl;
+  text-align: right;
+}
+
+.cart-step--rtl .cart-item__actions {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+
+.cart-step--rtl .quantity-input {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+
+.cart-step--rtl .checkout-title {
+  direction: rtl;
+  text-align: right;
+}
+
+.cart-step--rtl .alert {
+  direction: rtl;
+  text-align: right;
+}
+
+.cart-step--rtl .alert-danger p.d-flex {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+
+.cart-step--rtl .alert-danger .btn_underline {
+  margin-inline-start: 1.5rem;
+  margin-left: 0;
+}
+
+.cart-step--rtl .disableCart:after {
+  direction: rtl;
 }
 </style>

@@ -59,7 +59,8 @@ export default {
         loading: !hasInitialLayout,
         hasFetched: hasInitialLayout,
         error: null,
-        isMobileView: false
+        isMobileView: false,
+        isRtl: false,
     },
 
     mutations: {
@@ -77,6 +78,9 @@ export default {
         },
         SET_MOBILE_VIEW(state, isMobile) {
             state.isMobileView = isMobile;
+        },
+        SET_IS_RTL(state, isRtl) {
+            state.isRtl = isRtl;
         }
     },
 
@@ -134,6 +138,14 @@ export default {
 
         contentPosition: (state) => {
             return state.activeLayout?.split_screen?.content_position || 'left';
+        },
+
+        isRtl: (state) => state.isRtl,
+
+        effectiveContentPosition: (state, getters) => {
+            const base = getters.contentPosition;
+            if (!getters.isRtl) return base;
+            return base === 'left' ? 'right' : 'left';
         },
 
         featureImagePath: (state) => {

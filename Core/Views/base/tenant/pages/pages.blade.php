@@ -20,42 +20,44 @@
                         <h3 class="font-24">{{ translate('All Pages') }}</h3>
                         @can('Create Page')
                             <div class="d-flex flex-wrap">
-                                <a href="{{ route('core.page.add') }}" class="btn long">{{ translate('Create New Page') }}</a>
+                                <a href="{{ route('core.page.add') }}" class="btn long btn-orange">{{ translate('Create New Page') }}</a>
                             </div>
                         @endcan
                     </div>
                 </div>
                 <div class="card-body">
                     {{-- Page Filter Buttons --}}
-                    <div class="filter_button row mb-4 pl-3">
+                    <div class="filter-area d-flex align-items-center mb-4 flex-wrap">
                         @php
                             $count = ['tl_pages.id', '!=', null];
                             $search = request()->search ?? '';
                             $if_search = request()->search ? '&search=' . $search : '';
                             $all_page_request = request()->search ? '?status=search_text&search=' . $search : '';
+                            $page_status = request()->input('status');
                         @endphp
 
-                        <a href="{{ route('core.page') . $all_page_request }}" class="btn sm btn-dark mx-1 my-2">
+                        <a href="{{ route('core.page') . $all_page_request }}"
+                            class="btn-filter-item {{ !$page_status || $page_status == 'search_text' ? 'active' : '' }}">
                             {{ translate('All') }}({{ count(getPage([$count], $search)) }})</a>
 
                         <a href="{{ route('core.page') . '?status=mine' . $if_search }}"
-                            class="btn sm btn-dark sm mx-1 my-2">
+                            class="btn-filter-item {{ $page_status == 'mine' ? 'active' : '' }}">
                             {{ translate('Mine') }}({{ count(getPage([['tl_pages.user_id', '=', Auth::user()->id]], $search)) }})</a>
 
                         <a href="{{ route('core.page') . '?status=publish' . $if_search }}"
-                            class="btn sm btn-success sm mx-1 my-2">
+                            class="btn-filter-item {{ $page_status == 'publish' ? 'active' : '' }}">
                             {{ translate('Published') }}({{ count(getPage([['tl_pages.publish_status', '=', config('settings.page_status.publish')], ['tl_pages.publish_at', '<', currentDateTime()]], $search)) }})</a>
 
                         <a href="{{ route('core.page') . '?status=schedule' . $if_search }}"
-                            class="btn sm btn-info mx-1 my-2">
+                            class="btn-filter-item {{ $page_status == 'schedule' ? 'active' : '' }}">
                             {{ translate('Scheduled') }}({{ count(getPage([['tl_pages.publish_at', '>', currentDateTime()]], $search)) }})</a>
 
                         <a href="{{ route('core.page') . '?status=draft' . $if_search }}"
-                            class="btn sm btn-warning mx-1 my-2">
+                            class="btn-filter-item {{ $page_status == 'draft' ? 'active' : '' }}">
                             {{ translate('Drafts') }}({{ count(getPage([['tl_pages.publish_status', '=', config('settings.page_status.draft')]], $search)) }})</a>
 
                         <a href="{{ route('core.page') . '?status=trash' . $if_search }}"
-                            class="btn sm btn-danger mx-1 my-2">
+                            class="btn-filter-item {{ $page_status == 'trash' ? 'active' : '' }}">
                             {{ translate('Trash') }}({{ count(getPage([['tl_pages.publish_status', '=', config('settings.page_status.trash')]], $search)) }})</a>
 
                         @if (request()->input('search'))
@@ -508,7 +510,7 @@
                             <option value="">{{ translate('Bulk Action') }}</option>
                             <option value="delete_all">{{ translate('Delete selection') }}</option>
                         </select>
-                        <button class="btn sm" onclick="bulkDeleteConfirmation()">{{ translate('Apply') }}</button>
+                        <button class="btn sm btn-orange" onclick="bulkDeleteConfirmation()">{{ translate('Apply') }}</button>
                 </div>`;
 
             let bulk_permission = '{{ auth()->user()->can("Delete Page") }}';

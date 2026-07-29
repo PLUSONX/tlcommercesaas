@@ -356,47 +356,6 @@
     border: 1px solid black !important; /* Keeps your border consistent */
 }
 
-/* Target the permalink link itself */
-.permalink-input-group a {
-    color: #ff5A1f !important;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-/* Ensure the span (the dynamic part) is also orange */
-#permalink {
-    color: #ff5A1f !important;
-}
-
-/* Hover state for the link */
-.permalink-input-group a:hover {
-    color: #e04e1a !important; /* A slightly darker orange for hover */
-    text-decoration: underline;
-}
-
-/* Keep the Edit button distinct (Optional) */
-/* If you want the 'Edit' text to stay orange too, you can leave this out */
-.permalink-edit-btn {
-    color: white !important;
-    background: #ff5A1f !important;
-    border: 1px solid white;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    margin-left: 10px;
-    border-radius: 8px !important;
-    box-shadow: none !important;
-}
-
-.permalink-edit-btn:hover {
-    background-color: #e04e1a !important; /* A slightly deeper orange */
-    color: #ffffff !important;           /* Keeps text white */
-    border-color: #ff5a1f !important;    /* Changes border to match the brand */
-    cursor: pointer;                     /* Ensures the "hand" cursor appears */
-    transition: all 0.3s ease;           /* Makes the color swap smooth */
-    box-shadow: none !important; /* Optional: adds a soft orange glow */
-}
-
     /* 4. Optional: Style the Focus state (when clicked) to remove the blue shadow */
     /* .pagination .page-item .page-link:focus {
         box-shadow: 0 0 0 0.2rem rgba(255, 90, 31, 0.25);

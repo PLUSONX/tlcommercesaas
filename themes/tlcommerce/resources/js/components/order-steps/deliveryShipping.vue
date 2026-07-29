@@ -1,6 +1,6 @@
 ﻿<template>
-  <div class="shadow-card mb-30">
-    <div class="d-flex flex-wrap align-items-center justify-content-between mb-3">
+  <div class="shadow-card mb-30" :class="{ 'delivery-shipping--rtl': isRtl }">
+    <div class="delivery-shipping__header d-flex flex-wrap align-items-center justify-content-between mb-3">
       <h3 class="checkout-title">{{ $t("Delivery & Shipping") }}</h3>
       <router-link to="/dashboard/address" class="btn_underline" v-if="isCustomerLogin">{{ $t("Manage Address")
       }}</router-link>
@@ -793,6 +793,7 @@ import {
   buildProductPackages,
 } from "@/utils/checkoutShippingPrep";
 // import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 import {
   CModal,
   CModalHeader,
@@ -862,6 +863,9 @@ export default {
       errors: [],
       isRestoringShipping: false
     };
+  },
+  computed: {
+    ...mapGetters('layout', ['isRtl']),
   },
   mounted() {
 
@@ -1810,5 +1814,160 @@ export default {
 
 .checkout-state-city-half {
   overflow: visible;
+}
+
+/* RTL — explicit swap (split-screen content column is direction: ltr) */
+.delivery-shipping--rtl .delivery-shipping__header {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+
+.delivery-shipping--rtl .delivery-shipping__header .checkout-title {
+  flex: 0 1 auto;
+  direction: rtl;
+  text-align: right;
+}
+
+.delivery-shipping--rtl .delivery-shipping__header .btn_underline {
+  flex: 0 1 auto;
+  direction: rtl;
+  text-align: right;
+}
+
+.delivery-shipping--rtl .form-selector-list {
+  justify-content: flex-end !important;
+  direction: ltr;
+  width: 100%;
+}
+
+.delivery-shipping--rtl .form-selector-list > .single-form-selector:has(.custom-radio-btn) {
+  width: auto;
+  max-width: 100%;
+  flex: 0 1 auto;
+  margin-right: 0 !important;
+  margin-inline-start: auto;
+}
+
+.delivery-shipping--rtl .form-selector-list > .single-form-selector:not(:has(.custom-radio-btn)) {
+  display: none;
+  margin: 0 !important;
+  width: 0 !important;
+  flex: 0 0 0 !important;
+}
+
+.delivery-shipping--rtl .form-selector-list .custom-radio-btn {
+  display: inline-block;
+  width: auto;
+  direction: ltr;
+}
+
+.delivery-shipping--rtl .form-selector-list .custom-radio-btn label {
+  flex-direction: row;
+  direction: ltr;
+  justify-content: flex-start;
+  width: auto;
+}
+
+.delivery-shipping--rtl .form-selector-list .icon-wrap {
+  margin-right: 0;
+  margin-inline-end: 10px;
+}
+
+.delivery-shipping--rtl .form-selector-list .label-title {
+  flex: 0 1 auto;
+  direction: rtl;
+  text-align: right;
+}
+
+.delivery-shipping--rtl h5 {
+  width: 100%;
+  direction: rtl;
+  text-align: right;
+}
+
+.delivery-shipping--rtl .save-adderss,
+.delivery-shipping--rtl .guest-shipping-address,
+.delivery-shipping--rtl .row > .form-group {
+  direction: rtl;
+  text-align: right;
+}
+
+.delivery-shipping--rtl .save-adderss .radio-label {
+  flex-direction: row-reverse;
+  direction: ltr;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.delivery-shipping--rtl .save-adderss .radio-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  direction: rtl;
+  text-align: right;
+  margin-left: 0;
+  margin-inline-start: 10px;
+}
+
+.delivery-shipping--rtl .form-group {
+  direction: rtl;
+  text-align: right;
+}
+
+.delivery-shipping--rtl .form-group label {
+  direction: rtl;
+  text-align: right;
+  display: block;
+  width: 100%;
+}
+
+.delivery-shipping--rtl .form-group .radio-text {
+  direction: rtl;
+  text-align: right;
+}
+
+.delivery-shipping--rtl .theme-input-style {
+  direction: rtl;
+  text-align: right;
+}
+
+.delivery-shipping--rtl .radio-label.d-flex {
+  flex-direction: row;
+  direction: ltr;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.delivery-shipping--rtl .radio-label.d-flex .radio-text {
+  flex: 0 1 auto;
+}
+
+.delivery-shipping--rtl :deep(.v-select) {
+  direction: rtl;
+  text-align: right;
+}
+
+.delivery-shipping--rtl .alert {
+  direction: rtl;
+  text-align: right;
+}
+
+.delivery-shipping--rtl .cart-table td .d-flex {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+
+.delivery-shipping--rtl .product-name {
+  direction: rtl;
+  text-align: right;
+}
+
+.delivery-shipping--rtl .cart-table .text-right {
+  direction: ltr;
+  text-align: left;
+}
+
+.delivery-shipping--rtl .cart-image.mr-10 {
+  margin-right: 0;
+  margin-inline-end: 10px;
 }
 </style>

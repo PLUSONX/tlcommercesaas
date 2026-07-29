@@ -63,7 +63,7 @@
                 </div>
                 <div class="card-body">
                     {{-- Comment Filter Buttons --}}
-                    <div class="filter_button row mb-4 pl-3">
+                    <div class="filter-area d-flex align-items-center mb-4 flex-wrap">
                         @php
                             if (request()->blog) {
                                 $count = ['tl_blog_comments.blog_id', '=', request()->blog];
@@ -86,28 +86,30 @@
                                 $all_blog_request = '';
                                 $search = '';
                             }
+                            $comment_status = request()->input('status');
                         @endphp
-                        <a href="{{ route('core.blog.comment') . $all_blog_request }}" class="btn sm btn-dark mx-1 my-2">
+                        <a href="{{ route('core.blog.comment') . $all_blog_request }}"
+                            class="btn-filter-item {{ !$comment_status || in_array($comment_status, ['search_text', 'singel_blog_comment', 'user_ip_address']) ? 'active' : '' }}">
                             {{ translate('All') }}({{ getCommentCount([$count], $search) }})</a>
 
                         <a href="{{ route('core.blog.comment') . '?status=mine' . $if_blog }}"
-                            class="btn sm btn-primary sm mx-1 my-2">
+                            class="btn-filter-item {{ $comment_status == 'mine' ? 'active' : '' }}">
                             {{ translate('Mine') }}({{ getCommentCount([$count, ['tl_blog_comments.user_id', '=', Auth::user()->id]], $search) }})</a>
 
                         <a href="{{ route('core.blog.comment') . '?status=pending' . $if_blog }}"
-                            class="btn sm btn-info mx-1 my-2">
+                            class="btn-filter-item {{ $comment_status == 'pending' ? 'active' : '' }}">
                             {{ translate('Pending') }}({{ getCommentCount([$count, ['tl_blog_comments.status', '=', config('settings.blog_comment_status.pending')]], $search) }})</a>
 
                         <a href="{{ route('core.blog.comment') . '?status=approve' . $if_blog }}"
-                            class="btn sm btn-success mx-1 my-2">
+                            class="btn-filter-item {{ $comment_status == 'approve' ? 'active' : '' }}">
                             {{ translate('Approve') }}({{ getCommentCount([$count, ['tl_blog_comments.status', '=', config('settings.blog_comment_status.approve')]], $search) }})</a>
 
                         <a href="{{ route('core.blog.comment') . '?status=spam' . $if_blog }}"
-                            class="btn sm btn-danger mx-1 my-2">
+                            class="btn-filter-item {{ $comment_status == 'spam' ? 'active' : '' }}">
                             {{ translate('Spam') }}({{ getCommentCount([$count, ['tl_blog_comments.status', '=', config('settings.blog_comment_status.spam')]], $search) }})</a>
 
                         <a href="{{ route('core.blog.comment') . '?status=trash' . $if_blog }}"
-                            class="btn sm btn-danger mx-1 my-2">
+                            class="btn-filter-item {{ $comment_status == 'trash' ? 'active' : '' }}">
                             {{ translate('Trash') }}({{ getCommentCount([$count, ['tl_blog_comments.status', '=', config('settings.blog_comment_status.trash')]], $search) }})</a>
 
                         @if (request()->input('ip_address'))
@@ -614,7 +616,7 @@
                             <option value="">{{ translate('Bulk Action') }}</option>`+
                             option
                         +`</select>
-                        <button class="btn long" onclick="bulkActionConfirmation()">{{ translate('Apply') }}</button>
+                        <button class="btn long btn-orange" onclick="bulkActionConfirmation()">{{ translate('Apply') }}</button>
                     </div>`;
 
             $(bulk_actions_dropdown).insertAfter("#comment_table_wrapper #comment_table_length");

@@ -1,6 +1,6 @@
 <template>
   <template v-if="isSplitScreen">
-    <div :class="mtClass">
+    <div :class="[mtClass, { 'products-page--rtl': isRtl }]">
 
       <div class="custom-container2">
 
@@ -285,7 +285,7 @@ export default {
   },
   computed: {
 
-    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+    ...mapGetters('layout', ['isSplitScreen', 'isMobile', 'isRtl']),
 
     mtClass() {
 
@@ -513,6 +513,18 @@ export default {
   .products-listing-grid :deep(.single-product-item.style--eight) {
     margin-bottom: 10px !important;
   }
+}
+
+/* RTL — explicit swap (split-screen content column is direction: ltr) */
+.products-page--rtl .section-header {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+
+.products-page--rtl .header-title,
+.products-page--rtl .header-count {
+  direction: rtl;
+  text-align: right;
 }
 </style>
 

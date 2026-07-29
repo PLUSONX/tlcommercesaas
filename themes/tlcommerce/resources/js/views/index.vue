@@ -44,7 +44,7 @@
         </div>
     </div>
 
-    <div class="home__two" v-else>
+    <div class="home__two" :class="{ 'home__two--rtl': isSplitScreen && isRtl }" v-else>
         <!-- Banner -->
         <!-- <section class="product-banner product-banner-overflow-auto mt-30 mb-30" v-if="dataAvailable"> -->
         <!-- <div class="mt-50"> -->
@@ -263,7 +263,7 @@ export default {
             configuration: (state) => state.siteSettings,
         }),
 
-        ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+        ...mapGetters('layout', ['isSplitScreen', 'isMobile', 'isRtl']),
 
         showHomeBanners() {
             return !this.isSplitScreen || this.isMobile;

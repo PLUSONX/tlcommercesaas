@@ -19,13 +19,13 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <h3 class="font-24">{{ translate('Tags') }}</h3>
                         <div class="d-flex flex-wrap">
-                            <a href="{{ route('core.add.tag') }}" class="btn long">{{ translate('Add Tag') }}</a>
+                            <a href="{{ route('core.add.tag') }}" class="btn long btn-orange">{{ translate('Add Tag') }}</a>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
                     {{-- Tag Filter Buttons --}}
-                    <div class="filter_button row mb-4 pl-3">
+                    <div class="filter-area d-flex align-items-center mb-4">
                         @php
                             $count = ['tl_blog_tags.id', '!=', null];
                             if (request()->search) {
@@ -37,12 +37,14 @@
                                 $all_blog_request = '';
                                 $search = '';
                             }
+                            $tag_status = request()->input('status');
                         @endphp
-                        <a href="{{ route('core.tag') . $all_blog_request }}" class="btn sm btn-dark sm mx-1">
+                        <a href="{{ route('core.tag') . $all_blog_request }}"
+                            class="btn-filter-item {{ !$tag_status || $tag_status == 'search_text' ? 'active' : '' }}">
                             {{ translate('All') }}({{ count(getTag(null, $search)) }})</a>
 
                         <a href="{{ route('core.tag') . '?status=publish' . $if_search }}"
-                            class="btn sm btn-primary sm mx-1">
+                            class="btn-filter-item {{ $tag_status == 'publish' ? 'active' : '' }}">
                             {{ translate('Publish') }}({{ count(getTag([['is_publish', '1']], $search)) }})</a>
 
                         @if (request()->input('search'))
@@ -381,7 +383,7 @@
                                 <option value="">{{ translate('Bulk Action') }}</option>
                                 <option value="delete_all">{{ translate('Delete selection') }}</option>
                             </select>
-                            <button class="btn sm" onclick="bulkDeleteConfirmation()">{{ translate('Apply') }}</button>
+                            <button class="btn sm btn-orange" onclick="bulkDeleteConfirmation()">{{ translate('Apply') }}</button>
                         </div>`;
 
                     $(bulk_actions_dropdown).insertAfter("#tag_table_wrapper #tag_table_length");

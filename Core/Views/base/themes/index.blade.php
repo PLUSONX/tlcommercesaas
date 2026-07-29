@@ -15,7 +15,7 @@
         <h4><i class="icofont-ui-theme"></i> {{ translate('Themes') }}</h4>
         @if (!isTenant())
             <div class="d-flex align-items-center gap-10 flex-wrap">
-                <a href="{{ route('core.themes.create') }}" class="btn long">{{ translate('Install New Theme') }}</a>
+                <a href="{{ route('core.themes.create') }}" class="btn long btn-orange">{{ translate('Install New Theme') }}</a>
             </div>
         @endif
     </div>
@@ -26,9 +26,19 @@
                     <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 mb-30">
                         <div class="app-item">
                             <div class="app-icon">
-                                <img src="{{ str_replace('/public', '', asset('themes' . '/' . $theme->location . '/Gradients-Lab-1.png'))
-                                 }}"
-                                    alt="{{ $theme->name }}" />
+                                @if (File::exists(base_path('themes/' . $theme->location . '/public/Gradients-Lab-1.png')))
+                                    <img src="{{ asset('themes/' . $theme->location . '/Gradients-Lab-1.png') }}"
+                                        alt="{{ $theme->name }}" />
+                                @elseif (File::exists(base_path('themes/' . $theme->location . '/Gradients-Lab-1.png')))
+                                    <img src="{{ asset('themes/' . $theme->location . '/Gradients-Lab-1.png') }}"
+                                        alt="{{ $theme->name }}" />
+                                @elseif (File::exists(base_path('themes/' . $theme->location . '/public/banner.png')))
+                                    <img src="{{ asset('themes/' . $theme->location . '/banner.png') }}"
+                                        alt="{{ $theme->name }}" />
+                                @elseif (File::exists(base_path('themes/' . $theme->location . '/banner.png')))
+                                    <img src="{{ asset('themes/' . $theme->location . '/banner.png') }}"
+                                        alt="{{ $theme->name }}" />
+                                @endif
                                 <!-- <img src="{{ asset('/themes' . '/' . $theme->location . '/banner.png') }}"
                                     alt="{{ $theme->name }}" /> -->
                             </div>
@@ -46,12 +56,12 @@
                                 </div>
                                 <div class="app-actions">
                                     @if ($theme->is_activated == 1)
-                                        <button class="btn sm btn-success btn-trigger-change-status"
+                                        <button class="btn sm btn-orange btn-trigger-change-status"
                                             data-theme="{{ $theme->id }}">
                                             <i class="icofont-ui-check"></i> {{ translate('Activated') }}
                                         </button>
                                     @else
-                                        <button class="btn sm btn-info btn-trigger-change-status activate-theme"
+                                        <button class="btn sm btn-orange btn-trigger-change-status activate-theme"
                                             data-theme="{{ $theme->id }}">
                                             {{ translate('Activate') }}
                                         </button>
@@ -71,9 +81,19 @@
                     <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 mb-30">
                         <div class="app-item">
                             <div class="app-icon">
-                                <img src="{{ str_replace('/public', '', asset('themes' . '/' . $theme->location . '/Gradients-Lab-1.png'))
-                                 }}"
-                                    alt="{{ $theme->name }}" />
+                                @if (File::exists(base_path('themes/' . $theme->location . '/public/Gradients-Lab-1.png')))
+                                    <img src="{{ asset('themes/' . $theme->location . '/Gradients-Lab-1.png') }}"
+                                        alt="{{ $theme->name }}" />
+                                @elseif (File::exists(base_path('themes/' . $theme->location . '/Gradients-Lab-1.png')))
+                                    <img src="{{ asset('themes/' . $theme->location . '/Gradients-Lab-1.png') }}"
+                                        alt="{{ $theme->name }}" />
+                                @elseif (File::exists(base_path('themes/' . $theme->location . '/public/banner.png')))
+                                    <img src="{{ asset('themes/' . $theme->location . '/banner.png') }}"
+                                        alt="{{ $theme->name }}" />
+                                @elseif (File::exists(base_path('themes/' . $theme->location . '/banner.png')))
+                                    <img src="{{ asset('themes/' . $theme->location . '/banner.png') }}"
+                                        alt="{{ $theme->name }}" />
+                                @endif
                                 <!-- <img src="{{ asset('/themes' . '/' . $theme->location . '/banner.png') }}"
                                     alt="{{ $theme->name }}" /> -->
                             </div>
@@ -91,11 +111,11 @@
                                 </div>
                                 <div class="app-actions">
                                     @if ($theme->is_activated == 1)
-                                        <button class="btn sm btn-success btn-trigger-change-status"
+                                        <button class="btn sm btn-orange btn-trigger-change-status"
                                             data-theme="{{ $theme->id }}">{{ translate('Active') }}
                                         </button>
                                     @else
-                                        <button class="btn sm btn-info btn-trigger-change-status activate-theme"
+                                        <button class="btn sm btn-orange btn-trigger-change-status activate-theme"
                                             data-theme="{{ $theme->id }}">
                                             {{ translate('Activate') }}
                                         </button>
@@ -116,9 +136,19 @@
                     <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 mb-30">
                         <div class="app-item">
                             <div class="app-icon">
-                                <img src="{{ str_replace('/public', '', asset('themes' . '/' . $theme->location . '/banner.png'))
-                                 }}"
-                                    alt="{{ $theme->name }}" />
+                                @if (File::exists(base_path('themes/' . $theme->location . '/public/Gradients-Lab-1.png')))
+                                    <img src="{{ asset('themes/' . $theme->location . '/Gradients-Lab-1.png') }}"
+                                        alt="{{ $theme->name }}" />
+                                @elseif (File::exists(base_path('themes/' . $theme->location . '/Gradients-Lab-1.png')))
+                                    <img src="{{ asset('themes/' . $theme->location . '/Gradients-Lab-1.png') }}"
+                                        alt="{{ $theme->name }}" />
+                                @elseif (File::exists(base_path('themes/' . $theme->location . '/public/banner.png')))
+                                    <img src="{{ asset('themes/' . $theme->location . '/banner.png') }}"
+                                        alt="{{ $theme->name }}" />
+                                @elseif (File::exists(base_path('themes/' . $theme->location . '/banner.png')))
+                                    <img src="{{ asset('themes/' . $theme->location . '/banner.png') }}"
+                                        alt="{{ $theme->name }}" />
+                                @endif
                                 <!-- <img src="{{ asset('/themes' . '/' . $theme->location . '/banner.png') }}"
                                     alt="{{ $theme->name }}" /> -->
                             </div>
@@ -128,12 +158,12 @@
                             <div class="app-footer">
                                 <div class="app-actions">
                                     @if ($theme->is_activated == 1)
-                                        <button class="btn sm btn-success btn-trigger-change-status"
+                                        <button class="btn sm btn-orange btn-trigger-change-status"
                                             data-theme="{{ $theme->id }}">
                                             <i class="icofont-ui-check"></i> {{ translate('Activated') }}
                                         </button>
                                     @else
-                                        <button class="btn sm btn-info btn-trigger-change-status activate-theme"
+                                        <button class="btn sm btn-orange btn-trigger-change-status activate-theme"
                                             data-theme="{{ $theme->id }}">
                                             {{ translate('Activate') }}
                                         </button>
@@ -160,7 +190,7 @@
                         <input type="hidden" id="active-theme-id" name="id">
                         <button type="button" class="btn long mt-2 btn-danger"
                             data-dismiss="modal">{{ translate('cancel') }}</button>
-                        <button type="submit" class="btn long mt-2">{{ translate('Activate') }}</button>
+                        <button type="submit" class="btn long btn-orange mt-2">{{ translate('Activate') }}</button>
                     </form>
                 </div>
             </div>

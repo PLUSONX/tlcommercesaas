@@ -2,7 +2,7 @@
 
   <div class="banner-feature">
 
-    <div class="banner-feature__toolbar">
+    <div class="banner-feature__toolbar" :class="[toolbarAlignClass, { 'banner-feature__toolbar--rtl': isRtl }]">
 
       <the-offcanvas :user-info="customerInfo" :menu-items="offcanvas.menuItems" :header-menu-style="headerMenuStyle"
         :header-style="headerStyle" class="banner-feature__offcanvas" />
@@ -21,6 +21,15 @@
 
       <search-form class="banner-feature__search" style-two mobile-style
         overlay-teleport=".split-screen-search-inline-host" />
+
+      <language-currency-switcher
+        class="banner-feature__langcurrency"
+        :currencies="currencies"
+        :languages="languages"
+        :data-loading="dataLoading"
+        :use-fixed-dropdown="true"
+        @change-language-currency="setCurrencyLanguage"
+      />
 
     </div>
 
@@ -49,7 +58,9 @@ import SearchForm from "@/components/ui/SearchForm.vue";
 
 import TheOffcanvas from "@/components/menu/TheOffcanvas.vue";
 
-import { mapState } from "vuex";
+import LanguageCurrencySwitcher from "@/components/pageheader/LanguageCurrencySwitcher.vue";
+
+import { mapState, mapGetters } from "vuex";
 
 
 
@@ -63,7 +74,11 @@ export default {
 
     TheOffcanvas,
 
+    LanguageCurrencySwitcher,
+
   },
+
+  emits: ["change-language-currency"],
 
   props: {
 
@@ -107,6 +122,30 @@ export default {
 
     },
 
+    currencies: {
+
+      type: Array,
+
+      default: () => [],
+
+    },
+
+    languages: {
+
+      type: Array,
+
+      default: () => [],
+
+    },
+
+    dataLoading: {
+
+      type: Boolean,
+
+      default: false,
+
+    },
+
   },
 
   data() {
@@ -126,6 +165,24 @@ export default {
       customerInfo: (state) => state.customerInfo,
 
     }),
+
+    ...mapGetters("layout", ["effectiveContentPosition", "isRtl"]),
+
+    toolbarAlignClass() {
+      return this.effectiveContentPosition === "left"
+        ? "banner-feature__toolbar--inner-left"
+        : "banner-feature__toolbar--inner-right";
+    },
+
+  },
+
+  methods: {
+
+    setCurrencyLanguage(lang, currency) {
+
+      this.$emit("change-language-currency", lang, currency);
+
+    },
 
   },
 
@@ -164,8 +221,6 @@ export default {
 
   top: 16px;
 
-  left: 16px;
-
   z-index: 10;
 
   display: flex;
@@ -173,6 +228,36 @@ export default {
   align-items: center;
 
   gap: 8px;
+
+  direction: ltr;
+
+}
+
+
+
+/* RTL — explicit swap (split-screen feature column uses direction: ltr) */
+.banner-feature__toolbar--rtl {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+
+
+
+.banner-feature__toolbar--inner-left {
+
+  left: 16px;
+
+  right: auto;
+
+}
+
+
+
+.banner-feature__toolbar--inner-right {
+
+  right: 16px;
+
+  left: auto;
 
 }
 
@@ -200,13 +285,15 @@ export default {
 
 
 
-/* 20px circular toolbar buttons (cart, offcanvas, search) */
+/* 20px circular toolbar buttons (cart, offcanvas, search, langcurrency) */
 
 .banner-feature__toolbar :deep(.banner-feature__cart.btn-circle),
 
 .banner-feature__toolbar :deep(.banner-feature__offcanvas .hamburger),
 
-.banner-feature__toolbar :deep(.banner-feature__search.search-form-wrapper > button) {
+.banner-feature__toolbar :deep(.banner-feature__search.search-form-wrapper > button),
+
+.banner-feature__toolbar :deep(.banner-feature__langcurrency .langcurrency-trigger) {
 
   width: 40px !important;
 
@@ -242,7 +329,9 @@ export default {
 
 .banner-feature__toolbar :deep(.banner-feature__offcanvas .hamburger:hover),
 
-.banner-feature__toolbar :deep(.banner-feature__search.search-form-wrapper > button:hover) {
+.banner-feature__toolbar :deep(.banner-feature__search.search-form-wrapper > button:hover),
+
+.banner-feature__toolbar :deep(.banner-feature__langcurrency .langcurrency-trigger:hover) {
 
   background-color: var(--mainC) !important;
 
@@ -342,7 +431,7 @@ export default {
 
   line-height: 1;
 
-  right: -6px;
+  inset-inline-end: -6px;
 
   top: -4px;
 
@@ -451,6 +540,32 @@ export default {
   border: 1px solid #fff !important;
 
   color: #fff !important;
+
+}
+
+
+
+.banner-feature__toolbar :deep(.banner-feature__langcurrency .langcurrency-trigger .material-icons) {
+
+  font-size: 18px !important;
+
+}
+
+
+
+.banner-feature__toolbar :deep(.banner-feature__langcurrency .langcurrency-trigger:hover .material-icons) {
+
+  color: #fff !important;
+
+}
+
+
+
+.banner-feature__toolbar :deep(.banner-feature__langcurrency .langcurrency-wrap) {
+
+  display: flex;
+
+  align-items: center;
 
 }
 </style>
