@@ -64,7 +64,7 @@
     <div class="instruction">
         <a href="https://payzah.com/" target="_blank" class="btn-link">Payzah</a>
         <p>
-            Customer is redirected to Payzah’s hosted payment page (direct flow, same as KNET), where Apple Pay is available when enabled on your merchant account.
+            Customer is redirected to Payzah’s transit hosted page (all methods, including Apple Pay).
         </p>
         <p class="semi-bold">
             Configuration instruction for Apple Pay (Payzah)

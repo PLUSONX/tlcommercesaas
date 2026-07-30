@@ -269,15 +269,8 @@ export default {
           : null,
     }),
     ...mapGetters('layout', ['isRtl']),
-    currentHost() {
-      return window.location.hostname.replace(/^www\./, "");
-    },
-    isCraftedFlamesDemoStore() {
-      return this.currentHost === "craftedflameskw.com";
-    },
   },
   mounted() {
-    // console.log("Current Host: ", this.currentHost);
     this.getPaymentMethods();
     if (this.isCustomerLogin) {
       this.getCustomerWalletSummary();
@@ -418,11 +411,6 @@ export default {
      */
     createOrder() {
       this.setOrderCreating(true);
-      if (this.isCraftedFlamesDemoStore) {
-        this.$toast.error(this.$t("Checkout is unavailable in demo mode"));
-        this.setOrderCreating(false);
-        return null;
-      }
       if (this.selected_payment_method == null && !this.pay_wallet) {
         this.$toast.error(this.$t("Please select a payment option"));
         this.setOrderCreating(false);
