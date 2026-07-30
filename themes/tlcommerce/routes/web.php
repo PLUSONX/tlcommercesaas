@@ -161,6 +161,7 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
         Route::get('/layout-settings', [ThemeOptionController::class, 'layoutSettings'])->name('theme.tlcommerce.layoutSettings');
         Route::post('/layout-settings', [ThemeOptionController::class, 'updateLayoutSettings'])->name('theme.tlcommerce.updateLayoutSettings');
         Route::post('/edit-layout-settings', [ThemeOptionController::class, 'editLayoutSettings'])->name('theme.tlcommerce.editLayoutSettings');
+        Route::post('/product-layout-settings', [ThemeOptionController::class, 'updateProductLayoutSettings'])->name('theme.tlcommerce.updateProductLayoutSettings');
 
     });
 

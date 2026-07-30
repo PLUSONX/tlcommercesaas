@@ -1,3 +1,5 @@
+import { reloadOnceWithCacheBuster } from "./reloadOnceWithCacheBuster";
+
 const CHUNK_RELOAD_KEY = `tlc_chunk_reload_${__TLC_ASSET_VERSION__}`;
 
 export function isChunkLoadError(err) {
@@ -12,16 +14,5 @@ export function isChunkLoadError(err) {
  * HTML shell and main.js after a stale or mid-deploy async chunk miss.
  */
 export function reloadOnceForChunkError() {
-  try {
-    if (!sessionStorage.getItem(CHUNK_RELOAD_KEY)) {
-      sessionStorage.setItem(CHUNK_RELOAD_KEY, "1");
-      const url = new URL(window.location.href);
-      url.searchParams.set("_tlc_cb", String(Date.now()));
-      window.location.replace(url.toString());
-      return true;
-    }
-  } catch (e) {
-    // sessionStorage may be blocked; fall through
-  }
-  return false;
+  return reloadOnceWithCacheBuster(CHUNK_RELOAD_KEY);
 }

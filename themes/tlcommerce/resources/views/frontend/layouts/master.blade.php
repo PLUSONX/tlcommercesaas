@@ -4,6 +4,7 @@
     use Plugin\TlcommerceCore\Repositories\SettingsRepository;
     use Core\Repositories\SettingsRepository as CoreSettingRepository;
     use Theme\TLCommerce\Repositories\LayoutSettingsRepository;
+    use Theme\TLCommerce\Repositories\ProductListViewRepository;
     use Core\Models\Language;
     use Plugin\TlcommerceCore\Models\Currency;
     use Illuminate\Support\Facades\Cache;
@@ -15,6 +16,7 @@
 
     // Instant layout bootstrap for Vue (cached per tenant)
     $activeLayoutBootstrap = (new LayoutSettingsRepository())->getActiveLayout();
+    $productListViewBootstrap = (new ProductListViewRepository())->getStorefrontSettings();
 
     $site_name = str_replace('"', '', $siteProperties['site_title']);
     $site_name = str_replace("'", '', $site_name);
@@ -322,6 +324,7 @@
     <script>
         window.__TLC_BOOTSTRAP__ = {
             activeLayout: @json($activeLayoutBootstrap),
+            productListViewSettings: @json($productListViewBootstrap),
             assetVersion: @json($assetVersion),
             siteProperties: @json($siteProperties),
             themePrimaryColor: @json($theme_primary_color),

@@ -22,6 +22,7 @@
           :slides-per-view="'auto'"
           :space-between="splitCategoryGap"
           class="category-slider category-full-width theme-slider-dots category-slider--split"
+          :class="{ 'category-slider--ready': splitCategorySwiperReady }"
           :breakpoints="swiperBreakpoints"
           @swiper="onSplitCategorySwiper"
         >
@@ -95,6 +96,7 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 import CategoryCard from "../ui/CategoryCard.vue";
 
 import { Autoplay, Pagination } from "swiper";
+import "swiper/css";
 import { mapGetters } from "vuex";
 import { sectionBgImageUrl } from "@/utils/sectionProps";
 
@@ -123,6 +125,7 @@ export default {
   data() {
     return {
       splitCategorySwiper: null,
+      splitCategorySwiperReady: false,
       splitCategoryResizeTimeout: null,
     };
   },
@@ -230,7 +233,10 @@ export default {
   methods: {
     onSplitCategorySwiper(swiper) {
       this.splitCategorySwiper = swiper;
-      this.$nextTick(() => this.updateSplitCategorySwiper());
+      this.$nextTick(() => {
+        this.updateSplitCategorySwiper();
+        this.splitCategorySwiperReady = true;
+      });
     },
     handleSplitCategoryResize() {
       if (this.splitCategoryResizeTimeout) {
@@ -255,10 +261,37 @@ export default {
   background-color: transparent !important;
   background-image: none !important;
   --category-split-gap: 8px;
+  min-height: 88px;
 }
 
-.category-section--split :deep(.category-slider .swiper-wrapper) {
+@media (max-width: 480px) {
+  .category-section--split {
+    min-height: 72px;
+  }
+}
+
+.category-section--split :deep(.category-slider--split) {
+  overflow: hidden;
+}
+
+.category-section--split :deep(.category-slider--split:not(.category-slider--ready)) {
+  visibility: hidden;
+}
+
+.category-section--split :deep(.category-slider--split.category-slider--ready) {
+  visibility: visible;
+}
+
+.category-section--split :deep(.category-slider--split .swiper-wrapper) {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
+}
+
+.category-section--split :deep(.category-slider--split:not(.swiper-initialized) .swiper-slide) {
+  width: auto !important;
+  flex-shrink: 0;
 }
 
 .category-section--split :deep(.category-slider--split .swiper-slide) {

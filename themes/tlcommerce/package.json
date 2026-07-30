@@ -3,12 +3,14 @@
     "scripts": {
         "dev": "npm run development",
         "development": "mix",
+        "predevelopment": "node scripts/bump-asset-version.js",
         "watch": "mix watch",
         "watch-poll": "mix watch -- --watch-options-poll=1000",
         "hot": "mix watch --hot",
         "prod": "npm run production",
         "preproduction": "node scripts/bump-asset-version.js",
         "production": "mix --production",
+        "bump-version": "node scripts/bump-asset-version.js",
         "clear-cache": "rimraf ./node_modules/.cache/hard-source"
     },
     "devDependencies": {

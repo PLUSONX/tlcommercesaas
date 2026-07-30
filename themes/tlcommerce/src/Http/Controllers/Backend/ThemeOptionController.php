@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Response;
-use PhpParser\Node\Expr\Cast\Object_;
 use Theme\TLCommerce\Repositories\ThemeOptionRepository;
 use Theme\TLCommerce\Repositories\LayoutSettingsRepository;
+use Theme\TLCommerce\Repositories\ProductListViewRepository;
 use Illuminate\Support\Facades\Log;
 
 class ThemeOptionController extends Controller
@@ -16,11 +16,17 @@ class ThemeOptionController extends Controller
 
     protected $themeOption_repository;
     protected $layoutRepo;
+    protected $productListViewRepo;
 
-    public function __construct(ThemeOptionRepository $themeOption_repository, LayoutSettingsRepository $layoutRepo)
+    public function __construct(
+        ThemeOptionRepository $themeOption_repository,
+        LayoutSettingsRepository $layoutRepo,
+        ProductListViewRepository $productListViewRepo
+    )
     {
         $this->themeOption_repository = $themeOption_repository;
         $this->layoutRepo = $layoutRepo;
+        $this->productListViewRepo = $productListViewRepo;
     }
 
     /**
@@ -96,6 +102,7 @@ class ThemeOptionController extends Controller
     {
         try {
             $data = $this->layoutRepo->getLayOutSettings();
+            $data = array_merge($data, $this->productListViewRepo->getAdminData());
 
             return view('theme/tlcommerce::backend.layout-settings.layout_settings', $data);
         } catch (\Exception $e) {
@@ -185,5 +192,69 @@ class ThemeOptionController extends Controller
         }
 
         return redirect()->back()->with('error', translate('Failed to update layout settings'));
+    }
+
+    /**
+     * Product list view settings for storefront SPA.
+     */
+    public function getProductListViewSettings()
+    {
+        try {
+            return response()->json([
+                'data' => $this->productListViewRepo->getStorefrontSettings(),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Product list view settings API failed: ' . $e->getMessage());
+
+            return response()->json([
+                'data' => [
+                    'is_list_view_enabled' => false,
+                    'organise_by_category' => false,
+                    'categories' => [],
+                ],
+            ]);
+        }
+    }
+
+    /**
+     * Save product list view settings from Layout Settings modal.
+     */
+    public function updateProductLayoutSettings(Request $request)
+    {
+        $request->validate([
+            'category_order' => 'nullable|array',
+            'category_order.*' => 'integer',
+        ]);
+
+        try {
+            $categoryOrder = collect($request->input('category_order', []))
+                ->values()
+                ->map(function ($categoryId, $index) {
+                    return [
+                        'category_id' => (int) $categoryId,
+                        'ordering' => $index + 1,
+                    ];
+                })
+                ->all();
+
+            $saved = $this->productListViewRepo->saveSettings(
+                $request->boolean('is_list_view_enabled'),
+                $request->boolean('organise_by_category'),
+                $categoryOrder
+            );
+
+            if ($saved) {
+                toastNotification('success', translate('Product layout updated successfully'));
+            } else {
+                toastNotification('error', translate('Product layout update failed'));
+            }
+
+            return redirect()->back();
+        } catch (\Exception $e) {
+            Log::error('Product layout update failed: ' . $e->getMessage());
+            toastNotification('error', translate('Product layout update failed'));
+
+            return redirect()->back();
+        }
     }
 }

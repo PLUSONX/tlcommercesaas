@@ -1,33 +1,18 @@
 <template>
-  <div
-    class="langcurrency-wrap"
-    ref="dropdownMenu"
-    v-if="!dataLoading"
-  >
-    <button
-      type="button"
-      ref="triggerBtn"
-      class="btn-circle custom-icon-btn langcurrency-trigger"
-      @click.prevent="toggleDropdown"
-    >
+  <div class="langcurrency-wrap" ref="dropdownMenu" v-if="!dataLoading">
+    <button type="button" ref="triggerBtn" class="btn-circle custom-icon-btn langcurrency-trigger"
+      @click.prevent="toggleDropdown">
       <span class="material-icons">language</span>
     </button>
 
-    <div
-      v-if="showLanguageCurrency && !useFixedDropdown"
-      class="my-account-dropdown langcurrency-dropdown"
-    >
+    <div v-if="showLanguageCurrency && !useFixedDropdown" class="my-account-dropdown langcurrency-dropdown">
       <ul class="list-unstyled mb-0">
         <li class="langcurrency-section-label">{{ $t("Language") }}</li>
         <li v-for="(lang, index) in languages" :key="`lang-${index}`">
-          <a
-            href="#"
-            class="custom-menu"
-            :class="{ active: selected_lang === lang.code }"
-            @click.prevent="selectLanguage(lang.code)"
-          >{{ lang.title }}</a>
+          <a href="#" class="custom-menu" :class="{ active: selected_lang === lang.code }"
+            @click.prevent="selectLanguage(lang.code)">{{ lang.title }}</a>
         </li>
-        <li class="langcurrency-section-label">{{ $t("Currency") }}</li>
+        <!-- <li class="langcurrency-section-label">{{ $t("Currency") }}</li>
         <li v-for="(currency, index) in currencies" :key="`currency-${index}`">
           <a
             href="#"
@@ -35,7 +20,7 @@
             :class="{ active: selected_currency?.code === currency.code }"
             @click.prevent="selectCurrency(currency)"
           >{{ currency.code }}</a>
-        </li>
+        </li> -->
         <!-- <li>
           <a
             href="#"
@@ -47,31 +32,19 @@
     </div>
 
     <Teleport to="body">
-      <div
-        v-if="showLanguageCurrency && useFixedDropdown"
-        ref="fixedDropdown"
-        class="my-account-dropdown langcurrency-dropdown langcurrency-dropdown--fixed"
-        :style="fixedDropdownStyle"
-      >
+      <div v-if="showLanguageCurrency && useFixedDropdown" ref="fixedDropdown"
+        class="my-account-dropdown langcurrency-dropdown langcurrency-dropdown--fixed" :style="fixedDropdownStyle">
         <ul class="list-unstyled mb-0">
           <li class="langcurrency-section-label">{{ $t("Language") }}</li>
           <li v-for="(lang, index) in languages" :key="`lang-fixed-${index}`">
-            <a
-              href="#"
-              class="custom-menu"
-              :class="{ active: selected_lang === lang.code }"
-              @click.prevent="selectLanguage(lang.code)"
-            >{{ lang.title }}</a>
+            <a href="#" class="custom-menu" :class="{ active: selected_lang === lang.code }"
+              @click.prevent="selectLanguage(lang.code)">{{ lang.title }}</a>
           </li>
-          <li class="langcurrency-section-label">{{ $t("Currency") }}</li>
+          <!-- <li class="langcurrency-section-label">{{ $t("Currency") }}</li>
           <li v-for="(currency, index) in currencies" :key="`currency-fixed-${index}`">
-            <a
-              href="#"
-              class="custom-menu"
-              :class="{ active: selected_currency?.code === currency.code }"
-              @click.prevent="selectCurrency(currency)"
-            >{{ currency.code }}</a>
-          </li>
+            <a href="#" class="custom-menu" :class="{ active: selected_currency?.code === currency.code }"
+              @click.prevent="selectCurrency(currency)">{{ currency.code }}</a>
+          </li> -->
           <!-- <li>
             <a
               href="#"
@@ -85,11 +58,7 @@
   </div>
 
   <div class="langcurrency-wrap" ref="dropdownMenu" v-if="dataLoading">
-    <skeleton
-      width="45px"
-      height="45px"
-      border-radius="50%"
-    ></skeleton>
+    <skeleton width="45px" height="45px" border-radius="50%"></skeleton>
   </div>
 </template>
 

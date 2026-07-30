@@ -4,6 +4,7 @@ import {
   safeRemoveItem,
   safeSessionRemoveItem,
 } from "./safeStorage";
+import { reloadOnceWithCacheBuster } from "./reloadOnceWithCacheBuster";
 
 const VERSION_KEY = "tlc_asset_version";
 
@@ -13,9 +14,6 @@ const LOCAL_KEYS_TO_PURGE = ["siteSettings", "siteProperties"];
 const SESSION_LAYOUT_KEY = "tlc_active_layout";
 
 function getDeployedVersion() {
-  if (typeof __TLC_ASSET_VERSION__ !== "undefined" && __TLC_ASSET_VERSION__) {
-    return String(__TLC_ASSET_VERSION__);
-  }
   try {
     const boot = window.__TLC_BOOTSTRAP__;
     if (boot && boot.assetVersion) {
@@ -24,7 +22,21 @@ function getDeployedVersion() {
   } catch (e) {
     // ignore
   }
+  if (typeof __TLC_ASSET_VERSION__ !== "undefined" && __TLC_ASSET_VERSION__) {
+    return String(__TLC_ASSET_VERSION__);
+  }
   return null;
+}
+
+function getBundleVersion() {
+  if (typeof __TLC_ASSET_VERSION__ !== "undefined" && __TLC_ASSET_VERSION__) {
+    return String(__TLC_ASSET_VERSION__);
+  }
+  return null;
+}
+
+function versionReloadKey(deployedVersion) {
+  return `tlc_version_reload_${deployedVersion}`;
 }
 
 function purgeChunkReloadFlags() {
@@ -48,14 +60,23 @@ export function purgeStaleClientStorageIfNeeded() {
   if (!deployed) {
     return;
   }
+
+  const bundle = getBundleVersion();
+  if (bundle && bundle !== deployed) {
+    reloadOnceWithCacheBuster(versionReloadKey(deployed));
+    return;
+  }
+
   const stored = safeGetItem(VERSION_KEY);
   if (stored === deployed) {
     return;
   }
+
   LOCAL_KEYS_TO_PURGE.forEach((key) => safeRemoveItem(key));
   safeSessionRemoveItem(SESSION_LAYOUT_KEY);
   purgeChunkReloadFlags();
   safeSetItem(VERSION_KEY, deployed);
+  reloadOnceWithCacheBuster(versionReloadKey(deployed));
 }
 
 purgeStaleClientStorageIfNeeded();

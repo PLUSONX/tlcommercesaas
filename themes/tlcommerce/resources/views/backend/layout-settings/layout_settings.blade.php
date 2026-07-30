@@ -191,6 +191,15 @@
         background-position: right 12px bottom 10px;
         padding-right: 2rem;
     }
+
+    .ui-state-default {
+        cursor: move;
+    }
+
+    .product-layout-category-item {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+    }
     </style>
 @endsection
 
@@ -206,6 +215,10 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <h4 class="" style="font-size: 30px;">{{ translate('Store Layout') }}</h4>
+                        <button type="button" class="btn long btn-orange" data-toggle="modal"
+                            data-target="#product-layout-modal">
+                            {{ translate('Product Layout') }}
+                        </button>
                     </div>
                 </div>
 
@@ -376,12 +389,14 @@
     </div>
 
     @include('core::base.media.partial.media_modal')
+    @include('theme/tlcommerce::backend.product-layout._modal')
 
 @endsection
 
 @section('custom_scripts')
 
     <script src="{{ asset('backend/assets/plugins/select2/select2.min.js') }}"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 
     <script>
         (function($) {
@@ -436,6 +451,43 @@
 
                 $('input[name="layout_id"]').on('change', function () {
                     toggleSplitScreenForm($(this).data('layout-name'), false);
+                });
+
+                function toggleProductLayoutSections() {
+                    const listViewEnabled = $('#is-list-view-enabled').is(':checked');
+                    const organiseEnabled = $('#organise-by-category').is(':checked');
+
+                    $('#organise-by-category-row').toggle(listViewEnabled);
+                    $('#category-order-section').toggle(listViewEnabled && organiseEnabled);
+                }
+
+                toggleProductLayoutSections();
+
+                $('#is-list-view-enabled, #organise-by-category').on('change', toggleProductLayoutSections);
+
+                if ($('#product-layout-category-sortable').length) {
+                    $('#product-layout-category-sortable').sortable({
+                        items: '.product-layout-category-item',
+                        update: function () {
+                            $('#product-layout-category-sortable .product-layout-category-item').each(function () {
+                                $(this).find('input[name="category_order[]"]').appendTo($(this).find('.card-body'));
+                            });
+                        }
+                    });
+                }
+
+                $('#product-layout-form').on('submit', function () {
+                    $(this).find('input[name="category_order[]"]').remove();
+
+                    $('#product-layout-category-sortable .product-layout-category-item').each(function () {
+                        $('#product-layout-form').append(
+                            $('<input>', {
+                                type: 'hidden',
+                                name: 'category_order[]',
+                                value: $(this).data('category-id')
+                            })
+                        );
+                    });
                 });
             });
         })(jQuery);

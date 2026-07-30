@@ -86,6 +86,27 @@ export function findProductCartLine(cart, product) {
   return (cart || []).find((row) => cartRowMatchesProduct(row, product)) ?? null;
 }
 
+/**
+ * Cart line for split-screen product list rows.
+ * @param {Array} cart
+ * @param {{ id: *, has_variant: number }} item
+ * @returns {object|null}
+ */
+export function findListItemCartLine(cart, item) {
+  if (!item || item.id == null) {
+    return null;
+  }
+
+  if (item.has_variant == 2) {
+    return findProductCartLine(cart, { id: item.id, has_variant: 2 });
+  }
+
+  const productId = normalizeProductId(item.id);
+  return (
+    (cart || []).find((row) => normalizeProductId(row.id) === productId) ?? null
+  );
+}
+
 export function resolveOrderQuantity(quantityValue) {
   const qty = Number(quantityValue);
   return Number.isFinite(qty) && qty >= 1 ? qty : 1;

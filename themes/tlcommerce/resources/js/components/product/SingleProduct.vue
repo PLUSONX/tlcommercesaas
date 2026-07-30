@@ -1,8 +1,20 @@
 <template>
   <!-- Split-screen layout (desktop + mobile) -->
   <template v-if="isSplitScreen">
+    <!-- List row thumbnail only -->
+    <router-link
+      v-if="thumbnailOnly"
+      :to="`/products/${item.slug}`"
+      class="product-list-thumb-only d-block"
+    >
+      <v-lazy-image
+        class="product-list-thumb-only__image w-100"
+        :src="cleanImage(item.thumbnail_image)"
+        :alt="item.name"
+      />
+    </router-link>
     <!--Product Page style-->
-    <div v-if="styleEight" class="single-product-item single-product--split d-inline-block style--eight"
+    <div v-else-if="styleEight" class="single-product-item single-product--split d-inline-block style--eight"
       :class="{ 'single-product--rtl': isRtl }">
       <div class="position-relative overflow-hidden">
         <!-- Thumb -->
@@ -608,6 +620,10 @@ export default {
       default: false,
     },
     listingGrid: {
+      type: Boolean,
+      default: false,
+    },
+    thumbnailOnly: {
       type: Boolean,
       default: false,
     },

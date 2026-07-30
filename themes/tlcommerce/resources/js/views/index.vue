@@ -32,11 +32,8 @@
                         <!-- End Page Header -->
 
                         <!-- Page Content -->
-                        <div
-                            class="entry-content mb-40"
-                            :class="{ 'page-custom-content': hasCustomContentStyles }"
-                            v-html="page.content"
-                        ></div>
+                        <div class="entry-content mb-40" :class="{ 'page-custom-content': hasCustomContentStyles }"
+                            v-html="page.content"></div>
                         <!-- End Page Content -->
                     </article>
                 </div>
@@ -96,47 +93,51 @@
 
         <!--Dynamic Sections-->
         <template v-if="dataAvailable && homeContentReady">
-        <div v-for="(section, index) in sections" :key="index">
-            <deal-section v-if="section.layout === 'flashdeal'" :content="section.content"
-                :properties="section.properties"></deal-section>
+            <div v-for="(section, index) in sections" :key="index">
+                <deal-section v-if="section.layout === 'flashdeal'" :content="section.content"
+                    :properties="section.properties"></deal-section>
 
-            <collection-section v-if="section.layout === 'product_collection'" :content="section.content"
-                :properties="section.properties">
-            </collection-section>
+                <collection-section v-if="section.layout === 'product_collection'" :content="section.content"
+                    :properties="section.properties">
+                </collection-section>
 
-            <custom-product-section v-if="section.layout === 'custom_product_section'" :content="section.content"
-                :properties="section.properties">
-            </custom-product-section>
+                <custom-product-section v-if="section.layout === 'custom_product_section'" :content="section.content"
+                    :properties="section.properties">
+                </custom-product-section>
 
-            <category-section v-if="section.layout === 'category_slider'" :content="section.content"
-                :properties="section.properties"></category-section>
+                <category-section v-if="section.layout === 'category_slider'" :content="section.content"
+                    :properties="section.properties"></category-section>
 
-            <custom-category-slider-section v-if="section.layout === 'custom_category_slider'"
-                :content="section.content" :properties="section.properties">
-            </custom-category-slider-section>
+                <custom-category-slider-section v-if="section.layout === 'custom_category_slider'"
+                    :content="section.content" :properties="section.properties">
+                </custom-category-slider-section>
 
-            <ads-section v-if="section.layout === 'ads'" :content="section.content"
-                :properties="section.properties"></ads-section>
+                <ads-section v-if="section.layout === 'ads'" :content="section.content"
+                    :properties="section.properties"></ads-section>
 
-            <cta-section v-if="section.layout === 'featured_product'" :content="section.content"
-                :properties="section.properties"></cta-section>
+                <cta-section v-if="section.layout === 'featured_product'" :content="section.content"
+                    :properties="section.properties"></cta-section>
 
-            <custom-link-section v-if="section.layout === 'custom_link'" :content="section.content"
-                :properties="section.properties"></custom-link-section>
+                <custom-link-section v-if="section.layout === 'custom_link'" :content="section.content"
+                    :properties="section.properties"></custom-link-section>
 
-            <blog-section v-if="section.layout === 'blogs'" :content="section.content"
-                :properties="section.properties"></blog-section>
+                <blog-section v-if="section.layout === 'blogs'" :content="section.content"
+                    :properties="section.properties"></blog-section>
 
-            <top-sellers v-if="section.layout === 'seller_list'" :content="section.content"
-                :properties="section.properties"></top-sellers>
-        </div>
+                <top-sellers v-if="section.layout === 'seller_list'" :content="section.content"
+                    :properties="section.properties"></top-sellers>
+            </div>
         </template>
         <!--End Dynamic Sections-->
 
         <!-- <HomePageDeliveryShipping v-if="showContactInfo && isSplitScreen" :enums="enums" :config="configuration"
             :customer-address="customerAddress" :is-customer-login="isCustomerLogin" :pickup-points="pickupPoints" /> -->
 
-        <ProductPage v-if="isSplitScreen && homeContentReady" :disable-margin="true" />
+        <SplitScreenProductList
+            v-if="isSplitScreen && homeContentReady && productListViewEnabled"
+            :disable-margin="true" />
+        <ProductPage v-else-if="isSplitScreen && homeContentReady"
+            :disable-margin="true" />
 
     </div>
 
@@ -150,6 +151,7 @@ import {
     preparePageContentForRender,
     removePageContentStyles,
 } from "@/utils/pageContentStyles";
+import CategorySection from "@/components/home-page-sections/categorySection.vue";
 
 const BuilderSection = defineAsyncComponent(() =>
     import("@/components/page-builder/BuilderSection.vue")
@@ -165,10 +167,6 @@ const DealSection = defineAsyncComponent(() =>
 
 const collectionSection = defineAsyncComponent(() =>
     import("@/components/home-page-sections/collectionSection.vue")
-);
-
-const CategorySection = defineAsyncComponent(() =>
-    import("@/components/home-page-sections/categorySection.vue")
 );
 
 const CustomCategorySliderSection = defineAsyncComponent(() =>
@@ -203,6 +201,10 @@ const ProductPage = defineAsyncComponent(() =>
     import(/* webpackChunkName: "ProductPage" */ "@/views/products/index.vue")
 );
 
+const SplitScreenProductList = defineAsyncComponent(() =>
+    import(/* webpackChunkName: "SplitScreenProductList" */ "@/components/product/SplitScreenProductList.vue")
+);
+
 import HomePageDeliveryShipping from '@/components/order-steps/homePageDeliveryShipping.vue';
 // import HomePageDeliveryShipping from "../components/order-steps/homePageDeliveryShipping.vue";
 import enums from "../enums/enums";
@@ -210,6 +212,20 @@ import { mapState, mapGetters } from "vuex";
 import { trackSocialPixels } from "@/utils/trackSocialPixels";
 // import CompanyFooter from "../components/ui/CompanyFooter.vue";
 const axios = require("axios").default;
+
+function readBootstrapProductListViewEnabled() {
+    try {
+        const settings =
+            typeof window !== "undefined"
+                ? window.__TLC_BOOTSTRAP__?.productListViewSettings
+                : null;
+
+        return !!settings?.is_list_view_enabled;
+    } catch (e) {
+        return false;
+    }
+}
+
 export default {
     components: {
         Swiper,
@@ -227,6 +243,7 @@ export default {
         TopSellers,
         BuilderSection,
         ProductPage,
+        SplitScreenProductList,
         HomePageDeliveryShipping
     },
     setup() {
@@ -255,6 +272,8 @@ export default {
             enums: enums,
             customerAddress: [],
             pickupPoints: [],
+
+            productListViewEnabled: readBootstrapProductListViewEnabled(),
         };
     },
     computed: {

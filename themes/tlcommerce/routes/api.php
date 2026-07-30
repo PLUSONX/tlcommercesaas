@@ -11,6 +11,7 @@ use Theme\TLCommerce\Http\Controllers\Frontend\NewsletterController;
 use Theme\TLCommerce\Http\Controllers\Frontend\ThemeOptionController;
 use Theme\TLCommerce\Http\Controllers\Backend\ThemeOptionController As ThemeController;
 use Theme\TLCommerce\Http\Controllers\Api\QuizController;
+use Theme\TLCommerce\Http\Controllers\Api\ProductListViewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +55,8 @@ Route::group(['prefix' => 'theme/tlcommerce/v1'], function () {
     Route::get('/get-theme-color', [ThemeOptionController::class, 'getPresentColor']);
     Route::get('/get-blog-theme-style', [ThemeOptionController::class, 'getBlogThemeStyle']);
     Route::get('/get-active-layout', [ThemeController::class, 'getActiveLayout']);
+    Route::get('/get-product-list-view-settings', [ThemeController::class, 'getProductListViewSettings']);
+    Route::get('/split-screen-product-list', [ProductListViewController::class, 'splitScreenProductList']);
 
     //Blogs
     Route::get('/blogs', [BlogController::class, 'blogs']);
