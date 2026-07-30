@@ -12,6 +12,17 @@ mix.setPublicPath('../../public/themes/tlcommerce'); // Output directly to where
 mix.js('resources/js/main.js', 'js') // Outputs to themes/tlcommerce/public/js/main.js
     .vue();
 
+// Storefront CSS — linked from master.blade.php (not injected via JS bundle)
+mix.sass('resources/js/assets/sass/app.scss', 'css/app.css').options({
+    processCssUrls: false,
+});
+
+mix.copy('node_modules/bootstrap/dist/css/bootstrap.css', 'css/vendor/bootstrap.css');
+mix.copy('node_modules/@coreui/coreui/dist/css/coreui.min.css', 'css/vendor/coreui.min.css');
+mix.copy('node_modules/vue-toast-notification/dist/theme-sugar.css', 'css/vendor/toast-sugar.css');
+mix.copy('node_modules/vue-select/dist/vue-select.css', 'css/vendor/vue-select.css');
+mix.copy('resources/js/assets/css/google-icons.css', 'css/google-icons.css');
+
 mix.webpackConfig({
     plugins: [
         new webpack.DefinePlugin({

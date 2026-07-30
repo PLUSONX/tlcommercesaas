@@ -6,7 +6,16 @@
 
 <script>
 import MainLayout from "./layouts/MainLayout.vue";
+import { scheduleBackgroundRefresh } from "./utils/scheduleBackgroundRefresh";
 const axios = require("axios").default;
+
+function hasBootstrapThemeColor() {
+  try {
+    return !!window.__TLC_BOOTSTRAP__?.themePrimaryColor;
+  } catch (e) {
+    return false;
+  }
+}
 
 export default {
   components: {
@@ -18,8 +27,11 @@ export default {
     },
   },
   created() {
-    // Non-blocking: Blade already injects --mainC. Refresh from API when available.
-    this.refreshThemeColor();
+    if (hasBootstrapThemeColor()) {
+      scheduleBackgroundRefresh(() => this.refreshThemeColor());
+    } else {
+      this.refreshThemeColor();
+    }
   },
   methods: {
     async refreshThemeColor() {

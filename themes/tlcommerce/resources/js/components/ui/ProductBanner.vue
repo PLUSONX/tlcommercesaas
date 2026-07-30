@@ -8,6 +8,8 @@
           alt="image"
           :width="imageWidth"
           :height="imageHeight"
+          :fetchpriority="priority ? 'high' : 'auto'"
+          :loading="priority ? 'eager' : 'lazy'"
           decoding="async"
         />
         <!-- <img :src="content.desktop" alt="image" /> -->
@@ -27,6 +29,10 @@ export default {
     content: {
       type: Object,
       required: true,
+    },
+    priority: {
+      type: Boolean,
+      default: false,
     },
   },
   computed: {

@@ -4,6 +4,8 @@
     use Plugin\TlcommerceCore\Repositories\SettingsRepository;
     use Core\Repositories\SettingsRepository as CoreSettingRepository;
     use Theme\TLCommerce\Repositories\LayoutSettingsRepository;
+    use Core\Models\Language;
+    use Plugin\TlcommerceCore\Models\Currency;
     use Illuminate\Support\Facades\Cache;
     use Illuminate\Support\Facades\Log;
 
@@ -55,6 +57,40 @@
         ->where('provider', 'snapchat_pixel')
         ->first();
 
+    $fbPixelId = null;
+    if ($facebook_integration && $facebook_integration->is_active) {
+        $fbSettings = json_decode($facebook_integration->settings, true);
+        $fbPixelId = $fbSettings['pixel_id'] ?? null;
+    }
+
+    $tiktokPixelId = null;
+    if ($tiktok_integration && $tiktok_integration->is_active) {
+        $tiktokSettings = json_decode($tiktok_integration->settings, true);
+        $tiktokPixelId = $tiktokSettings['pixel_id'] ?? null;
+    }
+
+    $snapchatPixelId = null;
+    if ($snapchat_integration && $snapchat_integration->is_active) {
+        $snapchatSettings = json_decode($snapchat_integration->settings, true);
+        $snapchatPixelId = $snapchatSettings['pixel_id'] ?? null;
+    }
+
+    $bootstrapLanguages = Cache::rememberForever(tenantCacheKey('-active-languages'), function () {
+        return Language::where('status', config('settings.general_status.active'))
+            ->select('id', 'native_name as title', 'code')
+            ->get();
+    });
+
+    $bootstrapCurrencies = Cache::rememberForever(tenantCacheKey('active-currencies'), function () {
+        return Currency::where('status', config('settings.general_status.active'))
+            ->select('id', 'name', 'code', 'symbol', 'conversion_rate', 'position', 'thousand_separator', 'decimal_separator', 'number_of_decimal')
+            ->get();
+    });
+
+    $bootstrapSiteSettings = Cache::rememberForever(tenantCacheKey('e-commerce-settings'), function () {
+        return SettingsRepository::siteSettings();
+    });
+
     $tlcAssetVersionPath = base_path('themes/tlcommerce/asset-version.json');
     $assetVersion = '1';
     if (is_readable($tlcAssetVersionPath)) {
@@ -85,84 +121,6 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
 
-    @if($facebook_integration && $facebook_integration->is_active)
-    @php 
-        $fbSettings = json_decode($facebook_integration->settings, true);
-        $fbPixelId = $fbSettings['pixel_id'] ?? null;
-
-    @endphp
-
-    @if($fbPixelId)
-        <script>
-
-            !function(f,b,e,v,n,t,s)
-            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-            n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t,s)}(window, document,'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-
-
-            fbq('init', '{{ $fbPixelId }}');
-
-            fbq('track', 'PageView');
-            // window.fbq = fbq;
-        </script>
-        <noscript>
-            <img height="1" width="1" style="display:none"
-                 src="https://www.facebook.com/tr?id={{ $fbPixelId }}&ev=PageView&noscript=1"/>
-        </noscript>
-    @endif
-@endif
-
-    @if($tiktok_integration && $tiktok_integration->is_active)
-    @php
-        $tiktokSettings = json_decode($tiktok_integration->settings, true);
-        $tiktokPixelId = $tiktokSettings['pixel_id'] ?? null;
-    @endphp
-
-    @if($tiktokPixelId)
-        <script>
-            !function (w, d, t) {
-                w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];
-                ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];
-                ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};
-                for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
-                ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};
-                ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";
-                ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=i;ttq._t=ttq._t||{};ttq._t[e]=+new Date;
-                ttq._o=ttq._o||{};ttq._o[e]=n||{};
-                var o=document.createElement("script");o.type="text/javascript";o.async=!0;o.src=i+"?sdkid="+e+"&lib="+t;
-                var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
-                ttq.load('{{ $tiktokPixelId }}');
-                ttq.page();
-            }(window, document, 'ttq');
-        </script>
-    @endif
-    @endif
-
-    @if($snapchat_integration && $snapchat_integration->is_active)
-    @php
-        $snapchatSettings = json_decode($snapchat_integration->settings, true);
-        $snapchatPixelId = $snapchatSettings['pixel_id'] ?? null;
-    @endphp
-
-    @if($snapchatPixelId)
-        <script>
-            (function(e,t,n){if(e.snaptr)return;var a=e.snaptr=function()
-            {a.handleRequest?a.handleRequest.apply(a,arguments):a.queue.push(arguments)};
-            a.queue=[];var s='script';r=t.createElement(s);r.async=!0;
-            r.src=n;var u=t.getElementsByTagName(s)[0];
-            u.parentNode.insertBefore(r,u);})(window,document,
-            'https://sc-static.net/scevent.min.js');
-            snaptr('init', '{{ $snapchatPixelId }}');
-            snaptr('track', 'PAGE_VIEW');
-        </script>
-    @endif
-    @endif
-
     <meta charset="utf-8">
     @if (isset($logo_details['favicon']))
         <link rel="shortcut icon" href="{{ project_asset($logo_details['favicon']) }}">
@@ -188,10 +146,21 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    {{-- Material Icons: before main.js so split-screen toolbar ligatures are not visible text on first paint --}}
+    <link rel="preload"
+        href="https://fonts.gstatic.com/s/materialicons/v126/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2"
+        as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="{{ asset('themes/tlcommerce/css/google-icons.css') }}?v={{ $assetVersion }}">
     <!-- <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
         rel="stylesheet"> -->
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap"
     rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ asset('themes/tlcommerce/css/vendor/bootstrap.css') }}?v={{ $assetVersion }}">
+    <link rel="stylesheet" href="{{ asset('themes/tlcommerce/css/vendor/coreui.min.css') }}?v={{ $assetVersion }}">
+    <link rel="stylesheet" href="{{ asset('themes/tlcommerce/css/vendor/vue-select.css') }}?v={{ $assetVersion }}">
+    <link rel="stylesheet" href="{{ asset('themes/tlcommerce/css/vendor/toast-sugar.css') }}?v={{ $assetVersion }}">
+    <link rel="stylesheet" href="{{ asset('themes/tlcommerce/css/app.css') }}?v={{ $assetVersion }}">
 
     <link rel="stylesheet" href="{{ asset('backend/assets/plugins/fontawsome/css/all.min.css') }}?v={{ $assetVersion }}">
     <link rel="stylesheet" href=" {{ asset('themes/default/public/assets/css/font-awesome.min.css') }}?v={{ $assetVersion }}">
@@ -285,12 +254,80 @@
 
     @if (isActivePluging('tlecommercecore'))
 
+    {{-- Defer tracking pixels until after DOMContentLoaded so storefront assets load first (IG campaigns) --}}
+    @if ($fbPixelId || $tiktokPixelId || $snapchatPixelId)
+    <script>
+        (function () {
+            var pixelsLoaded = false;
+            function loadTrackingPixels() {
+                if (pixelsLoaded) {
+                    return;
+                }
+                pixelsLoaded = true;
+                @if ($fbPixelId)
+                !function(f,b,e,v,n,t,s)
+                {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                n.queue=[];t=b.createElement(e);t.async=!0;
+                t.src=v;s=b.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t,s)}(window, document,'script',
+                'https://connect.facebook.net/en_US/fbevents.js');
+                fbq('init', '{{ $fbPixelId }}');
+                fbq('track', 'PageView');
+                @endif
+                @if ($tiktokPixelId)
+                !function (w, d, t) {
+                    w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];
+                    ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];
+                    ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};
+                    for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
+                    ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e};
+                    ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";
+                    ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=i;ttq._t=ttq._t||{};ttq._t[e]=+new Date;
+                    ttq._o=ttq._o||{};ttq._o[e]=n||{};
+                    var o=document.createElement("script");o.type="text/javascript";o.async=!0;o.src=i+"?sdkid="+e+"&lib="+t;
+                    var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+                    ttq.load('{{ $tiktokPixelId }}');
+                    ttq.page();
+                }(window, document, 'ttq');
+                @endif
+                @if ($snapchatPixelId)
+                (function(e,t,n){if(e.snaptr)return;var a=e.snaptr=function()
+                {a.handleRequest?a.handleRequest.apply(a,arguments):a.queue.push(arguments)};
+                a.queue=[];var s='script';r=t.createElement(s);r.async=!0;
+                r.src=n;var u=t.getElementsByTagName(s)[0];
+                u.parentNode.insertBefore(r,u);})(window,document,
+                'https://sc-static.net/scevent.min.js');
+                snaptr('init', '{{ $snapchatPixelId }}');
+                snaptr('track', 'PAGE_VIEW');
+                @endif
+            }
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', loadTrackingPixels);
+            } else {
+                loadTrackingPixels();
+            }
+            setTimeout(loadTrackingPixels, 2000);
+        })();
+    </script>
+    @if ($fbPixelId)
+    <noscript>
+        <img height="1" width="1" style="display:none"
+             src="https://www.facebook.com/tr?id={{ $fbPixelId }}&ev=PageView&noscript=1"/>
+    </noscript>
+    @endif
+    @endif
+
     <script>
         window.__TLC_BOOTSTRAP__ = {
             activeLayout: @json($activeLayoutBootstrap),
             assetVersion: @json($assetVersion),
             siteProperties: @json($siteProperties),
             themePrimaryColor: @json($theme_primary_color),
+            languages: @json($bootstrapLanguages),
+            currencies: @json($bootstrapCurrencies),
+            siteSettings: @json($bootstrapSiteSettings),
         };
     </script>
 

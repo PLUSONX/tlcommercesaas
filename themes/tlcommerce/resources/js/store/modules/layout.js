@@ -9,6 +9,19 @@ const SPLIT_SCREEN_RATIO = { content: 45, feature: 55 };
 
 const LAYOUT_HINT_KEY = "tlc_active_layout";
 const LAYOUT_FETCH_TIMEOUT_MS = 20000;
+/** Matches MainLayout mobileBreakpoint (768) — innerWidth < 768 */
+const MOBILE_MAX_WIDTH_PX = 767;
+
+function detectMobileView() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  try {
+    return window.matchMedia(`(max-width: ${MOBILE_MAX_WIDTH_PX}px)`).matches;
+  } catch (e) {
+    return false;
+  }
+}
 
 function readLayoutHint() {
   const hint = safeSessionJsonParse(LAYOUT_HINT_KEY, null);
@@ -59,7 +72,7 @@ export default {
         loading: !hasInitialLayout,
         hasFetched: hasInitialLayout,
         error: null,
-        isMobileView: false,
+        isMobileView: detectMobileView(),
         isRtl: false,
     },
 

@@ -5,6 +5,30 @@ import getters from "./getters.js";
 import layout from './modules/layout';
 import { safeGetItem, safeJsonParse, asArray } from "../utils/safeStorage";
 
+function readBootstrapSiteProperties() {
+  try {
+    const props = window.__TLC_BOOTSTRAP__?.siteProperties;
+    if (props && typeof props === "object" && Object.keys(props).length) {
+      return props;
+    }
+  } catch (e) {
+    // ignore
+  }
+  return null;
+}
+
+function readBootstrapSiteSettings() {
+  try {
+    const settings = window.__TLC_BOOTSTRAP__?.siteSettings;
+    if (settings && typeof settings === "object" && Object.keys(settings).length) {
+      return settings;
+    }
+  } catch (e) {
+    // ignore
+  }
+  return null;
+}
+
 // vuex-multi-tab-state removed: it throws when localStorage is blocked
 // (common in Instagram WebView) and can restore corrupt full-store snapshots.
 
@@ -12,8 +36,8 @@ const store = createStore({
   state() {
     return {
       notifications: [],
-      siteSettings: safeJsonParse("siteSettings", null),
-      siteProperties: safeJsonParse("siteProperties", null),
+      siteSettings: safeJsonParse("siteSettings", null) || readBootstrapSiteSettings(),
+      siteProperties: safeJsonParse("siteProperties", null) || readBootstrapSiteProperties(),
       currency: safeJsonParse("currency", {}) || {},
       defaultCurrency: safeJsonParse("default_currency", {}) || {},
       customerToken: safeJsonParse("customerToken", "") || "",

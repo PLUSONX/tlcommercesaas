@@ -74,7 +74,7 @@
                             clickable: true,
                         }" class="mySwiper theme-slider-dots dots-bottom-30">
                         <swiper-slide v-for="(slide, index) in banners" :key="`slide-${index}`">
-                            <product-banner :content="slide" />
+                            <product-banner :content="slide" :priority="index === 0" />
                         </swiper-slide>
                     </swiper>
                 </div>
@@ -199,7 +199,9 @@ const TopSellers = defineAsyncComponent(() =>
     import("@/components/home-page-sections/TopSellers.vue")
 );
 
-import ProductPage from '@/views/products/index.vue';
+const ProductPage = defineAsyncComponent(() =>
+    import(/* webpackChunkName: "ProductPage" */ "@/views/products/index.vue")
+);
 
 import HomePageDeliveryShipping from '@/components/order-steps/homePageDeliveryShipping.vue';
 // import HomePageDeliveryShipping from "../components/order-steps/homePageDeliveryShipping.vue";

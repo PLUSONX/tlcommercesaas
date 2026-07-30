@@ -1,12 +1,12 @@
-/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true */
+/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true */
 
-/*! !!../../../css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./free-mode.min.css */
+/*! !!../../../css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./free-mode.min.css */
 
-/*! !!../../../css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./navigation.min.css */
+/*! !!../../../css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./navigation.min.css */
 
-/*! !!../../../css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../../../postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./thumbs.min.css */
+/*! !!../../../css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./thumbs.min.css */
 
-/*! !!../css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!../postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./swiper.min.css */
+/*! !!../css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./swiper.min.css */
 
 /*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */
 
@@ -18,7 +18,7 @@
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsGallery.vue?vue&type=template&id=59bea7fb&scoped=true */
 
-/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true */
+/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true */
 
 /*! ../../../../node_modules/css-loader/dist/runtime/api.js */
 
@@ -97,19 +97,19 @@
   \*********************************************************************************************************************/
 
 /*!****************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/swiper/swiper.min.css ***!
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/swiper/swiper.min.css ***!
   \****************************************************************************************************************************************************************************/
 
 /*!*******************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/swiper/modules/thumbs/thumbs.min.css ***!
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/swiper/modules/thumbs/thumbs.min.css ***!
   \*******************************************************************************************************************************************************************************************/
 
 /*!*************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/swiper/modules/free-mode/free-mode.min.css ***!
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/swiper/modules/free-mode/free-mode.min.css ***!
   \*************************************************************************************************************************************************************************************************/
 
 /*!***************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-8.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-8.use[2]!./node_modules/swiper/modules/navigation/navigation.min.css ***!
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/swiper/modules/navigation/navigation.min.css ***!
   \***************************************************************************************************************************************************************************************************/
 
 /*!****************************************************************************************************************************************************************************************************************!*\
@@ -121,9 +121,9 @@
   \********************************************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true ***!
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true ***!
   \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-11.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-11.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-11.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true ***!
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true ***!
   \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/

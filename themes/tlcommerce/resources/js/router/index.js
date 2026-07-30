@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import { loadLanguageAsync } from "../i18n_setup";
 import store from "../store";
 import { isChunkLoadError, reloadOnceForChunkError } from "../utils/chunkLoadRecovery";
+import { safeGetItem } from "../utils/safeStorage";
 
 /**
  * Check customer is logged in or not
@@ -295,12 +296,11 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  let lang = "en";
-  try {
-    lang = localStorage.getItem("locale") || "en";
-  } catch (e) {
-    lang = "en";
+  // Initial navigation: locale loads in parallel at boot (main.js)
+  if (from.name == null) {
+    return next();
   }
+  const lang = safeGetItem("locale") || "en";
   loadLanguageAsync(lang)
     .then(() => next())
     .catch(() => next());

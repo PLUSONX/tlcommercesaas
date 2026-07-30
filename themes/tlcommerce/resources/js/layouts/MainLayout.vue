@@ -158,7 +158,21 @@ import { mapState, mapGetters, mapActions } from "vuex";
 import config from "../config.js";
 const axios = require("axios").default;
 import VRuntimeTemplate from "vue3-runtime-template";
-import HeaderMiddle from "@/components/pageheader/HeaderMiddle.vue";
+import { defineAsyncComponent, reactive } from "vue";
+import { useStore } from "vuex";
+import { safeGetItem } from "@/utils/safeStorage";
+import { scheduleBackgroundRefresh } from "@/utils/scheduleBackgroundRefresh";
+import {
+  CModal,
+  CButton,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+} from "@coreui/vue";
+
+const HeaderMiddle = defineAsyncComponent(() =>
+  import("@/components/pageheader/HeaderMiddle.vue")
+);
 
 const address_widget = defineAsyncComponent(() =>
   import("@/components/widget/address_widget.vue")
@@ -234,23 +248,28 @@ const CompanyFooter = defineAsyncComponent(() =>
 
 // import ProductPage from '@/views/products/index.vue';
 
-
-import { defineAsyncComponent, reactive } from "vue";
-import { useStore } from "vuex";
-import {
-  CModal,
-  CButton,
-  CModalHeader,
-  CModalTitle,
-  CModalBody,
-} from "@coreui/vue";
-
 function readBootstrapSiteProperties() {
   try {
     return window.__TLC_BOOTSTRAP__?.siteProperties ?? null;
   } catch (e) {
     return null;
   }
+}
+
+function readStorefrontBootstrap() {
+  try {
+    return window.__TLC_BOOTSTRAP__ ?? null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function hasUsableBootstrapSiteData(boot) {
+  return !!(
+    boot?.siteProperties &&
+    typeof boot.siteProperties === "object" &&
+    Object.keys(boot.siteProperties).length
+  );
 }
 
 export default {
@@ -286,27 +305,33 @@ export default {
   },
   setup() {
     const store = useStore();
+    const boot = readStorefrontBootstrap();
+    const hasBootstrapSite = hasUsableBootstrapSiteData(boot);
+
     const data = reactive({
       site_properties:
         store.state.siteProperties ||
         readBootstrapSiteProperties() ||
         {},
-      languages: [],
-      currencies: [],
+      languages: boot?.languages || [],
+      currencies: boot?.currencies || [],
       megaCategories: [],
     });
 
-    getSiteProperties();
-    getMegacategories();
+    if (boot?.siteSettings && !store.state.siteSettings) {
+      store.dispatch("siteSettings", boot.siteSettings);
+    }
+    if (hasBootstrapSite && !store.state.siteProperties) {
+      store.dispatch("siteProperties", boot.siteProperties);
+    }
 
     /**
      * Get site properties
      */
     function getSiteProperties() {
-      // console.log("-------getSiteProperties method called-----")
       const headers = {
         "Content-Type": "application/json",
-        "Accept-Language": localStorage.getItem("locale") || "en",
+        "Accept-Language": safeGetItem("locale") || "en",
       };
       axios
         .post("/api/v1/ecommerce-core/site-properties", null, {
@@ -314,7 +339,6 @@ export default {
         })
         .then((response) => {
           if (response.data.success) {
-            // console.log("response site_properties: ", response.data);
             data.site_properties = response.data.siteProperties;
             data.languages = response.data.languages;
             data.currencies = response.data.currencies;
@@ -323,6 +347,12 @@ export default {
           }
         })
         .catch((error) => { });
+    }
+
+    if (hasBootstrapSite) {
+      scheduleBackgroundRefresh(getSiteProperties);
+    } else {
+      getSiteProperties();
     }
     // function getSiteProperties() {
     //   console.log("-------getSiteProperties method called-----")
@@ -350,12 +380,9 @@ export default {
      * Get Mega categories
      */
     function getMegacategories() {
-
-      // console.log("getMegacategories method called!!!")
-
       const headers = {
         "Content-Type": "application/json",
-        "Accept-Language": localStorage.getItem("locale") || "en",
+        "Accept-Language": safeGetItem("locale") || "en",
       };
 
       axios
@@ -692,13 +719,19 @@ export default {
   mounted() {
     var body = document.querySelector("body");
     body.className = this.mode == "dark" ? "dark" : "";
-    this.getThemeStyle();
     this.getAllMenusForEcommerceHome();
-    this.getFooterWidget();
+    scheduleBackgroundRefresh(() => this.getThemeStyle());
+    scheduleBackgroundRefresh(() => this.getFooterWidget(), 2000);
+
+    if (!(this.isSplitScreen && this.isMobile)) {
+      scheduleBackgroundRefresh(() => this.getMegacategories(), 1500);
+    }
 
     if (this.isCustomerLogin) {
-      this.checkCustomerAuthentication();
-      setInterval(this.checkCustomerAuthentication, 1000 * 60);
+      setTimeout(() => {
+        this.checkCustomerAuthentication();
+        setInterval(this.checkCustomerAuthentication, 1000 * 60);
+      }, 500);
     }
     this.$store.state.$t = this.translateLanguage;
 
@@ -751,7 +784,12 @@ export default {
 
     async initLayout() {
       this.checkMobileView();
-      await this.fetchActiveLayout();
+      const hasBootstrapLayout = !!(this.$store.state.layout?.activeLayout?.type);
+      if (hasBootstrapLayout) {
+        scheduleBackgroundRefresh(() => this.fetchActiveLayout());
+      } else {
+        await this.fetchActiveLayout();
+      }
       this.checkMobileView();
     },
 
