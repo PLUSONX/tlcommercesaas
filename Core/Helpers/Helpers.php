@@ -1390,18 +1390,18 @@ if (!function_exists('getEmailTemplateOf')) {
         }
 
         if (!array_key_exists('_system_logo_url_', $data)) {
-
-            $tenant_id = getGeneralSetting('tenant_id');
-            $system_logo = asset(getFilePath(getGeneralSetting('white_background_logo')));
-            if ($tenant_id != null) {
-                $system_logo = str_replace("/tenancy/assets", "", $system_logo);
-                $system_logo = str_replace('public/', '', $system_logo);
+            $logoId = getGeneralSetting('admin_logo') ?: getGeneralSetting('white_background_logo');
+            $system_logo = asset(getFilePath($logoId));
+            // Email clients need a public absolute URL; web root is already public/.
+            $system_logo = str_replace('/tenancy/assets', '', $system_logo);
+            $system_logo = str_replace('public/', '', $system_logo);
+            $system_logo = str_replace('/public', '', $system_logo);
+            $system_logo = preg_replace('#(?<!:)//+#', '/', $system_logo);
 
             \Log::info('Logo url', [
                 'system_logo_url' => $system_logo,
             ]);
-            
-        }
+
             $body = str_replace('_system_logo_url_', $system_logo, $body);
         }
         if (!array_key_exists('_store_link_', $data)) {

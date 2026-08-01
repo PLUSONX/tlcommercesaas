@@ -207,7 +207,7 @@ class EcommerceNotification
             $mail_data = [
                 'template_id'       => 11,
                 'keywords'          => getEmailTemplateVariables(11, true),
-                '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
+                '_system_logo_url_' => self::getMailLogoUrl(),
                 '_site_link_'       => url('/'),
                 'subject'           => $mail_title,
                 '_tracking_url_'    => url('/') . $link,
@@ -280,7 +280,7 @@ class EcommerceNotification
     //         $mail_data = [
     //             'template_id' => 11,
     //             'keywords' => getEmailTemplateVariables(11, true),
-    //             '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
+    //             '_system_logo_url_' => self::getMailLogoUrl(),
     //             '_site_link_'       => url('/'),
     //             'subject' => $mail_title,
     //             '_tracking_url_' => url('/') . $link ?? '',
@@ -502,7 +502,7 @@ class EcommerceNotification
             $mail_data = [
                 'template_id' => 13,
                 'keywords' => getEmailTemplateVariables(13, true),
-                '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
+                '_system_logo_url_' => self::getMailLogoUrl(),
                 '_site_link_'       => url('/'),
                 'subject' => 'New Order Placed!',
                 '_order_code_' =>  $order->order_code,
@@ -652,7 +652,7 @@ class EcommerceNotification
                 $mail_data = [
                     'template_id' => 15,
                     'keywords' => getEmailTemplateVariables(15, true),
-                    '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
+                    '_system_logo_url_' => self::getMailLogoUrl(),
                     '_site_link_'       => url('/'),
                     'subject' => 'New Feedback Placed!',
                     '_customer_name_' => $name,
@@ -724,7 +724,7 @@ class EcommerceNotification
             $mail_data = [
                 'template_id' => 16,
                 'keywords' => getEmailTemplateVariables(16, true),
-                '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
+                '_system_logo_url_' => self::getMailLogoUrl(),
                 '_site_link_'       => url('/'),
                 'subject' => 'New Order Review Placed!',
                 '_customer_name_' => $name,
@@ -828,7 +828,7 @@ class EcommerceNotification
             $mail_data = [
                 'template_id' => 14,
                 'keywords' => getEmailTemplateVariables(14, true),
-                '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
+                '_system_logo_url_' => self::getMailLogoUrl(),
                 '_site_link_'       => url('/'),
                 'subject' => 'Order Cancelled!',
                 '_mail_title_' =>  "Order Cancelled",
@@ -947,7 +947,7 @@ class EcommerceNotification
                 $mail_data = [
                     'template_id' => 10,
                     'keywords' => getEmailTemplateVariables(10, true),
-                    '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
+                    '_system_logo_url_' => self::getMailLogoUrl(),
                     '_site_link_'       => url('/'),
                     '_order_code_'      => $order->order_code,
                     'subject' => $mail_title,
@@ -985,7 +985,7 @@ class EcommerceNotification
             $mail_data = [
                 'template_id' => 14,
                 'keywords' => getEmailTemplateVariables(14, true),
-                '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
+                '_system_logo_url_' => self::getMailLogoUrl(),
                 'subject' => 'Product Review',
                 '_mail_title_' =>  "Product Review Received",
                 '_btn_title_' =>  "View Product Reviews",
@@ -1020,7 +1020,7 @@ class EcommerceNotification
             $mail_data = [
                 'template_id' => 14,
                 'keywords' => getEmailTemplateVariables(14, true),
-                '_system_logo_url_' => url(str_replace('public/', '', getFilePath(getGeneralSetting('admin_logo')))),
+                '_system_logo_url_' => self::getMailLogoUrl(),
                 'subject' => 'Refund Request Created',
                 '_mail_title_' =>  "Refund Request Created",
                 '_btn_title_' =>  "View Request Details",
@@ -1147,11 +1147,13 @@ class EcommerceNotification
     {
         $logoId = getGeneralSetting('admin_logo') ?: getGeneralSetting('white_background_logo');
         $logo = asset(getFilePath($logoId));
-        if (getGeneralSetting('tenant_id') != null) {
-            $logo = str_replace('/tenancy/assets', '', $logo);
-            $logo = str_replace('public/', '', $logo);
-        }
 
-        return $logo;
+        // Email clients need a public absolute URL; web root is already public/.
+        $logo = str_replace('/tenancy/assets', '', $logo);
+        $logo = str_replace('public/', '', $logo);
+        $logo = str_replace('/public', '', $logo);
+        $logo = preg_replace('#(?<!:)//+#', '/', $logo);
+
+        return $logo ?: '';
     }
 }

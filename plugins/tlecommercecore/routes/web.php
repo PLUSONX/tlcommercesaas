@@ -354,6 +354,7 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
     Route::group(['prefix' => 'orders'], function () {
         Route::middleware(['can:Manage Inhouse Orders'])->group(function () {
             Route::get('/inhouse-orders', [OrderController::class, 'inhouseOrders'])->name('plugin.tlcommercecore.orders.inhouse');
+            Route::get('/inhouse-orders/latest-meta', [OrderController::class, 'inhouseOrdersLatestMeta'])->name('plugin.tlcommercecore.orders.inhouse.latest.meta');
             Route::post('/update-order-payment-status', [OrderController::class, 'updateOrderPaymentStatus'])->name('plugin.tlcommercecore.orders.payment.status.update');
             Route::post('/update-order-delivery-status', [OrderController::class, 'updateOrderDeliveryStatus'])->name('plugin.tlcommercecore.orders.delivery.status.update');
         });

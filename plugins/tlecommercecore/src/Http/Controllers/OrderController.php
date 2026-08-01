@@ -33,19 +33,55 @@ class OrderController extends Controller
      */
     public function inhouseOrders(Request $request)
     {
-        $orders = $this->order_repository->orderList($request, config('tlecommercecore.order_type.home_delivery'), 'inhouse', null);
-        $order_counter = $this->order_repository->orderCounter(config('tlecommercecore.order_type.home_delivery'));
+        $shipping_type = config('tlecommercecore.order_type.home_delivery');
+        $orders = $this->order_repository->orderList($request, $shipping_type, 'inhouse', null);
+        $order_counter = $this->order_repository->orderCounter($shipping_type);
+        $meta = $this->order_repository->inhouseOrdersMeta($shipping_type);
 
         // Log::info('inhouse method called', [
         //             'orders' => json_encode($orders),
         // ]);
 
+        if ($request->boolean('partial')) {
+            return response()->json([
+                'success' => true,
+                'latest_id' => $meta['latest_id'],
+                'status_version' => $meta['status_version'],
+                'total' => $meta['total'],
+                'order_counter' => $order_counter,
+                'tbody' => view('plugin/tlecommercecore::orders.inhouse_orders._table_rows', [
+                    'orders' => $orders,
+                ])->render(),
+                'pagination' => view('plugin/tlecommercecore::orders.inhouse_orders._pagination', [
+                    'orders' => $orders,
+                ])->render(),
+            ]);
+        }
+
         return view('plugin/tlecommercecore::orders.inhouse_orders.index')->with(
             [
                 'orders' => $orders,
-                'order_counter' => $order_counter
+                'order_counter' => $order_counter,
+                'orders_meta' => $meta,
             ]
         );
+    }
+
+    /**
+     * Lightweight meta for inhouse orders auto-refresh polling.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function inhouseOrdersLatestMeta()
+    {
+        $meta = $this->order_repository->inhouseOrdersMeta(config('tlecommercecore.order_type.home_delivery'));
+
+        return response()->json([
+            'success' => true,
+            'latest_id' => $meta['latest_id'],
+            'status_version' => $meta['status_version'],
+            'total' => $meta['total'],
+        ]);
     }
 
     /**

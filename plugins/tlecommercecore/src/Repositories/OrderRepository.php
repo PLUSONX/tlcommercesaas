@@ -105,6 +105,56 @@ class OrderRepository
      * @return Array
      *
      */
+    /**
+     * Lightweight fingerprint for inhouse order list auto-refresh.
+     * Detects new orders and payment/delivery status changes.
+     *
+     * @param mixed $shipping_type
+     * @return array
+     */
+    public function inhouseOrdersMeta($shipping_type)
+    {
+        try {
+            $row = DB::table('tl_com_orders')
+                ->leftJoin('tl_com_ordered_products', 'tl_com_ordered_products.order_id', '=', 'tl_com_orders.id')
+                ->leftJoin('tl_users', 'tl_users.id', '=', 'tl_com_ordered_products.seller_id')
+                ->where('tl_com_orders.shipping_type', $shipping_type)
+                ->where(function ($q) {
+                    $q->where('tl_users.user_type', config('tlecommercecore.user_type.admin'))
+                        ->orWhereNull('tl_com_ordered_products.seller_id');
+                })
+                ->selectRaw('MAX(tl_com_orders.id) as latest_id')
+                ->selectRaw('COUNT(DISTINCT tl_com_orders.id) as total')
+                ->selectRaw("CONCAT(
+                    COALESCE(MAX(tl_com_orders.id), 0), ':',
+                    COALESCE(COUNT(DISTINCT tl_com_orders.id), 0), ':',
+                    COALESCE(SUM(tl_com_ordered_products.payment_status), 0), ':',
+                    COALESCE(SUM(tl_com_ordered_products.delivery_status), 0), ':',
+                    COALESCE(MAX(tl_com_ordered_products.updated_at), ''), ':',
+                    COALESCE(MAX(tl_com_orders.updated_at), '')
+                ) as status_version")
+                ->first();
+
+            return [
+                'latest_id' => (int) ($row->latest_id ?? 0),
+                'total' => (int) ($row->total ?? 0),
+                'status_version' => (string) ($row->status_version ?? '0'),
+            ];
+        } catch (\Exception $e) {
+            return [
+                'latest_id' => 0,
+                'total' => 0,
+                'status_version' => '0',
+            ];
+        } catch (\Error $e) {
+            return [
+                'latest_id' => 0,
+                'total' => 0,
+                'status_version' => '0',
+            ];
+        }
+    }
+
     public function orderCounter($shipping_type)
     {
         try {

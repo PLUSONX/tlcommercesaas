@@ -634,7 +634,7 @@
                     <div class="form-row mb-20">
                         <div class="col-sm-3">
                             <label class="font-14 bold black mb-0">{{ translate('Thumbnail Image') }} </label>
-                            <p>385x380</p>
+                            <p>{{ translate('Recommended: 1000×1000 px (square). Used on homepage and product lists.') }}</p>
                         </div>
                         <div class="col-md-12">
                             @include('core::base.includes.media.media_input', [
@@ -650,7 +650,7 @@
                         class="form-row mb-20 product-gallery-images {{ count($product_details->color_choices) > 0 ? 'd-none' : '' }}">
                         <div class="col-sm-3">
                             <label class="font-14 bold black mb-0">{{ translate('Gallery Images') }} </label>
-                            <p>624x624</p>
+                            <p>{{ translate('Recommended: 1000×1000 px (square), up to 1600px wide.') }}</p>
                         </div>
                         <div class="col-md-12">
                             @php
