@@ -252,7 +252,8 @@ class CarrierRepository
             if (!$courier || !$courier->properties) {
                 Log::warning("Courier or properties not found for ID: " . $shipping_courier_id);
                 return [
-                    'shipping_courier_id' => $shipping_courier_id
+                    'success' => false,
+                    'message' => translate('Courier or courier properties not found.'),
                 ];
             }
 
@@ -261,7 +262,8 @@ class CarrierRepository
             if (!$order) {
                 Log::warning("Order not found for ID: " . $order_id);
                 return [
-                    'order_id' => $order_id
+                    'success' => false,
+                    'message' => translate('Order not found.'),
                 ];
             }
 
@@ -274,7 +276,10 @@ class CarrierRepository
                     'order_id' => $order_id,
                     'shipping_address_id' => $order->shipping_address,
                 ]);
-                return false;
+                return [
+                    'success' => false,
+                    'message' => translate('Shipping address not found for this order.'),
+                ];
             }
 
             Log::info("address data with relations:", ['address' => $address->toArray()]);
@@ -305,25 +310,35 @@ class CarrierRepository
                         'pickup_qr_url'        => $normalized['pickup_qr_url'],
                     ]);
 
-                    return true;
+                    return [
+                        'success' => true,
+                        'message' => $armadaResponse['message'] ?? translate('Delivery request submitted successfully.'),
+                    ];
 
                 }
                 catch (\Exception $e) {
                     Log::error("ShippingCourierOrder Submit failure: " . $e->getMessage());
-                    return false;
+                    return [
+                        'success' => false,
+                        'message' => translate('Delivery was created but saving courier order failed: ') . $e->getMessage(),
+                    ];
                 }
 
             }
             else {
-                Log::warning("Courier Error", ['error' => $armadaResponse['message']]);
-                return false;
+                Log::warning("Courier Error", ['error' => $armadaResponse['message'] ?? null]);
+                return [
+                    'success' => false,
+                    'message' => $armadaResponse['message'] ?? translate('Could not submit courier request.'),
+                ];
             }
-            // DB::commit();
-            return true;
         } catch (\Exception $e) {
             // DB::rollBack();
             Log::error("Courier Requst failure: " . $e->getMessage());
-            return false;
+            return [
+                'success' => false,
+                'message' => translate('Courier request failed: ') . $e->getMessage(),
+            ];
         }
     }
 

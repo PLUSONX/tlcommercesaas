@@ -1,7 +1,8 @@
 <template>
   <div class="" :class="{
     'force-mobile-layout': forcedMobile,
-    'mobile-content-wrapper': forcedMobile
+    'mobile-content-wrapper': forcedMobile,
+    'confirm-order--rtl': isRtl
   }">
     <!-- <page-header :items="bItems" /> -->
 
@@ -9,15 +10,22 @@
       <div class="custom-container2">
         <div class="row" v-if="!dataLoading">
           <div class="col-12" v-if="success">
-            <div class="shadow-card py-5 text-center mb-30">
-              <img src="/themes/tlcommerce/assets/images/icons/completed-order.svg" class="mb-4" alt="Order" />
-              <!-- <img
-                src="/public/themes/tlcommerce/assets/img/complete-order.png"
-                class="mb-4"
-                alt="Order"
-              /> -->
-              <h3>{{ $t("Thank You") }}!</h3>
-              <h4>{{ $t("Order ID") }}: {{ orderDetails.order_code }}</h4>
+            <div class="shadow-card py-5 mb-30">
+              <div class="confirm-order-success-row">
+                <div class="confirm-order-success-row__thumb">
+                  <img
+                    src="/themes/tlcommerce/assets/images/icons/completed-order.svg"
+                    class="confirm-order-success-icon"
+                    alt="Order"
+                  />
+                </div>
+                <div class="confirm-order-success-row__body">
+                  <h3 class="confirm-order-success-row__title">{{ $t("Thank You") }}!</h3>
+                  <h4 class="confirm-order-success-row__order-id">
+                    {{ $t("Order ID") }}: {{ orderDetails.order_code }}
+                  </h4>
+                </div>
+              </div>
             </div>
 
             <div class="shadow-card mb-30">
@@ -134,10 +142,16 @@
                   <CTableBody>
                     <CTableRow v-for="product in orderDetails.products.data" :key="product.id">
                       <CTableDataCell class="w-50">
-                        <div class="d-flex align-items-center">
-                          <router-link :to="`/products/${product.permalink}`">
-                            <img :src="product.image" :alt="product.name" class="cart-image mr-10 rounded-circle" />
-                          </router-link>
+                        <div class="d-flex align-items-center confirm-order-product-row">
+                          <div class="confirm-order-product-thumb">
+                            <router-link :to="`/products/${product.permalink}`">
+                              <img
+                                :src="product.image"
+                                :alt="product.name"
+                                class="confirm-order-product-thumb__image"
+                              />
+                            </router-link>
+                          </div>
                           <div class="item-info">
                             <!--Item Name-->
                             <router-link :title="`${product.name}`" :to="`/products/${product.permalink}`"
@@ -319,7 +333,7 @@ export default {
       isCustomerLogin: (state) => state.isCustomerLogin,
     }),
 
-    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+    ...mapGetters('layout', ['isSplitScreen', 'isMobile', 'isRtl']),
 
     forcedMobile() {
       if (this.isSplitScreen && !this.isMobile) {
@@ -481,6 +495,63 @@ export default {
 </script>
 
 <style scoped>
+.confirm-order-success-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.confirm-order-success-row__thumb {
+  flex: 0 0 96px;
+  width: 96px;
+  flex-shrink: 0;
+}
+
+.confirm-order-success-icon {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  display: block;
+}
+
+.confirm-order-success-row__body {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.confirm-order-success-row__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.confirm-order-success-row__order-id {
+  margin: 4px 0 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.confirm-order-product-row {
+  gap: 12px;
+}
+
+.confirm-order-product-thumb {
+  flex: 0 0 96px;
+  width: 96px;
+  flex-shrink: 0;
+}
+
+.confirm-order-product-thumb__image {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+}
+
 .force-mobile-layout .row>[class*="col-"] {
   flex: 0 0 100% !important;
   max-width: 100% !important;
@@ -516,5 +587,74 @@ export default {
   display: flex !important;
   flex-wrap: wrap !important;
   justify-content: space-between !important;
+}
+
+/* RTL — explicit swap (split-screen content column is direction: ltr) */
+.confirm-order--rtl .confirm-order-success-row {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+
+.confirm-order--rtl .confirm-order-success-row__body {
+  direction: rtl;
+  text-align: right;
+}
+
+.confirm-order--rtl .order-summery-title,
+.confirm-order--rtl .checkout-title {
+  direction: rtl;
+  text-align: right;
+}
+
+.confirm-order--rtl .order-summery-list li {
+  direction: rtl;
+}
+
+.confirm-order--rtl .order-summery-list li > span:first-child {
+  direction: rtl;
+  text-align: right;
+}
+
+.confirm-order--rtl .order-summery-list li > span:last-child,
+.confirm-order--rtl .order-summery-list li > p {
+  direction: ltr;
+  text-align: left;
+}
+
+.confirm-order--rtl .cart-table {
+  direction: rtl;
+}
+
+.confirm-order--rtl .cart-table td .confirm-order-product-row {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+
+.confirm-order--rtl .product-name {
+  direction: rtl;
+  text-align: right;
+}
+
+.confirm-order--rtl .shop_table {
+  direction: rtl;
+}
+
+.confirm-order--rtl .shop_table td:first-child {
+  direction: rtl;
+  text-align: right;
+  padding-left: 9px;
+  padding-right: 0;
+}
+
+.confirm-order--rtl .shop_table td:last-child {
+  direction: ltr;
+  text-align: left;
+  padding-left: 0;
+  padding-right: 9px;
+}
+
+.confirm-order--rtl .mt-3.d-flex.flex-wrap.justify-content-between {
+  flex-direction: row-reverse;
+  direction: ltr;
 }
 </style>

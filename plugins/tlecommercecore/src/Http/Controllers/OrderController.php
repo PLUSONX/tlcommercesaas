@@ -286,35 +286,33 @@ class OrderController extends Controller
             $shipping_label_content = $this->order_repository->getShippingLabelContent($request['order_id'], $request['shipping_label_products']);
             // \Log::info('Shipping label content retrieved', ['content' => $shipping_label_content]);
 
-            $qr_data = collect($shipping_label_content)->toJson();
+            // $qr_data = collect($shipping_label_content)->toJson();
 
             // Generate QR as SVG - save raw content directly (no base64)
-            $qr_svg_content = QrCode::format('svg')->size(200)->errorCorrection('H')->generate($qr_data);
-            $qr_temp = public_path('temp_qr_' . $shipping_label_content['order_code'] . '.svg');
-            file_put_contents($qr_temp, $qr_svg_content);
+            // $qr_svg_content = QrCode::format('svg')->size(200)->errorCorrection('H')->generate($qr_data);
+            // $qr_temp = public_path('temp_qr_' . $shipping_label_content['order_code'] . '.svg');
+            // file_put_contents($qr_temp, $qr_svg_content);
             // \Log::info('QR code generated successfully');
 
             // Log::info('qr data', [
             //     'qr_temp' => $qr_temp,
             // ]);
 
-            $order_code_bar_code = DNS1D::getBarcodePNG($shipping_label_content['order_code'], 'C39+', 1, 85);
-            $tracking_id_bar_code = DNS1D::getBarcodePNG($shipping_label_content['tracking_id'], 'C39+', 1, 50);
+            // $order_code_bar_code = DNS1D::getBarcodePNG($shipping_label_content['order_code'], 'C39+', 1, 85);
+            // $tracking_id_bar_code = DNS1D::getBarcodePNG($shipping_label_content['tracking_id'], 'C39+', 1, 50);
             // \Log::info('Barcodes generated successfully');
 
-            $order_bar_temp = public_path('temp_bar_order_' . $shipping_label_content['order_code'] . '.png');
-            $tracking_bar_temp = public_path('temp_bar_tracking_' . $shipping_label_content['order_code'] . '.png');
+            // $order_bar_temp = public_path('temp_bar_order_' . $shipping_label_content['order_code'] . '.png');
+            // $tracking_bar_temp = public_path('temp_bar_tracking_' . $shipping_label_content['order_code'] . '.png');
 
             // Register cleanup
-            register_shutdown_function(function() use ($order_bar_temp, $tracking_bar_temp, $qr_temp) {
-                @unlink($order_bar_temp);
-                @unlink($tracking_bar_temp);
-                @unlink($qr_temp);
-            });
+            // register_shutdown_function(function() use ($qr_temp) {
+            //     @unlink($qr_temp);
+            // });
 
             // Now generate and save files
-            file_put_contents($order_bar_temp, base64_decode($order_code_bar_code));
-            file_put_contents($tracking_bar_temp, base64_decode($tracking_id_bar_code));
+            // file_put_contents($order_bar_temp, base64_decode($order_code_bar_code));
+            // file_put_contents($tracking_bar_temp, base64_decode($tracking_id_bar_code));
 
             // file_put_contents($qr_temp, base64_decode($qr_code));
 
@@ -355,13 +353,31 @@ class OrderController extends Controller
                 }
             }
 
+            if (!empty($order_info['system_properties']['paid_image'])) {
+                $clean_path = str_replace([url('/'), '/public', 'public/'], '', $order_info['system_properties']['paid_image']);
+                $clean_path = ltrim($clean_path, '/');
+                $local_path = public_path($clean_path);
+                if (file_exists($local_path)) {
+                    $order_info['system_properties']['paid_image'] = $local_path;
+                }
+            }
+
+            if (!empty($order_info['system_properties']['unpaid_image'])) {
+                $clean_path = str_replace([url('/'), '/public', 'public/'], '', $order_info['system_properties']['unpaid_image']);
+                $clean_path = ltrim($clean_path, '/');
+                $local_path = public_path($clean_path);
+                if (file_exists($local_path)) {
+                    $order_info['system_properties']['unpaid_image'] = $local_path;
+                }
+            }
+
                     $data = [
                         'title'               => $shipping_label_content['order_code'],
                         'date'                => date('m/d/Y'),
                         'order_info'          => $order_info,
-                        'qr_code'             => $qr_temp,
-                        'order_code_bar_code' => $order_bar_temp,
-                        'tracking_id_bar_code'=> $tracking_bar_temp,
+                        // 'qr_code'             => $qr_temp,
+                        // 'order_code_bar_code' => $order_bar_temp,
+                        // 'tracking_id_bar_code'=> $tracking_bar_temp,
                         'font_family'         => $font_family,
                         'currency_font'       => $currency_font,
                     ];
@@ -379,22 +395,22 @@ class OrderController extends Controller
                     // \Log::info('RTL check', ['locale' => $default_language, 'is_rtl' => $is_rtl]);
 
                     if ($is_rtl) {
-                        $tenant_id = isTenant();
-                        $qrCodePath = public_path('tenant/tenant' . $tenant_id . '/shipping_' . $shipping_label_content['order_code'] . 'qr_code.png');
+                        // $tenant_id = isTenant();
+                        // $qrCodePath = public_path('tenant/tenant' . $tenant_id . '/shipping_' . $shipping_label_content['order_code'] . 'qr_code.png');
 
-                        \Log::info('Writing QR code file', ['path' => $qrCodePath]);
-                        file_put_contents($qrCodePath, base64_decode($qr_code));
+                        // \Log::info('Writing QR code file', ['path' => $qrCodePath]);
+                        // file_put_contents($qrCodePath, base64_decode($qr_code));
 
-                        $data['qr_code'] = url('tenant/tenant' . $tenant_id . '/shipping_' . $shipping_label_content['order_code'] . 'qr_code.png');
+                        // $data['qr_code'] = url('tenant/tenant' . $tenant_id . '/shipping_' . $shipping_label_content['order_code'] . 'qr_code.png');
 
                         // \Log::info('Loading RTL PDF view');
                         $pdf = NPDF::loadView('plugin/tlecommercecore::orders.invoice.shipping_label_rtl', $data, [], [
                             'default_font'  => 'dejavusans',
                             'mode'          => 'utf-8',
-                            'margin_top'    => 10,
-                            'margin_right'  => 10,
-                            'margin_bottom' => 10,
-                            'margin_left'   => 10,
+                            'margin_top'    => 0,
+                            'margin_right'  => 0,
+                            'margin_bottom' => 0,
+                            'margin_left'   => 0,
                             'padding_left'  => 5,
                             'padding_right' => 5,
                         ]);

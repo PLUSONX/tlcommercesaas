@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Plugin\Carrier\Http\Requests\CarrierRequest;
 use Plugin\Carrier\Repositories\CarrierRepository;
+use Plugin\Carrier\Services\ArmadaService;
 
 class CarrierController extends Controller
 {
@@ -178,19 +179,20 @@ class CarrierController extends Controller
         Log::info("submitCourierRequest method called!");
         Log::info("Courier request data:", ['request' => $request->all()]);
         $res = $this->carrier_repository->submitCourierRequest($request);
-        if ($res) {
-            return response()->json(
-                [
-                    'success' => true,
-                ]
-            );
-        } else {
-            return response()->json(
-                [
-                    'success' => false,
-                ]
-            );
+
+        if (!is_array($res)) {
+            $res = [
+                'success' => (bool) $res,
+                'message' => $res
+                    ? translate('Delivery request submitted successfully.')
+                    : translate('Something went wrong'),
+            ];
         }
+
+        return response()->json([
+            'success' => (bool) ($res['success'] ?? false),
+            'message' => $res['message'] ?? null,
+        ]);
     }
 
     /**
@@ -226,5 +228,82 @@ class CarrierController extends Controller
         ];
     }
 
-    
+    /**
+     * Debug-only: exercise ArmadaService::getCoordinates with free-form address fields.
+     *
+     * POST /api/carrier/test-geocode
+     * Body: address?, city?, state?, country?
+     */
+    public function testGeocode(Request $request)
+    {
+        if (!config('app.debug')) {
+            abort(404);
+        }
+
+        $validated = $request->validate([
+            'address' => 'nullable|string|max:500',
+            'city' => 'nullable|string|max:120',
+            'state' => 'nullable|string|max:120',
+            'country' => 'nullable|string|max:120',
+        ]);
+
+        $addressText = trim((string) ($validated['address'] ?? ''));
+        $city = trim((string) ($validated['city'] ?? ''));
+        $state = trim((string) ($validated['state'] ?? ''));
+        $country = trim((string) ($validated['country'] ?? '')) ?: 'Kuwait';
+
+        if ($addressText === '' && $city === '' && $state === '') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Provide at least one of: address, city, state.',
+            ], 422);
+        }
+
+        $address = new \stdClass();
+        $address->address = $addressText;
+        $address->city = $city !== '' ? (object) ['name' => $city] : null;
+        $address->state = $state !== '' ? (object) ['name' => $state] : null;
+        $address->country = (object) ['name' => $country];
+
+        $candidates = $this->buildTestGeocodeCandidates($address);
+        $result = app(ArmadaService::class)->getCoordinates($address);
+
+        $resolved = !is_null($result['lat'] ?? null) && !is_null($result['lng'] ?? null);
+
+        return response()->json([
+            'success' => $resolved,
+            'candidates' => $candidates,
+            'result' => $result,
+        ]);
+    }
+
+    /**
+     * Mirror ArmadaService candidate building for debug response visibility.
+     *
+     * @param object $address
+     * @return string[]
+     */
+    private function buildTestGeocodeCandidates($address): array
+    {
+        $addressParts = array_values(array_filter(array_map('trim', explode(',', (string) ($address->address ?? '')))));
+
+        $tail = [
+            $address->city->name ?? null,
+            $address->state->name ?? null,
+            $address->country->name ?? 'Kuwait',
+        ];
+        $tail = array_values(array_filter($tail));
+
+        $candidates = [];
+        $parts = $addressParts;
+        while (!empty($parts)) {
+            $candidates[] = implode(', ', array_merge($parts, $tail));
+            array_shift($parts);
+        }
+        if (!empty($tail)) {
+            $candidates[] = implode(', ', $tail);
+        }
+
+        return array_values(array_unique(array_filter($candidates)));
+    }
 }

@@ -1,3 +1,17 @@
+/* ==========================================================================
+   TL Commerce brand colors — global override for Dashmin purple theme
+   Change --tl-brand here to update accent color project-wide.
+   ========================================================================== */
+:root {
+    --tl-brand: #ff5A1f;
+    --tl-brand-hover: #ff7545;
+    --tl-brand-dark: #e64a10;
+    --tl-brand-light: #fff0e6;
+    --tl-brand-border: rgba(255, 90, 31, 0.35);
+    --tl-brand-shadow: rgba(255, 90, 31, 0.45);
+    --tl-brand-selected: rgba(255, 90, 31, 0.36);
+}
+
 /* Pagination */
 .pagination .page-item {
     box-sizing: border-box;
@@ -618,7 +632,7 @@ body[class*="admin-"] .widgets-page .widget-item.widget-border {
     overflow: hidden;
 }
 
-/* Confirmation modals — keep default theme primary on submit buttons */
+/* Confirmation modals — brand primary on submit buttons */
 body[class*="admin-"] .modal[class*="delete"] button.btn.long[type="submit"]:not(.btn-danger):not(.btn-white):not(.btn-success):not(.btn-info):not(.btn-secondary),
 body[class*="admin-"] .modal[class*="delete"] input.btn.long[type="submit"]:not(.btn-danger):not(.btn-white):not(.btn-info):not(.btn-secondary),
 body[class*="admin-"] .modal[class*="delete"] button[type="submit"]:not(.btn-danger),
@@ -627,10 +641,10 @@ body[class*="admin-"] .delete-modal button.btn.long[type="submit"]:not(.btn-dang
 body[class*="admin-"] .delete-modal input.btn.long[type="submit"]:not(.btn-danger):not(.btn-white):not(.btn-info):not(.btn-secondary),
 body[class*="admin-"] .delete-modal button[type="submit"]:not(.btn-danger),
 body[class*="admin-"] .delete-modal input[type="submit"]:not(.btn-danger) {
-    background-color: #6045e2 !important;
+    background-color: var(--tl-brand) !important;
     background-image: none !important;
-    border-color: #6045e2 !important;
-    box-shadow: 0 5px 10px rgba(4, 0, 252, 0.2) !important;
+    border-color: var(--tl-brand) !important;
+    box-shadow: 0 5px 10px var(--tl-brand-shadow) !important;
     color: #fff !important;
 }
 
@@ -642,10 +656,10 @@ body[class*="admin-"] .delete-modal button.btn.long[type="submit"]:not(.btn-dang
 body[class*="admin-"] .delete-modal input.btn.long[type="submit"]:not(.btn-danger):not(.btn-white):not(.btn-info):not(.btn-secondary):hover,
 body[class*="admin-"] .delete-modal button[type="submit"]:not(.btn-danger):hover,
 body[class*="admin-"] .delete-modal input[type="submit"]:not(.btn-danger):hover {
-    background-color: #6045e2 !important;
+    background-color: var(--tl-brand-hover) !important;
     background-image: none !important;
-    border-color: #6045e2 !important;
-    box-shadow: 0 5px 10px rgba(4, 0, 252, 0.2) !important;
+    border-color: var(--tl-brand-hover) !important;
+    box-shadow: 0 5px 10px var(--tl-brand-shadow) !important;
     color: #fff !important;
 }
 
@@ -995,4 +1009,286 @@ body[class*="admin-"] .theme-option-sidebar a.parent-menu:not(.active) {
 body[class*="admin-"] .theme-option-sidebar a.theme_option_link:not(.active) span,
 body[class*="admin-"] .theme-option-sidebar a.parent-menu:not(.active) span {
     color: #333 !important;
+}
+
+/* ==========================================================================
+   Dashmin purple theme overrides — cards, forms, utilities
+   ========================================================================== */
+
+/* Selection highlight */
+body[class*="admin-"] ::selection {
+    background-color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] ::-moz-selection {
+    background-color: var(--tl-brand) !important;
+}
+
+/* c1 / c2 utility classes */
+body[class*="admin-"] .c1,
+body[class*="admin-"] .aside-body li a.active,
+body[class*="admin-"] .aside-body li:hover a,
+body[class*="admin-"] .aside-body li.active a {
+    color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] .c1-bg {
+    background-color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] .c1-bo {
+    border-color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] .c2 {
+    color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] .c2-bg {
+    background-color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] .c2-bo {
+    border-color: var(--tl-brand) !important;
+}
+
+/* Bootstrap-like primary utilities */
+body[class*="admin-"] .bg-primary {
+    background-color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] .bg-primary-light {
+    background-color: var(--tl-brand-light) !important;
+}
+
+body[class*="admin-"] .text-primary {
+    color: var(--tl-brand) !important;
+}
+
+/* Border buttons */
+body[class*="admin-"] .btn.btn-border {
+    border-color: var(--tl-brand) !important;
+    color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] .btn.btn-border:hover {
+    background-color: var(--tl-brand) !important;
+    border-color: var(--tl-brand) !important;
+    color: #fff !important;
+}
+
+/* Checkboxes — replace purple outline and tick */
+body[class*="admin-"] .custom-checkbox .checkmark {
+    background-color: var(--tl-brand-light) !important;
+    border-color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] .custom-checkbox .checkmark:after {
+    border-color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] input[type="checkbox"] {
+    border-color: var(--tl-brand) !important;
+}
+
+/* Chips / tags — active and hover outlines */
+body[class*="admin-"] .chip .chip-content .img.icon:hover,
+body[class*="admin-"] .chip .chip-content .img.p_nav-link,
+body[class*="admin-"] .chip .chip-content .about-nav-tab a.img.active,
+body[class*="admin-"] .about-nav-tab .chip .chip-content a.img.active,
+body[class*="admin-"] .chip .chip-content .img.iconwrap,
+body[class*="admin-"] .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: var(--tl-brand-light) !important;
+    color: var(--tl-brand) !important;
+    border-color: var(--tl-brand) !important;
+}
+
+/* Select2 — open/focus borders and highlights */
+body[class*="admin-"] .select2-container--classic.select2-container--open .select2-selection--single,
+body[class*="admin-"] .select2-container--classic.select2-container--open .select2-selection--multiple,
+body[class*="admin-"] .select2-container--default.select2-container--open .select2-selection--single,
+body[class*="admin-"] .select2-container--default.select2-container--open .select2-selection--multiple,
+body[class*="admin-"] .select2-container--default.select2-container--focus .select2-selection--multiple {
+    border-color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] .select2-container--classic.select2-container--open .select2-dropdown,
+body[class*="admin-"] .select2-container--default.select2-container--open .select2-dropdown {
+    border-color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] .select2-container--classic .select2-results__option--highlighted.select2-results__option--selectable,
+body[class*="admin-"] .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] .select2-results__option--selected {
+    background: var(--tl-brand-selected) !important;
+}
+
+/* Media picker — selected attachment ring */
+body[class*="admin-"] .all-attachments ul li.selected {
+    box-shadow: 0 0 2px 3px var(--tl-brand), inset 0 0 0 7px #fff !important;
+}
+
+/* Unchecked switch default border */
+body[class*="admin-"] .switch .control {
+    border-color: var(--tl-brand-border) !important;
+}
+
+/* Multiselect media wrapper — moved from head.blade.php inline styles */
+#multiselectMediaWrapper {
+    padding: 8px 17px;
+    border: 1px solid gray;
+}
+
+div#multiselectMediaWrapper.active {
+    background: var(--tl-brand) !important;
+    color: #fff;
+    border-color: var(--tl-brand) !important;
+}
+
+/* ==========================================================================
+   Admin sidebar navigation — orange pill active states
+   ========================================================================== */
+
+/* Suppress Dashmin left-bar indicator (pill style replaces it) */
+body[class*="admin-"] .sidebar .sidebar-body li.active:before,
+body[class*="admin-"] .sidebar .sidebar-body li:hover:before {
+    background-color: transparent !important;
+}
+
+/* Parent WITH sub-menu: always transparent, no background in any state */
+body[class*="admin-"] .sidebar .nav li:has(> .sub-menu) > a,
+body[class*="admin-"] .sidebar .nav li:has(> .sub-menu) > a:hover,
+body[class*="admin-"] .sidebar .nav li:has(> .sub-menu).active > a,
+body[class*="admin-"] .sidebar .nav li:has(> .sub-menu).active > a:hover {
+    background-color: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Parent WITH sub-menu hover: only font + icon turn orange */
+body[class*="admin-"] .sidebar .nav li:has(> .sub-menu) > a:hover,
+body[class*="admin-"] .sidebar .nav li:has(> .sub-menu).active > a:hover {
+    color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] .sidebar .nav li:has(> .sub-menu) > a:hover svg,
+body[class*="admin-"] .sidebar .nav li:has(> .sub-menu).active > a:hover svg {
+    stroke: var(--tl-brand) !important;
+}
+
+/* Standalone active parent — Customers, File Manager, Dashboard */
+body[class*="admin-"] .sidebar .nav > li.active:not(:has(> .sub-menu)) > a {
+    background-color: var(--tl-brand) !important;
+    color: #fff !important;
+    border-radius: 12px;
+}
+
+body[class*="admin-"] .sidebar .nav > li.active:not(:has(> .sub-menu)) > a .link-title {
+    color: #fff !important;
+}
+
+body[class*="admin-"] .sidebar .nav > li.active:not(:has(> .sub-menu)) > a svg {
+    stroke: #fff !important;
+}
+
+/* Standalone parent hover */
+body[class*="admin-"] .sidebar .nav > li:not(:has(> .sub-menu)) > a:hover {
+    background-color: var(--tl-brand) !important;
+    color: #fff !important;
+    border-radius: 12px;
+}
+
+body[class*="admin-"] .sidebar .nav > li:not(:has(> .sub-menu)) > a:hover .link-title {
+    color: #fff !important;
+}
+
+body[class*="admin-"] .sidebar .nav > li:not(:has(> .sub-menu)) > a:hover svg {
+    stroke: #fff !important;
+}
+
+/* Parent WITH sub-menu that is currently OPEN: keep font orange */
+body[class*="admin-"] .sidebar .nav li.sub-menu-opened:has(> .sub-menu) > a {
+    color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] .sidebar .nav li.sub-menu-opened:has(> .sub-menu) > a .link-title {
+    color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] .sidebar .nav li.sub-menu-opened:has(> .sub-menu) > a svg {
+    stroke: var(--tl-brand) !important;
+}
+
+/* Active child: orange background (leaf items only, not nested parents) */
+body[class*="admin-"] .sidebar .nav .sub-menu > li.active:not(:has(> .sub-menu)) > a {
+    background-color: var(--tl-brand) !important;
+    color: #fff !important;
+    border-radius: 12px;
+}
+
+body[class*="admin-"] .sidebar .nav .sub-menu > li.active:not(:has(> .sub-menu)) > a svg {
+    stroke: #fff !important;
+}
+
+/* Child hover: only font color, no background */
+body[class*="admin-"] .sidebar .nav .sub-menu > li:not(:has(> .sub-menu)) > a:hover {
+    background-color: transparent !important;
+    color: var(--tl-brand) !important;
+    text-decoration: none;
+}
+
+/* Active child being hovered: keep orange background */
+body[class*="admin-"] .sidebar .nav .sub-menu > li.active:not(:has(> .sub-menu)) > a:hover {
+    background-color: var(--tl-brand) !important;
+    color: #fff !important;
+}
+
+/* Locations / nested parent (has sub-menu): transparent always */
+body[class*="admin-"] .sidebar .nav .sub-menu > li:has(> .sub-menu) > a,
+body[class*="admin-"] .sidebar .nav .sub-menu > li:has(> .sub-menu) > a:hover,
+body[class*="admin-"] .sidebar .nav .sub-menu > li:has(> .sub-menu).active > a,
+body[class*="admin-"] .sidebar .nav .sub-menu > li:has(> .sub-menu).active > a:hover {
+    background-color: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+body[class*="admin-"] .sidebar .nav .sub-menu > li:has(> .sub-menu) > a:hover {
+    color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] .sidebar .sidebar-body .nav .sub-menu > li.sub-menu-opened:has(> .sub-menu) > a {
+    color: var(--tl-brand) !important;
+}
+
+body[class*="admin-"] .sidebar .sidebar-body .nav .sub-menu > li:has(> .sub-menu).active:before,
+body[class*="admin-"] .sidebar .sidebar-body .nav .sub-menu > li:has(> .sub-menu).sub-menu-opened:before {
+    background-color: transparent !important;
+}
+
+/* Locations grandchild active */
+body[class*="admin-"] .sidebar .nav .sub-menu .sub-menu > li.active > a {
+    background-color: var(--tl-brand) !important;
+    color: #fff !important;
+    border-radius: 12px;
+}
+
+body[class*="admin-"] .sidebar .sidebar-body .nav .sub-menu .sub-menu > li > a:hover {
+    background-color: transparent !important;
+    color: var(--tl-brand) !important;
+    text-decoration: none;
+}
+
+body[class*="admin-"] .sidebar .nav .sub-menu .sub-menu > li.active > a:hover {
+    background-color: var(--tl-brand) !important;
+    color: #fff !important;
+}
+
+@media (max-width: 900px) {
+    .hide-menu {
+        display: none !important;
+    }
 }

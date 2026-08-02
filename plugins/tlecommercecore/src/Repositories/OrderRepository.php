@@ -25,6 +25,7 @@ use Plugin\TlcommerceCore\Models\PaymentMethods;
 use Plugin\TlcommerceCore\Models\ProductAttribute;
 use Plugin\TlcommerceCore\Models\CustomerAddress;
 use Plugin\TlcommerceCore\Models\OrderHasProducts;
+use Plugin\TlcommerceCore\Models\ShippingCourierOrders;
 use Plugin\TlcommerceCore\Models\ShippingZoneCities;
 use Plugin\TlcommerceCore\Models\SingleProductPrice;
 use Plugin\TlcommerceCore\Models\ProductShippingInfo;
@@ -3364,49 +3365,59 @@ class OrderRepository
             $order_info = Orders::find($order_id);
             $num_of_products = OrderHasProducts::whereIn('id', $order_products)->sum('quantity');
 
-            $products = OrderHasProducts::whereIn('id', $order_products)->select(
+            $products = OrderHasProducts::whereIn('id', $order_products)->with('product_details')->select(
                 [
+                    'id',
                     'delivery_cost',
                     'order_id',
                     'total_paid',
                     'order_discount',
                     'tracking_id',
                     'product_id',
+                    'variant_id as variant',
                     'quantity',
                     'unit_price',
                     'shipping_rate',
+                    'payment_status',
                     'tax'
                 ]
 
             )->get();
-            $shipping_zone = null;
-            $tracking_id = $products[0]->tracking_id != null ? $products[0]->tracking_id : $order_info->order_code;
-            $shipping_rate = $products[0]->shipping_rate;
-            $shipping_method = null;
 
-            if ($shipping_rate != null) {
-                $rate_info = ShippingRate::where('id', $shipping_rate)->select('zone_id', 'name', 'carrier_id')->first();
-                if ($rate_info != null) {
-                    if ($rate_info->name != null) {
-                        $shipping_method = $rate_info->name;
-                    } else {
-                        $carrier = ShippingCarrier::find($rate_info->carrier_id);
-                        if ($carrier != null) {
-                            $shipping_method = $carrier->name;
-                        }
-                    }
-                    $shipping_zone_info = ShippingZone::where('id', $rate_info->zone_id)->select('name', 'profile_id')->first();
-                    if ($shipping_zone_info != null) {
-                        $shipping_zone = $shipping_zone_info->name;
-                    }
+            $paid_status = config('tlecommercecore.order_payment_status.paid');
+            $total_payable = 0;
+            $total_paid_sum = 0;
+            $is_fully_paid = $products->isNotEmpty();
+            foreach ($products as $product) {
+                $total_payable += $product->totalPayableAmount();
+                $total_paid_sum += $product->total_paid;
+                if ($product->payment_status != $paid_status) {
+                    $is_fully_paid = false;
                 }
             }
 
-            $shipping_type = $order_info->shipping_type == config('tlecommercecore.order_type.home_delivery') ? 'Home Delivery' : 'Local Pickup';
+            $tracking_id = $products[0]->tracking_id != null ? $products[0]->tracking_id : $order_info->order_code;
 
-            $payment_method = $order_info->payment_method != config('tlecommercecore.payment_methods.cod') ? 'Non COD' : 'COD';
+            $shipping_method = 'NA';
+            $shippingCourierOrder = ShippingCourierOrders::where('order_id', $order_id)
+                ->with('courier')
+                ->first();
 
-            $total_weight = 0;
+            if ($shippingCourierOrder != null && $shippingCourierOrder->courier != null) {
+                $shipping_method = $shippingCourierOrder->courier->name;
+            }
+
+            $payment_method = null;
+            if ($order_info->payment_method == config('tlecommercecore.payment_methods.payzah')) {
+                $payment_method = 'Payzah';
+            } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.payzah_apple_pay')) {
+                $payment_method = 'Apple Pay';
+            } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.myfatoorah')) {
+                $payment_method = 'Myfatoorah';
+            } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.cod')) {
+                $payment_method = 'COD';
+            }
+
             $total_price = 0;
             $total_order_discount = 0;
             $total_delivery_cost = 0;
@@ -3419,12 +3430,7 @@ class OrderRepository
                 $total_tax += $product['tax'];
                 $total_price += $product['quantity'] * $product['unit_price'];
                 $total_paid += $product['total_paid'];
-                $single_weight = ProductShippingInfo::where('product_id', $product['product_id'])->select('weight')->first();
-                if ($single_weight != null) {
-                    $total_weight += $single_weight['weight'] * $product['quantity'];
-                }
             }
-            $total_product_weight = $total_weight / 1000;
 
             $amount_to_pay = ($total_price + $total_delivery_cost + $total_tax) - $total_order_discount;
             $due_amount = $amount_to_pay - $total_paid;
@@ -3447,10 +3453,12 @@ class OrderRepository
             $system_properties =
                 [
                     'title' => getGeneralSetting('system_name'),
-                    'logo' => url($logo),
+                    'logo' => $logo ? url($logo) : null,
                     'address' => SettingsRepository::getEcommerceSetting('invoice_address'),
                     'phone' => SettingsRepository::getEcommerceSetting('invoice_phone'),
                     'email' => SettingsRepository::getEcommerceSetting('invoice_email'),
+                    'paid_image' => SettingsRepository::getEcommerceSetting('invoice_paid_image') != null ? url('/') . getFilePath(SettingsRepository::getEcommerceSetting('invoice_paid_image'), false) : url('/public/backend/assets/img/invoice/paid.jpg'),
+                    'unpaid_image' => SettingsRepository::getEcommerceSetting('invoice_unpaid_image') != null ? url('/') . getFilePath(SettingsRepository::getEcommerceSetting('invoice_unpaid_image'), false) : url('/public/backend/assets/img/invoice/unpaid.jpg'),
                 ];
 
 
@@ -3458,16 +3466,17 @@ class OrderRepository
                 'order_code' => $order_info->order_code,
                 'date' => $order_info->created_at->format('d M Y'),
                 'num_of_products' => $num_of_products,
-                'total_product_weight' => $total_product_weight,
                 'shipping_info' => $shipping_details,
-                'shipping_zone' => $shipping_zone,
-                'shipping_type' => $shipping_type,
                 'payment_method' => $payment_method,
                 'total_payable_amount' => $total_payable_amount,
                 'shipping_method' => $shipping_method,
                 'tracking_id' => $tracking_id,
                 'system_properties' => $system_properties,
-                'customer_name' => $customer_name
+                'customer_name' => $customer_name,
+                'products' => $products,
+                'total_payable' => $total_payable,
+                'total_paid' => $total_paid_sum,
+                'is_fully_paid' => $is_fully_paid,
             ];
             return $data;
         } catch (\Exception $e) {

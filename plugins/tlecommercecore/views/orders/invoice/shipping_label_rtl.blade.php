@@ -1,17 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Shipping Lebel Preview</title>
-    <!-- ======= MAIN STYLES ======= -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <!-- ======= END MAIN STYLES ======= -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipping Label</title>
     <style>
         @font-face {
             font-family: "Arabic";
@@ -33,195 +26,323 @@
             src: url("https://tlcommerce.themelooks.us/public/cdn/font/arial-unicode-ms.ttf") format('truetype');
         }
 
+        html {
+            margin: 0px;
+            background: white;
+            padding: 5px;
+        }
+
         body {
             font-family: '{{ $font_family }}', sans-serif;
-            margin: 10px;
-            padding: 10px;
-            font-size: 16px;
-            color: #000;
-        }
-
-        .big-barcode {
-            height: 150px;
-            width: 100%;
-        }
-
-        .small-barcode {
-            height: 100px;
+            padding: 5px;
+            margin: 0px;
         }
 
         .qr-code {
-            min-height: 300px;
-            max-height: 350px;
+            max-height: 120px;
         }
 
+        .payment-image {
+            max-height: 120px;
+            margin-top: 70px;
+            max-width: 200px;
+        }
 
+        .invoice-top {
+            background: #EBEBEB;
+        }
+
+        .invoice-p {
+            margin-bottom: 0px;
+            font-size: 12px;
+            color: black;
+            padding-block: 5px !important;
+        }
 
         .currency {
             font-family: '{{ $currency_font }}', sans-serif;
         }
 
-        .table tr,
+        .payment-image {
+            max-height: 150px;
+        }
+
+        .invoice-product-table {
+            width: calc(100% - 40px);
+            margin-inline: 20px;
+        }
+
+        .p5 {
+            padding: 5px;
+        }
+
+        .invoice-product-table th,
         td {
-            padding: 20px 10px !important;
+            padding-top: 5px;
+            padding-bottom: 5px;
         }
 
-        .table-border-less {
-            border: 0px;
+        .invoice-title {
+            font-size: 32px
         }
 
-        .border-bottom-1 {
-            border-bottom: 1px solid #000 !important;
-            padding: 5px;
+        .section {
+            width: 100%;
+            margin-bottom: 10px !important;
+            padding: 5px !important;
         }
 
-        .border-right-1 {
-            border-right: 1px solid #dee2e6 !important;
-            padding: 5px;
+        .table-borderless td {
+            border-top: 0px !important;
         }
 
         .w-100 {
-            width: 100%;
-        }
-
-        .p-0 {
-            padding: 0px !important;
-        }
-
-        .text-right {
-            text-align: right;
+            width: 100% !important;
         }
     </style>
 </head>
 
 <body>
-    <div class="row">
-        <div class="col-12">
-            <table class="table table-bordered w-100">
-                <tbody>
-                    <tr>
-                        <td style="text-align: left;">{{ $order_info['date'] }}</td>
-                        <td>
-                            <p class="mb-0">{{ translate('Order Number', getLocale()) }}</p>
-                            <p class="mb-0">{{ $order_info['order_code'] }}</p>
-                        </td>
-                        <td>
-                            @if ($order_info['system_properties']['logo'] != null)
-                                <img src="{{ $order_info['system_properties']['logo'] }}"
-                                    alt="{{ $order_info['system_properties']['title'] }}">
-                            @else
-                                <h2>{{ $order_info['system_properties']['title'] }}</h2>
-                            @endif
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" style="text-align:center;">
-                            <img src="data:image/png;base64, {!! $tracking_id_bar_code !!}" class="w-100 small-barcode">
-                            <p class="mb-0 text-center" style="text-align: center;">
-                                {{ translate('Tracking Number', getLocale()) }} {{ $order_info['tracking_id'] }}
-                            </p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="text-align:center;">
-                            <img src="data:image/png;base64, {!! $order_code_bar_code !!}" class="w-100 big-barcode">
-                            <p class="mb-0 text-center">
-                                {{ translate('Order Number', getLocale()) }}
-                                {{ $order_info['order_code'] }}
-                            </p>
-                        </td>
-                        <td class="p-0" style="padding: 0px;">
-                            <table class="w-100 p-0 table-border-less">
-                                <tr>
-                                    <td class="text-right">
-                                        {{ $order_info['shipping_zone'] != null ? $order_info['shipping_zone'] : '-' }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="text-right">
-                                        {{ $order_info['shipping_type'] != null ? $order_info['shipping_type'] : '-' }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="text-right">
-                                        {{ $order_info['shipping_method'] != null ? $order_info['shipping_method'] : '-' }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="text-right">{{ $order_info['payment_method'] }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="currency text-right">
-                                        {{ currencyExchange($order_info['total_payable_amount'], true, null, false) }}
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <img src="{{ $qr_code }}" class="qr-code float-left w-100">
-                        </td>
-                        <td colspan="2" class="p-0" style="padding: 0px;">
-                            <table class="w-100 p-0 table-border-less">
-                                <tr>
-                                    <td class="text-right" colspan="2">
-                                        @if ($order_info['shipping_info'] != null)
-                                            <p class="mb-0">
-                                                {{ $order_info['shipping_info']['name'] }}
-                                                :{{ translate('Recipient', getLocale()) }}
-                                            </p>
-                                            <p>
-                                                {{ $order_info['shipping_info']['phone'] }}
-                                                :{{ translate('Tel', getLocale()) }} <br>
-                                                {{ $order_info['shipping_info']['postal_code'] }}:
-                                                {{ translate('Postal Code', getLocale()) }}
-                                                {{ $order_info['shipping_info']['state'] }},
-                                                {{ $order_info['shipping_info']['city'] }},
-                                                {{ $order_info['shipping_info']['address'] }}
-                                                {{ $order_info['shipping_info']['country'] }}<br>
-                                            </p>
-                                        @else
-                                            {{ translate('Recipient', getLocale()) }}:
-                                            {{ $order_info['customer_name'] }}
-                                        @endif
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class=" text-right" colspan="2">
-                                        <p class="mb-0">
-                                            {{ $order_info['system_properties']['title'] }}:
-                                            {{ translate('Seller', getLocale()) }}
-                                        </p>
-                                        <p>
-                                            {{ $order_info['system_properties']['phone'] }}
-                                            :{{ translate('Tel', getLocale()) }}<br>
-                                            {{ $order_info['system_properties']['address'] }},
-                                            {{ $order_info['system_properties']['email'] }},
-                                        </p>
+    <table class="table table-borderless invoice-top section">
+        <tbody>
+            <tr>
+                <td>
+                    @if ($order_info['system_properties']['logo'] != null)
+                        <img src="{{ $order_info['system_properties']['logo'] }}" alt="Logo">
+                    @else
+                        <h2>{{ $order_info['system_properties']['title'] }}</h2>
+                    @endif
+                </td>
+                <td style="text-align: left;">
+                    <p class="invoice-title">{{ translate('Shipping Label', getLocale()) }}</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p class="invoice-p">{{ $order_info['system_properties']['title'] }}</p>
+                    @if ($order_info['system_properties']['address'] != null)
+                        <p class="invoice-p">{{ $order_info['system_properties']['address'] }}</p>
+                    @endif
+                    @if ($order_info['system_properties']['email'] != null)
+                        <p class="invoice-p">
+                            {{ translate('Email', getLocale()) }}: {{ $order_info['system_properties']['email'] }}
+                        </p>
+                    @endif
+                    @if ($order_info['system_properties']['phone'] != null)
+                        <p class="invoice-p">
+                            {{ translate('Phone', getLocale()) }}: {{ $order_info['system_properties']['phone'] }}
+                        </p>
+                    @endif
+                </td>
+                <td style="text-align: left;">
+                    <p class="invoice-p">
+                        {{ translate('Order ID', getLocale()) }}: {{ $order_info['order_code'] }}
+                    </p>
+                    <p class="invoice-p">
+                        {{ translate('Order date', getLocale()) }}: {{ $order_info['date'] }}
+                    </p>
+                    <p class="invoice-p">
+                        {{ translate('Payment method', getLocale()) }}: {{ $order_info['payment_method'] }}
+                    </p>
+                    <p class="invoice-p">
+                        {{ translate('Tracking Number', getLocale()) }}: {{ $order_info['tracking_id'] }}
+                    </p>
+                    <p class="invoice-p">
+                        {{ translate('Shipping Method', getLocale()) }}: {{ $order_info['shipping_method'] ?? 'NA' }}
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="text-right" colspan="2">
-                                        {{ translate('kg', getLocale()) }}
-                                        {{ $order_info['total_product_weight'] }}
-                                        {{ translate('Total Weight', getLocale()) }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="text-right" colspan="2">
-                                        {{ $order_info['num_of_products'] }}
-                                        {{ translate('Number of Products', getLocale()) }}
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <table class="table table-borderless section">
+        <tbody>
+            <tr>
+                <td>
+                    <p class="invoice-p">{{ translate('Ship to', getLocale()) }}</p>
+                    @if ($order_info['shipping_info'] != null)
+                        <p class="invoice-p">{{ $order_info['shipping_info']['name'] }}</p>
+                        <p class="invoice-p">
+                            @if ($order_info['shipping_info']['country'] != null)
+                                <span>{{ $order_info['shipping_info']['country'] }}.</span>
+                            @endif
+                            @if ($order_info['shipping_info']['state'] != null)
+                                <span>{{ $order_info['shipping_info']['state'] }}, </span>
+                            @endif
+                            @if ($order_info['shipping_info']['city'] != null)
+                                <span>{{ $order_info['shipping_info']['city'] }}, </span>
+                            @endif
+                            @if ($order_info['shipping_info']['address'] != null)
+                                <span>{{ $order_info['shipping_info']['address'] }}, </span>
+                            @endif
+                        </p>
+                        @if ($order_info['shipping_info']['postal_code'] != null)
+                            <p class="invoice-p">
+                                {{ translate('Postal Code', getLocale()) }}:
+                                {{ $order_info['shipping_info']['postal_code'] }}
+                            </p>
+                        @endif
+                        @if ($order_info['shipping_info']['phone'] != null)
+                            <p class="invoice-p">
+                                {{ translate('Phone', getLocale()) }}: {{ $order_info['shipping_info']['phone'] }}
+                            </p>
+                        @endif
+                    @else
+                        <p class="invoice-p">{{ $order_info['customer_name'] }}</p>
+                    @endif
+                </td>
+                {{-- <td style="text-align:left;">
+                    <div>
+                        <img src="{{ $qr_code }}" class="qr-code float-left">
+                    </div>
+                </td> --}}
+            </tr>
+        </tbody>
+    </table>
+
+    {{-- <tr>
+        <td colspan="3" style="text-align:center;">
+            <img src="data:image/png;base64, {!! $tracking_id_bar_code !!}" class="w-100 small-barcode">
+            <p class="mb-0 text-center" style="text-align: center;">
+                {{ translate('Tracking Number', getLocale()) }} {{ $order_info['tracking_id'] }}
+            </p>
+        </td>
+    </tr> --}}
+
+    {{-- <td colspan="2" style="text-align:center;">
+        <img src="data:image/png;base64, {!! $order_code_bar_code !!}" class="w-100 big-barcode">
+        <p class="mb-0 text-center">
+            {{ translate('Order Number', getLocale()) }}
+            {{ $order_info['order_code'] }}
+        </p>
+    </td> --}}
+
+    @php
+        $total_amount = 0;
+        $sub_total = 0;
+        $total_tax = 0;
+        $total_discount = 0;
+        $total_shipping_cost = 0;
+        $total_paid = 0;
+    @endphp
+    <table class="table invoice-product-table section w-100">
+        <thead class="thead-light">
+            <tr>
+                <td scope="col" class="invoice-p">{{ translate('Name', getLocale()) }}</td>
+                <td scope="col" class="invoice-p">{{ translate('Quantity', getLocale()) }}</td>
+                <td scope="col" class="invoice-p">{{ translate('Unit Price', getLocale()) }}</td>
+                <td scope="col" class="invoice-p">{{ translate('Tax', getLocale()) }}</td>
+                <td scope="col" class="invoice-p" style="text-align:left;">
+                    {{ translate('Total', getLocale()) }}</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($order_info['products'] as $item)
+                @php
+                    $sub_total += $item->unit_price * $item->quantity;
+                    $total_tax += $item->tax;
+                    $total_shipping_cost += $item->delivery_cost;
+                    $total_discount += $item->couponDiscountedAmount();
+                    $total_amount += $item->unit_price * $item->quantity + $item->tax + $item->delivery_cost;
+                    $total_paid += $item->total_paid;
+                @endphp
+                <tr>
+                    <td class="invoice-p">
+                        <p class="invoice-p">{{ $item->product_details->translation('name', getLocale()) }}</p>
+                        @if ($item->variant != null)
+                            <p class="invoice-p">{{ $item->variant }}</p>
+                        @endif
+                    </td>
+                    <td class="invoice-p">{{ $item->quantity }}</td>
+                    <td class="invoice-p currency">{{ currencyExchange($item->unit_price, true, null, false) }}</td>
+                    <td class="invoice-p currency">{{ currencyExchange($item->tax, true, null, false) }}</td>
+                    <td class="invoice-p currency" style="text-align:left;">
+                        {{ currencyExchange($item->unit_price * $item->quantity, true, null, false) }}
+                    </td>
+                </tr>
+            @endforeach
+            <tr>
+                <td colspan="2">
+                    <div class="payment-image-container mt-4">
+                        @if (!empty($order_info['is_fully_paid']))
+                            @if ($order_info['system_properties']['paid_image'] != null)
+                                <img src="{{ $order_info['system_properties']['paid_image'] }}" class="payment-image"
+                                    alt="Paid">
+                            @endif
+                        @else
+                            @if ($order_info['system_properties']['unpaid_image'] != null)
+                                <img src="{{ $order_info['system_properties']['unpaid_image'] }}" class="payment-image"
+                                    alt="Unpaid">
+                            @endif
+                        @endif
+                    </div>
+                </td>
+                <td colspan="3" style="text-align: left;">
+                    <table class="table table-borderless w-100 invoice-summary-table">
+                        <tr>
+                            <td colspan="3" class="border-top-0 invoice-p p-0">
+                                {{ translate('Subtotal', getLocale()) }}</td>
+                            <td class="border-top-0">
+                                <p class=" invoice-p p-0 currency">
+                                    {{ currencyExchange($sub_total, true, null, false) }}
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="border-top-0 invoice-p p-0">{{ translate('Tax', getLocale()) }}
+                            </td>
+                            <td class="border-top-0">
+                                <div class=" invoice-p p-0 currency">
+                                    {{ currencyExchange($total_tax, true, null, false) }}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="border-top-0 invoice-p p-0">
+                                {{ translate('Shipping', getLocale()) }}</td>
+                            <td class="border-top-0">
+                                <div class=" invoice-p p-0 currency">
+                                    {{ currencyExchange($total_shipping_cost, true, null, false) }}
+                                </div>
+                            </td>
+                        </tr>
+                        @if ($total_discount > 0)
+                        <tr>
+                            <td colspan="3" class="border-top-0 invoice-p p-0">
+                                {{ translate('Discount', getLocale()) }}</td>
+                            <td class="border-top-0">
+                                <div class="invoice-p  p-0 currency">
+                                    {{ currencyExchange($total_discount, true, null, false) }}
+                                </div>
+                            </td>
+                        </tr>
+                        @endif
+                        <tr>
+                            <td colspan="3" class="border-top-0 invoice-p p-0">
+                                {{ translate('Grand Total', getLocale()) }}
+                            </td>
+                            <td class="border-top-0">
+                                <div class="invoice-p  p-0 currency">
+                                    {{ currencyExchange($total_amount - $total_discount, true, null, false) }}
+                                </div>
+                            </td>
+                        </tr>
+                        @if ($order_info['total_payable_amount'] > 0)
+                        <tr>
+                            <td colspan="3" class="border-top-0 invoice-p p-0">
+                                {{ translate('Amount to Collect', getLocale()) }}</td>
+                            <td class="border-top-0">
+                                <div class="invoice-p  p-0 currency">
+                                    {{ currencyExchange($order_info['total_payable_amount'], true, null, false) }}
+                                </div>
+                            </td>
+                        </tr>
+                        @endif
+                    </table>
+                </td>
+            <tr>
+        </tbody>
+    </table>
 </body>
 
 </html>

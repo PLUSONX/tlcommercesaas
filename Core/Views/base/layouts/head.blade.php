@@ -58,17 +58,6 @@
     <link rel="stylesheet" href="{{ asset('/public/backend/assets/css/custom.css') }}"> -->
     <!-- ======= END MAIN STYLES ======= -->
     <style>
-        #multiselectMediaWrapper {
-            padding: 8px 17px;
-            border: 1px solid gray;
-        }
-
-        div#multiselectMediaWrapper.active {
-            background: #6045e2 !important;
-            color: #fff;
-            border-color: #6045e2 !important;
-        }
-
         .currency-font {
             font-family: "Roboto", sans-serif;
         }

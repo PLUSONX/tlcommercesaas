@@ -25,7 +25,7 @@
 @endphp
 @include('core::base.layouts.head')
 
-<body>
+<body class="admin-{{ $style_path }}">
     <!-- Offcanval Overlay -->
     <div class="offcanvas-overlay"></div>
     <!-- Offcanval Overlay -->
