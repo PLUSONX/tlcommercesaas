@@ -54,6 +54,14 @@
                             </span>
                         </td>
                     </tr>
+                    <tr v-if="orderDetails.delivery_schedule">
+                        <td
+                            style="padding: 12px 16px; background: #f5f5f5; font-weight: 600; border-bottom: 1px solid #e0e0e0;">
+                            Delivery Time</td>
+                        <td style="padding: 12px 16px; border-bottom: 1px solid #e0e0e0;">
+                            {{ orderDetails.delivery_schedule.display }}
+                        </td>
+                    </tr>
                     <tr>
                         <td
                             style="padding: 12px 16px; background: #f5f5f5; font-weight: 600; border-bottom: 1px solid #e0e0e0;">

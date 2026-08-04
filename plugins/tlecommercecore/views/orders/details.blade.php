@@ -1,8 +1,19 @@
 @php
+    use Plugin\TlcommerceCore\Repositories\DeliveryScheduleRepository;
+    use Plugin\TlcommerceCore\Repositories\SettingsRepository;
+
     if ($order_details->payment_method == config('tlecommercecore.payment_methods.bank')) {
         $bank_details = $order_details->bank_transaction;
     } else {
         $bank_details = null;
+    }
+
+    $delivery_schedule = null;
+    if (
+        $order_details->pickup_point == null
+        && SettingsRepository::getEcommerceSetting('enable_delivery_scheduling') == config('settings.general_status.active')
+    ) {
+        $delivery_schedule = app(DeliveryScheduleRepository::class)->getScheduleForOrder((int) $order_details->id);
     }
 
 @endphp
@@ -118,6 +129,11 @@
                                 <li><span class="key">{{ translate('Date') }}</span> <span
                                         class="black">{{ $order_details->created_at->format('d M y h:i A') }}</span>
                                 </li>
+                                @if ($delivery_schedule)
+                                    <li><span class="key">{{ translate('Delivery Time') }}</span> <span
+                                            class="black">{{ $delivery_schedule['display'] }}</span>
+                                    </li>
+                                @endif
                                 <li><span class="key">{{ translate('Total') }}</span> <span
                                         class="black">{!! currencyExchange($order_details->total_payable_amount) !!}</span>
                                 </li>

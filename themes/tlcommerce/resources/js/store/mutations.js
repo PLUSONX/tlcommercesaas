@@ -146,6 +146,10 @@ export default {
     state.shippingDetails = data;
     localStorage.setItem("shippingDetails", JSON.stringify(state.shippingDetails));
   },
+  storeDeliverySchedule(state, data) {
+    state.deliverySchedule = data;
+    localStorage.setItem("deliverySchedule", JSON.stringify(state.deliverySchedule));
+  },
   /**
    * Store guest customer details
    */
@@ -307,6 +311,8 @@ export default {
     //Remove shipping address
     state.shippingDetails = null;
     localStorage.removeItem("shippingDetails");
+    state.deliverySchedule = null;
+    localStorage.removeItem("deliverySchedule");
     //Remove guest customer info
     state.guestCustomerInfo = null;
     localStorage.removeItem("guestCustomerInfo");

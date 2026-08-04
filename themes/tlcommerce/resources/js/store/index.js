@@ -50,6 +50,7 @@ const store = createStore({
       checkoutItems: asArray(safeJsonParse("checkoutItems", [])),
       billingDetails: safeJsonParse("billingDetails", null),
       shippingDetails: safeJsonParse("shippingDetails", null),
+      deliverySchedule: safeJsonParse("deliverySchedule", null),
       guestCustomerInfo: safeJsonParse("guestCustomerInfo", null),
       isActiveBillToDifferentAddress: safeJsonParse("isActiveBillToDifferentAddress", false) || false,
       isActiveCreateNewAccount: safeJsonParse("isActiveCreateNewAccount", false) || false,

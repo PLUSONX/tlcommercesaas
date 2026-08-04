@@ -168,6 +168,9 @@ export default {
     // console.log("storeShippingDetails action.js called: ", data);
     context.commit("storeShippingDetails", data);
   },
+  storeDeliverySchedule(context, data) {
+    context.commit("storeDeliverySchedule", data);
+  },
   /**
    * Store guest customer details
    */

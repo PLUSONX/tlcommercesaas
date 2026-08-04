@@ -95,6 +95,14 @@ class PaymentMethodCollection extends ResourceCollection
             $logo = PaymentMethodRepository::configKeyValue($id, 'payzah_logo');
         }
 
+        if ($id == config('tlecommercecore.payment_methods.upayments')) {
+            $logo = PaymentMethodRepository::configKeyValue($id, 'upayments_logo');
+        }
+
+        if ($id == config('tlecommercecore.payment_methods.upayments_apple_pay')) {
+            $logo = PaymentMethodRepository::configKeyValue($id, 'upayments_logo');
+        }
+
         return getFilePath($logo, false);
     }
     public function getInstruction($id)
@@ -144,6 +152,12 @@ class PaymentMethodCollection extends ResourceCollection
         }
         if ($id == config('tlecommercecore.payment_methods.payzah_apple_pay')) {
             $instruction = PaymentMethodRepository::configKeyValue($id, 'payzah_instruction');
+        }
+        if ($id == config('tlecommercecore.payment_methods.upayments')) {
+            $instruction = PaymentMethodRepository::configKeyValue($id, 'upayments_instruction');
+        }
+        if ($id == config('tlecommercecore.payment_methods.upayments_apple_pay')) {
+            $instruction = PaymentMethodRepository::configKeyValue($id, 'upayments_instruction');
         }
         return $instruction;
     }

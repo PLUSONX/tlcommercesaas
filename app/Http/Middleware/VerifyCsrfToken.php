@@ -18,5 +18,6 @@ class VerifyCsrfToken extends Middleware
         // '/webhook/paddle',
         'payment/payzah/*',
         'payment/myfatoorah/*',
+        'payment/upayments/*',
     ];
 }

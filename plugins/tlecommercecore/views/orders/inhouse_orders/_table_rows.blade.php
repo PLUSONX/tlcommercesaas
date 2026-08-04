@@ -1,3 +1,31 @@
+@php
+    $delivery_schedules_by_order = $orders->count() > 0
+        ? app(\Plugin\TlcommerceCore\Repositories\DeliveryScheduleRepository::class)->getSchedulesForOrders(
+            $orders->pluck('id')->map(fn ($id) => (int) $id)->all()
+        )
+        : [];
+
+    $delivery_status_timestamps = [];
+    $delivery_status_timestamp_displays = [];
+    $order_created_displays = [];
+    if ($orders->count() > 0) {
+        $status_by_order = $orders->pluck('delivery_status', 'id')
+            ->mapWithKeys(fn ($status, $id) => [(int) $id => (int) $status])
+            ->all();
+        $delivery_status_log_repository = app(\Plugin\TlcommerceCore\Repositories\OrderDeliveryStatusLogRepository::class);
+        $delivery_status_timestamps = $delivery_status_log_repository->getCurrentStatusTimestampsForOrders($status_by_order);
+        foreach ($delivery_status_timestamps as $orderId => $timestamp) {
+            $delivery_status_timestamp_displays[$orderId] = $delivery_status_log_repository->formatTimestampForDisplay($timestamp);
+        }
+        foreach ($orders as $orderRow) {
+            $order_created_displays[$orderRow->id] = [
+                'time' => $delivery_status_log_repository->formatTimeForDisplay($orderRow->created_at),
+                'date' => $delivery_status_log_repository->formatDateForDisplay($orderRow->created_at),
+                'date_key' => $delivery_status_log_repository->formatDateKeyForDisplay($orderRow->created_at),
+            ];
+        }
+    }
+@endphp
 @if ($orders->count() > 0)
     @foreach ($orders as $key => $order)
         @php
@@ -36,10 +64,26 @@
             </td>
 
             <td style="width: 100px;">
-                <div style="width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                <div class="font-12 text-muted" style="white-space: nowrap;"
                     title="{{ $order->created_at }}">
-                    {{ date('d M, Y', strtotime($order->created_at)) }}
+                    {{ $order_created_displays[$order->id]['time'] }}
                 </div>
+                <div style="white-space: nowrap;">
+                    {{ $order_created_displays[$order->id]['date'] }}
+                </div>
+                @php
+                    $delivery_schedule = $delivery_schedules_by_order[$order->id] ?? null;
+                    $orderDate = $order_created_displays[$order->id]['date_key'];
+                @endphp
+                @if ($delivery_schedule)
+                    <div class="font-12 text-muted mt-1" style="white-space: normal; line-height: 1.3;"
+                        title="{{ $delivery_schedule['display'] }}">
+                        @if ($delivery_schedule['schedule_date'] !== $orderDate)
+                            {{ date('d M, Y', strtotime($delivery_schedule['schedule_date'])) }} ·
+                        @endif
+                        {{ $delivery_schedule['time_display'] }}
+                    </div>
+                @endif
             </td>
 
             <!-- <td  style="width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
@@ -104,6 +148,11 @@
                     </select>
                     <span class="delivery-status-spinner ajax-inline-spinner" style="display:none;"></span>
                 </div>
+                @if (!empty($delivery_status_timestamp_displays[$order->id]))
+                    <div class="font-12 text-muted mt-1" style="white-space: normal; line-height: 1.3;">
+                        {{ $delivery_status_timestamp_displays[$order->id] }}
+                    </div>
+                @endif
             </td>
 
 

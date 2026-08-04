@@ -5,6 +5,8 @@ namespace Plugin\TlcommerceCore\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Plugin\TlcommerceCore\Http\Resources\OrderProductCollection;
 use Plugin\TlcommerceCore\Http\Resources\CustomerAddressDetailCollection;
+use Plugin\TlcommerceCore\Repositories\DeliveryScheduleRepository;
+use Plugin\TlcommerceCore\Repositories\SettingsRepository;
 
 class SingleOrderCollection extends JsonResource
 {
@@ -32,7 +34,21 @@ class SingleOrderCollection extends JsonResource
             'can_cancel' => $this->canCancel(),
             'note' => $this->note,
             'payment_required' => $this->OrderPaymentRequiredStatus(),
+            'delivery_schedule' => $this->resolveDeliverySchedule(),
         ];
+    }
+
+    protected function resolveDeliverySchedule(): ?array
+    {
+        if (isActivePluging('pickuppoint') && $this->pickup_point != null) {
+            return null;
+        }
+
+        if (SettingsRepository::getEcommerceSetting('enable_delivery_scheduling') != config('settings.general_status.active')) {
+            return null;
+        }
+
+        return app(DeliveryScheduleRepository::class)->getScheduleForOrder((int) $this->id);
     }
 
     public function OrderPaymentRequiredStatus()

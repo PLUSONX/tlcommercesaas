@@ -277,6 +277,18 @@ export default {
     }
   },
   methods: {
+    appendDeliveryScheduleToFormData(formData) {
+      const schedule = this.$store.state.deliverySchedule;
+      if (
+        this.config?.enable_delivery_scheduling == this.enums.status.ACTIVE &&
+        schedule?.mode
+      ) {
+        formData.append("delivery_schedule_mode", schedule.mode);
+        if (schedule.mode === "scheduled" && schedule.slot?.id) {
+          formData.append("delivery_schedule_slot_id", schedule.slot.id);
+        }
+      }
+    },
     toggleOrderNote() {
       this.showOrderNote = !this.showOrderNote;
       if (this.showOrderNote) {
@@ -298,7 +310,7 @@ export default {
         return false;
       }
       const key = this.normalizePaymentKey(payment.name);
-      return payment.id === 13 || key === "applepay" || key.includes("applepay");
+      return payment.id === 13 || payment.id === 18 || key === "applepay" || key.includes("applepay");
     },
     showPaymentMethodTitle(payment) {
       if (!payment) {
@@ -324,7 +336,7 @@ export default {
         "upayment",
         "upaymentkw",
       ];
-      if (knetKeys.includes(key) || payment.id === 11 || payment.id === 12) {
+      if (knetKeys.includes(key) || payment.id === 11 || payment.id === 12 || payment.id === 17) {
         return this.$t("KNET");
       }
       return payment.name;
@@ -486,6 +498,7 @@ export default {
               : ""
           );
         }
+        this.appendDeliveryScheduleToFormData(formData);
       }
 
       if (
@@ -606,6 +619,7 @@ export default {
           formData.append("billing_address", JSON.stringify(billingAddress));
         }
       }
+      this.appendDeliveryScheduleToFormData(formData);
 
       if (
         this.selected_payment_method != null &&

@@ -27,6 +27,12 @@
               <p class="breadcrumb-item active">
                 {{ $t("Order Placed on") }} {{ orderDetails.order_date }}
               </p>
+              <p
+                v-if="orderDetails.delivery_schedule"
+                class="breadcrumb-item active mb-0"
+              >
+                {{ $t("Delivery Time") }}: {{ orderDetails.delivery_schedule.display }}
+              </p>
             </div>
             <div class="align-items-center col-12 col-lg-6 d-flex justify-content-lg-end">
               <h6 class="mb-0">

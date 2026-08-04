@@ -106,6 +106,7 @@
         <!-- End Footer -->
     </div>
     <!-- End wrapper -->
+    @include('core::base.layouts.notification_permission_banner')
     @include('core::base.layouts.script')
 </body>
 

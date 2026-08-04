@@ -34,6 +34,171 @@
             }
         });
         $(document).ready(function() {
+            var knownNotificationIds = null;
+            var notificationAudio = null;
+            var dismissStorageKey = 'admin_notification_permission_dismissed_until';
+            var dismissDays = 7;
+
+            try {
+                notificationAudio = new Audio('{{ asset('backend/assets/audio/notification.wav') }}');
+                notificationAudio.preload = 'auto';
+            } catch (e) {
+                notificationAudio = null;
+            }
+
+            function isNotificationApiSupported() {
+                return typeof window.Notification !== 'undefined';
+            }
+
+            function isPermissionDismissed() {
+                try {
+                    var until = parseInt(localStorage.getItem(dismissStorageKey) || '0', 10);
+                    return until > Date.now();
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            function dismissPermissionBanner(days) {
+                try {
+                    localStorage.setItem(
+                        dismissStorageKey,
+                        String(Date.now() + (days * 24 * 60 * 60 * 1000))
+                    );
+                } catch (e) {}
+                $('#web-notification-permission-banner').addClass('d-none');
+            }
+
+            function isMobileViewport() {
+                return window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
+            }
+
+            function showPermissionBannerIfNeeded() {
+                if (isMobileViewport()) {
+                    return;
+                }
+                if (!isNotificationApiSupported()) {
+                    return;
+                }
+                if (Notification.permission !== 'default') {
+                    return;
+                }
+                if (isPermissionDismissed()) {
+                    return;
+                }
+                $('#web-notification-permission-banner').removeClass('d-none');
+            }
+
+            function unlockNotificationAudio() {
+                if (!notificationAudio) {
+                    return;
+                }
+                try {
+                    var previousVolume = notificationAudio.volume;
+                    notificationAudio.volume = 0.01;
+                    var playPromise = notificationAudio.play();
+                    if (playPromise && typeof playPromise.then === 'function') {
+                        playPromise.then(function() {
+                            notificationAudio.pause();
+                            notificationAudio.currentTime = 0;
+                            notificationAudio.volume = previousVolume || 1;
+                        }).catch(function() {
+                            notificationAudio.volume = previousVolume || 1;
+                        });
+                    } else {
+                        notificationAudio.pause();
+                        notificationAudio.currentTime = 0;
+                        notificationAudio.volume = previousVolume || 1;
+                    }
+                } catch (e) {}
+            }
+
+            function playNotificationAlert(notificationItem) {
+                if (notificationAudio) {
+                    try {
+                        notificationAudio.currentTime = 0;
+                        var playPromise = notificationAudio.play();
+                        if (playPromise && typeof playPromise.catch === 'function') {
+                            playPromise.catch(function() {});
+                        }
+                    } catch (e) {}
+                }
+
+                if (!isNotificationApiSupported() || Notification.permission !== 'granted') {
+                    return;
+                }
+
+                var body = (notificationItem && notificationItem.message) ?
+                    String(notificationItem.message) :
+                    '{{ translate('You have a new notification') }}';
+                var tag = (notificationItem && notificationItem.id) ?
+                    ('admin-notif-' + notificationItem.id) :
+                    'admin-notif';
+
+                try {
+                    new Notification('{{ translate('New notification') }}', {
+                        body: body,
+                        tag: tag
+                    });
+                } catch (e) {}
+            }
+
+            function handleNotificationDelta(notifications) {
+                var currentIds = [];
+                for (var i = 0; i < notifications.length; i++) {
+                    currentIds.push(String(notifications[i].id));
+                }
+
+                if (knownNotificationIds === null) {
+                    knownNotificationIds = currentIds;
+                    return;
+                }
+
+                var knownSet = {};
+                for (var k = 0; k < knownNotificationIds.length; k++) {
+                    knownSet[knownNotificationIds[k]] = true;
+                }
+
+                var newest = null;
+                for (var n = 0; n < notifications.length; n++) {
+                    var id = String(notifications[n].id);
+                    if (!knownSet[id]) {
+                        newest = notifications[n];
+                        break;
+                    }
+                }
+
+                if (newest) {
+                    playNotificationAlert(newest);
+                }
+
+                knownNotificationIds = currentIds;
+            }
+
+            $('#web-notification-enable-btn').on('click', function() {
+                if (!isNotificationApiSupported()) {
+                    $('#web-notification-permission-banner').addClass('d-none');
+                    return;
+                }
+
+                unlockNotificationAudio();
+
+                Notification.requestPermission().then(function(permission) {
+                    $('#web-notification-permission-banner').addClass('d-none');
+                    if (permission !== 'granted') {
+                        dismissPermissionBanner(dismissDays);
+                    }
+                }).catch(function() {
+                    dismissPermissionBanner(dismissDays);
+                });
+            });
+
+            $('#web-notification-dismiss-btn').on('click', function() {
+                dismissPermissionBanner(dismissDays);
+            });
+
+            showPermissionBannerIfNeeded();
+
             getNotification();
             changeCurrencyFont()
             setInterval(getNotification, 1000 * 30);
@@ -52,20 +217,23 @@
                     success: function(response) {
                         if (response.success) {
                             // console.log("response: ", response);
+                            var notifications = response.notifications || [];
+                            handleNotificationDelta(notifications);
+
                             $(".notification-list-items").html('');
-                            let total_notification = response.notifications.length;
+                            let total_notification = notifications.length;
                             $('.notification-counter').html(total_notification);
                             if (total_notification > 0) {
                                 $('.mark-as-all-read').removeClass('d-none');
                                 for (let i = 0; i < total_notification; i++) {
-                                    let id = response.notifications[i]['id'];
+                                    let id = notifications[i]['id'];
                                     let item =
                                         "<a href='#' id=" + id +
                                         " data-id=" + id +
                                         " class='single-notification-item py-1 d-flex align-items-center'><div class ='content'><div><p class ='main-text' > " +
-                                        response.notifications[i]['message'] +
+                                        notifications[i]['message'] +
                                         "</p></div> <p class ='time'> " +
-                                        response.notifications[i]['time'] +
+                                        notifications[i]['time'] +
                                         "</p> </div></a>";
                                     //Append list   
                                     $(".notification-list-items").append(item);

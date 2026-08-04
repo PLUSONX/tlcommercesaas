@@ -1725,6 +1725,10 @@ class OrderRepository
                 return false;
             }
 
+            if (!$this->validateDeliveryScheduleForCheckout($request)) {
+                return false;
+            }
+
             $checkoutCouponDiscount = $this->getValidatedCheckoutCouponTotal();
             $total_payable_amount = self::totalOrderAmount($products) - $checkoutCouponDiscount;
             DB::beginTransaction();
@@ -1770,6 +1774,11 @@ class OrderRepository
             $this->storeOrderProducts($order->id, $products, auth('jwt-customer')->user()->id);
             $this->storeCouponUsageInfo($request, $order->id, auth('jwt-customer')->user()->id);
 
+            if (!$this->attachDeliveryScheduleForOrder($request, $order->id)) {
+                DB::rollBack();
+                return false;
+            }
+
             DB::commit();
 
             if ($request['payment_id'] == config('tlecommercecore.payment_methods.bank')) {
@@ -1808,6 +1817,10 @@ class OrderRepository
             // Rate + overwrite amounts before any DB writes so unavailable shipping fails closed.
             $products = $this->hardenCheckoutProducts($request, $products);
             if ($products === false) {
+                return false;
+            }
+
+            if (!$this->validateDeliveryScheduleForCheckout($request)) {
                 return false;
             }
 
@@ -1976,6 +1989,10 @@ class OrderRepository
 
             $this->storeCouponUsageInfo($request, $order->id, $customer_id != null ? $customer_id : null);
 
+            if (!$this->attachDeliveryScheduleForOrder($request, $order->id)) {
+                DB::rollBack();
+                return false;
+            }
 
             $redirect_url = null;
             if ($customer_id != null) {
@@ -2301,6 +2318,8 @@ class OrderRepository
             $notifiable_sellers = [];
             $order = Orders::where('id', $order_id)->first();
             if ($order != null) {
+                $previousDeliveryStatus = (int) $order->delivery_status;
+                $processingStatus = (int) config('tlecommercecore.order_delivery_status.processing');
 
                 $query = OrderHasProducts::where('order_id', $order_id);
                 // if ($seller_id != null) {
@@ -2324,6 +2343,7 @@ class OrderRepository
                 //Update order table
                 $order->delivery_status = config('tlecommercecore.order_delivery_status.processing');
                 $order->save();
+                $this->logOrderDeliveryStatusChange((int) $order_id, $processingStatus, $previousDeliveryStatus);
                 // if ($order->products->count() == $all_products->count()) {
                 //     $order->delivery_status = config('tlecommercecore.order_delivery_status.processing');
                 //     $order->save();
@@ -2450,6 +2470,9 @@ class OrderRepository
             Log::info("after order");
 
             if ($order != null) {
+                $previousDeliveryStatus = (int) $order->delivery_status;
+                $cancelledStatus = (int) config('tlecommercecore.order_delivery_status.cancelled');
+
                 $query = OrderHasProducts::where('order_id', $order_id);
                 // if ($seller_id != null) {
                 //     $query = $query->where('seller_id', $seller_id);
@@ -2478,6 +2501,7 @@ class OrderRepository
                 //     $order->delivery_status = config('tlecommercecore.order_delivery_status.cancelled');
                     $order->delivery_status = 4;
                     $order->save();
+                    $this->logOrderDeliveryStatusChange((int) $order_id, $cancelledStatus, $previousDeliveryStatus);
                 // }
                 
                 Log::info("after order update");
@@ -2561,6 +2585,14 @@ class OrderRepository
             $customer_id = 0;
             $guest_customer_id = 0;
             $order = Orders::where('id', $request['order_id'])->first();
+
+            if ($order == null) {
+                DB::rollBack();
+                return false;
+            }
+
+            $previousOrderDeliveryStatus = (int) $order->delivery_status;
+            $newOrderDeliveryStatus = (int) $request['delivery_status'];
 
             if($order->customer_id != null) {
                 $customer_id = $order->customer_id;
@@ -2718,6 +2750,12 @@ class OrderRepository
             // }
             $order->save();
 
+            $this->logOrderDeliveryStatusChange(
+                (int) $request['order_id'],
+                $newOrderDeliveryStatus,
+                $previousOrderDeliveryStatus
+            );
+
             //Send notification to seller
             // foreach ($seller_ids as $seller_id) {
             //     $seller_message = "Order status updated. Order code " . $order->order_code;
@@ -2753,12 +2791,15 @@ class OrderRepository
 
                     //Change order table
                     $order = Orders::where('id', $order_id)->first();
+                    $previousDeliveryStatus = (int) $order->delivery_status;
                     $order->delivery_status = $status;
                     $order->save();
 
                     //Change order has products table
                     $item->delivery_status = $status;
                     $item->save();
+
+                    $this->logOrderDeliveryStatusChange((int) $order_id, (int) $status, $previousDeliveryStatus);
 
                     \Log::info('After saving item!!!');
 
@@ -2878,6 +2919,7 @@ class OrderRepository
             ]);
 
             $notificationContext = null;
+            $previousDeliveryStatus = (int) Orders::where('id', $order_id)->value('delivery_status');
 
             $result = $connection->transaction(function () use ($order_id, $status, &$notificationContext) {
                 $order = Orders::where('id', $order_id)->first();
@@ -2943,6 +2985,8 @@ class OrderRepository
             if (!$result) {
                 return false;
             }
+
+            $this->logOrderDeliveryStatusChange((int) $order_id, $status, $previousDeliveryStatus);
 
             Log::info('updateOrderDeliveryStatus: persisted', [
                 'order_id' => $order_id,
@@ -3414,6 +3458,10 @@ class OrderRepository
                 $payment_method = 'Apple Pay';
             } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.myfatoorah')) {
                 $payment_method = 'Myfatoorah';
+            } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.upayments')) {
+                $payment_method = 'Upayments';
+            } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.upayments_apple_pay')) {
+                $payment_method = 'Upayments Apple Pay';
             } elseif ($order_info->payment_method == config('tlecommercecore.payment_methods.cod')) {
                 $payment_method = 'COD';
             }
@@ -3538,6 +3586,12 @@ class OrderRepository
             }
             else if ($order_info->payment_method == config('tlecommercecore.payment_methods.myfatoorah')) {
                 $payment_method = 'Myfatoorah';
+            }
+            else if ($order_info->payment_method == config('tlecommercecore.payment_methods.upayments')) {
+                $payment_method = 'Upayments';
+            }
+            else if ($order_info->payment_method == config('tlecommercecore.payment_methods.upayments_apple_pay')) {
+                $payment_method = 'Upayments Apple Pay';
             }
 
 
@@ -3684,5 +3738,31 @@ class OrderRepository
                 }
             }
         }
+    }
+
+    protected function validateDeliveryScheduleForCheckout($request): bool
+    {
+        $result = app(DeliveryScheduleRepository::class)->validateCheckoutSchedule($request);
+
+        return $result['success'];
+    }
+
+    protected function attachDeliveryScheduleForOrder($request, int $orderId): bool
+    {
+        if ($request->input('delivery_schedule_mode') !== 'scheduled' || !$request->filled('delivery_schedule_slot_id')) {
+            return true;
+        }
+
+        $result = app(DeliveryScheduleRepository::class)->attachScheduleToOrder(
+            $orderId,
+            (int) $request->input('delivery_schedule_slot_id')
+        );
+
+        return $result['success'];
+    }
+
+    protected function logOrderDeliveryStatusChange(int $orderId, int $newStatus, ?int $oldStatus = null): void
+    {
+        app(OrderDeliveryStatusLogRepository::class)->logStatusChange($orderId, $newStatus, $oldStatus);
     }
 }

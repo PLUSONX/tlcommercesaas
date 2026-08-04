@@ -1,6 +1,6 @@
 @extends('core::base.layouts.master')
 @section('title')
-    {{ translate('Carriers & Locations') }}
+    {{ translate('Shipping Hub') }}
 @endsection
 @section('main_content')
     @php
@@ -8,13 +8,14 @@
         $location_tab = $location_tab ?? 'countries';
         $canCarriers = $can_carriers ?? false;
         $canLocations = $can_locations ?? false;
+        $canTimeSlots = $can_time_slots ?? false;
     @endphp
     <div class="row">
         <div class="col-12">
             <div class="card bg-transparent mb-20">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h4 class="" style="font-size: 30px;">{{ translate('Carriers & Locations') }}</h4>
+                        <h4 class="" style="font-size: 30px;">{{ translate('Shipping Hub') }}</h4>
                     </div>
                 </div>
             </div>
@@ -35,6 +36,14 @@
                         <a class="nav-link {{ $active_tab === 'locations' ? 'active' : '' }}"
                             href="{{ route('plugin.tlcommercecore.shipping.hub', ['tab' => 'locations', 'location' => 'countries']) }}">
                             {{ translate('Locations') }}
+                        </a>
+                    </li>
+                @endif
+                @if ($canTimeSlots)
+                    <li class="nav-item">
+                        <a class="nav-link {{ $active_tab === 'time_slots' ? 'active' : '' }}"
+                            href="{{ route('plugin.tlcommercecore.shipping.hub', ['tab' => 'time_slots']) }}">
+                            {{ translate('Time Slot') }}
                         </a>
                     </li>
                 @endif
@@ -77,6 +86,8 @@
                 @else
                     @include('plugin/tlecommercecore::shipping.hub._partials.countries')
                 @endif
+            @elseif ($active_tab === 'time_slots' && $canTimeSlots)
+                @include('plugin/tlecommercecore::shipping.hub._partials.time_slots')
             @endif
         </div>
     </div>
@@ -88,6 +99,7 @@
         $location_tab = $location_tab ?? 'countries';
         $canCarriers = $can_carriers ?? false;
         $canLocations = $can_locations ?? false;
+        $canTimeSlots = $can_time_slots ?? false;
     @endphp
     @if ($active_tab === 'carriers' && $canCarriers)
         @include('plugin/tlecommercecore::shipping.hub._partials.carriers-scripts')
@@ -99,6 +111,8 @@
         @else
             @include('plugin/tlecommercecore::shipping.hub._partials.countries-scripts')
         @endif
+    @elseif ($active_tab === 'time_slots' && $canTimeSlots)
+        @include('plugin/tlecommercecore::shipping.hub._partials.time_slots-scripts')
     @endif
 @endsection
 

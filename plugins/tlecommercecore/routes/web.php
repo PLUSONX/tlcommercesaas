@@ -16,6 +16,7 @@ use Plugin\TlcommerceCore\Http\Controllers\LocationController;
 use Plugin\TlcommerceCore\Http\Controllers\SettingsController;
 use Plugin\TlcommerceCore\Http\Controllers\ShippingController;
 use Plugin\TlcommerceCore\Http\Controllers\ShippingHubController;
+use Plugin\TlcommerceCore\Http\Controllers\DeliveryScheduleController;
 use Plugin\TlcommerceCore\Http\Controllers\MarketingController;
 use Plugin\TlcommerceCore\Http\Controllers\SocialMediaController;
 use Plugin\TlcommerceCore\Http\Controllers\ProductTagsController;
@@ -35,6 +36,7 @@ use Plugin\TlcommerceCore\Http\Controllers\Payment\SSLCommerzController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\MercadoPagoController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\PayzahController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\MyFatoorahController;
+use Plugin\TlcommerceCore\Http\Controllers\Payment\UpaymentsController;
 
 /**
  * Payzah payment
@@ -53,6 +55,14 @@ Route::prefix('payment')->group(function () {
 // Route::get('/payzah/cancel', [PayzahController::class, 'cancel'])->name('payment.payzah.error');
 Route::get('/payzah/test', [PayzahController::class, 'test'])->name('payzah.test');
 
+
+/**
+ * Upayments payment
+ */
+Route::get('/upayments/pay', [UpaymentsController::class, 'pay'])->name('upayments.pay');
+Route::get('/upayments-apple-pay/pay', [UpaymentsController::class, 'pay'])->name('upayments.apple-pay.pay');
+Route::match(['get', 'post'], '/upayments/callback', [UpaymentsController::class, 'callback'])->name('upayments.callback');
+Route::post('/upayments/webhook', [UpaymentsController::class, 'webhook'])->name('upayments.webhook');
 
 /**
  * Myfatoorah payment
@@ -242,6 +252,17 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
             //Shipping time
             Route::post('/store-new-shipping-time', [ShippingController::class, 'storeShippingTime'])->name('plugin.tlcommercecore.shipping.time.store');
             Route::post('/delete-shipping-time', [ShippingController::class, 'deleteShippingTime'])->name('plugin.tlcommercecore.shipping.time.delete')->middleware('demo');
+
+            // Delivery scheduling (time slots)
+            Route::post('/delivery-schedule/settings', [DeliveryScheduleController::class, 'updateSettings'])->name('plugin.tlcommercecore.delivery.schedule.settings.update');
+            Route::post('/delivery-schedule/slots/store', [DeliveryScheduleController::class, 'storeSlots'])->name('plugin.tlcommercecore.delivery.schedule.slots.store');
+            Route::post('/delivery-schedule/slots/update', [DeliveryScheduleController::class, 'updateSlot'])->name('plugin.tlcommercecore.delivery.schedule.slots.update');
+            Route::post('/delivery-schedule/slots/delete', [DeliveryScheduleController::class, 'deleteSlot'])->name('plugin.tlcommercecore.delivery.schedule.slots.delete')->middleware('demo');
+            Route::post('/delivery-schedule/slots/delete-recurrence-group', [DeliveryScheduleController::class, 'deleteRecurrenceGroup'])->name('plugin.tlcommercecore.delivery.schedule.slots.delete.recurrence')->middleware('demo');
+            Route::post('/delivery-schedule/slots/status', [DeliveryScheduleController::class, 'updateSlotStatus'])->name('plugin.tlcommercecore.delivery.schedule.slots.status');
+            Route::post('/delivery-schedule/slots/disable-date', [DeliveryScheduleController::class, 'disableSlotsForDate'])->name('plugin.tlcommercecore.delivery.schedule.slots.disable.date');
+            Route::post('/delivery-schedule/slots/delete-unbooked-date', [DeliveryScheduleController::class, 'deleteUnbookedSlotsForDate'])->name('plugin.tlcommercecore.delivery.schedule.slots.delete.unbooked.date')->middleware('demo');
+            Route::post('/delivery-schedule/slots/copy-date', [DeliveryScheduleController::class, 'copySlotsToDate'])->name('plugin.tlcommercecore.delivery.schedule.slots.copy.date');
 
             //Shipping Profiles
             Route::get('/create-shipping-profile', [ShippingController::class, 'shippingProfileForm'])->name('plugin.tlcommercecore.shipping.profile.form');

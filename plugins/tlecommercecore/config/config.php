@@ -65,7 +65,9 @@ return [
         'payzah_apple_pay' => 13,
         'avariamoney' => 14,
         'paymob' => 15,
-        'mercado-pago' => 16
+        'mercado-pago' => 16,
+        'upayments' => 17,
+        'upayments_apple_pay' => 18,
     ],
     'order_type' => [
         'local_pickup' => 1,

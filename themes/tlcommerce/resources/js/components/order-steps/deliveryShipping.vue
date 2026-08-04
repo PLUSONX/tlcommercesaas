@@ -121,6 +121,12 @@
               </div>
             </div>
           </div>
+          <delivery-time-selector
+            v-if="isSchedulingEnabled"
+            ref="deliveryTimeSelectorLoggedIn"
+            :config="config"
+            :enums="enums"
+          />
         </div>
         <!--End Shipping Address-->
         <!--Billing Address-->
@@ -399,6 +405,12 @@
               </p>
             </div>
           </div> -->
+          <delivery-time-selector
+            v-if="isSchedulingEnabled"
+            ref="deliveryTimeSelectorGuest"
+            :config="config"
+            :enums="enums"
+          />
         </div>
         <!--End Guest Shipping Address-->
         <!--Bill to different Address-->
@@ -801,6 +813,7 @@ import {
   CModalBody,
   CModalFooter,
 } from "@coreui/vue";
+import DeliveryTimeSelector from "./DeliveryTimeSelector.vue";
 export default {
   name: "deliveryShipping",
   emits: ["next-step", "previous-step", "shipping-prep-updated"],
@@ -810,6 +823,7 @@ export default {
     CModalTitle,
     CModalBody,
     CModalFooter,
+    DeliveryTimeSelector,
   },
   props: {
     config: {
@@ -866,6 +880,13 @@ export default {
   },
   computed: {
     ...mapGetters('layout', ['isRtl']),
+    isSchedulingEnabled() {
+      return (
+        this.isActiveHomeDelivery &&
+        !this.isActivePickupPoint &&
+        this.config?.enable_delivery_scheduling == this.enums.status.ACTIVE
+      );
+    },
   },
   mounted() {
 
@@ -998,6 +1019,31 @@ export default {
     },
   },
   methods: {
+    getActiveDeliveryTimeSelector() {
+      if (!this.isSchedulingEnabled) {
+        return null;
+      }
+      return this.isCustomerLogin
+        ? this.$refs.deliveryTimeSelectorLoggedIn
+        : this.$refs.deliveryTimeSelectorGuest;
+    },
+    validateDeliverySchedule() {
+      if (!this.isSchedulingEnabled) {
+        return true;
+      }
+      const selector = this.getActiveDeliveryTimeSelector();
+      if (!selector) {
+        return true;
+      }
+      const valid = selector.validateSchedule();
+      if (!valid) {
+        const message =
+          selector.scheduleError || this.$t("Please select a delivery time option.");
+        this.errors.push({ delivery_schedule: message });
+        this.$toast.error(message);
+      }
+      return valid;
+    },
     restoreGuestContactFromStore() {
       const stored = this.$store.state.guestCustomerInfo;
       if (stored) {
@@ -1631,6 +1677,12 @@ export default {
               });
             }
           }
+        }
+      }
+
+      if (this.isSchedulingEnabled && this.isActiveHomeDelivery) {
+        if (!this.validateDeliverySchedule()) {
+          return false;
         }
       }
 

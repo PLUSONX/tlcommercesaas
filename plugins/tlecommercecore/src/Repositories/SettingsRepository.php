@@ -25,7 +25,6 @@ class SettingsRepository
                 $config = EcommerceConfig::where('key_name', $key)->first();
             } else {
                 $config = EcommerceConfig::firstOrCreate(['key_name' => $key]);
-                dd($config);
                 $config->key_value = $fallback;
                 $config->save();
             }
@@ -288,6 +287,11 @@ class SettingsRepository
                 'enable_post_code_in_checkout'     => self::getEcommerceSetting('enable_post_code_in_checkout') != null && self::getEcommerceSetting('enable_post_code_in_checkout') == config('settings.general_status.in_active') ? config('settings.general_status.in_active') : config('settings.general_status.active'),
                 'post_code_required_in_checkout'     => self::getEcommerceSetting('post_code_required_in_checkout') != null && self::getEcommerceSetting('post_code_required_in_checkout') == config('settings.general_status.in_active') ? config('settings.general_status.in_active') : config('settings.general_status.active'),
                 'enable_personal_info_guest_checkout' => self::getEcommerceSetting('enable_personal_info_guest_checkout') != null && self::getEcommerceSetting('enable_personal_info_guest_checkout') == config('settings.general_status.in_active') ? config('settings.general_status.in_active') : config('settings.general_status.active'),
+                'enable_delivery_scheduling' => self::getEcommerceSetting('enable_delivery_scheduling') == config('settings.general_status.active') ? config('settings.general_status.active') : config('settings.general_status.in_active'),
+                'delivery_scheduling_required' => self::getEcommerceSetting('delivery_scheduling_required') == config('settings.general_status.active') ? config('settings.general_status.active') : config('settings.general_status.in_active'),
+                'delivery_scheduling_lead_time' => (int) (self::getEcommerceSetting('delivery_scheduling_lead_time') ?: 0),
+                'delivery_scheduling_lead_time_unit' => self::getEcommerceSetting('delivery_scheduling_lead_time_unit') ?: config('tlecommercecore.time_unit.Hours'),
+                'delivery_scheduling_horizon_days' => max(1, min(90, (int) (self::getEcommerceSetting('delivery_scheduling_horizon_days') ?: 30))),
             ];
 
             return $data;

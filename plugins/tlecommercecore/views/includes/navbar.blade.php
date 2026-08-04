@@ -326,10 +326,10 @@
                         href="{{ route('plugin.tlcommercecore.shipping.configuration') }}">{{ translate('Shipping & Delivery') }}</a>
                 </li>
             @endif
-            @if (($isactivateCarrier && auth()->user()->can('Manage Carriers')) || auth()->user()->can('Manage Locations'))
+            @if (($isactivateCarrier && auth()->user()->can('Manage Carriers')) || auth()->user()->can('Manage Locations') || auth()->user()->can('Manage Shipping & Delivery'))
                 <li class="{{ Request::routeIs(['plugin.tlcommercecore.shipping.hub', 'plugin.tlcommercecore.shipping.locations.cities.edit', 'plugin.tlcommercecore.shipping.locations.cities.add.new', 'plugin.tlcommercecore.shipping.locations.cities.list', 'plugin.tlcommercecore.shipping.locations.states.edit', 'plugin.tlcommercecore.shipping.locations.states.new.add', 'plugin.tlcommercecore.shipping.locations.states.list', 'plugin.tlcommercecore.shipping.locations.country.edit', 'plugin.tlcommercecore.shipping.locations.country.new', 'plugin.tlcommercecore.shipping.locations.country.list', 'plugin.carrier.list']) ? 'active' : '' }}">
                     <a class="pl-2"
-                        href="{{ route('plugin.tlcommercecore.shipping.hub') }}">{{ translate('Carriers & Locations') }}</a>
+                        href="{{ route('plugin.tlcommercecore.shipping.hub') }}">{{ translate('Shipping Hub') }}</a>
                 </li>
             @endif
         </ul>
