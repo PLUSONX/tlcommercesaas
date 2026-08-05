@@ -38,6 +38,4 @@ public/tenant/
 .idea/
 .DS_Store
 Thumbs.db
-
-
-  .cursor/rules/project-structure.mdc
+.cursor
