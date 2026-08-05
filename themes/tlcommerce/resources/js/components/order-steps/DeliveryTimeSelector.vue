@@ -1,54 +1,59 @@
 <template>
-  <div class="delivery-time-section col-12 mb-20">
-    <h5 class="mb-3">{{ $t("Delivery Time") }}:</h5>
+  <div
+    class="delivery-time-section"
+    :class="{ 'col-12 mb-20': !isHomepageVariant, 'delivery-time-section--homepage': isHomepageVariant }"
+  >
+    <template v-if="!isHomepageVariant">
+      <h5 class="mb-3">{{ $t("Delivery Time") }}:</h5>
 
-    <div class="delivery-time-options">
-      <label v-if="!isSchedulingRequired" class="d-flex align-items-center gap-2 radio-label mb-2">
-        <input
-          type="radio"
-          name="delivery-time-mode"
-          value="now"
-          :checked="deliveryMode === 'now'"
-          @change="selectMode('now')"
-        />
-        <span class="radio-text">{{ $t("Now") }}</span>
-      </label>
+      <div class="delivery-time-options">
+        <label v-if="!isSchedulingRequired" class="d-flex align-items-center gap-2 radio-label mb-2">
+          <input
+            type="radio"
+            name="delivery-time-mode"
+            value="now"
+            :checked="deliveryMode === 'now'"
+            @change="selectMode('now')"
+          />
+          <span class="radio-text">{{ $t("Now") }}</span>
+        </label>
 
-      <label class="d-flex align-items-center gap-2 radio-label mb-2">
-        <input
-          type="radio"
-          name="delivery-time-mode"
-          value="scheduled"
-          :checked="deliveryMode === 'scheduled'"
-          @change="selectMode('scheduled')"
-        />
-        <span class="radio-text">{{ $t("Choose Delivery Time") }}</span>
-      </label>
-    </div>
-
-    <div
-      v-if="deliveryMode === 'scheduled' && !selectedSlot"
-      class="delivery-time-prompt"
-      role="button"
-      tabindex="0"
-      @click="openSlotModal(false)"
-      @keyup.enter="openSlotModal(false)"
-    >
-      <span class="material-icons delivery-time-prompt__icon">schedule</span>
-      <span>{{ $t("Please select your preferred delivery time") }}</span>
-    </div>
-
-    <div v-if="deliveryMode === 'scheduled' && selectedSlot" class="delivery-time-summary">
-      <div class="delivery-time-summary__content">
-        <span class="material-icons delivery-time-summary__icon">schedule</span>
-        <span>{{ formatSelectedSlot(selectedSlot) }}</span>
+        <label class="d-flex align-items-center gap-2 radio-label mb-2">
+          <input
+            type="radio"
+            name="delivery-time-mode"
+            value="scheduled"
+            :checked="deliveryMode === 'scheduled'"
+            @change="selectMode('scheduled')"
+          />
+          <span class="radio-text">{{ $t("Choose Delivery Time") }}</span>
+        </label>
       </div>
-      <button type="button" class="btn_underline" @click.prevent="openSlotModal(true)">
-        {{ $t("Change") }}
-      </button>
-    </div>
 
-    <p v-if="scheduleError" class="text-danger validation-error mb-0 mt-2">{{ scheduleError }}</p>
+      <div
+        v-if="deliveryMode === 'scheduled' && !selectedSlot"
+        class="delivery-time-prompt"
+        role="button"
+        tabindex="0"
+        @click="openSlotModal(false)"
+        @keyup.enter="openSlotModal(false)"
+      >
+        <span class="material-icons delivery-time-prompt__icon">schedule</span>
+        <span>{{ $t("Please select your preferred delivery time") }}</span>
+      </div>
+
+      <div v-if="deliveryMode === 'scheduled' && selectedSlot" class="delivery-time-summary">
+        <div class="delivery-time-summary__content">
+          <span class="material-icons delivery-time-summary__icon">schedule</span>
+          <span>{{ formatSelectedSlot(selectedSlot) }}</span>
+        </div>
+        <button type="button" class="btn_underline" @click.prevent="openSlotModal(true)">
+          {{ $t("Change") }}
+        </button>
+      </div>
+
+      <p v-if="scheduleError" class="text-danger validation-error mb-0 mt-2">{{ scheduleError }}</p>
+    </template>
 
     <CModal
       scrollable
@@ -60,76 +65,121 @@
     >
       <CModalHeader>
         <div class="delivery-modal-header">
-          <CModalTitle>{{ $t("Schedule Delivery") }}</CModalTitle>
+          <div class="delivery-modal-header__title-row">
+            <button
+              v-if="isHomepageVariant && modalStep === 'schedule'"
+              type="button"
+              class="delivery-modal-back"
+              @click.prevent="backToOptionsStep"
+            >
+              <span class="material-icons">arrow_back</span>
+            </button>
+            <CModalTitle>{{ modalTitle }}</CModalTitle>
+          </div>
           <button class="btn-circle bg-black size-35" @click.prevent="closeSlotModal">
             <base-icon-svg name="close" :width="10" :height="10" />
           </button>
         </div>
       </CModalHeader>
       <CModalBody ref="modalBody">
-        <div v-if="slotsLoading" class="p-3 text-center">
-          {{ $t("Loading") }}...
-        </div>
-        <div v-else-if="availableDates.length === 0" class="p-3 text-center text-muted">
-          {{ $t("No delivery times available") }}
-        </div>
-        <div v-else class="delivery-schedule-scroll">
-          <div class="delivery-calendar">
-            <div class="delivery-calendar__nav">
-              <button type="button" class="delivery-calendar__nav-btn" @click.prevent="prevMonth">
-                <span class="material-icons">chevron_left</span>
-              </button>
-              <span class="delivery-calendar__month">{{ calendarMonthLabel }}</span>
-              <button type="button" class="delivery-calendar__nav-btn" @click.prevent="nextMonth">
-                <span class="material-icons">chevron_right</span>
-              </button>
-            </div>
-            <div class="delivery-calendar__weekdays">
-              <span v-for="day in weekdayLabels" :key="day">{{ day }}</span>
-            </div>
-            <div class="delivery-calendar__grid">
-              <button
-                v-for="(cell, index) in calendarCells"
-                :key="index"
-                type="button"
-                class="delivery-calendar__day"
-                :class="{
-                  'delivery-calendar__day--outside': !cell.inMonth,
-                  'delivery-calendar__day--selectable': cell.isSelectable,
-                  'delivery-calendar__day--selected': cell.isSelected,
-                  'delivery-calendar__day--today': cell.isToday,
-                }"
-                :disabled="!cell.isSelectable"
-                @click.prevent="selectCalendarDate(cell.date)"
-              >
-                {{ cell.dayNumber }}
-              </button>
-            </div>
-          </div>
+        <div v-if="isHomepageVariant && modalStep === 'options'" class="delivery-time-options delivery-time-options--modal">
+          <label v-if="!isSchedulingRequired" class="d-flex align-items-center gap-2 radio-label mb-2">
+            <input
+              type="radio"
+              name="delivery-time-mode-homepage"
+              value="now"
+              :checked="deliveryMode === 'now'"
+              @change="selectHomepageMode('now')"
+            />
+            <span class="radio-text">{{ $t("Now") }}</span>
+          </label>
 
-          <div ref="slotsPanel" class="delivery-slots-panel">
-            <h6 class="delivery-slots-panel__title">{{ $t("Select Delivery Time") }}</h6>
-            <p v-if="pendingDate" class="delivery-slots-panel__date text-muted">{{ pendingDateLabel }}</p>
-            <p v-else class="delivery-slots-panel__hint text-muted">{{ $t("Select a date above") }}</p>
-            <div v-if="pendingDate && slotsForPendingDate.length === 0" class="text-center text-muted py-3">
-              {{ $t("No delivery times available") }}
+          <label class="d-flex align-items-center gap-2 radio-label mb-2">
+            <input
+              type="radio"
+              name="delivery-time-mode-homepage"
+              value="scheduled"
+              :checked="deliveryMode === 'scheduled'"
+              @change="selectHomepageMode('scheduled')"
+            />
+            <span class="radio-text">{{ $t("Choose Delivery Time") }}</span>
+          </label>
+
+          <button
+            v-if="deliveryMode === 'scheduled'"
+            type="button"
+            class="btn_underline mt-2"
+            @click.prevent="goToScheduleStep(true)"
+          >
+            {{ selectedSlot ? $t("Change") : $t("Please select your preferred delivery time") }}
+          </button>
+        </div>
+
+        <template v-else>
+          <div v-if="slotsLoading" class="p-3 text-center">
+            {{ $t("Loading") }}...
+          </div>
+          <div v-else-if="availableDates.length === 0" class="p-3 text-center text-muted">
+            {{ $t("No delivery times available") }}
+          </div>
+          <div v-else class="delivery-schedule-scroll">
+            <div class="delivery-calendar">
+              <div class="delivery-calendar__nav">
+                <button type="button" class="delivery-calendar__nav-btn" @click.prevent="prevMonth">
+                  <span class="material-icons">chevron_left</span>
+                </button>
+                <span class="delivery-calendar__month">{{ calendarMonthLabel }}</span>
+                <button type="button" class="delivery-calendar__nav-btn" @click.prevent="nextMonth">
+                  <span class="material-icons">chevron_right</span>
+                </button>
+              </div>
+              <div class="delivery-calendar__weekdays">
+                <span v-for="day in weekdayLabels" :key="day">{{ day }}</span>
+              </div>
+              <div class="delivery-calendar__grid">
+                <button
+                  v-for="(cell, index) in calendarCells"
+                  :key="index"
+                  type="button"
+                  class="delivery-calendar__day"
+                  :class="{
+                    'delivery-calendar__day--outside': !cell.inMonth,
+                    'delivery-calendar__day--selectable': cell.isSelectable,
+                    'delivery-calendar__day--selected': cell.isSelected,
+                    'delivery-calendar__day--today': cell.isToday,
+                  }"
+                  :disabled="!cell.isSelectable"
+                  @click.prevent="selectCalendarDate(cell.date)"
+                >
+                  {{ cell.dayNumber }}
+                </button>
+              </div>
             </div>
-            <div v-else-if="pendingDate" class="delivery-time-slots-grid">
-              <button
-                v-for="slot in slotsForPendingDate"
-                :key="slot.id"
-                type="button"
-                class="delivery-time-slot-btn"
-                :class="{ active: pendingSlot && pendingSlot.id === slot.id }"
-                @click.prevent="selectPendingSlot(slot)"
-              >
-                {{ slot.display }}
-              </button>
+
+            <div ref="slotsPanel" class="delivery-slots-panel">
+              <h6 class="delivery-slots-panel__title">{{ $t("Select Delivery Time") }}</h6>
+              <p v-if="pendingDate" class="delivery-slots-panel__date text-muted">{{ pendingDateLabel }}</p>
+              <p v-else class="delivery-slots-panel__hint text-muted">{{ $t("Select a date above") }}</p>
+              <div v-if="pendingDate && slotsForPendingDate.length === 0" class="text-center text-muted py-3">
+                {{ $t("No delivery times available") }}
+              </div>
+              <div v-else-if="pendingDate" class="delivery-time-slots-grid">
+                <button
+                  v-for="slot in slotsForPendingDate"
+                  :key="slot.id"
+                  type="button"
+                  class="delivery-time-slot-btn"
+                  :class="{ active: pendingSlot && pendingSlot.id === slot.id }"
+                  @click.prevent="selectPendingSlot(slot)"
+                >
+                  {{ formatSlotDisplay(slot) }}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </template>
       </CModalBody>
-      <CModalFooter class="delivery-modal-footer">
+      <CModalFooter v-if="showConfirmFooter" class="delivery-modal-footer">
         <button
           type="button"
           class="btn btn_fill w-100"
@@ -152,6 +202,7 @@ import {
   CModalBody,
   CModalFooter,
 } from "@coreui/vue";
+import { formatSlotDisplay } from "@/utils/deliveryTimeFormat";
 
 export default {
   name: "DeliveryTimeSelector",
@@ -171,6 +222,11 @@ export default {
       type: Object,
       required: true,
     },
+    variant: {
+      type: String,
+      default: "checkout",
+      validator: (value) => ["checkout", "homepage"].includes(value),
+    },
   },
   data() {
     return {
@@ -185,9 +241,13 @@ export default {
       calendarMonth: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
       pendingDate: null,
       pendingSlot: null,
+      modalStep: "schedule",
     };
   },
   computed: {
+    isHomepageVariant() {
+      return this.variant === "homepage";
+    },
     isSchedulingRequired() {
       return this.config?.delivery_scheduling_required == this.enums.status.ACTIVE;
     },
@@ -243,9 +303,24 @@ export default {
       }
       return this.formatDateLabel(this.pendingDate);
     },
+    modalTitle() {
+      if (this.isHomepageVariant && this.modalStep === "options") {
+        return this.$t("Delivery Time");
+      }
+      return this.$t("Schedule Delivery");
+    },
+    showConfirmFooter() {
+      if (this.isHomepageVariant) {
+        return this.modalStep === "schedule";
+      }
+      return true;
+    },
   },
   mounted() {
     this.restoreFromStore();
+    if (this.isHomepageVariant) {
+      return;
+    }
     if (this.isSchedulingRequired) {
       this.deliveryMode = "scheduled";
       if (!this.selectedSlot) {
@@ -254,6 +329,7 @@ export default {
     }
   },
   methods: {
+    formatSlotDisplay,
     formatDateKey(date) {
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -298,9 +374,21 @@ export default {
       this.persistToStore();
       this.openSlotModal(false);
     },
-    openSlotModal(fromExistingSelection = false) {
+    selectHomepageMode(mode) {
+      this.scheduleError = "";
+      this.deliveryMode = mode;
+      if (mode === "now") {
+        this.selectedSlot = null;
+        this.persistToStore();
+        this.closeSlotModal();
+        return;
+      }
+      this.persistToStore();
+      this.goToScheduleStep(false);
+    },
+    goToScheduleStep(fromExistingSelection = false) {
       this.deliveryMode = "scheduled";
-      this.slotModalVisible = true;
+      this.modalStep = "schedule";
       this.scrollToSlotsOnLoad = fromExistingSelection;
 
       if (fromExistingSelection && this.selectedSlot?.schedule_date) {
@@ -319,11 +407,32 @@ export default {
         this.$nextTick(() => this.scrollToSlotsPanel());
       }
     },
+    openEditModal() {
+      this.restoreFromStore();
+      this.modalStep = "options";
+      this.pendingDate = null;
+      this.pendingSlot = null;
+      this.scrollToSlotsOnLoad = false;
+      this.slotModalVisible = true;
+    },
+    backToOptionsStep() {
+      this.modalStep = "options";
+      this.pendingDate = null;
+      this.pendingSlot = null;
+      this.scrollToSlotsOnLoad = false;
+    },
+    openSlotModal(fromExistingSelection = false) {
+      this.slotModalVisible = true;
+      this.goToScheduleStep(fromExistingSelection);
+    },
     closeSlotModal() {
       this.slotModalVisible = false;
       this.pendingDate = null;
       this.pendingSlot = null;
       this.scrollToSlotsOnLoad = false;
+      if (this.isHomepageVariant) {
+        this.modalStep = "options";
+      }
     },
     setInitialCalendarMonth() {
       if (this.availableDates.length > 0) {
@@ -431,7 +540,7 @@ export default {
       const dateLabel = slot.schedule_date
         ? this.formatDateLabel(slot.schedule_date)
         : "";
-      const timePart = slot.display || `${slot.start_time} – ${slot.end_time}`;
+      const timePart = formatSlotDisplay(slot);
       if (dateLabel && timePart) {
         return `${dateLabel} · ${timePart}`;
       }
@@ -471,6 +580,12 @@ export default {
   padding-top: 20px;
 }
 
+.delivery-time-section--homepage {
+  border-top: none;
+  padding-top: 0;
+  margin: 0;
+}
+
 .delivery-time-prompt {
   display: flex;
   align-items: center;
@@ -504,6 +619,10 @@ export default {
   gap: 10px;
 }
 
+.delivery-time-options--modal {
+  padding: 8px 0 4px;
+}
+
 :deep(.delivery-schedule-modal .modal-dialog) {
   max-width: 420px;
 }
@@ -531,6 +650,31 @@ export default {
   justify-content: space-between;
   width: 100%;
   gap: 12px;
+}
+
+.delivery-modal-header__title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.delivery-modal-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+
+  .material-icons {
+    font-size: 20px;
+  }
 }
 
 .delivery-schedule-scroll {
@@ -667,6 +811,13 @@ export default {
 .delivery-modal-footer {
   border-top: none;
   padding-top: 0;
+}
+
+.delivery-modal-footer .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .delivery-modal-footer .btn:disabled {

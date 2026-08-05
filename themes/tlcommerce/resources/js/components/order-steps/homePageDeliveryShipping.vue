@@ -16,12 +16,18 @@
                         <span class="delivery-field__city">
                             {{ selectedCity.name }}<template v-if="selectedState">, {{ selectedState.name }}</template>
                         </span>
-                        <span class="material-icons delivery-field__chevron">{{ isRtl ? 'chevron_left' : 'chevron_right' }}</span>
+                        <button type="button" class="arrival-time__edit" @click.stop="goToLocation">
+                            {{ editLabel }}
+                        </button>
                     </div>
 
                     <div class="delivery-field__location delivery-field__location--empty" v-else>
-                        <span class="delivery-field__prompt">{{ tapToChooseLabel }}</span>
-                        <span class="material-icons delivery-field__chevron">{{ isRtl ? 'chevron_left' : 'chevron_right' }}</span>
+                        <span class="delivery-field__prompt">{{ chooseLocationLabel }}</span>
+                        <button type="button" class="arrival-time__edit" @click.stop="goToLocation">
+                            {{ editLabel }}
+                        </button>
+                        <!-- <span class="delivery-field__prompt">{{ tapToChooseLabel }}</span> -->
+                        <!-- <span class="material-icons delivery-field__chevron">{{ isRtl ? 'chevron_left' : 'chevron_right' }}</span> -->
                     </div>
                 </div>
 
@@ -32,8 +38,11 @@
                         <span class="material-icons mr-2">schedule</span>
                         <span class="text-muted small">{{ earliestArrivalLabel }}</span>
                     </div>
-                    <div v-if="earliestArrival" class="arrival-time">
-                        <strong>{{ earliestArrival }}</strong>
+                    <div v-if="displayArrival" class="arrival-time">
+                        <strong>{{ displayArrival }}</strong>
+                        <button type="button" class="arrival-time__edit" @click.stop="openDeliveryTimeEdit">
+                            {{ editLabel }}
+                        </button>
                     </div>
                     <!-- <div v-if="selectedCity" class="arrival-time">
                         <div v-if="['raneem', 'raneemjewelers', 'RANEEM JEWELERS'].includes(tenant)">
@@ -53,6 +62,9 @@
             </div>
 
         </div>
+
+        <delivery-time-selector v-if="config && enums" ref="deliveryTimeSelector" variant="homepage" :config="config"
+            :enums="enums" />
     </div>
 </template>
 
@@ -145,9 +157,14 @@
 <script>
 
 import axios from "axios";
-import { mapState, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
+import DeliveryTimeSelector from "./DeliveryTimeSelector.vue";
+import { formatSlotDisplay } from "@/utils/deliveryTimeFormat";
 
 export default {
+    components: {
+        DeliveryTimeSelector,
+    },
 
     props: {
         enums: Object,
@@ -181,14 +198,33 @@ export default {
             const stateId = this.selectedState?.id || "";
             return `${cityId}-${stateId}`;
         },
+        deliverySchedule() {
+            return this.$store.state.deliverySchedule || null;
+        },
+        scheduledSummary() {
+            const schedule = this.deliverySchedule;
+            if (schedule?.mode !== "scheduled" || !schedule?.slot) {
+                return null;
+            }
+            return this.formatScheduledSlot(schedule.slot);
+        },
+        displayArrival() {
+            return this.scheduledSummary || this.earliestArrival;
+        },
         selectDeliveryLocationLabel() {
             return this.localizedLabel("Select Delivery Location", "اختر موقع التوصيل");
         },
         tapToChooseLabel() {
             return this.localizedLabel("Tap to choose", "اضغط للاختيار");
         },
+        chooseLocationLabel() {
+            return this.localizedLabel("Choose location", "اختر الموقع");
+        },
         earliestArrivalLabel() {
             return this.localizedLabel("Earliest Arrival", "أقرب وقت للوصول");
+        },
+        editLabel() {
+            return this.localizedLabel("Edit", "تعديل");
         },
     },
 
@@ -213,6 +249,38 @@ export default {
             const translated = this.$t(key);
             if (!this.isRtl) return translated;
             return /[\u0600-\u06FF]/.test(translated) ? translated : arFallback;
+        },
+
+        formatDateLabel(dateKey) {
+            const parts = String(dateKey || "").split("-");
+            if (parts.length !== 3) {
+                return dateKey || "";
+            }
+            const date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+            return date.toLocaleDateString(undefined, {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+            });
+        },
+
+        formatScheduledSlot(slot) {
+            if (!slot) {
+                return null;
+            }
+            const dateLabel = slot.schedule_date
+                ? this.formatDateLabel(slot.schedule_date)
+                : "";
+            const timePart = formatSlotDisplay(slot);
+            if (dateLabel && timePart) {
+                return `${dateLabel} · ${timePart}`;
+            }
+            return timePart || dateLabel || null;
+        },
+
+        openDeliveryTimeEdit() {
+            this.$refs.deliveryTimeSelector?.openEditModal();
         },
 
         fetchEarliestArrival() {
@@ -395,7 +463,41 @@ export default {
     flex-shrink: 0;
 }
 
-.delivery-page--rtl .delivery-arrival > .d-flex {
+.arrival-time {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.arrival-time strong {
+    font-weight: 700;
+    color: #111;
+}
+
+.arrival-time__edit {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font-size: inherit;
+    font-weight: 400;
+    color: #6c757d;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.arrival-time__edit:hover {
+    color: #343a40;
+    text-decoration: underline;
+}
+
+.delivery-page--rtl .arrival-time__edit {
+    direction: rtl;
+    unicode-bidi: plaintext;
+}
+
+.delivery-page--rtl .delivery-arrival>.d-flex {
     flex-direction: row-reverse;
     direction: ltr;
 }

@@ -156,6 +156,8 @@
 
 /*! @/utils/checkoutShippingPrep */
 
+/*! @/utils/deliveryTimeFormat */
+
 /*! @/utils/formatVariantDisplay */
 
 /*! @/utils/trackSocialPixels */
@@ -181,6 +183,10 @@
 /*!*************************************************!*\
   !*** ./resources/js/utils/trackSocialPixels.js ***!
   \*************************************************/
+
+/*!**************************************************!*\
+  !*** ./resources/js/utils/deliveryTimeFormat.js ***!
+  \**************************************************/
 
 /*!****************************************************!*\
   !*** ./resources/js/utils/checkoutShippingPrep.js ***!
