@@ -7,6 +7,7 @@ use Plugin\TlcommerceCore\Http\Controllers\Api\ProductController;
 use Plugin\TlcommerceCore\Http\Controllers\Api\CustomerController;
 use Plugin\TlcommerceCore\Http\Controllers\Api\SettingsController;
 use Plugin\TlcommerceCore\Http\Controllers\Api\DeliveryScheduleController;
+use Plugin\TlcommerceCore\Http\Controllers\Api\AnalyticsController;
 use Plugin\TlcommerceCore\Http\Controllers\Api\NotificationController;
 use Plugin\TlcommerceCore\Http\Controllers\Api\CustomerAddressController;
 use Plugin\TlcommerceCore\Http\Controllers\Api\CustomerWishlistController;
@@ -32,6 +33,7 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
     // Route::get('site-properties', [SettingsController::class, 'siteProperties']);
     Route::get('phone-codes', [SettingsController::class, 'phoneCodes']);
     Route::post('delivery-schedule/available-slots', [DeliveryScheduleController::class, 'availableSlots']);
+    Route::post('analytics/track', [AnalyticsController::class, 'track']);
     /**
      * Product routes
      * 

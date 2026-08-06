@@ -88,11 +88,58 @@ class DashboardController extends Controller
                         break;
                 }
 
+                $analytics_store_visits = 0;
+                $analytics_add_to_cart = 0;
+                $analytics_checkout = 0;
+                $analytics_content_view = 0;
+
+                try {
+                    $storeVisitQuery = \Plugin\TlcommerceCore\Models\AnalyticsEvent::where('event_type', 'store_visit');
+                    $addToCartQuery = \Plugin\TlcommerceCore\Models\AnalyticsEvent::where('event_type', 'add_to_cart');
+                    $checkoutQuery = \Plugin\TlcommerceCore\Models\AnalyticsEvent::where('event_type', 'checkout');
+                    $contentViewQuery = \Plugin\TlcommerceCore\Models\AnalyticsEvent::where('event_type', 'content_view');
+
+                    switch ($filter) {
+                        case 'daily':
+                            $storeVisitQuery->whereDate('created_at', today());
+                            $addToCartQuery->whereDate('created_at', today());
+                            $checkoutQuery->whereDate('created_at', today());
+                            $contentViewQuery->whereDate('created_at', today());
+                            break;
+                        case 'weekly':
+                            $storeVisitQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                            $addToCartQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                            $checkoutQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                            $contentViewQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                            break;
+                        case 'monthly':
+                            $storeVisitQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
+                            $addToCartQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
+                            $checkoutQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
+                            $contentViewQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
+                            break;
+                    }
+
+                    $analytics_store_visits = $storeVisitQuery->count();
+                    $analytics_add_to_cart = $addToCartQuery->count();
+                    $analytics_checkout = $checkoutQuery->count();
+                    $analytics_content_view = $contentViewQuery->count();
+                } catch (\Throwable $e) {
+                    $analytics_store_visits = 0;
+                    $analytics_add_to_cart = 0;
+                    $analytics_checkout = 0;
+                    $analytics_content_view = 0;
+                }
+
                 return response()->json([
                     'total_customers' => $customerQuery->count(),
                     'total_products'  => $productQuery->count(),
                     'total_sales'     => $salesQuery->sum('total_payable_amount'),
                     'total_orders'    => $ordersQuery->get()->count(),
+                    'analytics_store_visits' => $analytics_store_visits,
+                    'analytics_add_to_cart' => $analytics_add_to_cart,
+                    'analytics_checkout' => $analytics_checkout,
+                    'analytics_content_view' => $analytics_content_view,
                 ]);
         }
         catch (\Exception $e) {
@@ -102,5 +149,90 @@ class DashboardController extends Controller
             ]);
         }
         
+    }
+
+    /**
+     * Per-product analytics breakdown for Content View / Add to Cart cards.
+     */
+    public function analyticsByProduct(Request $request)
+    {
+        $eventType = (string) $request->get('event_type', '');
+        $allowed = ['content_view', 'add_to_cart'];
+
+        if (!in_array($eventType, $allowed, true)) {
+            return response()->json([
+                'success' => true,
+                'items' => [],
+            ]);
+        }
+
+        $filter = $request->get('filter', 'all-time');
+
+        try {
+            $query = DB::table('tl_com_analytics_events')
+                ->where('event_type', $eventType)
+                ->whereNotNull('product_id');
+
+            switch ($filter) {
+                case 'daily':
+                    $query->whereDate('created_at', today());
+                    break;
+                case 'weekly':
+                    $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                    break;
+                case 'monthly':
+                    $query->whereMonth('created_at', now()->month)
+                        ->whereYear('created_at', now()->year);
+                    break;
+            }
+
+            $rows = $query
+                ->select('product_id', DB::raw('COUNT(*) as total'))
+                ->groupBy('product_id')
+                ->orderByDesc('total')
+                ->limit(50)
+                ->get();
+
+            $productIds = $rows->pluck('product_id')->filter()->unique()->values()->all();
+            $products = collect();
+            if (!empty($productIds)) {
+                $products = DB::table('tl_com_products')
+                    ->whereIn('id', $productIds)
+                    ->get(['id', 'name', 'thumbnail_image'])
+                    ->keyBy('id');
+            }
+
+            $fallbackImage = asset('backend/assets/img/avatar/avatar-user.png');
+
+            $items = $rows->map(function ($row) use ($products, $fallbackImage) {
+                $id = (int) $row->product_id;
+                $product = $products->get($id);
+                $image = $fallbackImage;
+                if ($product && !empty($product->thumbnail_image)) {
+                    $image = str_replace('/public', '', getFilePath($product->thumbnail_image));
+                }
+
+                return [
+                    'product_id' => $id,
+                    'name' => $product->name ?? ('Product #' . $id),
+                    'image' => $image,
+                    'total' => (int) $row->total,
+                ];
+            })->values();
+
+            return response()->json([
+                'success' => true,
+                'items' => $items,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('analytics by product failed', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'items' => [],
+            ]);
+        }
     }
 }

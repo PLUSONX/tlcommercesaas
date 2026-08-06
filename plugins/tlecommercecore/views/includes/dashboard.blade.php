@@ -79,6 +79,23 @@
             ];
         }
     });
+
+    $analytics_store_visits = 0;
+    $analytics_add_to_cart = 0;
+    $analytics_checkout = 0;
+    $analytics_content_view = 0;
+
+    try {
+        $analytics_store_visits = \Plugin\TlcommerceCore\Models\AnalyticsEvent::where('event_type', 'store_visit')->count();
+        $analytics_add_to_cart = \Plugin\TlcommerceCore\Models\AnalyticsEvent::where('event_type', 'add_to_cart')->count();
+        $analytics_checkout = \Plugin\TlcommerceCore\Models\AnalyticsEvent::where('event_type', 'checkout')->count();
+        $analytics_content_view = \Plugin\TlcommerceCore\Models\AnalyticsEvent::where('event_type', 'content_view')->count();
+    } catch (\Throwable $e) {
+        $analytics_store_visits = 0;
+        $analytics_add_to_cart = 0;
+        $analytics_checkout = 0;
+        $analytics_content_view = 0;
+    }
     
 @endphp
 @push('head')
@@ -125,6 +142,15 @@
             height: 20px !important;
         }
 
+        .analytics-breakdown-card {
+            cursor: pointer;
+            transition: box-shadow 0.15s ease, transform 0.15s ease;
+        }
+
+        .analytics-breakdown-card:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+        }
 
         
  
@@ -310,6 +336,105 @@
                             <!-- <h2 class="mb-0">{{ currencyExchange($total_sales) }}</h2> -->
                             <h2 class="mb-0 total-sales-count">{{ currencyExchange($total_sales) }}</h2>
                         </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row w-100 mx-0 px-0 mt-20 align-items-start mb-2" style="padding-right: 0.5rem !important; padding-left: 0.5rem !important;">
+        <div class="col px-1 mb-2">
+            <div class="card bg-white text-black" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
+                <div class="">
+                    <div class="p-3 text-left">
+                        <div class="d-flex align-items-center mb-4" style="gap: 10px;">
+                            <x-lucide-trending-up style="width: 22px; height: 22px; color: #ff5A1f;" />
+                            <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Store Visits') }}</h4>
+                        </div>
+                        <h2 class="mb-0 analytics-store-visits-count">{{ $analytics_store_visits }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col px-1 mb-2">
+            <div class="card bg-white text-black analytics-breakdown-card" data-analytics-type="content_view" role="button" tabindex="0" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
+                <div class="">
+                    <div class="p-3 text-left">
+                        <div class="d-flex align-items-center mb-4" style="gap: 10px;">
+                            <x-lucide-view style="width: 22px; height: 22px; color: #ff5A1f;" />
+                            <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Content View') }}</h4>
+                        </div>
+                        <h2 class="mb-0 analytics-content-view-count">{{ $analytics_content_view }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col px-1 mb-2">
+            <div class="card bg-white text-black analytics-breakdown-card" data-analytics-type="add_to_cart" role="button" tabindex="0" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
+                <div class="">
+                    <div class="p-3 text-left">
+                        <div class="d-flex align-items-center mb-4" style="gap: 10px;">
+                            <x-lucide-shopping-cart style="width: 22px; height: 22px; color: #ff5A1f;" />
+                            <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Add to Cart') }}</h4>
+                        </div>
+                        <h2 class="mb-0 analytics-add-to-cart-count">{{ $analytics_add_to_cart }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col px-1 mb-2">
+            <div class="card bg-white text-black" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
+                <div class="">
+                    <div class="p-3 text-left">
+                        <div class="d-flex align-items-center mb-4" style="gap: 10px;">
+                            <x-lucide-shopping-basket style="width: 22px; height: 22px; color: #ff5A1f;" />
+                            <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Checkout') }}</h4>
+                        </div>
+                        <h2 class="mb-0 analytics-checkout-count">{{ $analytics_checkout }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- <div class="col px-1" style="padding-right: 10px;">
+            <div class="card bg-white text-black" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
+                <div class="">
+                    <div class="p-3 text-left">
+                        <div class="d-flex align-items-center mb-4" style="gap: 10px;">
+                            <i class="fas fa-eye" style="font-size: 22px; color: #ff5A1f;"></i>
+                            <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Content View') }}</h4>
+                        </div>
+                        <h2 class="mb-0 analytics-content-view-count">{{ $analytics_content_view }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+    </div>
+
+    <div id="analytics-product-breakdown-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-centered" style="border-radius: 12px !important; overflow: hidden !important;">
+            <div class="modal-content" style="border-radius: 12px !important;">
+                <div class="modal-header">
+                    <h4 class="modal-title h6 bold analytics-product-breakdown-title">{{ translate('Product breakdown') }}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body pt-0">
+                    <p class="text-muted small mb-2 analytics-product-breakdown-status d-none"></p>
+                    <div class="table-responsive">
+                        <table class="table table-sm mb-0">
+                            <thead>
+                                <tr>
+                                    <th>{{ translate('Product') }}</th>
+                                    <th class="text-right">{{ translate('Count') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="analytics-product-breakdown-body"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -867,11 +992,85 @@
                     $('.total-products-count').text(data.total_products ?? 0);
                     $('.total-sales-count').text(data.total_sales ?? 0);
                     $('.total-orders-count').text(data.total_orders ?? 0);
+                    $('.analytics-store-visits-count').text(data.analytics_store_visits ?? 0);
+                    $('.analytics-add-to-cart-count').text(data.analytics_add_to_cart ?? 0);
+                    $('.analytics-checkout-count').text(data.analytics_checkout ?? 0);
+                    $('.analytics-content-view-count').text(data.analytics_content_view ?? 0);
                 },
                 error: function(err) {
                     console.error('Filter error:', err);
                 }
             });
+        });
+
+        function openAnalyticsBreakdown(eventType) {
+            const titles = {
+                content_view: '{{ translate("Content View by Product") }}',
+                add_to_cart: '{{ translate("Add to Cart by Product") }}'
+            };
+            const $modal = $('#analytics-product-breakdown-modal');
+            const $body = $modal.find('.analytics-product-breakdown-body');
+            const $status = $modal.find('.analytics-product-breakdown-status');
+            const filter = $('.selectFilter').val() || 'all-time';
+
+            $modal.find('.analytics-product-breakdown-title').text(titles[eventType] || '{{ translate("Product breakdown") }}');
+            $status.removeClass('d-none').text('{{ translate("Loading") }}...');
+            $body.empty();
+            $modal.modal('show');
+
+            $.ajax({
+                url: '{{ route("dashboard.analytics.by.product") }}',
+                data: {
+                    event_type: eventType,
+                    filter: filter
+                },
+                success: function (data) {
+                    const items = (data && data.items) ? data.items : [];
+                    $body.empty();
+                    if (!items.length) {
+                        $status.removeClass('d-none').text('{{ translate("No data") }}');
+                        return;
+                    }
+                    $status.addClass('d-none').text('');
+                    items.forEach(function (item) {
+                        const name = $('<div>').text(item.name || ('#' + item.product_id)).html();
+                        const image = $('<div>').text(item.image || '{{ asset("backend/assets/img/avatar/avatar-user.png") }}').html();
+                        const total = item.total ?? 0;
+                        $body.append(
+                            '<tr><td>' +
+                                '<div class="d-flex align-items-center" style="gap: 10px;">' +
+                                    '<img src="' + image + '" alt="" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; flex-shrink: 0;" />' +
+                                    '<span>' + name + '</span>' +
+                                '</div>' +
+                            '</td><td class="text-right">' + total + '</td></tr>'
+                        );
+                    });
+                },
+                error: function () {
+                    $status.removeClass('d-none').text('{{ translate("No data") }}');
+                    $body.empty();
+                }
+            });
+        }
+
+        $(document).on('click', '.analytics-breakdown-card', function () {
+            const eventType = $(this).data('analytics-type');
+            if (!eventType) {
+                return;
+            }
+            openAnalyticsBreakdown(eventType);
+        });
+
+        $(document).on('keyup', '.analytics-breakdown-card', function (e) {
+            if (e.key !== 'Enter' && e.key !== ' ') {
+                return;
+            }
+            e.preventDefault();
+            const eventType = $(this).data('analytics-type');
+            if (!eventType) {
+                return;
+            }
+            openAnalyticsBreakdown(eventType);
         });
         
         // function dateFormatted() {

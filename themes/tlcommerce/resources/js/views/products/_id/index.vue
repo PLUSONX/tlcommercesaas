@@ -493,6 +493,7 @@ const SingleShop = defineAsyncComponent(() =>
 
 import CustomFooter from '@/components/ui/CustomFooter.vue'
 import { isProductLineInCart, findProductCartLine } from '@/utils/cartLineMatch'
+import { trackSocialPixels } from '@/utils/trackSocialPixels'
 
 import {
   CTabContent,
@@ -846,6 +847,14 @@ export default {
             this.productLoading = false;
             this.syncOrderQuantityFromProduct();
             this.syncProductDetailsTab();
+
+            trackSocialPixels('ViewContent', {
+              content_ids: [this.product.id],
+              content_name: this.product.name,
+              content_type: 'product',
+              value: this.product.price,
+              currency: 'KWD',
+            });
           } else {
             this.productLoading = false;
           }

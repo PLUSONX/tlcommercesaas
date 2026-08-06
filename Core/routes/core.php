@@ -157,6 +157,8 @@ Route::group(['middleware' => 'auth'], function () {
         ->name('admin.license.active')->middleware(['can:Manage Dashboard']);
 
     Route::get('/dashboard/filter', [DashboardController::class, 'filter'])->name('dashboard.filter');
+    Route::get('/dashboard/analytics-by-product', [DashboardController::class, 'analyticsByProduct'])
+        ->name('dashboard.analytics.by.product');
 
      /**
          * Manage Store

@@ -665,15 +665,6 @@ export default {
       return this.isSplitScreen && this.visibleQuickView && !!this.product?.id;
     },
   },
-  mounted() {
-    trackSocialPixels('ViewContent', {
-      content_ids: [this.item.id],
-      content_name: this.item.name,
-      content_type: 'product',
-      value: this.item.price,
-      currency: 'KD'
-    });
-  },
   methods: {
 
     cleanImage(img) {

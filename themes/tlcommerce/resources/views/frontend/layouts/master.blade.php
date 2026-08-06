@@ -321,6 +321,55 @@
     @endif
     @endif
 
+    {{-- Best-effort store_visit once per browser session (never blocks shell) --}}
+    <script>
+        (function () {
+            var STORE_VISIT_KEY = 'tlc_analytics_store_visit';
+
+            function trackStoreVisit() {
+                try {
+                    if (window.sessionStorage && sessionStorage.getItem(STORE_VISIT_KEY) === '1') {
+                        return;
+                    }
+
+                    var url = '/api/v1/ecommerce-core/analytics/track';
+                    var body = JSON.stringify({ event_type: 'store_visit', product_id: null });
+                    var sent = false;
+
+                    if (navigator.sendBeacon) {
+                        try {
+                            var blob = new Blob([body], { type: 'application/json' });
+                            sent = !!navigator.sendBeacon(url, blob);
+                        } catch (e) {}
+                    }
+
+                    if (!sent) {
+                        fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                            body: body,
+                            keepalive: true,
+                            credentials: 'same-origin'
+                        }).catch(function () {});
+                        sent = true;
+                    }
+
+                    if (sent && window.sessionStorage) {
+                        try {
+                            sessionStorage.setItem(STORE_VISIT_KEY, '1');
+                        } catch (e) {}
+                    }
+                } catch (e) {}
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', trackStoreVisit);
+            } else {
+                trackStoreVisit();
+            }
+        })();
+    </script>
+
     <script>
         window.__TLC_BOOTSTRAP__ = {
             activeLayout: @json($activeLayoutBootstrap),
