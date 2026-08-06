@@ -213,6 +213,9 @@ class UserController extends Controller
                     $user->syncRoles($request['role']);
                 }
             }
+
+            $this->syncStoreUser($user);
+
             DB::commit();
 
             toastNotification('success', translate('User updated successfully'));
@@ -238,6 +241,7 @@ class UserController extends Controller
                 return redirect()->route('core.users');
             }
             $user = User::findOrFail($request['id']);
+            $this->deleteStoreUser($user);
             $user->delete();
             toastNotification('Success', 'User deleted successfully');
             return redirect()->route('core.users');
@@ -291,14 +295,23 @@ class UserController extends Controller
             }
             $user->name  = xss_clean($request['name']);
             $user->email = xss_clean($request['email']);
+            $passwordChanged = false;
             if (request('password') != null && request('password_confirmation') != null && request('old_password') != null) {
                 $user->password = Hash::make($request['password']);
+                $passwordChanged = true;
             }
 
             $user->update();
             $user->image = $request['pro_pic'];
 
             $user->update();
+
+            $extra = [];
+            if ($passwordChanged) {
+                $extra['password'] = $user->password;
+            }
+            $this->syncStoreUser($user, $extra);
+
             DB::commit();
             toastNotification('success', translate('Profile updated successfully'));
             return redirect()->route('core.profile');
@@ -307,5 +320,49 @@ class UserController extends Controller
             toastNotification('error', translate('Unable to update user profile'));
             return redirect()->route('core.profile');
         }
+    }
+
+    /**
+     * Mirror tenant staff user changes to central tl_store_users.
+     *
+     * @param  User  $user
+     * @param  array  $extra
+     * @return void
+     */
+    protected function syncStoreUser(User $user, array $extra = [])
+    {
+        if (!tenancy()->initialized || empty($user->uid)) {
+            return;
+        }
+
+        $data = array_merge([
+            'name' => $user->name,
+            'email' => $user->email,
+            'status' => $user->status,
+            'updated_at' => Carbon::now(),
+        ], $extra);
+
+        DB::connection('mysql')->table('tl_store_users')
+            ->where('uid', $user->uid)
+            ->where('tenant_id', tenant('id'))
+            ->update($data);
+    }
+
+    /**
+     * Remove mirrored tenant staff user from central tl_store_users.
+     *
+     * @param  User  $user
+     * @return void
+     */
+    protected function deleteStoreUser(User $user)
+    {
+        if (!tenancy()->initialized || empty($user->uid)) {
+            return;
+        }
+
+        DB::connection('mysql')->table('tl_store_users')
+            ->where('uid', $user->uid)
+            ->where('tenant_id', tenant('id'))
+            ->delete();
     }
 }
