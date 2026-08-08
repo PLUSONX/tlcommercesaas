@@ -75,10 +75,41 @@
             </span>
             <!-- End Price -->
 
-            <button type="button" class="btn-circle bg-black product-split-add-btn" :disabled="item.quantity < 1"
-              :title="$t('Add To Cart')" @click.prevent="handleAddToCartButton">
+            <button
+              v-if="!cartLine"
+              type="button"
+              class="btn-circle bg-black product-split-add-btn"
+              :disabled="item.quantity < 1"
+              :title="$t('Add To Cart')"
+              @click.prevent="handleAddToCartButton"
+            >
               <span class="material-icons">add</span>
             </button>
+            <div
+              v-else
+              class="quantity-input text-center d-flex single-product__quantity"
+            >
+              <button
+                type="button"
+                class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
+                @click.prevent="decreaseQuantity"
+              >
+                <span class="material-icons"> remove </span>
+              </button>
+              <input
+                :value="cartLine.quantity"
+                type="number"
+                class="border-0 text-center font-weight-bold w-100"
+                @change="onQuantityInputChange"
+              />
+              <button
+                type="button"
+                class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
+                @click.prevent="increaseQuantity"
+              >
+                <span class="material-icons"> add </span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -359,10 +390,40 @@
             {{ $t("Place Order") }}
           </button>
 
-          <button type="button" :disabled="item.quantity < 1" class="btn btn_borderd btn-xs rounded"
-            @click.prevent="handleAddToCartButton">
+          <button
+            v-if="!cartLine"
+            type="button"
+            :disabled="item.quantity < 1"
+            class="btn btn_borderd btn-xs rounded"
+            @click.prevent="handleAddToCartButton"
+          >
             {{ $t("Add To Cart") }}
           </button>
+          <div
+            v-else
+            class="quantity-input text-center d-flex single-product__quantity single-product__quantity--button-group"
+          >
+            <button
+              type="button"
+              class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
+              @click.prevent="decreaseQuantity"
+            >
+              <span class="material-icons"> remove </span>
+            </button>
+            <input
+              :value="cartLine.quantity"
+              type="number"
+              class="border-0 text-center font-weight-bold w-100"
+              @change="onQuantityInputChange"
+            />
+            <button
+              type="button"
+              class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
+              @click.prevent="increaseQuantity"
+            >
+              <span class="material-icons"> add </span>
+            </button>
+          </div>
         </div>
       </div>
 </div>
@@ -557,6 +618,7 @@ import CustomFooter from "@/components/ui/CustomFooter.vue";
 import VLazyImage from "v-lazy-image";
 const axios = require("axios").default;
 import { mapState, mapGetters } from "vuex";
+import { findListItemCartLine } from "@/utils/cartLineMatch";
 import { trackSocialPixels } from "@/utils/trackSocialPixels";
 import {
   CModal,
@@ -647,8 +709,12 @@ export default {
       isCustomerLogin: (state) => state.isCustomerLogin,
       site_config: (state) => state.siteSettings,
       currency: (state) => state.currency,
+      cart: (state) => state.cart,
     }),
     ...mapGetters("layout", ["isSplitScreen", "isMobile", "isRtl"]),
+    cartLine() {
+      return findListItemCartLine(this.cart, this.item);
+    },
     min_qty() {
       return this.item.min_qty != null && parseInt(this.item.min_qty) > 0
         ? parseInt(this.item.min_qty)
@@ -666,6 +732,88 @@ export default {
     },
   },
   methods: {
+    effectiveMaxItem(line) {
+      const itemMax = parseInt(this.max_qty, 10);
+      const lineMax = parseInt(line?.max_item, 10);
+      if (!Number.isNaN(lineMax) && lineMax > 0 && !Number.isNaN(itemMax)) {
+        return Math.min(lineMax, itemMax);
+      }
+      if (!Number.isNaN(lineMax) && lineMax > 0) {
+        return lineMax;
+      }
+      return itemMax;
+    },
+    effectiveMinItem(line) {
+      let minItem = parseInt(line.min_item, 10);
+      if (!minItem || minItem <= 0 || Number.isNaN(minItem)) {
+        minItem = 1;
+      }
+      const maxItem = this.effectiveMaxItem(line);
+      if (!Number.isNaN(maxItem) && minItem >= maxItem) {
+        minItem = 1;
+      }
+      return minItem;
+    },
+    clampQuantity(rawQty, line) {
+      const minItem = this.effectiveMinItem(line);
+      let qty = parseInt(rawQty, 10);
+      if (!Number.isFinite(qty)) {
+        qty = minItem;
+      }
+      const maxItem = this.effectiveMaxItem(line);
+      if (qty > maxItem) {
+        qty = maxItem;
+      } else if (qty < minItem) {
+        qty = minItem;
+      }
+      return qty;
+    },
+    syncQuantity(quantity) {
+      if (!this.cartLine) {
+        return;
+      }
+      this.$store.dispatch("updateCartLineQuantity", {
+        ...this.cartLine,
+        quantity,
+      });
+    },
+    decreaseQuantity() {
+      const line = this.cartLine;
+      if (!line) {
+        return;
+      }
+      const minItem = this.effectiveMinItem(line);
+      const currentQty = parseInt(line.quantity, 10);
+      if (currentQty > 1 && currentQty > minItem) {
+        this.syncQuantity(currentQty - 1);
+      } else {
+        this.$store.dispatch("removeCartItem", line.uid);
+      }
+    },
+    increaseQuantity() {
+      const line = this.cartLine;
+      if (!line) {
+        return;
+      }
+      const currentQty = parseInt(line.quantity, 10);
+      const maxItem = this.effectiveMaxItem(line);
+      if (currentQty > 0 && currentQty < maxItem) {
+        this.syncQuantity(currentQty + 1);
+      }
+    },
+    onQuantityInputChange(event) {
+      const line = this.cartLine;
+      if (!line) {
+        return;
+      }
+      const minItem = this.effectiveMinItem(line);
+      const rawQty = parseInt(event.target.value, 10);
+      if (!Number.isFinite(rawQty) || rawQty <= 0 || rawQty < minItem) {
+        this.$store.dispatch("removeCartItem", line.uid);
+        return;
+      }
+      this.syncQuantity(this.clampQuantity(rawQty, line));
+    },
 
     cleanImage(img) {
       if (!img) return '';
@@ -1196,6 +1344,10 @@ export default {
     }
   }
 
+  .single-product__quantity.quantity-input {
+    flex-shrink: 0;
+  }
+
   .product-title-price-row--split {
     width: 100%;
     margin-bottom: 0;
@@ -1342,6 +1494,62 @@ export default {
   width: 60px !important;
   height: 60px !important;
   min-width: 60px;
+}
+
+/* In-cart quantity counter on styleEight cards (non-list) */
+.single-product__quantity.quantity-input {
+  border: 1px solid #e5e5e5;
+  border-radius: 20px;
+  overflow: hidden;
+  height: 28px;
+  align-items: center;
+  min-width: 88px;
+  max-width: 100px;
+  background-color: transparent;
+}
+
+.single-product__quantity.quantity-input .material-icons {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.single-product__quantity.quantity-input button {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.single-product__quantity.quantity-input input {
+  height: 26px;
+  font-size: 13px;
+  padding: 0;
+  min-width: 0;
+  -moz-appearance: textfield;
+}
+
+.single-product__quantity.quantity-input input::-webkit-outer-spin-button,
+.single-product__quantity.quantity-input input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.single-product__quantity--button-group.quantity-input {
+  flex: 1;
+  max-width: none;
+  height: auto;
+  min-height: 28px;
+  margin-top: 10px;
+  align-self: stretch;
+}
+
+.single-product__quantity--button-group.quantity-input button {
+  width: 36px;
+  height: 36px;
+}
+
+.single-product__quantity--button-group.quantity-input input {
+  height: 34px;
+  font-size: 14px;
 }
 
 /* Place Order / Add To Cart buttons — default styleEight listings */

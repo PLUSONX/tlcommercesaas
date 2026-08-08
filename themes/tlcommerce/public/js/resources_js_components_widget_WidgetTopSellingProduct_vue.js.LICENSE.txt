@@ -104,6 +104,8 @@
 
 /*! @/components/ui/CustomFooter.vue */
 
+/*! @/utils/cartLineMatch */
+
 /*! @/utils/trackSocialPixels */
 
 /*! @/utils/variantSelection */

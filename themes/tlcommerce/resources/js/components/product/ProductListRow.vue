@@ -480,6 +480,10 @@ export default {
 
         this.syncQuantity(currentQty - 1);
 
+      } else {
+
+        this.$store.dispatch("removeCartItem", line.uid);
+
       }
 
     },
@@ -520,7 +524,21 @@ export default {
 
 
 
-      this.syncQuantity(this.clampQuantity(event.target.value, line));
+      const minItem = this.effectiveMinItem(line);
+
+      const rawQty = parseInt(event.target.value, 10);
+
+      if (!Number.isFinite(rawQty) || rawQty <= 0 || rawQty < minItem) {
+
+        this.$store.dispatch("removeCartItem", line.uid);
+
+        return;
+
+      }
+
+
+
+      this.syncQuantity(this.clampQuantity(rawQty, line));
 
     },
 

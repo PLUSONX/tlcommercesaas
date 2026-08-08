@@ -103,10 +103,52 @@ export default {
     context.commit("updateCart", data);
   },
   /**
+   * Remove a single cart line by uid (product list / qty→0).
+   */
+  removeCartItem(context, uid) {
+    if (uid == null) {
+      return;
+    }
+    const state = context.state;
+    const updatedCart = (state.cart || []).filter((item) => item.uid !== uid);
+
+    if (state.isCustomerLogin) {
+      context.commit("showPreloader", true);
+      return axios
+        .post(
+          "/api/v1/ecommerce-core/customer/cart/remove-item",
+          { uid },
+          {
+            headers: {
+              Authorization: `Bearer ${state.customerToken}`,
+            },
+          }
+        )
+        .then((response) => {
+          context.commit("showPreloader", false);
+          if (response.data.success) {
+            context.commit("updateCart", updatedCart);
+            context.dispatch("flushCouponData");
+          }
+        })
+        .catch(() => {
+          context.commit("showPreloader", false);
+          $toast.error(state.$t("Action failed. Please try again"));
+        });
+    }
+
+    context.commit("updateCart", updatedCart);
+    context.dispatch("flushCouponData");
+  },
+  /**
    * Update a single cart line quantity (PDP, cart UI).
    */
   updateCartLineQuantity(context, item) {
     const state = context.state;
+    const qty = parseInt(item?.quantity, 10);
+    if (!Number.isFinite(qty) || qty <= 0) {
+      return context.dispatch("removeCartItem", item?.uid);
+    }
     const payload = { ...item, quantity: item.quantity };
 
     if (state.isCustomerLogin) {

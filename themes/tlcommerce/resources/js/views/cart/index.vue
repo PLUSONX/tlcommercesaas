@@ -647,12 +647,15 @@ export default {
     },
     clampAndUpdateQuantity(tdata) {
       const minItem = this.effectiveMinItem(tdata);
-      if (tdata.quantity > tdata.max_item) {
+      const qty = parseInt(tdata.quantity);
+      if (!Number.isFinite(qty) || qty <= 0 || qty < minItem) {
+        this.removeItem(tdata.uid);
+        return;
+      }
+      if (qty > tdata.max_item) {
         tdata.quantity = tdata.max_item;
-      } else if (tdata.quantity < minItem) {
-        tdata.quantity = minItem;
       } else {
-        tdata.quantity = parseInt(tdata.quantity);
+        tdata.quantity = qty;
       }
       this.updateCartItems(tdata);
     },
@@ -671,7 +674,7 @@ export default {
             item.quantity--;
             this.updateCartItems(item);
           } else {
-            return;
+            this.removeItem(id);
           }
         }
       }

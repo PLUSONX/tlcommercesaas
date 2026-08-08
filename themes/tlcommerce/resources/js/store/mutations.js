@@ -221,9 +221,16 @@ export default {
   },
   /**
    * Update quantity on an existing cart line (PDP sync, cart page).
+   * quantity <= 0 removes the line (caller should prefer removeCartItem).
    */
   setCartLineQuantity(state, item) {
     if (!item || item.uid == null) {
+      return;
+    }
+    let qty = parseInt(item.quantity, 10);
+    if (Number.isFinite(qty) && qty <= 0) {
+      state.cart = (state.cart || []).filter((row) => row.uid !== item.uid);
+      localStorage.setItem("cart", JSON.stringify(state.cart));
       return;
     }
     let minItem = parseInt(item.min_item, 10);
@@ -237,7 +244,6 @@ export default {
     if (minItem >= maxItem) {
       minItem = 1;
     }
-    let qty = parseInt(item.quantity, 10);
     if (!Number.isFinite(qty)) {
       qty = minItem;
     }
