@@ -16,18 +16,15 @@
                         <span class="delivery-field__city">
                             {{ selectedCity.name }}<template v-if="selectedState">, {{ selectedState.name }}</template>
                         </span>
-                        <button type="button" class="arrival-time__edit" @click.stop="goToLocation">
-                            {{ editLabel }}
-                        </button>
+                        <span class="material-icons delivery-field__chevron">{{ isRtl ? 'chevron_left' : 'chevron_right'
+                            }}</span>
                     </div>
 
                     <div class="delivery-field__location delivery-field__location--empty" v-else>
                         <span class="delivery-field__prompt">{{ chooseLocationLabel }}</span>
-                        <button type="button" class="arrival-time__edit" @click.stop="goToLocation">
-                            {{ editLabel }}
-                        </button>
                         <!-- <span class="delivery-field__prompt">{{ tapToChooseLabel }}</span> -->
-                        <!-- <span class="material-icons delivery-field__chevron">{{ isRtl ? 'chevron_left' : 'chevron_right' }}</span> -->
+                        <span class="material-icons delivery-field__chevron">{{ isRtl ? 'chevron_left' : 'chevron_right'
+                            }}</span>
                     </div>
                 </div>
 
@@ -38,11 +35,8 @@
                         <span class="material-icons mr-2">schedule</span>
                         <span class="text-muted small">{{ earliestArrivalLabel }}</span>
                     </div>
-                    <div v-if="displayArrival" class="arrival-time">
-                        <strong>{{ displayArrival }}</strong>
-                        <button type="button" class="arrival-time__edit" @click.stop="openDeliveryTimeEdit">
-                            {{ editLabel }}
-                        </button>
+                    <div v-if="earliestArrival" class="arrival-time">
+                        <strong>{{ earliestArrival }}</strong>
                     </div>
                     <!-- <div v-if="selectedCity" class="arrival-time">
                         <div v-if="['raneem', 'raneemjewelers', 'RANEEM JEWELERS'].includes(tenant)">
@@ -57,6 +51,23 @@
                             <strong>12-24 {{ $t('Hours') }}</strong>
                         </div>
                     </div> -->
+                </div>
+
+                <hr class="delivery-card__divider">
+
+                <div class="delivery-time-row" role="button" tabindex="0" @click="openDeliveryTimeEdit"
+                    @keyup.enter="openDeliveryTimeEdit">
+                    <div class="d-flex align-items-center">
+                        <span class="material-icons mr-2">event</span>
+                        <span class="text-muted small">{{ deliveryTimeLabel }}</span>
+                    </div>
+                    <div class="arrival-time">
+                        <strong v-if="deliveryTimeValue" class="delivery-time-row__value">{{ deliveryTimeValue
+                            }}</strong>
+                        <span v-else class="delivery-field__prompt">{{ chooseDeliveryTimeLabel }}</span>
+                        <span class="material-icons delivery-field__chevron">{{ isRtl ? 'chevron_left' : 'chevron_right'
+                            }}</span>
+                    </div>
                 </div>
 
             </div>
@@ -208,8 +219,14 @@ export default {
             }
             return this.formatScheduledSlot(schedule.slot);
         },
-        displayArrival() {
-            return this.scheduledSummary || this.earliestArrival;
+        deliveryTimeValue() {
+            if (this.scheduledSummary) {
+                return this.scheduledSummary;
+            }
+            if (this.deliverySchedule?.mode === "now") {
+                return this.nowLabel;
+            }
+            return null;
         },
         selectDeliveryLocationLabel() {
             return this.localizedLabel("Select Delivery Location", "اختر موقع التوصيل");
@@ -221,10 +238,17 @@ export default {
             return this.localizedLabel("Choose location", "اختر الموقع");
         },
         earliestArrivalLabel() {
-            return this.localizedLabel("Earliest Arrival", "أقرب وقت للوصول");
+            return this.localizedLabel("Order Now", "اطلب الحين");
+            //return this.localizedLabel("Earliest Arrival", "أقرب وقت للوصول");
         },
-        editLabel() {
-            return this.localizedLabel("Edit", "تعديل");
+        deliveryTimeLabel() {
+            return this.localizedLabel("Deliver Now", "التوصيل الآن");
+        },
+        chooseDeliveryTimeLabel() {
+            return this.localizedLabel("Choose delivery time", "اختر وقت التوصيل");
+        },
+        nowLabel() {
+            return this.localizedLabel("Now", "الآن");
         },
     },
 
@@ -347,7 +371,8 @@ export default {
 
 /* Internal shared styles */
 .delivery-field,
-.delivery-arrival {
+.delivery-arrival,
+.delivery-time-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -364,14 +389,48 @@ export default {
     /* Removed individual border */
 }
 
-.delivery-field:hover {
+.delivery-field:hover,
+.delivery-time-row:hover {
     background: #f1f1f1;
 }
 
-/* Bottom area styling */
+/* Middle area — read-only estimate */
 .delivery-arrival {
     background: rgba(0, 0, 0, 0.03);
     /* Subtle contrast from top section */
+}
+
+/* Bottom area — tappable delivery time choice */
+.delivery-time-row {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+}
+
+.delivery-time-row:focus {
+    outline: none;
+    background: #f1f1f1;
+}
+
+.delivery-time-row__value {
+    font-size: 0.85rem;
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.delivery-field__chevron {
+    font-size: 18px;
+    color: #a0aec0;
+    flex-shrink: 0;
+}
+
+.delivery-field__location--empty .delivery-field__prompt,
+.delivery-time-row .delivery-field__prompt {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #a0aec0;
 }
 
 .delivery-card__divider {
@@ -421,7 +480,8 @@ export default {
 
 /* RTL — explicit swap (split-screen content column is direction: ltr) */
 .delivery-page--rtl .delivery-field,
-.delivery-page--rtl .delivery-arrival {
+.delivery-page--rtl .delivery-arrival,
+.delivery-page--rtl .delivery-time-row {
     flex-direction: row-reverse;
     direction: ltr;
 }
@@ -444,7 +504,8 @@ export default {
 
 .delivery-page--rtl .delivery-field__label,
 .delivery-page--rtl .delivery-field__prompt,
-.delivery-page--rtl .delivery-arrival .text-muted {
+.delivery-page--rtl .delivery-arrival .text-muted,
+.delivery-page--rtl .delivery-time-row .text-muted {
     direction: rtl;
     text-align: right;
     white-space: normal;
@@ -461,6 +522,10 @@ export default {
     direction: ltr;
     text-align: left;
     flex-shrink: 0;
+}
+
+.delivery-page--rtl .delivery-time-row .arrival-time {
+    flex-direction: row-reverse;
 }
 
 .arrival-time {
@@ -497,7 +562,8 @@ export default {
     unicode-bidi: plaintext;
 }
 
-.delivery-page--rtl .delivery-arrival>.d-flex {
+.delivery-page--rtl .delivery-arrival>.d-flex,
+.delivery-page--rtl .delivery-time-row>.d-flex {
     flex-direction: row-reverse;
     direction: ltr;
 }
