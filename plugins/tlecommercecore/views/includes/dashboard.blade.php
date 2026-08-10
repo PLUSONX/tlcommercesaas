@@ -1,27 +1,22 @@
 @php
     $order_repository = new Plugin\TlcommerceCore\Repositories\OrderRepository();
 
-    $total_customers = \Plugin\TlcommerceCore\Models\Customers::select('id')
-        ->get()
-        ->count();
-    
-    $total_products = \Plugin\TlcommerceCore\Models\Product::select('id')
-        ->get()
-        ->count();
+    $total_customers = \Plugin\TlcommerceCore\Models\Customers::select('id')->get()->count();
+
+    $total_products = \Plugin\TlcommerceCore\Models\Product::select('id')->get()->count();
 
     $total_sales = \Plugin\TlcommerceCore\Models\Orders::where('payment_status', config('tlecommercecore.order_payment_status.paid'))->sum('total_payable_amount');
-    
+
     $recent_orders = \Plugin\TlcommerceCore\Models\Orders::with(['customer_info', 'guest_customer'])
-        ->select('order_code', 'id', 'created_at', 'total_payable_amount', 'customer_id', 'guest_customer_id', 'delivery_status', 'payment_status')
-        ->orderBy('id', 'DESC')
-        ->take(5)
-        ->get();
-    
-    $top_customers = \Plugin\TlcommerceCore\Models\Customers::withCount('orders')
-        ->orderBy('orders_count', 'DESC')
-        ->take(5)
-        ->get();
-    
+    ->select('order_code', 'id', 'created_at', 'total_payable_amount', 'customer_id', 'guest_customer_id', 'delivery_status', 'payment_status')
+    ->where('payment_status', config('tlecommercecore.order_payment_status.paid'))     
+    // ->where('delivery_status', config('tlecommercecore.order_delivery_status.delivered')) 
+    ->orderBy('id', 'DESC')
+    ->take(5)
+    ->get();
+
+    $top_customers = \Plugin\TlcommerceCore\Models\Customers::withCount('orders')->orderBy('orders_count', 'DESC')->take(5)->get();
+
     $top_products = \Plugin\TlcommerceCore\Models\Product::select(['id', 'name', 'permalink', 'thumbnail_image'])
         ->withCount(['orders'])
         ->withSum('orders', 'unit_price')
@@ -29,8 +24,13 @@
         ->orderBy('orders_sum_quantity', 'DESC')
         ->take(5)
         ->get();
-    
-    $category_data = ['tl_com_categories.id', DB::raw('GROUP_CONCAT(DISTINCT(tl_com_categories.icon)) as icon'), DB::raw('sum(tl_com_ordered_products.quantity * tl_com_ordered_products.unit_price) as total_sales'), DB::raw('sum(tl_com_ordered_products.quantity ) as number_of_sales')];
+
+    $category_data = [
+        'tl_com_categories.id',
+        DB::raw('GROUP_CONCAT(DISTINCT(tl_com_categories.icon)) as icon'),
+        DB::raw('sum(tl_com_ordered_products.quantity * tl_com_ordered_products.unit_price) as total_sales'),
+        DB::raw('sum(tl_com_ordered_products.quantity ) as number_of_sales'),
+    ];
     $top_categories = DB::table('tl_com_categories')
         ->leftjoin('tl_com_product_has_categories', 'tl_com_product_has_categories.category_id', 'tl_com_categories.id')
         ->leftjoin('tl_com_ordered_products', 'tl_com_ordered_products.product_id', 'tl_com_product_has_categories.product_id')
@@ -39,11 +39,9 @@
         ->orderBy(DB::raw('sum(tl_com_ordered_products.quantity )'), 'DESC')
         ->take(5)
         ->get();
-    
+
     $top_categories = $top_categories->map(function ($category, $key) {
-        $category_details = \Plugin\TlcommerceCore\Models\ProductCategory::select('id', 'name', 'permalink')
-            ->where('id', $category->id)
-            ->first();
+        $category_details = \Plugin\TlcommerceCore\Models\ProductCategory::select('id', 'name', 'permalink')->where('id', $category->id)->first();
         if ($category_details != null) {
             return [
                 'id' => $category->id,
@@ -54,8 +52,13 @@
             ];
         }
     });
-    
-    $brands_data = ['tl_com_brands.id', DB::raw('GROUP_CONCAT(DISTINCT(tl_com_brands.logo)) as logo'), DB::raw('sum(tl_com_ordered_products.quantity * tl_com_ordered_products.unit_price) as total_sales'), DB::raw('sum(tl_com_ordered_products.quantity ) as number_of_sales')];
+
+    $brands_data = [
+        'tl_com_brands.id',
+        DB::raw('GROUP_CONCAT(DISTINCT(tl_com_brands.logo)) as logo'),
+        DB::raw('sum(tl_com_ordered_products.quantity * tl_com_ordered_products.unit_price) as total_sales'),
+        DB::raw('sum(tl_com_ordered_products.quantity ) as number_of_sales'),
+    ];
     $top_brands = DB::table('tl_com_brands')
         ->leftjoin('tl_com_products', 'tl_com_products.brand', 'tl_com_brands.id')
         ->leftjoin('tl_com_ordered_products', 'tl_com_ordered_products.product_id', 'tl_com_products.id')
@@ -64,11 +67,9 @@
         ->orderBy(DB::raw('sum(tl_com_ordered_products.quantity )'), 'DESC')
         ->take(5)
         ->get();
-    
+
     $top_brands = $top_brands->map(function ($brand, $key) {
-        $brand_details = \Plugin\TlcommerceCore\Models\ProductBrand::select('id', 'name', 'permalink')
-            ->where('id', $brand->id)
-            ->first();
+        $brand_details = \Plugin\TlcommerceCore\Models\ProductBrand::select('id', 'name', 'permalink')->where('id', $brand->id)->first();
         if ($brand_details != null) {
             return [
                 'id' => $brand->id,
@@ -96,7 +97,7 @@
         $analytics_checkout = 0;
         $analytics_content_view = 0;
     }
-    
+
 @endphp
 @push('head')
     {{-- Push custom script or style into head tag --}}
@@ -125,14 +126,14 @@
         }
 
         /* .apexcharts-toolbar {
-            top: -30px !important;
-        } */
-
+                                        top: -30px !important;
+                                    } */
         .apexcharts-toolbar {
             display: none !important;
         }
 
-        .list-inline, .list-button {
+        .list-inline,
+        .list-button {
             margin-right: 0px !important;
             padding-right: 0px !important;
         }
@@ -152,47 +153,96 @@
             transform: translateY(-1px);
         }
 
-        
- 
+        /* .glass-card {
+                              position: relative;
+                              border-radius: 18px;
 
-    
-    /* .glass-card {
-  position: relative;
-  border-radius: 18px;
+                              /* Core glass layer */
+        /* background: linear-gradient(
+                                135deg,
+                                rgba(255, 255, 255, 0.22),
+                                rgba(255, 255, 255, 0.06)
+                              );
 
-  /* Core glass layer */
-  /* background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.22),
-    rgba(255, 255, 255, 0.06)
-  );
+                              backdrop-filter: blur(22px) saturate(180%);
+                              -webkit-backdrop-filter: blur(22px) saturate(180%);
 
-  backdrop-filter: blur(22px) saturate(180%);
-  -webkit-backdrop-filter: blur(22px) saturate(180%);
+                              /* Thin glass edge */
+        /* border: 1px solid rgba(255, 255, 255, 0.35); */
+        /* Soft elevation */
+        /* box-shadow:
+                                0 20px 40px rgba(0, 0, 0, 0.25),
+                                inset 0 1px 1px rgba(255, 255, 255, 0.35);
 
-  /* Thin glass edge */
-  /* border: 1px solid rgba(255, 255, 255, 0.35); */
+                              overflow: hidden;
+                            }
 
-  /* Soft elevation */
-  /* box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.25),
-    inset 0 1px 1px rgba(255, 255, 255, 0.35);
+                            .glass-card:hover {
+                                scale: 1.05;
+                              box-shadow:
+                                0 30px 60px rgba(0, 0, 0, 0.35),
+                                inset 0 1px 1px rgba(255, 255, 255, 0.45);
+                            } */
+        /* Customize date range picker */
+        .customize-date-range {
+            gap: 8px;
+        }
 
-  overflow: hidden;
-}
+        .customize-date-range input[type="date"] {
+            height: 48px;
+            padding: 0 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            background: #fff;
+            border: 1px solid #dcdcdc;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
 
-.glass-card:hover {
-    scale: 1.05;
-  box-shadow:
-    0 30px 60px rgba(0, 0, 0, 0.35),
-    inset 0 1px 1px rgba(255, 255, 255, 0.45);
-} */ 
+        .customize-date-range input[type="date"]:focus {
+            outline: none;
+            border-color: #ff5A1f;
+            box-shadow: 0 0 0 3px rgba(255, 90, 31, 0.15);
+        }
+
+        .customize-date-range .apply-date-range {
+            height: 48px;
+            padding: 0 18px;
+            border-radius: 10px;
+            background-color: #ff5A1f;
+            border-color: #ff5A1f;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .customize-date-range .apply-date-range:hover {
+            background-color: #e64f1b;
+            border-color: #e64f1b;
+            color: #fff;
+        }
+
+        @media (max-width: 576px) {
+            .customize-date-range {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .customize-date-range input[type="date"] {
+                flex: 1 1 45%;
+            }
+
+            .customize-date-range .apply-date-range {
+                width: 100%;
+            }
+        }
     </style>
 @endpush
 @push('script')
     {{-- Push custom script or style bottom of body tag --}}
 @endpush
- <div class="row">
+<div class="row">
 
     <div class="dashboard-header d-sm-flex justify-content-between align-items-center ml-3 mr-3 w-100">
         <h4 class="font-20 mb-0">{{ translate('Dashboard') }}</h4>
@@ -203,10 +253,18 @@
                 <option value="weekly">This week</option>
                 <option value="monthly">This month</option>
                 <option value="all-time" selected>All Time</option>
+                <option value="customize">{{ translate('Customize') }}</option>
             </select>
+
+            <div class="customize-date-range d-none align-items-center mt-2 mt-sm-0">
+                <input type="date" class="filter-start-date" />
+                <span>{{ translate('to') }}</span>
+                <input type="date" class="filter-end-date" />
+                <button type="button" class="btn apply-date-range">{{ translate('Apply') }}</button>
+            </div>
         </div>
     </div>
-      <!--<div class="col-xl-3 col-sm-6">
+    <!--<div class="col-xl-3 col-sm-6">
             <div class="card mb-30 bg-primary text-white glassmorphic-card">
                 <div class="state">
                     <div class="align-items-center d-flex justify-content-center">
@@ -231,7 +289,7 @@
             </div>
         </div>
     </div> -->
-   
+
     <!--End total customers-->
     <!--Total Orders-->
     <!-- <div class="col-xl-3 col-sm-6">
@@ -288,7 +346,7 @@
                             <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Customers') }}</h4>
                         </div>
                         <!-- <h2 class="mb-0">{{ $total_customers }}</h2> -->
-                         <h2 class="mb-0 total-customers-count">{{ $total_customers }}</h2>
+                        <h2 class="mb-0 total-customers-count">{{ $total_customers }}</h2>
 
                     </div>
                 </div>
@@ -298,14 +356,14 @@
         <div class="col px-1 mb-2">
             <div class="card bg-white text-black" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
                 <div class="">
-                        <div class="p-3 text-left">
-                            <div class="d-flex align-items-center mb-4" style="gap: 10px;">
-                                <x-lucide-shopping-cart style="width: 22px; height: 22px; color: #ff5A1f;" />
-                                <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Orders') }}</h4>
-                            </div>
-                            <!-- <h2 class="mb-0">{{ $order_repository->statusWiseOrderCounter() }}</h2> -->
-                            <h2 class="mb-0 total-orders-count">{{ $order_repository->statusWiseOrderCounter() }}</h2>
+                    <div class="p-3 text-left">
+                        <div class="d-flex align-items-center mb-4" style="gap: 10px;">
+                            <x-lucide-shopping-cart style="width: 22px; height: 22px; color: #ff5A1f;" />
+                            <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Orders') }}</h4>
                         </div>
+                        <!-- <h2 class="mb-0">{{ $order_repository->statusWiseOrderCounter() }}</h2> -->
+                        <h2 class="mb-0 total-orders-count">{{ $order_repository->statusWiseOrderCounter() }}</h2>
+                    </div>
                 </div>
             </div>
         </div>
@@ -314,13 +372,13 @@
             <div class="card bg-white text-black" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
                 <div class="">
                     <div class="p-3 text-left">
-                            <div class="d-flex align-items-center mb-4" style="gap: 10px;">
-                                <x-lucide-shopping-basket style="width: 22px; height: 22px; color: #ff5A1f;" />
-                                <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Products') }}</h4>
-                            </div>
-                            <!-- <h2 class="mb-0">{{ $total_products }}</h2> -->
-                            <h2 class="mb-0 total-products-count">{{ $total_products }}</h2>
+                        <div class="d-flex align-items-center mb-4" style="gap: 10px;">
+                            <x-lucide-shopping-basket style="width: 22px; height: 22px; color: #ff5A1f;" />
+                            <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Products') }}</h4>
                         </div>
+                        <!-- <h2 class="mb-0">{{ $total_products }}</h2> -->
+                        <h2 class="mb-0 total-products-count">{{ $total_products }}</h2>
+                    </div>
                 </div>
             </div>
         </div>
@@ -329,20 +387,20 @@
             <div class="card bg-white text-black" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
                 <div class="">
                     <div class="p-3 text-left">
-                            <div class="d-flex align-items-center mb-4" style="gap: 10px;">
-                                <x-lucide-circle-dollar-sign style="width: 22px; height: 22px; color: #ff5A1f;" />
-                                <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Sales') }}</h4>
-                            </div>
-                            <!-- <h2 class="mb-0">{{ currencyExchange($total_sales) }}</h2> -->
-                            <h2 class="mb-0 total-sales-count">{{ currencyExchange($total_sales) }}</h2>
+                        <div class="d-flex align-items-center mb-4" style="gap: 10px;">
+                            <x-lucide-circle-dollar-sign style="width: 22px; height: 22px; color: #ff5A1f;" />
+                            <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Sales') }}</h4>
                         </div>
+                        <!-- <h2 class="mb-0">{{ currencyExchange($total_sales) }}</h2> -->
+                        <h2 class="mb-0 total-sales-count">{{ currencyExchange($total_sales) }}</h2>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row w-100 mx-0 px-0 mt-20 align-items-start mb-2" style="padding-right: 0.5rem !important; padding-left: 0.5rem !important;">
-        <div class="col px-1 mb-2">
+        <div class="col-6 col-md px-1 mb-2">
             <div class="card bg-white text-black" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
                 <div class="">
                     <div class="p-3 text-left">
@@ -350,41 +408,46 @@
                             <x-lucide-trending-up style="width: 22px; height: 22px; color: #ff5A1f;" />
                             <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Store Visits') }}</h4>
                         </div>
+                        <!-- <h2 class="mb-0">{{ $analytics_store_visits }}</h2> -->
                         <h2 class="mb-0 analytics-store-visits-count">{{ $analytics_store_visits }}</h2>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col px-1 mb-2">
-            <div class="card bg-white text-black analytics-breakdown-card" data-analytics-type="content_view" role="button" tabindex="0" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
+        <div class="col-6 col-md px-1 mb-2">
+            <div class="card bg-white text-black analytics-breakdown-card" data-analytics-type="content_view" role="button" tabindex="0"
+                style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
                 <div class="">
                     <div class="p-3 text-left">
                         <div class="d-flex align-items-center mb-4" style="gap: 10px;">
                             <x-lucide-view style="width: 22px; height: 22px; color: #ff5A1f;" />
                             <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Content View') }}</h4>
                         </div>
+                        <!-- <h2 class="mb-0">{{ $analytics_content_view }}</h2> -->
                         <h2 class="mb-0 analytics-content-view-count">{{ $analytics_content_view }}</h2>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col px-1 mb-2">
-            <div class="card bg-white text-black analytics-breakdown-card" data-analytics-type="add_to_cart" role="button" tabindex="0" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
+        <div class="col-6 col-md px-1 mb-2">
+            <div class="card bg-white text-black analytics-breakdown-card" data-analytics-type="add_to_cart" role="button" tabindex="0"
+                style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
                 <div class="">
                     <div class="p-3 text-left">
                         <div class="d-flex align-items-center mb-4" style="gap: 10px;">
                             <x-lucide-shopping-cart style="width: 22px; height: 22px; color: #ff5A1f;" />
                             <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Add to Cart') }}</h4>
                         </div>
+                        <!-- <h2 class="mb-0">{{ $analytics_add_to_cart }}</h2> -->
                         <h2 class="mb-0 analytics-add-to-cart-count">{{ $analytics_add_to_cart }}</h2>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col px-1 mb-2">
+        <div class="col-6 col-md px-1" style="padding-right: 10px;">
             <div class="card bg-white text-black" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
                 <div class="">
                     <div class="p-3 text-left">
@@ -392,25 +455,12 @@
                             <x-lucide-shopping-basket style="width: 22px; height: 22px; color: #ff5A1f;" />
                             <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Checkout') }}</h4>
                         </div>
+                        <!-- <h2 class="mb-0">{{ $analytics_checkout }}</h2> -->
                         <h2 class="mb-0 analytics-checkout-count">{{ $analytics_checkout }}</h2>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- <div class="col px-1" style="padding-right: 10px;">
-            <div class="card bg-white text-black" style="height: 80%;  border-radius: 12px !important; overflow: hidden !important;">
-                <div class="">
-                    <div class="p-3 text-left">
-                        <div class="d-flex align-items-center mb-4" style="gap: 10px;">
-                            <i class="fas fa-eye" style="font-size: 22px; color: #ff5A1f;"></i>
-                            <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Content View') }}</h4>
-                        </div>
-                        <h2 class="mb-0 analytics-content-view-count">{{ $analytics_content_view }}</h2>
-                    </div>
-                </div>
-            </div>
-        </div> -->
     </div>
 
     <div id="analytics-product-breakdown-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
@@ -446,8 +496,7 @@
         <div class="card" style="border-radius: 12px !important; overflow: hidden !important;">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start align-items-sm-center media">
-                    <div
-                        class="d-flex justify-content-start justify-content-sm-between align-items-start align-items-sm-center flex-column flex-sm-row mb-sm-n3 media-body">
+                    <div class="d-flex justify-content-start justify-content-sm-between align-items-start align-items-sm-center flex-column flex-sm-row mb-sm-n3 media-body">
                         <!-- <div class="title-content mb-4 mr-sm-5 mb-sm-0"> -->
                         <div class="d-flex align-items-center title-content mb-4 mr-sm-5 mb-sm-0" style="gap: 10px;">
                             <x-lucide-circle-dollar-sign style="width: 22px; height: 22px; color: #ff5A1f;" />
@@ -602,7 +651,7 @@
 
                             <td class="py-1 px-2">
                                 <span class="d-flex align-items-center justify-content-between w-100">
-                                    
+
                                     <span class="d-flex align-items-center" style="gap: 6px;">
                                         <span style="width: 10px; height: 10px; border-radius: 50%; background: #f6c23e; display:inline-block;"></span>
                                         {{ translate('Pending') }}:
@@ -611,7 +660,7 @@
                                     <strong class="ml-2">
                                         {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.pending')) }}
                                     </strong>
-                                    
+
                                 </span>
                             </td>
                             <td class="py-1 px-2">
@@ -639,7 +688,8 @@
                                         {{ translate('Ready to Ship') }}:
                                     </span>
 
-                                    <strong class="ml-2">{{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.ready_to_ship')) }}</strong>
+                                    <strong
+                                        class="ml-2">{{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.ready_to_ship')) }}</strong>
 
                                 </span>
                             </td>
@@ -652,7 +702,7 @@
                                     </span>
                                     <strong>{{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.shipped')) }}</strong>
                                 </span>
-                                
+
                             </td>
                         </tr>
                         <tr>
@@ -681,7 +731,6 @@
             </div>
         </div>
     </div>
-
 
     <!--End order counter-->
     <!--Recent Orders-->
@@ -715,8 +764,7 @@
                             @foreach ($recent_orders as $order)
                                 <tr>
                                     <td>
-                                        <a
-                                            href="{{ route('plugin.tlcommercecore.orders.details', ['id' => $order->id]) }}">{{ $order->order_code }}</a>
+                                        <a href="{{ route('plugin.tlcommercecore.orders.details', ['id' => $order->id]) }}">{{ $order->order_code }}</a>
                                     </td>
                                     <td>{{ $order->created_at->format('d M Y h:i A') }}</td>
                                     <td>
@@ -724,53 +772,20 @@
                                             <a
                                                 href="{{ route('plugin.tlcommercecore.customers.details', ['id' => $order->customer_id]) }}">{{ $order->customer_info->name }}</a>
                                         @else
-                                            <a href="#">{{ $order->guest_customer?->name ?? "Guest" }}
+                                            <a href="#">{{ $order->guest_customer?->name ?? 'Guest' }}
                                                 <span class="badge" style="background-color: #ff5A1f; color: #fff;">
                                                     {{ translate('Guest') }}
                                                 </span>
-                                                <!-- <span class="badge badge-info ml-1">Guest</span></a> -->
+                                            </a>
                                         @endif
                                     </td>
                                     <td class="text-center">{!! currencyExchange($order->total_payable_amount) !!}</td>
                                     <td class="text-center">
-                                        @switch($order->delivery_status)
-                                            @case(config('tlecommercecore.order_delivery_status.pending'))
-                                                <span class="badge badge-secondary">{{ translate('Pending') }}</span>
-                                                @break
-                                            @case(config('tlecommercecore.order_delivery_status.processing'))
-                                                <span class="badge badge-warning">{{ translate('Processing') }}</span>
-                                                @break
-                                            @case(config('tlecommercecore.order_delivery_status.ready_to_ship'))
-                                                <span class="badge badge-info">{{ translate('Ready to Ship') }}</span>
-                                                @break
-                                            @case(config('tlecommercecore.order_delivery_status.shipped'))
-                                                <span class="badge badge-primary">{{ translate('Shipped') }}</span>
-                                                @break
-                                            @case(config('tlecommercecore.order_delivery_status.delivered'))
-                                                <span class="badge badge-success">{{ translate('Delivered') }}</span>
-                                                @break
-                                            @case(config('tlecommercecore.order_delivery_status.cancelled'))
-                                                <span class="badge badge-danger">{{ translate('Cancelled') }}</span>
-                                                @break
-                                            @default
-                                                <span class="badge badge-secondary">{{ translate('Unknown') }}</span>
-                                        @endswitch
+                                        <span class="badge badge-success">{{ translate('Delivered') }}</span>
                                     </td>
-                                    <!-- <td class="text-center">
-                                        @switch($order->payment_status)
-                                            @case(config('tlecommercecore.order_payment_status.unpaid'))
-                                                <span class="badge badge-danger">{{ translate('Unpaid') }}</span>
-                                                @break
-                                            @case(config('tlecommercecore.order_payment_status.paid'))
-                                                <span class="badge badge-success">{{ translate('Paid') }}</span>
-                                                @break
-                                            @default
-                                                <span class="badge badge-secondary">{{ translate('Unknown') }}</span>
-                                        @endswitch
-                                    </td> -->
                                     <td class="text-center">
-                                        <a href="{{ route('plugin.tlcommercecore.orders.details', ['id' => $order->id]) }}"
-                                            class="details-btn" style="color: #ff5A1f !important;">
+                                        <a href="{{ route('plugin.tlcommercecore.orders.details', ['id' => $order->id]) }}" class="details-btn"
+                                            style="color: #ff5A1f !important;">
                                             Details
                                             <i class="icofont-arrow-right"></i></a>
                                     </td>
@@ -812,19 +827,13 @@
                             <div class="product-list-item mb-20 d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
                                     <div class="img mr-3">
-                                        <img 
-                                                src="{{ $customer->image 
-                                                    ? str_replace('/public', '', getFilePath($customer->image))
-                                                    : asset('backend/assets/img/avatar/avatar-user.png') 
-                                                }}"
-                                                alt="Customer Image"
-                                            />
+                                        <img src="{{ $customer->image ? str_replace('/public', '', getFilePath($customer->image)) : asset('backend/assets/img/avatar/avatar-user.png') }}"
+                                            alt="Customer Image" />
                                         <!-- <img src="{{ asset(getFilePath($customer->image, true)) }}"
                                             alt="{{ $customer->name }}"> -->
                                     </div>
                                     <div class="content">
-                                        <a href="{{ route('plugin.tlcommercecore.customers.details', ['id' => $customer->id]) }}"
-                                            class="black mb-1">{{ $customer->name }}
+                                        <a href="{{ route('plugin.tlcommercecore.customers.details', ['id' => $customer->id]) }}" class="black mb-1">{{ $customer->name }}
                                         </a>
                                         <p class="c3 bold font-14">
                                             {!! currencyExchange($customer->orders->sum('total_payable_amount')) !!}</p>
@@ -865,13 +874,8 @@
                                 <div class="d-flex align-items-center">
                                     <div class="img mr-3">
 
-                                            <img 
-                                                src="{{ $product->thumbnail_image
-                                                    ? str_replace('/public', '', getFilePath($product->thumbnail_image))
-                                                    : asset('backend/assets/img/avatar/avatar-user.png') 
-                                                }}"
-                                                alt="Customer Image"
-                                            />
+                                        <img src="{{ $product->thumbnail_image ? str_replace('/public', '', getFilePath($product->thumbnail_image)) : asset('backend/assets/img/avatar/avatar-user.png') }}"
+                                            alt="Customer Image" />
                                         <!-- <img src="{{ asset(getFilePath($product->thumbnail_image)) }}"
                                             alt="{{ $product->translation('name', getLocale()) }}"
                                             class="dash-image"> -->
@@ -907,12 +911,11 @@
                 </div>
                 <div class="product-list">
                     @if ($top_categories->count() > 0)
-                        @foreach ($top_categories as $category)
-                            <div class="product-list-item mb-20 d-flex justify-content-between align-items-center">
+@foreach ($top_categories as $category)
+<div class="product-list-item mb-20 d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
                                     <div class="img mr-3">
-                                         <img src="{{ str_replace('/public', '',  asset(getFilePath($category['icon'], true)) )
-                                        }}"
+                                         <img src="{{ str_replace('/public', '', asset(getFilePath($category['icon'], true))) }}"
                                             alt="{{ $category['name'] }}">
                                     </div>
                                     <div class="content">
@@ -924,10 +927,10 @@
                                     {{ $category['number_of_sales'] != null ? $category['number_of_sales'] : 0 }}
                                     {{ $category['number_of_sales'] > 1 ? 'Sales' : 'Sale' }}</p>
                             </div>
-                        @endforeach
-                    @else
-                        <p class="alert alert-danger text-center">{{ translate('Nothing Found') }}</p>
-                    @endif
+@endforeach
+@else
+<p class="alert alert-danger text-center">{{ translate('Nothing Found') }}</p>
+@endif
                 </div>
             </div>
         </div>
@@ -944,12 +947,11 @@
                 </div>
                 <div class="product-list">
                     @if ($top_brands->count() > 0)
-                        @foreach ($top_brands as $brand)
-                            <div class="product-list-item mb-20 d-flex justify-content-between align-items-center">
+@foreach ($top_brands as $brand)
+<div class="product-list-item mb-20 d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
                                     <div class="img mr-3">
-                                         <img src="{{ str_replace('/public', '', asset(getFilePath($brand['logo'])))
-                                          }}"
+                                         <img src="{{ str_replace('/public', '', asset(getFilePath($brand['logo']))) }}"
                                             alt="{{ $brand['name'] }}" class="img-20">
                                     </div>
                                     <div class="content">
@@ -961,10 +963,10 @@
                                     {{ $brand['number_of_sales'] != null ? $brand['number_of_sales'] : 0 }}
                                     {{ $brand['number_of_sales'] > 1 ? 'Sales' : 'Sale' }}</p>
                             </div>
-                        @endforeach
-                    @else
-                        <p class="alert alert-danger text-center">{{ translate('Nothing Found') }}</p>
-                    @endif
+@endforeach
+@else
+<p class="alert alert-danger text-center">{{ translate('Nothing Found') }}</p>
+@endif
                 </div>
             </div>
         </div>
@@ -973,339 +975,424 @@
 </div>
 
 @push('script')
-<script>
-    (function($) {
-        "use strict";
-        let chart_data_type = "monthly";
-        let categories = [];
+    <script>
+        (function($) {
+            "use strict";
+            let chart_data_type = "monthly";
+            let categories = [];
+            // Restrict date pickers to not allow future dates
+            const todayStr = new Date().toISOString().split('T')[0];
+            $('.filter-start-date, .filter-end-date').attr('max', todayStr);
 
-        $('.selectFilter').on('change', function () {
-            const filter = $(this).val();
+            $('.selectFilter').on('change', function() {
+                const filter = $(this).val();
 
-            $.ajax({
-                url: '{{ route("dashboard.filter") }}',
-                data: { filter: filter },
-                success: function(data) {
-                    console.log("customers: ", data.total_customers);
-                    console.log(typeof data.total_customers); 
-                    $('.total-customers-count').text(data.total_customers);
-                    $('.total-products-count').text(data.total_products ?? 0);
-                    $('.total-sales-count').text(data.total_sales ?? 0);
-                    $('.total-orders-count').text(data.total_orders ?? 0);
-                    $('.analytics-store-visits-count').text(data.analytics_store_visits ?? 0);
-                    $('.analytics-add-to-cart-count').text(data.analytics_add_to_cart ?? 0);
-                    $('.analytics-checkout-count').text(data.analytics_checkout ?? 0);
-                    $('.analytics-content-view-count').text(data.analytics_content_view ?? 0);
-                },
-                error: function(err) {
-                    console.error('Filter error:', err);
+                if (filter === 'customize') {
+                    $('.customize-date-range').removeClass('d-none').addClass('d-flex');
+                    return;
                 }
-            });
-        });
 
-        function openAnalyticsBreakdown(eventType) {
-            const titles = {
-                content_view: '{{ translate("Content View by Product") }}',
-                add_to_cart: '{{ translate("Add to Cart by Product") }}'
-            };
-            const $modal = $('#analytics-product-breakdown-modal');
-            const $body = $modal.find('.analytics-product-breakdown-body');
-            const $status = $modal.find('.analytics-product-breakdown-status');
-            const filter = $('.selectFilter').val() || 'all-time';
+                $('.customize-date-range').removeClass('d-flex').addClass('d-none');
+                $('.filter-start-date, .filter-end-date').val('');
 
-            $modal.find('.analytics-product-breakdown-title').text(titles[eventType] || '{{ translate("Product breakdown") }}');
-            $status.removeClass('d-none').text('{{ translate("Loading") }}...');
-            $body.empty();
-            $modal.modal('show');
-
-            $.ajax({
-                url: '{{ route("dashboard.analytics.by.product") }}',
-                data: {
-                    event_type: eventType,
-                    filter: filter
-                },
-                success: function (data) {
-                    const items = (data && data.items) ? data.items : [];
-                    $body.empty();
-                    if (!items.length) {
-                        $status.removeClass('d-none').text('{{ translate("No data") }}');
-                        return;
+                $.ajax({
+                    url: '{{ route('dashboard.filter') }}',
+                    data: {
+                        filter: filter
+                    },
+                    success: function(data) {
+                        console.log("customers: ", data.total_customers);
+                        console.log(typeof data.total_customers);
+                        $('.total-customers-count').text(data.total_customers);
+                        $('.total-products-count').text(data.total_products ?? 0);
+                        $('.total-sales-count').text(data.total_sales ?? 0);
+                        $('.total-orders-count').text(data.total_orders ?? 0);
+                        $('.analytics-store-visits-count').text(data.analytics_store_visits ?? 0);
+                        $('.analytics-add-to-cart-count').text(data.analytics_add_to_cart ?? 0);
+                        $('.analytics-checkout-count').text(data.analytics_checkout ?? 0);
+                        $('.analytics-content-view-count').text(data.analytics_content_view ?? 0);
+                    },
+                    error: function(err) {
+                        console.error('Filter error:', err);
                     }
-                    $status.addClass('d-none').text('');
-                    items.forEach(function (item) {
-                        const name = $('<div>').text(item.name || ('#' + item.product_id)).html();
-                        const image = $('<div>').text(item.image || '{{ asset("backend/assets/img/avatar/avatar-user.png") }}').html();
-                        const total = item.total ?? 0;
-                        $body.append(
-                            '<tr><td>' +
+                });
+            });
+
+            $(document).on('click', '.apply-date-range', function() {
+                const startDate = $('.filter-start-date').val();
+                const endDate = $('.filter-end-date').val();
+
+                if (!startDate || !endDate) {
+                    alert('{{ translate('Please select both a start and end date') }}');
+                    return;
+                }
+
+                if (startDate > endDate) {
+                    alert('{{ translate('Start date cannot be after end date') }}');
+                    return;
+                }
+
+                $.ajax({
+                    url: '{{ route('dashboard.filter') }}',
+                    data: {
+                        filter: 'customize',
+                        start_date: startDate,
+                        end_date: endDate
+                    },
+                    success: function(data) {
+                        $('.total-customers-count').text(data.total_customers ?? 0);
+                        $('.total-products-count').text(data.total_products ?? 0);
+                        $('.total-sales-count').text(data.total_sales ?? 0);
+                        $('.total-orders-count').text(data.total_orders ?? 0);
+                        $('.analytics-store-visits-count').text(data.analytics_store_visits ?? 0);
+                        $('.analytics-add-to-cart-count').text(data.analytics_add_to_cart ?? 0);
+                        $('.analytics-checkout-count').text(data.analytics_checkout ?? 0);
+                        $('.analytics-content-view-count').text(data.analytics_content_view ?? 0);
+                    },
+                    error: function(err) {
+                        console.error('Filter error:', err);
+                    }
+                });
+            });
+
+            function openAnalyticsBreakdown(eventType) {
+                const titles = {
+                    content_view: '{{ translate('Content View by Product') }}',
+                    add_to_cart: '{{ translate('Add to Cart by Product') }}'
+                };
+                const $modal = $('#analytics-product-breakdown-modal');
+                const $body = $modal.find('.analytics-product-breakdown-body');
+                const $status = $modal.find('.analytics-product-breakdown-status');
+                const filter = $('.selectFilter').val() || 'all-time';
+
+                $modal.find('.analytics-product-breakdown-title').text(titles[eventType] || '{{ translate('Product breakdown') }}');
+                $status.removeClass('d-none').text('{{ translate('Loading') }}...');
+                $body.empty();
+                $modal.modal('show');
+
+                $.ajax({
+                    url: '{{ route('dashboard.analytics.by.product') }}',
+                    data: {
+                        event_type: eventType,
+                        filter: filter
+                    },
+                    success: function(data) {
+                        const items = (data && data.items) ? data.items : [];
+                        $body.empty();
+                        if (!items.length) {
+                            $status.removeClass('d-none').text('{{ translate('No data') }}');
+                            return;
+                        }
+                        $status.addClass('d-none').text('');
+                        items.forEach(function(item) {
+                            const name = $('<div>').text(item.name || ('#' + item.product_id)).html();
+                            const image = $('<div>').text(item.image || '{{ asset('backend/assets/img/avatar/avatar-user.png') }}').html();
+                            const total = item.total ?? 0;
+                            $body.append(
+                                '<tr><td>' +
                                 '<div class="d-flex align-items-center" style="gap: 10px;">' +
-                                    '<img src="' + image + '" alt="" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; flex-shrink: 0;" />' +
-                                    '<span>' + name + '</span>' +
+                                '<img src="' + image +
+                                '" alt="" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; flex-shrink: 0;" />' +
+                                '<span>' + name + '</span>' +
                                 '</div>' +
-                            '</td><td class="text-right">' + total + '</td></tr>'
-                        );
-                    });
-                },
-                error: function () {
-                    $status.removeClass('d-none').text('{{ translate("No data") }}');
-                    $body.empty();
-                }
-            });
-        }
-
-        $(document).on('click', '.analytics-breakdown-card', function () {
-            const eventType = $(this).data('analytics-type');
-            if (!eventType) {
-                return;
-            }
-            openAnalyticsBreakdown(eventType);
-        });
-
-        $(document).on('keyup', '.analytics-breakdown-card', function (e) {
-            if (e.key !== 'Enter' && e.key !== ' ') {
-                return;
-            }
-            e.preventDefault();
-            const eventType = $(this).data('analytics-type');
-            if (!eventType) {
-                return;
-            }
-            openAnalyticsBreakdown(eventType);
-        });
-        
-        // function dateFormatted() {
-        //     let today = new Date();
-
-        //     let year = today.getFullYear();
-        //     let month = String(today.getMonth() + 1).padStart(2, '0');
-        //     let day = String(today.getDate()).padStart(2, '0');
-
-        //     let todayFormatted = `${year}-${month}-${day}`;
-
-        //     return todayFormatted;
-
-        // }
-
-        // function loadDailyData() {
-        //     console.log("Daily selected");
-        //     let today = dateFormatted();
-
-        //     console.log(today);
-        // }
-
-        //  function loadWeeklyData() {
-        //     console.log("Weekly selected");
-        // }
-
-        // function loadMonthlyData() {
-        //     console.log("Monthly selected");
-        // }
-
-        // function loadAllTimeData() {
-        //     console.log("All Time selected");
-        // }
-
-        $(".chart-switcher").on('click', function(e) {
-            e.preventDefault();
-            $('.chart-switcher').removeClass('active');
-            $(this).addClass('active');
-            chart_data_type = $(this).data('type');
-            getChartData();
-        });
-
-        function getChartData() {
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-                },
-                type: "POST",
-                data: { type: chart_data_type },
-                url: '{{ route("plugin.tlcommercecore.reports.sales.chart") }}',
-                success: function(data) {
-                    if (data.success) {
-                        categories = data.times;
-                        sales_chart.updateSeries([{ name: 'Sales', data: data.sales }]);
-                        sales_chart.updateOptions({ xaxis: { categories: data.times } });
+                                '</td><td class="text-right">' + total + '</td></tr>'
+                            );
+                        });
+                    },
+                    error: function() {
+                        $status.removeClass('d-none').text('{{ translate('No data') }}');
+                        $body.empty();
                     }
+                });
+            }
+
+            $(document).on('click', '.analytics-breakdown-card', function() {
+                const eventType = $(this).data('analytics-type');
+                if (!eventType) {
+                    return;
                 }
+                openAnalyticsBreakdown(eventType);
             });
-        }
 
-        var sales_chart_options = {
-            series: [],
-            chart: {
-                height: 340,
-                type: 'line',
-                toolbar: { show: true },
-                zoom: { enabled: false }
-            },
-            dataLabels: { enabled: false },
-            stroke: { curve: 'smooth', width: 3, dashArray: 0 },
-            colors: ['#FFBA5A', '#8381FD'],
-            grid: { borderColor: '#f5f5f5' },
-            markers: {
-                size: 7,
-                colors: ["#ff5A1f"],
-                hover: { size: 8 }
-            },
-            xaxis: { categories: [] },
-            yaxis: {
-                tickAmount: 4,
-                labels: {
-                    formatter: function(val) { return val.toFixed(2); }
+            $(document).on('keyup', '.analytics-breakdown-card', function(e) {
+                if (e.key !== 'Enter' && e.key !== ' ') {
+                    return;
                 }
-            },
-            responsive: [{
-                breakpoint: 576,
-                options: {
-                    markers: { size: 5, colors: ["#ff5A1f"], hover: { size: 5 } }
+                e.preventDefault();
+                const eventType = $(this).data('analytics-type');
+                if (!eventType) {
+                    return;
                 }
-            }]
-        };
+                openAnalyticsBreakdown(eventType);
+            });
 
-        var sales_chart = new ApexCharts(document.querySelector("#apex_sales_report_chart"), sales_chart_options);
-        sales_chart.render();
+            // function dateFormatted() {
+            //     let today = new Date();
 
-        // Doughnut chart using ApexCharts
-        var donut_options = {
-            series: [
-                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.pending')) }},
-                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.processing')) }},
-                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.ready_to_ship')) }},
-                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.shipped')) }},
-                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.delivered')) }},
-                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.cancelled')) }}
-            ],
-            chart: {
-                type: 'donut',
-                height: 220,
-            },
-            labels: ['Pending', 'Approved', 'Ready to Ship', 'Shipped', 'Delivered', 'Cancelled'],
-            colors: ['#f6c23e', '#36b9cc', '#ff8c00', '#4e73df', '#1cc88a', '#e74a3b'],
-            plotOptions: {
-                pie: {
-                    donut: {
-                        size: '65%',
-                        labels: {
-                            show: true,
-                            total: {
+            //     let year = today.getFullYear();
+            //     let month = String(today.getMonth() + 1).padStart(2, '0');
+            //     let day = String(today.getDate()).padStart(2, '0');
+
+            //     let todayFormatted = `${year}-${month}-${day}`;
+
+            //     return todayFormatted;
+
+            // }
+
+            // function loadDailyData() {
+            //     console.log("Daily selected");
+            //     let today = dateFormatted();
+
+            //     console.log(today);
+            // }
+
+            //  function loadWeeklyData() {
+            //     console.log("Weekly selected");
+            // }
+
+            // function loadMonthlyData() {
+            //     console.log("Monthly selected");
+            // }
+
+            // function loadAllTimeData() {
+            //     console.log("All Time selected");
+            // }
+
+            $(".chart-switcher").on('click', function(e) {
+                e.preventDefault();
+                $('.chart-switcher').removeClass('active');
+                $(this).addClass('active');
+                chart_data_type = $(this).data('type');
+                getChartData();
+            });
+
+            function getChartData() {
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                    },
+                    type: "POST",
+                    data: {
+                        type: chart_data_type
+                    },
+                    url: '{{ route('plugin.tlcommercecore.reports.sales.chart') }}',
+                    success: function(data) {
+                        if (data.success) {
+                            categories = data.times;
+                            sales_chart.updateSeries([{
+                                name: 'Sales',
+                                data: data.sales
+                            }]);
+                            sales_chart.updateOptions({
+                                xaxis: {
+                                    categories: data.times
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+            var sales_chart_options = {
+                series: [],
+                chart: {
+                    height: 340,
+                    type: 'line',
+                    toolbar: {
+                        show: true
+                    },
+                    zoom: {
+                        enabled: false
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 3,
+                    dashArray: 0
+                },
+                colors: ['#FFBA5A', '#8381FD'],
+                grid: {
+                    borderColor: '#f5f5f5'
+                },
+                markers: {
+                    size: 7,
+                    colors: ["#ff5A1f"],
+                    hover: {
+                        size: 8
+                    }
+                },
+                xaxis: {
+                    categories: []
+                },
+                yaxis: {
+                    tickAmount: 4,
+                    labels: {
+                        formatter: function(val) {
+                            return val.toFixed(2);
+                        }
+                    }
+                },
+                responsive: [{
+                    breakpoint: 576,
+                    options: {
+                        markers: {
+                            size: 5,
+                            colors: ["#ff5A1f"],
+                            hover: {
+                                size: 5
+                            }
+                        }
+                    }
+                }]
+            };
+
+            var sales_chart = new ApexCharts(document.querySelector("#apex_sales_report_chart"), sales_chart_options);
+            sales_chart.render();
+
+            // Doughnut chart using ApexCharts
+            var donut_options = {
+                series: [
+                    {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.processing')) }},
+                    {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.ready_to_ship')) }},
+                    {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.shipped')) }},
+                    {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.delivered')) }},
+                    {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.cancelled')) }}
+                ],
+                chart: {
+                    type: 'donut',
+                    height: 220,
+                },
+                labels: ['Approved', 'Ready to Ship', 'Shipped', 'Delivered', 'Cancelled'],
+                colors: ['#36b9cc', '#ff8c00', '#4e73df', '#1cc88a', '#e74a3b'],
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '65%',
+                            labels: {
                                 show: true,
-                                label: '{{ translate("Total Sales") }}',
-                                formatter: function() {
-                                    return '{!! addslashes(currencyExchange($total_sales)) !!}';
+                                total: {
+                                    show: true,
+                                    label: '{{ translate("Total Sales") }}',
+                                    formatter: function() {
+                                        return '{!! addslashes(currencyExchange($total_sales)) !!}';
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            },
-            legend: { show: false },
-            dataLabels: { enabled: false },
-        };
+                },
+                legend: {
+                    show: false
+                },
+                dataLabels: {
+                    enabled: false
+                },
+            };
 
-        var donut_chart = new ApexCharts(document.querySelector("#orderStatusChart"), donut_options);
-        donut_chart.render();
+            var donut_chart = new ApexCharts(document.querySelector("#orderStatusChart"), donut_options);
+            donut_chart.render();
 
-        $(document).ready(function() {
-            getChartData();
-        });
+            $(document).ready(function() {
+                getChartData();
+            });
 
-    })(jQuery);
-</script>
+        })(jQuery);
+    </script>
 @endpush
 
-
 <style>
-
-/* Change the background and text color of the active button */
-.list-button li.active.chart-switcher {
-    background-color: #ff5A1f !important;
-    color: #ffffff !important;
-    border-color: #ff5A1f !important; /* In case there is a border */
-}
-
-/* Optional: If you want a slight hover effect on the inactive buttons */
-.list-button li.chart-switcher:hover:not(.active) {
-    background-color: #ff5A1f !important;
-    color: #ffffff !important;
-    cursor: pointer;
-}
-
-
-.filter {
-    position: relative;
-    display: inline-block;
-    min-width: 180px;
-}
-
-.selectFilter {
-    width: 100%;
-    height: 48px;
-    line-height: 48px;
-    padding: 0 40px 0 15px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #333;
-    background: #fff;
-    border: 1px solid #dcdcdc;
-    border-radius: 10px;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-.selectFilter option {
-    padding: 10px;
-    line-height: normal;
-}
-
-/* Hover */
-.selectFilter:hover {
-    border-color: #ff5A1f;
-}
-
-/* Focus */
-.selectFilter:focus {
-    outline: none;
-    border-color: #ff5A1f;
-    box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
-}
-
-/* Custom arrow */
-.filter::after {
-    content: "▼";
-    font-size: 11px;
-    color: #666;
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-}
-
-@media (max-width: 576px) {
-    .dashboard-header {
-        flex-direction: column;
-        align-items: stretch !important;
-        gap: 12px;
+    /* Change the background and text color of the active button */
+    .list-button li.active.chart-switcher {
+        background-color: #ff5A1f !important;
+        color: #ffffff !important;
+        border-color: #ff5A1f !important;
+        /* In case there is a border */
     }
 
-    .dashboard-header h4 {
-        text-align: center;
-        white-space: normal; 
-        margin-bottom: 20px !important;
+    /* Optional: If you want a slight hover effect on the inactive buttons */
+    .list-button li.chart-switcher:hover:not(.active) {
+        background-color: #ff5A1f !important;
+        color: #ffffff !important;
+        cursor: pointer;
     }
 
     .filter {
-        width: 100%;
-        min-width: unset;
+        position: relative;
+        display: inline-block;
+        min-width: 180px;
     }
 
     .selectFilter {
         width: 100%;
+        height: 48px;
+        line-height: 48px;
+        padding: 0 40px 0 15px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        background: #fff;
+        border: 1px solid #dcdcdc;
+        border-radius: 10px;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     }
-}
+
+    .selectFilter option {
+        padding: 10px;
+        line-height: normal;
+    }
+
+    /* Hover */
+    .selectFilter:hover {
+        border-color: #ff5A1f;
+    }
+
+    /* Focus */
+    .selectFilter:focus {
+        outline: none;
+        border-color: #ff5A1f;
+        box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.15);
+    }
+
+    /* Custom arrow */
+    .filter::after {
+        content: "▼";
+        font-size: 11px;
+        color: #666;
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+
+    @media (max-width: 576px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: stretch !important;
+            gap: 12px;
+        }
+
+        .dashboard-header h4 {
+            text-align: center;
+            white-space: normal;
+            margin-bottom: 20px !important;
+        }
+
+        .filter {
+            width: 100%;
+            min-width: unset;
+        }
+
+        .selectFilter {
+            width: 100%;
+        }
+    }
 </style>

@@ -194,11 +194,14 @@ class ReportController extends Controller
                     'created_at',
                     [$first_day_of_month, $last_day_of_month]
                 )
+                    ->where('payment_status', config('tlecommercecore.order_payment_status.paid'))
+                    // ->where('delivery_status', config('tlecommercecore.order_delivery_status.delivered'))
                     ->sum('total_payable_amount');
 
                 array_push($times, $first_day_of_month->shortMonthName);
                 array_push($sales, $total_sales);
             }
+
             return response()->json(
                 [
                     'success' => true,
@@ -214,7 +217,10 @@ class ReportController extends Controller
             for ($i = 29; $i >= 0; $i--) {
 
                 $day = Carbon::today()->endOfDay()->subDay($i);
-                $total_sales = Orders::whereDate('created_at', $day)->sum('total_payable_amount');
+                $total_sales = Orders::whereDate('created_at', $day)
+                    ->where('payment_status', config('tlecommercecore.order_payment_status.paid'))
+                    // ->where('delivery_status', config('tlecommercecore.order_delivery_status.delivered'))
+                    ->sum('total_payable_amount');
                 array_push($sales, $total_sales);
 
                 array_push($times, $day->translatedFormat('d M'));

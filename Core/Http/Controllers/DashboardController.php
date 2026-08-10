@@ -45,110 +45,126 @@ class DashboardController extends Controller
     public function filter(Request $request)
     {
         try {
-                \Log::info('Filter Dashboard method called');
+            \Log::info('Filter Dashboard method called');
 
-                $filter = $request->get('filter', 'all-time');
+            $filter = $request->get('filter', 'all-time');
 
-                // Customers
-                $customerQuery = \Plugin\TlcommerceCore\Models\Customers::select('id');
+            // Customers
+            $customerQuery = \Plugin\TlcommerceCore\Models\Customers::select('id');
 
-                // Products
-                $productQuery = \Plugin\TlcommerceCore\Models\Product::select('id');
+            // Products
+            $productQuery = \Plugin\TlcommerceCore\Models\Product::select('id');
 
-                // Sales
-                // $salesQuery = \Plugin\TlcommerceCore\Models\Orders::query();
-                $salesQuery = \Plugin\TlcommerceCore\Models\Orders::query()
-                    ->where('payment_status', config('tlecommercecore.order_payment_status.paid'));
+            // Sales
+            // $salesQuery = \Plugin\TlcommerceCore\Models\Orders::query();
+            $salesQuery = \Plugin\TlcommerceCore\Models\Orders::query()
+                ->where('payment_status', config('tlecommercecore.order_payment_status.paid'));
 
-                // Orders
-                $ordersQuery = DB::table('tl_com_ordered_products')
-                    ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
-                    ->groupBy('tl_com_ordered_products.order_id')
-                    ->select(DB::raw('GROUP_CONCAT(DISTINCT(tl_com_ordered_products.order_id)) as order_id'));
+            // Orders
+            $ordersQuery = DB::table('tl_com_ordered_products')
+                ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
+                ->groupBy('tl_com_ordered_products.order_id')
+                ->select(DB::raw('GROUP_CONCAT(DISTINCT(tl_com_ordered_products.order_id)) as order_id'));
+
+            switch ($filter) {
+                case 'daily':
+                    $customerQuery->whereDate('created_at', today());
+                    $productQuery->whereDate('created_at', today());
+                    $salesQuery->whereDate('created_at', today());
+                    $ordersQuery->whereDate('tl_com_orders.created_at', today());
+                    break;
+                case 'weekly':
+                    $customerQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                    $productQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                    $salesQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                    $ordersQuery->whereBetween('tl_com_orders.created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                    break;
+                case 'monthly':
+                    $customerQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
+                    $productQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
+                    $salesQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
+                    $ordersQuery->whereMonth('tl_com_orders.created_at', now()->month)
+                        ->whereYear('tl_com_orders.created_at', now()->year);
+                    break;
+                case 'customize':
+                    $startDate = \Carbon\Carbon::parse($request->get('start_date'))->startOfDay();
+                    $endDate = \Carbon\Carbon::parse($request->get('end_date'))->endOfDay();
+
+                    $customerQuery->whereBetween('created_at', [$startDate, $endDate]);
+                    $productQuery->whereBetween('created_at', [$startDate, $endDate]);
+                    $salesQuery->whereBetween('created_at', [$startDate, $endDate]);
+                    $ordersQuery->whereBetween('tl_com_orders.created_at', [$startDate, $endDate]);
+                    break;
+            }
+
+            $analytics_store_visits = 0;
+            $analytics_add_to_cart = 0;
+            $analytics_checkout = 0;
+            $analytics_content_view = 0;
+
+            try {
+                $storeVisitQuery = \Plugin\TlcommerceCore\Models\AnalyticsEvent::where('event_type', 'store_visit');
+                $addToCartQuery = \Plugin\TlcommerceCore\Models\AnalyticsEvent::where('event_type', 'add_to_cart');
+                $checkoutQuery = \Plugin\TlcommerceCore\Models\AnalyticsEvent::where('event_type', 'checkout');
+                $contentViewQuery = \Plugin\TlcommerceCore\Models\AnalyticsEvent::where('event_type', 'content_view');
 
                 switch ($filter) {
                     case 'daily':
-                        $customerQuery->whereDate('created_at', today());
-                        $productQuery->whereDate('created_at', today());
-                        $salesQuery->whereDate('created_at', today());
-                        $ordersQuery->whereDate('tl_com_orders.created_at', today());
+                        $storeVisitQuery->whereDate('created_at', today());
+                        $addToCartQuery->whereDate('created_at', today());
+                        $checkoutQuery->whereDate('created_at', today());
+                        $contentViewQuery->whereDate('created_at', today());
                         break;
                     case 'weekly':
-                        $customerQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
-                        $productQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
-                        $salesQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
-                        $ordersQuery->whereBetween('tl_com_orders.created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                        $storeVisitQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                        $addToCartQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                        $checkoutQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                        $contentViewQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
                         break;
                     case 'monthly':
-                        $customerQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
-                        $productQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
-                        $salesQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
-                        $ordersQuery->whereMonth('tl_com_orders.created_at', now()->month)
-                                    ->whereYear('tl_com_orders.created_at', now()->year);
+                        $storeVisitQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
+                        $addToCartQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
+                        $checkoutQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
+                        $contentViewQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
+                        break;
+                    case 'customize':
+                        $startDate = \Carbon\Carbon::parse($request->get('start_date'))->startOfDay();
+                        $endDate = \Carbon\Carbon::parse($request->get('end_date'))->endOfDay();
+
+                        $storeVisitQuery->whereBetween('created_at', [$startDate, $endDate]);
+                        $addToCartQuery->whereBetween('created_at', [$startDate, $endDate]);
+                        $checkoutQuery->whereBetween('created_at', [$startDate, $endDate]);
+                        $contentViewQuery->whereBetween('created_at', [$startDate, $endDate]);
                         break;
                 }
 
+                $analytics_store_visits = $storeVisitQuery->count();
+                $analytics_add_to_cart = $addToCartQuery->count();
+                $analytics_checkout = $checkoutQuery->count();
+                $analytics_content_view = $contentViewQuery->count();
+            } catch (\Throwable $e) {
                 $analytics_store_visits = 0;
                 $analytics_add_to_cart = 0;
                 $analytics_checkout = 0;
                 $analytics_content_view = 0;
+            }
 
-                try {
-                    $storeVisitQuery = \Plugin\TlcommerceCore\Models\AnalyticsEvent::where('event_type', 'store_visit');
-                    $addToCartQuery = \Plugin\TlcommerceCore\Models\AnalyticsEvent::where('event_type', 'add_to_cart');
-                    $checkoutQuery = \Plugin\TlcommerceCore\Models\AnalyticsEvent::where('event_type', 'checkout');
-                    $contentViewQuery = \Plugin\TlcommerceCore\Models\AnalyticsEvent::where('event_type', 'content_view');
-
-                    switch ($filter) {
-                        case 'daily':
-                            $storeVisitQuery->whereDate('created_at', today());
-                            $addToCartQuery->whereDate('created_at', today());
-                            $checkoutQuery->whereDate('created_at', today());
-                            $contentViewQuery->whereDate('created_at', today());
-                            break;
-                        case 'weekly':
-                            $storeVisitQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
-                            $addToCartQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
-                            $checkoutQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
-                            $contentViewQuery->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
-                            break;
-                        case 'monthly':
-                            $storeVisitQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
-                            $addToCartQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
-                            $checkoutQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
-                            $contentViewQuery->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year);
-                            break;
-                    }
-
-                    $analytics_store_visits = $storeVisitQuery->count();
-                    $analytics_add_to_cart = $addToCartQuery->count();
-                    $analytics_checkout = $checkoutQuery->count();
-                    $analytics_content_view = $contentViewQuery->count();
-                } catch (\Throwable $e) {
-                    $analytics_store_visits = 0;
-                    $analytics_add_to_cart = 0;
-                    $analytics_checkout = 0;
-                    $analytics_content_view = 0;
-                }
-
-                return response()->json([
-                    'total_customers' => $customerQuery->count(),
-                    'total_products'  => $productQuery->count(),
-                    'total_sales'     => $salesQuery->sum('total_payable_amount'),
-                    'total_orders'    => $ordersQuery->get()->count(),
-                    'analytics_store_visits' => $analytics_store_visits,
-                    'analytics_add_to_cart' => $analytics_add_to_cart,
-                    'analytics_checkout' => $analytics_checkout,
-                    'analytics_content_view' => $analytics_content_view,
-                ]);
-        }
-        catch (\Exception $e) {
+            return response()->json([
+                'total_customers' => $customerQuery->count(),
+                'total_products'  => $productQuery->count(),
+                'total_sales'     => $salesQuery->sum('total_payable_amount'),
+                'total_orders'    => $ordersQuery->get()->count(),
+                'analytics_store_visits' => $analytics_store_visits,
+                'analytics_add_to_cart' => $analytics_add_to_cart,
+                'analytics_checkout' => $analytics_checkout,
+                'analytics_content_view' => $analytics_content_view,
+            ]);
+        } catch (\Exception $e) {
             Log::error('filter dashboard failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
         }
-        
     }
 
     /**
