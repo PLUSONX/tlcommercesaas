@@ -55,14 +55,16 @@ class DashboardController extends Controller
             // Products
             $productQuery = \Plugin\TlcommerceCore\Models\Product::select('id');
 
-            // Sales
+            // Sales — paid only, exclude cancelled (revenue)
             // $salesQuery = \Plugin\TlcommerceCore\Models\Orders::query();
             $salesQuery = \Plugin\TlcommerceCore\Models\Orders::query()
-                ->where('payment_status', config('tlecommercecore.order_payment_status.paid'));
+                ->where('payment_status', config('tlecommercecore.order_payment_status.paid'))
+                ->where('delivery_status', '!=', config('tlecommercecore.order_delivery_status.cancelled'));
 
-            // Orders
+            // Orders — paid only (align with Sales analytics)
             $ordersQuery = DB::table('tl_com_ordered_products')
                 ->leftJoin('tl_com_orders', 'tl_com_orders.id', '=', 'tl_com_ordered_products.order_id')
+                ->where('tl_com_orders.payment_status', config('tlecommercecore.order_payment_status.paid'))
                 ->groupBy('tl_com_ordered_products.order_id')
                 ->select(DB::raw('GROUP_CONCAT(DISTINCT(tl_com_ordered_products.order_id)) as order_id'));
 

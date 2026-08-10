@@ -475,7 +475,7 @@ class OrderRepository
      *
      * @return Array
      */
-    public function statusWiseOrderCounter($status = null, $seller_id = null)
+    public function statusWiseOrderCounter($status = null, $seller_id = null, $paid_only = false)
     {
         try {
             $data = [
@@ -491,6 +491,12 @@ class OrderRepository
                 if ($seller_id != null) {
                     $query = $query->where('tl_com_ordered_products.seller_id', $seller_id);
                 }
+                if ($paid_only) {
+                    $query = $query->where(
+                        'tl_com_orders.payment_status',
+                        config('tlecommercecore.order_payment_status.paid')
+                    );
+                }
                 $total_order = $query->get()->count();
             } else {
                 $query = DB::table('tl_com_ordered_products')
@@ -499,6 +505,12 @@ class OrderRepository
                     ->select($data);
                 if ($seller_id != null) {
                     $query = $query->where('tl_com_ordered_products.seller_id', $seller_id);
+                }
+                if ($paid_only) {
+                    $query = $query->where(
+                        'tl_com_orders.payment_status',
+                        config('tlecommercecore.order_payment_status.paid')
+                    );
                 }
                 $total_order = $query->get()->count();
             }
@@ -1641,60 +1653,120 @@ class OrderRepository
             return false;
         }
 
-        if ($couponDetails->maximum_spend_amount != null && $couponDetails->maximum_spend_amount < $totalCartPrice) {
+        $maxSpend = $couponDetails->maximum_spend_mount ?? $couponDetails->maximum_spend_amount ?? null;
+        if ($maxSpend != null && (float) $maxSpend > 0 && (float) $maxSpend < $totalCartPrice) {
             return false;
         }
 
         return true;
     }
 
-    protected function computeCouponDiscountForCart($couponDetails, array $cartShaped)
+    /**
+     * Eligible product id set for a coupon, or null when the whole cart qualifies.
+     *
+     * @return array<int, true>|null
+     */
+    protected function resolveCouponEligibleProductSet($couponDetails, array $cartShaped): ?array
     {
-        $cartItems = array_map(function ($product) {
-            return $product['id'];
-        }, $cartShaped);
+        $cartProductIds = array_values(array_unique(array_map(function ($product) {
+            return (int) $product['id'];
+        }, $cartShaped)));
 
-        $applicableProductId = $cartItems;
+        $eligible = null;
+        $restricted = false;
 
-        $selectedProducts = CouponProducts::where('coupon_id', $couponDetails->id)->pluck('product_id')->toArray();
+        $selectedProducts = CouponProducts::where('coupon_id', $couponDetails->id)
+            ->pluck('product_id')
+            ->map(function ($id) {
+                return (int) $id;
+            })
+            ->unique()
+            ->values()
+            ->toArray();
         if (count($selectedProducts) > 0) {
-            $applicableProductId = array_intersect($applicableProductId, $selectedProducts);
-            $applicableProductId = array_values($applicableProductId);
+            $restricted = true;
+            $eligible = array_values(array_intersect($cartProductIds, $selectedProducts));
         }
 
         $selectedCategories = $couponDetails->categories->pluck('category_id');
         if (count($selectedCategories) > 0) {
-            $applicableProductId = ProductHasCategories::whereIn('product_id', $cartItems)->whereIn('category_id', $selectedCategories)->pluck('product_id');
+            $categoryProductIds = ProductHasCategories::whereIn('product_id', $cartProductIds)
+                ->whereIn('category_id', $selectedCategories)
+                ->pluck('product_id')
+                ->map(function ($id) {
+                    return (int) $id;
+                })
+                ->unique()
+                ->values()
+                ->toArray();
+            $restricted = true;
+            $eligible = $eligible === null
+                ? $categoryProductIds
+                : array_values(array_intersect($eligible, $categoryProductIds));
         }
 
         $selectedBrands = $couponDetails->brands->pluck('brand_id');
         if (count($selectedBrands) > 0) {
-            $applicableProductId = Product::whereIn('id', $cartItems)->whereIn('brand', $selectedBrands)->pluck('id');
+            $brandProductIds = Product::whereIn('id', $cartProductIds)
+                ->whereIn('brand', $selectedBrands)
+                ->pluck('id')
+                ->map(function ($id) {
+                    return (int) $id;
+                })
+                ->unique()
+                ->values()
+                ->toArray();
+            $restricted = true;
+            $eligible = $eligible === null
+                ? $brandProductIds
+                : array_values(array_intersect($eligible, $brandProductIds));
         }
 
-        $excludeProducts = CouponExcludeProducts::where('coupon_id', $couponDetails->id)->pluck('product_id')->toArray();
+        $excludeProducts = CouponExcludeProducts::where('coupon_id', $couponDetails->id)
+            ->pluck('product_id')
+            ->map(function ($id) {
+                return (int) $id;
+            })
+            ->unique()
+            ->values()
+            ->toArray();
         if (count($excludeProducts) > 0) {
-            $applicableProductId = array_diff($cartItems, $excludeProducts);
-        }
-
-        $discountedAmount = 0;
-        if ($couponDetails->discount_type == config('tlecommercecore.amount_type.flat')) {
-            $discountedAmount = $couponDetails->discount_amount;
-        }
-        if ($couponDetails->discount_type != config('tlecommercecore.amount_type.flat')) {
-            $totalPrice = 0;
-            foreach ($cartShaped as $item) {
-                foreach ($applicableProductId as $productId) {
-                    if ($productId == $item['id']) {
-                        $temp = $item['unitPrice'] * $item['quantity'];
-                        $totalPrice += $temp;
-                    }
-                }
+            $restricted = true;
+            if ($eligible === null) {
+                $eligible = array_values(array_diff($cartProductIds, $excludeProducts));
+            } else {
+                $eligible = array_values(array_diff($eligible, $excludeProducts));
             }
-            $discountedAmount = ($totalPrice * $couponDetails->discount_amount) / 100;
         }
 
-        return $discountedAmount;
+        if (!$restricted) {
+            return null;
+        }
+
+        return array_fill_keys($eligible, true);
+    }
+
+    /**
+     * Percent coupons: rate × sum of eligible cart lines (each line once).
+     * Unrestricted coupons use the full cart product subtotal.
+     */
+    public function computeCouponDiscountForCart($couponDetails, array $cartShaped)
+    {
+        if ($couponDetails->discount_type == config('tlecommercecore.amount_type.flat')) {
+            return (float) $couponDetails->discount_amount;
+        }
+
+        $eligibleSet = $this->resolveCouponEligibleProductSet($couponDetails, $cartShaped);
+
+        $totalPrice = 0;
+        foreach ($cartShaped as $item) {
+            $productId = (int) $item['id'];
+            if ($eligibleSet === null || isset($eligibleSet[$productId])) {
+                $totalPrice += ((float) ($item['unitPrice'] ?? 0)) * ((float) ($item['quantity'] ?? 0));
+            }
+        }
+
+        return ($totalPrice * (float) $couponDetails->discount_amount) / 100;
     }
 
     protected function getValidatedCheckoutCouponTotal()
@@ -2740,14 +2812,16 @@ class OrderRepository
                 $order_product->save();
             }
 
-            //Update order table status
-            $total_order_products = OrderHasProducts::where('order_id', $request['order_id'])->count();
-            $order->delivery_status = $request['delivery_status'];
-            $order->payment_status = $request['payment_status'];
+            // Update order header from full line-item state (not only selected rows).
+            // Header is paid only when every line item is paid; otherwise unpaid.
+            $paidStatus = (int) config('tlecommercecore.order_payment_status.paid');
+            $unpaidStatus = (int) config('tlecommercecore.order_payment_status.unpaid');
+            $unpaidLineCount = OrderHasProducts::where('order_id', $request['order_id'])
+                ->where('payment_status', '!=', $paidStatus)
+                ->count();
 
-            // if ($total_order_products == $request['product']) {
-            //     $order->payment_status = $request['payment_status'];
-            // }
+            $order->delivery_status = $request['delivery_status'];
+            $order->payment_status = $unpaidLineCount === 0 ? $paidStatus : $unpaidStatus;
             $order->save();
 
             $this->logOrderDeliveryStatusChange(

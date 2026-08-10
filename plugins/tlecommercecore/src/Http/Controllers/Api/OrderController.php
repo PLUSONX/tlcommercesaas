@@ -7,7 +7,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Plugin\Coupon\Models\CouponProducts;
 use Plugin\TlcommerceCore\Models\Cities;
 use Plugin\TlcommerceCore\Models\States;
 use Illuminate\Support\Facades\Validator;
@@ -15,12 +14,10 @@ use Plugin\TlcommerceCore\Models\Country;
 use Plugin\TlcommerceCore\Models\Product;
 use Plugin\TlcommerceCore\Models\Customers;
 use Plugin\TlcommerceCore\Models\ShippingRate;
-use Plugin\Coupon\Models\CouponExcludeProducts;
 use Plugin\TlcommerceCore\Models\PaymentMethods;
 use Plugin\TlcommerceCore\Models\ProductAttribute;
 use Plugin\TlcommerceCore\Models\ShippingZoneCities;
 use Plugin\TlcommerceCore\Models\SingleProductPrice;
-use Plugin\TlcommerceCore\Models\ProductHasCategories;
 use Plugin\TlcommerceCore\Repositories\OrderRepository;
 use Plugin\TlcommerceCore\Repositories\ShippingRepository;
 use Plugin\TlcommerceCore\Http\Resources\CityCollection;
@@ -663,63 +660,22 @@ class OrderController extends Controller
                 return $this->couponError('You have to need more shopping to apply this coupon');
             }
 
-            //Maximum spend validation
-            if ($coupon_details->maximum_spend_amount != null && $coupon_details->maximum_spend_amount < $total_cart_price) {
+            // Maximum spend (DB column is maximum_spend_mount; 0 means no max)
+            $max_spend = $coupon_details->maximum_spend_mount ?? $coupon_details->maximum_spend_amount ?? null;
+            if ($max_spend != null && (float) $max_spend > 0 && (float) $max_spend < $total_cart_price) {
                 return $this->couponError('Coupon is not applicable');
             }
 
-
-
-            $cart_items = array_map(function ($product) {
-                return $product['id'];
+            // Normalize line shape for shared calculator (id + unitPrice + quantity)
+            $cart_shaped = array_map(function ($product) {
+                return [
+                    'id' => $product['id'] ?? ($product['product_id'] ?? null),
+                    'unitPrice' => $product['unitPrice'] ?? 0,
+                    'quantity' => $product['quantity'] ?? 0,
+                ];
             }, $products);
 
-            $applicable_product_id = $cart_items;
-
-            //Filter selected product
-            $selected_products = CouponProducts::where('coupon_id', $coupon_details->id)->pluck('product_id')->toArray();
-            if (count($selected_products) > 0) {
-                $applicable_product_id = array_intersect($applicable_product_id, $selected_products);
-                $applicable_product_id = array_values($applicable_product_id);
-            }
-
-            //Selected categories
-            $selected_categories = $coupon_details->categories->pluck('category_id');
-            if (count($selected_categories) > 0) {
-                $applicable_product_id = ProductHasCategories::whereIn('product_id', $cart_items)->whereIn('category_id', $selected_categories)->pluck('product_id');
-            }
-
-            //Selected Brand
-            $selected_brands = $coupon_details->brands->pluck('brand_id');
-            if (count($selected_brands) > 0) {
-                $applicable_product_id = Product::whereIn('id', $cart_items)->whereIn('brand', $selected_brands)->pluck('id');
-            }
-
-
-            //Filter exclude products
-            $exclude_products = CouponExcludeProducts::where('coupon_id', $coupon_details->id)->pluck('product_id')->toArray();
-            if (count($exclude_products) > 0) {
-                $applicable_product_id = array_diff($cart_items, $exclude_products);
-            }
-
-            $discounted_amount = 0;
-            //Flat Discount
-            if ($coupon_details->discount_type == config('tlecommercecore.amount_type.flat')) {
-                $discounted_amount = $coupon_details->discount_amount;
-            }
-            //Percent Discount
-            if ($coupon_details->discount_type != config('tlecommercecore.amount_type.flat')) {
-                $total_price = 0;
-                foreach ($products as $item) {
-                    foreach ($applicable_product_id as $productId) {
-                        if ($productId == $item['id']) {
-                            $temp = $item['unitPrice'] * $item['quantity'];
-                            $total_price += $temp;
-                        }
-                    }
-                }
-                $discounted_amount = ($total_price * $coupon_details->discount_amount) / 100;
-            }
+            $discounted_amount = $this->order_repository->computeCouponDiscountForCart($coupon_details, $cart_shaped);
 
             return response()->json(
                 [

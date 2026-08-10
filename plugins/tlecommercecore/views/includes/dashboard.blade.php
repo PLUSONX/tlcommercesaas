@@ -5,22 +5,44 @@
 
     $total_products = \Plugin\TlcommerceCore\Models\Product::select('id')->get()->count();
 
-    $total_sales = \Plugin\TlcommerceCore\Models\Orders::where('payment_status', config('tlecommercecore.order_payment_status.paid'))->sum('total_payable_amount');
+    $paidPaymentStatus = config('tlecommercecore.order_payment_status.paid');
+    $cancelledDeliveryStatus = config('tlecommercecore.order_delivery_status.cancelled');
+
+    $total_sales = \Plugin\TlcommerceCore\Models\Orders::where('payment_status', $paidPaymentStatus)
+        ->where('delivery_status', '!=', $cancelledDeliveryStatus)
+        ->sum('total_payable_amount');
 
     $recent_orders = \Plugin\TlcommerceCore\Models\Orders::with(['customer_info', 'guest_customer'])
     ->select('order_code', 'id', 'created_at', 'total_payable_amount', 'customer_id', 'guest_customer_id', 'delivery_status', 'payment_status')
-    ->where('payment_status', config('tlecommercecore.order_payment_status.paid'))     
+    ->where('payment_status', $paidPaymentStatus)
+    ->where('delivery_status', '!=', $cancelledDeliveryStatus)
     // ->where('delivery_status', config('tlecommercecore.order_delivery_status.delivered')) 
     ->orderBy('id', 'DESC')
     ->take(5)
     ->get();
 
-    $top_customers = \Plugin\TlcommerceCore\Models\Customers::withCount('orders')->orderBy('orders_count', 'DESC')->take(5)->get();
+    $paidOrdersConstraint = function ($query) use ($paidPaymentStatus, $cancelledDeliveryStatus) {
+        $query->where('payment_status', $paidPaymentStatus)
+            ->where('delivery_status', '!=', $cancelledDeliveryStatus);
+    };
+
+    $top_customers = \Plugin\TlcommerceCore\Models\Customers::with(['orders' => $paidOrdersConstraint])
+        ->withCount(['orders as orders_count' => $paidOrdersConstraint])
+        ->having('orders_count', '>', 0)
+        ->orderBy('orders_count', 'DESC')
+        ->take(5)
+        ->get();
+
+    $paidProductOrdersConstraint = function ($query) use ($paidPaymentStatus, $cancelledDeliveryStatus) {
+        $query->where('payment_status', $paidPaymentStatus)
+            ->where('delivery_status', '!=', $cancelledDeliveryStatus);
+    };
 
     $top_products = \Plugin\TlcommerceCore\Models\Product::select(['id', 'name', 'permalink', 'thumbnail_image'])
-        ->withCount(['orders'])
-        ->withSum('orders', 'unit_price')
-        ->withSum('orders', 'quantity')
+        ->withCount(['orders' => $paidProductOrdersConstraint])
+        ->withSum(['orders' => $paidProductOrdersConstraint], 'unit_price')
+        ->withSum(['orders' => $paidProductOrdersConstraint], 'quantity')
+        ->having('orders_count', '>', 0)
         ->orderBy('orders_sum_quantity', 'DESC')
         ->take(5)
         ->get();
@@ -34,6 +56,8 @@
     $top_categories = DB::table('tl_com_categories')
         ->leftjoin('tl_com_product_has_categories', 'tl_com_product_has_categories.category_id', 'tl_com_categories.id')
         ->leftjoin('tl_com_ordered_products', 'tl_com_ordered_products.product_id', 'tl_com_product_has_categories.product_id')
+        ->where('tl_com_ordered_products.payment_status', $paidPaymentStatus)
+        ->where('tl_com_ordered_products.delivery_status', '!=', $cancelledDeliveryStatus)
         ->groupBy('tl_com_categories.id')
         ->select($category_data)
         ->orderBy(DB::raw('sum(tl_com_ordered_products.quantity )'), 'DESC')
@@ -62,6 +86,8 @@
     $top_brands = DB::table('tl_com_brands')
         ->leftjoin('tl_com_products', 'tl_com_products.brand', 'tl_com_brands.id')
         ->leftjoin('tl_com_ordered_products', 'tl_com_ordered_products.product_id', 'tl_com_products.id')
+        ->where('tl_com_ordered_products.payment_status', $paidPaymentStatus)
+        ->where('tl_com_ordered_products.delivery_status', '!=', $cancelledDeliveryStatus)
         ->groupBy('tl_com_brands.id')
         ->select($brands_data)
         ->orderBy(DB::raw('sum(tl_com_ordered_products.quantity )'), 'DESC')
@@ -299,7 +325,7 @@
                     <div class="state-content text-center">
                         <p class="font-14 mb-2">{{ translate('Orders') }}</p>
                         <h2>
-                            {{ $order_repository->statusWiseOrderCounter() }}
+                            {{ $order_repository->statusWiseOrderCounter(null, null, true) }}
                         </h2>
                     </div>
                 </div>
@@ -361,8 +387,8 @@
                             <x-lucide-shopping-cart style="width: 22px; height: 22px; color: #ff5A1f;" />
                             <h4 class="mb-0" style="font-size: 18px; font-weight: 500;">{{ translate('Orders') }}</h4>
                         </div>
-                        <!-- <h2 class="mb-0">{{ $order_repository->statusWiseOrderCounter() }}</h2> -->
-                        <h2 class="mb-0 total-orders-count">{{ $order_repository->statusWiseOrderCounter() }}</h2>
+                        <!-- <h2 class="mb-0">{{ $order_repository->statusWiseOrderCounter(null, null, true) }}</h2> -->
+                        <h2 class="mb-0 total-orders-count">{{ $order_repository->statusWiseOrderCounter(null, null, true) }}</h2>
                     </div>
                 </div>
             </div>
@@ -537,7 +563,7 @@
                         </div>
                         <div class="">
                             <h5>
-                                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.pending')) }}
+                                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.pending'), null, true) }}
                             </h5>
                         </div>
                     </div>
@@ -552,7 +578,7 @@
                         </div>
                         <div class="">
                             <h5>
-                                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.processing')) }}
+                                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.processing'), null, true) }}
                             </h5>
                         </div>
                     </div>
@@ -568,7 +594,7 @@
                         </div>
                         <div class="">
                             <h5>
-                                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.ready_to_ship')) }}
+                                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.ready_to_ship'), null, true) }}
                             </h5>
                         </div>
                     </div>
@@ -584,7 +610,7 @@
                         </div>
                         <div class="">
                             <h5>
-                                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.shipped')) }}
+                                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.shipped'), null, true) }}
                             </h5>
                         </div>
                     </div>
@@ -600,7 +626,7 @@
                         </div>
                         <div class="">
                             <h5>
-                                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.delivered')) }}
+                                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.delivered'), null, true) }}
                             </h5>
                         </div>
                     </div>
@@ -616,7 +642,7 @@
                         </div>
                         <div class="">
                             <h5>
-                                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.cancelled')) }}
+                                {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.cancelled'), null, true) }}
                             </h5>
                         </div>
                     </div>
@@ -658,7 +684,7 @@
                                     </span>
 
                                     <strong class="ml-2">
-                                        {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.pending')) }}
+                                        {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.pending'), null, true) }}
                                     </strong>
 
                                 </span>
@@ -672,7 +698,7 @@
                                     </span>
 
                                     <strong class="ml-2">
-                                        {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.processing')) }}
+                                        {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.processing'), null, true) }}
                                     </strong>
 
                                 </span>
@@ -689,7 +715,7 @@
                                     </span>
 
                                     <strong
-                                        class="ml-2">{{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.ready_to_ship')) }}</strong>
+                                        class="ml-2">{{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.ready_to_ship'), null, true) }}</strong>
 
                                 </span>
                             </td>
@@ -700,7 +726,7 @@
                                         <span style="width: 10px; height: 10px; border-radius: 50%; background: #4e73df; display:inline-block;"></span>
                                         {{ translate('Shipped') }}:
                                     </span>
-                                    <strong>{{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.shipped')) }}</strong>
+                                    <strong>{{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.shipped'), null, true) }}</strong>
                                 </span>
 
                             </td>
@@ -712,7 +738,7 @@
                                         <span style="width: 10px; height: 10px; border-radius: 50%; background: #1cc88a; display:inline-block;"></span>
                                         {{ translate('Delivered') }}:
                                     </span>
-                                    <strong>{{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.delivered')) }}</strong>
+                                    <strong>{{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.delivered'), null, true) }}</strong>
                                 </span>
                             </td>
                             <td class="py-1 px-2">
@@ -721,7 +747,7 @@
                                         <span style="width: 10px; height: 10px; border-radius: 50%; background: #e74a3b; display:inline-block;"></span>
                                         {{ translate('Cancelled') }}:
                                     </span>
-                                    <strong>{{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.cancelled')) }}</strong>
+                                    <strong>{{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.cancelled'), null, true) }}</strong>
                                 </span>
                             </td>
                         </tr>
@@ -1255,11 +1281,11 @@
             // Doughnut chart using ApexCharts
             var donut_options = {
                 series: [
-                    {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.processing')) }},
-                    {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.ready_to_ship')) }},
-                    {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.shipped')) }},
-                    {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.delivered')) }},
-                    {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.cancelled')) }}
+                    {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.processing'), null, true) }},
+                    {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.ready_to_ship'), null, true) }},
+                    {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.shipped'), null, true) }},
+                    {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.delivered'), null, true) }},
+                    {{ $order_repository->statusWiseOrderCounter(config('tlecommercecore.order_delivery_status.cancelled'), null, true) }}
                 ],
                 chart: {
                     type: 'donut',

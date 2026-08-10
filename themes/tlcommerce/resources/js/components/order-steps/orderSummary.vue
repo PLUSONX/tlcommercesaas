@@ -278,9 +278,7 @@ export default {
                   this.$toast.success(this.$t("Coupon applied successfully"));
                   this.coupon_code = "";
                 });
-            }
-
-            if (response.data.discount < 1) {
+            } else {
               this.$toast.error("Coupon is not applied");
             }
           }

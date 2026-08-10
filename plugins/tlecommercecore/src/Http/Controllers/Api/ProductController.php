@@ -72,10 +72,10 @@ class ProductController extends Controller
 
         $categoryId = $request->input('category_id');
 
-        \Log::info('Products data', [
-                'request' => json_encode($request->all()),
-                // 'category_id' => json_encode($category_id)
-        ]);
+        // \Log::info('Products data', [
+        //         'request' => json_encode($request->all()),
+        //         // 'category_id' => json_encode($category_id)
+        // ]);
         
         // echo "<script>console.log('request:', " . json_encode($request) . ");</script>";
         // \Log::info('Products request', $request->all());
@@ -126,10 +126,10 @@ class ProductController extends Controller
         
         $products = $query->paginate($request->perPage);
         
-        \Log::info('Products data', [
-                'query' => $query,
-                'products' => json_encode($products),
-        ]);
+        // \Log::info('Products data', [
+        //         'query' => $query,
+        //         'products' => json_encode($products),
+        // ]);
 
         return new ProductCollection($products);
     }
