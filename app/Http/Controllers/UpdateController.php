@@ -47,14 +47,14 @@ class UpdateController extends Controller
                 return redirect()->back();
             }
         } catch (\Exception $e) {
-            cache_clear();
+            full_optimize_clear();
             $this->delete_directory($temp_storage_path);
             info(3);
             info($e);
             toastNotification('error', 'Something went wrong', 'Error');
             return redirect()->back();
         } catch (\Error $e) {
-            cache_clear();
+            full_optimize_clear();
             info(4);
             info($e);
             $this->delete_directory($temp_storage_path);
@@ -92,7 +92,7 @@ class UpdateController extends Controller
     public function processUpdate($root_path, $rm_dir, $redirect_route = null)
     {
         try {
-            cache_clear();
+            full_optimize_clear();
             $config_file = @file_get_contents($root_path . '/updates/config.json', true);
             if ($config_file === false) {
                 abort(500, 'The update file is corrupt.');
@@ -209,20 +209,20 @@ class UpdateController extends Controller
             }
 
             // $this->delete_directory($rm_dir);
-            cache_clear();
+            full_optimize_clear();
             toastNotification('success', 'Successfully updated', 'Success');
             if ($redirect_route != null) {
                 return to_route($redirect_route);
             }
             return to_route('core.system.update.page');
         } catch (\Exception $e) {
-            cache_clear();
+            full_optimize_clear();
             info(1);
             info($e);
             toastNotification('error', 'Something went wrong', 'Error');
             return redirect()->back();
         } catch (\Error $e) {
-            cache_clear();
+            full_optimize_clear();
             info(2);
             info($e);
             toastNotification('error', 'Something went wrong', 'Error');

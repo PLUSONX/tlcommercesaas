@@ -284,7 +284,7 @@ class StoreController extends Controller
         $root_path = storage_path('app/tempUpdate');
 
         try {
-            cache_clear();
+            full_optimize_clear();
             $config_file = @file_get_contents($root_path . '/updates/config.json', true);
             if ($config_file == false) {
                 abort(500, 'The update file is corrupt.');
@@ -300,7 +300,7 @@ class StoreController extends Controller
                 dispatch($job);
             }
 
-            cache_clear();
+            full_optimize_clear();
             toastNotification('success', 'Successfully updated', 'Success');
             return response()->json([
                 'success' => true
@@ -313,7 +313,7 @@ class StoreController extends Controller
             ];
             Log::channel('tenant_database')->info(json_encode($error));
 
-            cache_clear();
+            full_optimize_clear();
             toastNotification('error', 'Something went wrong', 'Error');
             return response()->json([
                 'success' => false
@@ -326,7 +326,7 @@ class StoreController extends Controller
             ];
             Log::channel('tenant_database')->info(json_encode($error));
 
-            cache_clear();
+            full_optimize_clear();
             toastNotification('error', 'Something went wrong', 'Error');
             return response()->json([
                 'success' => false

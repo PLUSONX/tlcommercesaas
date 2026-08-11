@@ -61,7 +61,11 @@ function translate($key, $lang = null, $addslashes = false)
         $translation_def->lang_key = $lang_key;
         $translation_def->lang_value = str_replace(array("\r", "\n", "\r\n"), "", $key);
         $translation_def->save();
-        cache_clear();
+        Cache::forget('translations-en');
+        if ($lang) {
+            Cache::forget("translations-{$lang}");
+        }
+        Cache::forget('translations-' . env('DEFAULT_LANGUAGE', 'en'));
     }
 
     // return user session lang
@@ -92,11 +96,25 @@ function translate($key, $lang = null, $addslashes = false)
 
 if (!function_exists('cache_clear')) {
     /**
-     * cache clear
+     * Clear application cache only (safe for request hot paths).
+     * Does not wipe compiled Blade views.
      *
      * @return void
      */
     function cache_clear()
+    {
+        Artisan::call('cache:clear');
+    }
+}
+
+if (!function_exists('full_optimize_clear')) {
+    /**
+     * Full cache + view + optimize clear.
+     * Use only for explicit admin "clear cache" or deploy/update flows.
+     *
+     * @return void
+     */
+    function full_optimize_clear()
     {
         Artisan::call('cache:clear');
         Artisan::call('view:clear');
@@ -2780,7 +2798,11 @@ function front_translate($key, $lang = null, $addslashes = false)
         $translation_def->lang_key = $lang_key;
         $translation_def->lang_value = $lang_key;
         $translation_def->save();
-        cache_clear();
+        Cache::forget('front-translations-en');
+        if ($lang) {
+            Cache::forget("front-translations-{$lang}");
+        }
+        Cache::forget('front-translations-' . env('DEFAULT_LANGUAGE', 'en'));
     }
 
     // return user session lang

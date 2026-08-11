@@ -20,7 +20,7 @@ class SystemController extends Controller
     public function clearSystemCache()
     {
         try {
-            cache_clear();
+            full_optimize_clear();
             toastNotification('success', translate('Cache clear successfully'));
             return redirect()->back();
         } catch (\Exception $e) {
