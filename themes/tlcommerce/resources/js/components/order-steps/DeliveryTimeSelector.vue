@@ -1,7 +1,11 @@
 <template>
   <div
     class="delivery-time-section"
-    :class="{ 'col-12 mb-20': !isHomepageVariant, 'delivery-time-section--homepage': isHomepageVariant }"
+    :class="{
+      'col-12 mb-20': !isHomepageVariant,
+      'delivery-time-section--homepage': isHomepageVariant,
+      'delivery-time-section--rtl': isRtl,
+    }"
   >
     <template v-if="!isHomepageVariant">
       <h5 class="mb-3">{{ $t("Delivery Time") }}:</h5>
@@ -60,7 +64,7 @@
       alignment="center"
       :visible="slotModalVisible"
       size="md"
-      class="delivery-schedule-modal"
+      :class="['delivery-schedule-modal', { 'delivery-schedule-modal--rtl': isRtl }]"
       @close.prevent="closeSlotModal"
     >
       <CModalHeader>
@@ -72,7 +76,7 @@
               class="delivery-modal-back"
               @click.prevent="backToOptionsStep"
             >
-              <span class="material-icons">arrow_back</span>
+              <span class="material-icons">{{ isRtl ? 'arrow_forward' : 'arrow_back' }}</span>
             </button>
             <CModalTitle>{{ modalTitle }}</CModalTitle>
           </div>
@@ -126,11 +130,11 @@
             <div class="delivery-calendar">
               <div class="delivery-calendar__nav">
                 <button type="button" class="delivery-calendar__nav-btn" @click.prevent="prevMonth">
-                  <span class="material-icons">chevron_left</span>
+                  <span class="material-icons">{{ isRtl ? 'chevron_right' : 'chevron_left' }}</span>
                 </button>
                 <span class="delivery-calendar__month">{{ calendarMonthLabel }}</span>
                 <button type="button" class="delivery-calendar__nav-btn" @click.prevent="nextMonth">
-                  <span class="material-icons">chevron_right</span>
+                  <span class="material-icons">{{ isRtl ? 'chevron_left' : 'chevron_right' }}</span>
                 </button>
               </div>
               <div class="delivery-calendar__weekdays">
@@ -195,6 +199,7 @@
 
 <script>
 import axios from "axios";
+import { mapGetters } from "vuex";
 import {
   CModal,
   CModalHeader,
@@ -245,6 +250,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters("layout", ["isRtl"]),
     isHomepageVariant() {
       return this.variant === "homepage";
     },
@@ -829,5 +835,119 @@ export default {
   .delivery-time-slots-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* RTL — explicit swap (split-screen content column is direction: ltr) */
+.delivery-time-section--rtl > h5,
+.delivery-time-section--rtl .validation-error {
+  direction: rtl;
+  text-align: right;
+}
+
+.delivery-time-section--rtl .radio-label.d-flex {
+  flex-direction: row-reverse;
+  direction: ltr;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.delivery-time-section--rtl .radio-text {
+  direction: rtl;
+  text-align: right;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.delivery-time-section--rtl .delivery-time-prompt {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+
+.delivery-time-section--rtl .delivery-time-prompt > span:not(.material-icons) {
+  direction: rtl;
+  text-align: right;
+  flex: 1 1 auto;
+}
+
+.delivery-time-section--rtl .delivery-time-summary {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+
+.delivery-time-section--rtl .delivery-time-summary__content {
+  flex-direction: row-reverse;
+  direction: ltr;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.delivery-time-section--rtl .delivery-time-summary__content > span:not(.material-icons) {
+  direction: rtl;
+  text-align: right;
+}
+
+.delivery-time-section--rtl .delivery-time-summary .btn_underline {
+  direction: rtl;
+  unicode-bidi: plaintext;
+}
+
+.delivery-schedule-modal--rtl :deep(.modal-header),
+.delivery-schedule-modal--rtl .delivery-modal-header {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+
+.delivery-schedule-modal--rtl .delivery-modal-header__title-row {
+  flex-direction: row-reverse;
+  direction: ltr;
+  justify-content: flex-end;
+}
+
+.delivery-schedule-modal--rtl :deep(.modal-title) {
+  direction: rtl;
+  text-align: right;
+}
+
+.delivery-schedule-modal--rtl .delivery-time-options--modal .radio-label.d-flex {
+  flex-direction: row-reverse;
+  direction: ltr;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.delivery-schedule-modal--rtl .delivery-time-options--modal .radio-text {
+  direction: rtl;
+  text-align: right;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.delivery-schedule-modal--rtl .delivery-time-options--modal .btn_underline {
+  direction: rtl;
+  text-align: right;
+  display: block;
+  width: 100%;
+}
+
+.delivery-schedule-modal--rtl .delivery-calendar__month,
+.delivery-schedule-modal--rtl .delivery-slots-panel__title,
+.delivery-schedule-modal--rtl .delivery-slots-panel__date,
+.delivery-schedule-modal--rtl .delivery-slots-panel__hint {
+  direction: rtl;
+  text-align: right;
+}
+
+.delivery-schedule-modal--rtl .delivery-calendar__nav {
+  flex-direction: row-reverse;
+}
+
+.delivery-schedule-modal--rtl .delivery-calendar__weekdays,
+.delivery-schedule-modal--rtl .delivery-calendar__grid {
+  direction: ltr;
+}
+
+.delivery-schedule-modal--rtl .p-3.text-center,
+.delivery-schedule-modal--rtl .text-center.text-muted {
+  direction: rtl;
 }
 </style>

@@ -148,6 +148,12 @@ export default {
 }
 
 .products-page--rtl .split-screen-product-list__category-bar {
+  direction: rtl;
+  text-align: right;
+}
+
+.products-page--rtl .split-screen-product-list__empty {
+  direction: rtl;
   text-align: right;
 }
 </style>

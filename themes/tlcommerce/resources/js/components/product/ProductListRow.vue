@@ -1,6 +1,6 @@
 <template>
 
-  <div class="product-list-row">
+  <div class="product-list-row" :class="{ 'product-list-row--rtl': isRtl }">
 
     <div class="product-list-row__thumb">
 
@@ -326,7 +326,7 @@ export default {
 
     }),
 
-    ...mapGetters("layout", ["isSplitScreen", "isMobile"]),
+    ...mapGetters("layout", ["isSplitScreen", "isMobile", "isRtl"]),
 
     cartLine() {
 
@@ -926,6 +926,35 @@ export default {
 
   margin: 0;
 
+}
+
+/* RTL — explicit swap (split-screen content column is direction: ltr) */
+.product-list-row--rtl {
+  flex-direction: row-reverse;
+}
+
+.product-list-row--rtl .product-list-row__title,
+.product-list-row--rtl .product-list-row__summary {
+  direction: rtl;
+  text-align: right;
+}
+
+.product-list-row--rtl .product-list-row__footer {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+.product-list-row--rtl .product-list-row__price {
+  direction: rtl;
+  unicode-bidi: plaintext;
+}
+
+.product-list-row--rtl .product-list-row__add-btn {
+  direction: rtl;
+}
+
+.product-list-row--rtl .product-list-row__quantity.quantity-input {
+  direction: ltr;
 }
 
 </style>
