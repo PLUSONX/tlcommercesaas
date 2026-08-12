@@ -109,12 +109,13 @@ class EcommerceNotification
         $message = 'Thank you for your order. Payment has been received.';
         $btn_title = 'Track Your Order';
 
-        // Omit _system_logo_url_ / _footer_text_ so getEmailTemplateOf() fallbacks apply.
-        // Template 10 often lacks those keywords; passing them in $data blocks the fallbacks
-        // and leaves broken placeholders (feedback template 15 works because it registers them).
+        // Pass logo/footer like feedback; getEmailTemplateOf always applies them even if
+        // template 10 keywords omit _system_logo_url_ / _footer_text_.
         Log::info("Mail Data", [
             'template_id'       => 10,
+            '_system_logo_url_' => self::getMailLogoUrl(),
             '_site_link_'       => url('/'),
+            '_footer_text_'     => getGeneralSetting('copyright_text'),
             'keywords'          => getEmailTemplateVariables(10, true),
         ]);
 
@@ -122,7 +123,9 @@ class EcommerceNotification
             'template_id'       => 10,
             'keywords'          => getEmailTemplateVariables(10, true),
             'subject'           => 'Invoice for Order #' . $order->order_code,
+            '_system_logo_url_' => self::getMailLogoUrl(),
             '_site_link_'       => url('/'),
+            '_footer_text_'     => getGeneralSetting('copyright_text'),
             '_order_code_'      => $order->order_code,
             '_order_details_'   => $invoice_table_html,
             '_tracking_url_'    => url('/') . $link,

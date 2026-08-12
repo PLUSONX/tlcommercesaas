@@ -1407,7 +1407,11 @@ if (!function_exists('getEmailTemplateOf')) {
             }
         }
 
-        if (!array_key_exists('_system_logo_url_', $data)) {
+        // Always apply logo/footer even when present in $data but missing from template keywords
+        // (template 10 often omits them; old gate left literal src="_system_logo_url_").
+        if (!empty($data['_system_logo_url_'])) {
+            $system_logo = $data['_system_logo_url_'];
+        } else {
             $logoId = getGeneralSetting('admin_logo') ?: getGeneralSetting('white_background_logo');
             $system_logo = asset(getFilePath($logoId));
             // Email clients need a public absolute URL; web root is already public/.
@@ -1415,20 +1419,24 @@ if (!function_exists('getEmailTemplateOf')) {
             $system_logo = str_replace('public/', '', $system_logo);
             $system_logo = str_replace('/public', '', $system_logo);
             $system_logo = preg_replace('#(?<!:)//+#', '/', $system_logo);
-
-            \Log::info('Logo url', [
-                'system_logo_url' => $system_logo,
-            ]);
-
-            $body = str_replace('_system_logo_url_', $system_logo, $body);
         }
+
+        \Log::info('Logo url', [
+            'system_logo_url' => $system_logo,
+        ]);
+
+        $body = str_replace('_system_logo_url_', $system_logo, $body);
+
         if (!array_key_exists('_store_link_', $data)) {
             $body = str_replace('_store_link_', URL::to('/'), $body);
         }
-        if (!array_key_exists('_footer_text_', $data)) {
+
+        if (!empty($data['_footer_text_'])) {
+            $copyright_text = $data['_footer_text_'];
+        } else {
             $copyright_text = getGeneralSetting('copyright_text');
-            $body = str_replace('_footer_text_', $copyright_text, $body);
         }
+        $body = str_replace('_footer_text_', $copyright_text, $body);
 
         return $body;
     }
