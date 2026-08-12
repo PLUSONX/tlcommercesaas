@@ -388,7 +388,8 @@ class TenantRepository
             $sqlContent = str_replace('{{DYNAMIC_USER_INSERT}}', $dynamicUserInsert, $sqlContent);
 
 
-            $query->unprepared($sqlContent);
+            // $query->unprepared($sqlContent);         ---Hassaan Commented
+            $this->runSqlFile($sqlContent, $query);
 
             $job = new TenantDatabaseMonitoringJob($saas_account_id, $package_id, $is_for_update);
             dispatch($job);
@@ -398,10 +399,103 @@ class TenantRepository
             dispatch($job);
         }
     }
+//// Hassaan created these two below function
+    protected function splitSqlStatements(string $sql): array
+    {
+        $statements = [];
+        $current = '';
+        $length = strlen($sql);
+        $inSingleQuote = false;
+        $inDoubleQuote = false;
+        $inLineComment = false;
+        $inBlockComment = false;
+
+        for ($i = 0; $i < $length; $i++) {
+            $char = $sql[$i];
+            $prevChar = $i > 0 ? $sql[$i - 1] : '';
+            $nextChar = $i < $length - 1 ? $sql[$i + 1] : '';
+
+            // End of line comment
+            if ($inLineComment) {
+                $current .= $char;
+                if ($char === "\n") {
+                    $inLineComment = false;
+                }
+                continue;
+            }
+
+            // End of block comment
+            if ($inBlockComment) {
+                $current .= $char;
+                if ($prevChar === '*' && $char === '/') {
+                    $inBlockComment = false;
+                }
+                continue;
+            }
+
+            // Detect start of comments (only when not inside a string)
+            if (!$inSingleQuote && !$inDoubleQuote) {
+                if (($char === '-' && $nextChar === '-') || $char === '#') {
+                    $inLineComment = true;
+                    $current .= $char;
+                    continue;
+                }
+                if ($char === '/' && $nextChar === '*') {
+                    $inBlockComment = true;
+                    $current .= $char;
+                    continue;
+                }
+            }
+
+            // Track quote state, respecting escaped quotes
+            if ($char === "'" && $prevChar !== '\\' && !$inDoubleQuote) {
+                $inSingleQuote = !$inSingleQuote;
+            } elseif ($char === '"' && $prevChar !== '\\' && !$inSingleQuote) {
+                $inDoubleQuote = !$inDoubleQuote;
+            }
+
+            $current .= $char;
+
+            if ($char === ';' && !$inSingleQuote && !$inDoubleQuote) {
+                $statements[] = trim($current);
+                $current = '';
+            }
+        }
+
+        if (trim($current) !== '') {
+            $statements[] = trim($current);
+        }
+
+        return $statements;
+    }
+
+    protected function runSqlFile(string $sqlContent, $connection)
+    {
+        // No more manual line-based comment stripping needed —
+        // the splitter now handles comments itself. Pass raw content directly.
+        $statements = $this->splitSqlStatements($sqlContent);
+
+        foreach ($statements as $i => $statement) {
+            $trimmed = trim($statement);
+            if ($trimmed === '' || $trimmed === ';') continue;
+            try {
+                $connection->unprepared($statement);
+            } catch (\Throwable $e) {
+                $logPath = storage_path('app/tenant-sql-error.log');
+                file_put_contents(
+                    $logPath,
+                    "Statement #$i failed\n\n" .
+                        "ERROR:\n" . $e->getMessage() . "\n\n" .
+                        "FULL STATEMENT:\n" . $statement . "\n"
+                );
+                dd("Failed at statement #$i — see storage/app/tenant-sql-error.log for full details");
+            }
+        }
+    }
 
     private function generateUserInsert($subscriber, $tenant)
-{
-    
+    {
+
         // if (!$subscriber) {
         //     \Log::channel('tenant_database')->error('Subscriber is null', ['tenant_id' => $tenant->id]);
         //     throw new \Exception('Subscriber not found');
@@ -416,27 +510,25 @@ class TenantRepository
 
         // Use DB::getPdo()->quote() for proper escaping
         $pdo = DB::connection()->getPdo();
-        
+
         $uid = 'Subscriber-ADMIN-' . $tenant->id;
-        
+
         // PDO::quote() adds quotes AND escapes properly
         $name = $pdo->quote($subscriber->name);
         $email = $pdo->quote($subscriber->email);
         $password = $pdo->quote($subscriber->password);
         $createdAt = $pdo->quote(now()->format('Y-m-d H:i:s'));
-        
+
         // Note: PDO::quote() includes the quotes, so don't add extra ones
         $sql = "INSERT INTO `tl_users` (`id`, `uid`, `name`, `email`, `image`, `password`, `remember_token`, `email_verified_at`, `is_logged_in`, `status`, `user_type`, `created_at`, `updated_at`) 
         VALUES (1, '{$uid}', {$name}, {$email}, NULL, {$password}, NULL, NULL, NULL, 1, 1, {$createdAt}, {$createdAt});";
-        
+
         // echo "<script>console.log('sql:', " . json_encode($sql) . ");</script>";
 
         // \Log::channel('tenant_database')->info('Generated SQL', ['sql' => $sql]);
-        
+
         return $sql;
-        
-    
-}
+    }
 
 //     private function generateUserInsert($subscriber, $tenant)
 // {

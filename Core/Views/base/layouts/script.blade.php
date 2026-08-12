@@ -6,7 +6,7 @@
 <script src="{{ asset('/public/backend/assets/plugins/dropzone/dropzone.min.js') }}"></script>
  -->
 
- <script src="{{ asset('backend/assets/js/jquery.min.js') }}"></script>
+<script src="{{ asset('backend/assets/js/jquery.min.js') }}"></script>
 <script src="{{ asset('backend/assets/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('backend/assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
 <script src="{{ asset('backend/assets/plugins/moment/moment.min.js') }}"></script>
@@ -670,26 +670,66 @@
             });
     }
 
+      /**
+     * Filter media file on edit
+     */
+//    function filtermediaOnEditForMultiSelect(selected_media_files, ids, indicator) {                    -----Hassaan Commented
+//         "use strict";
+//         media_current_page = 1;
+//         selected_file_id = selected_media_files.split(',');
+//         mediaFilterApi().then(data => {
+//                 let all_files = data.all_media.data;
+//                 let current_selected_files_id_array = selected_media_files.split(',');
+
+//                 $("#attachment-list > li").removeClass("selected")
+//                 for (let j = 0; j < current_selected_files_id_array.length; j++) {
+//                     $('#list_item_' + current_selected_files_id_array[j]).addClass("selected");
+//                 }
+
+//                 if (current_selected_files_id_array != "") {
+//                     selected_file_id = current_selected_files_id_array;
+//                 } else {
+//                     selected_file_id = [];
+//                 }
+
+//                 let filter_selected_items = all_files.filter(item => selected_file_id.some(id => id == item.id));
+
+//                 for (let i = 0; i < filter_selected_items.length; i++) {
+//                     let path = filter_selected_items[i].path;
+//                     selected_file_location['file_' + filter_selected_items[i].id] = '/public/' + path;
+//                 }
+
+//                 enable_multiple_file_select = true;
+//                 if ($("#multiselectMediaWrapper").hasClass('d-none')) {
+//                     $("#multiselectMediaWrapper").removeClass('d-none');
+//                 }
+
+//                 $('input[name="multiselectMediaCheckbox"]').prop('checked', false);
+
+//                 $('.insert_image').attr('onclick', 'getSeletedFilesForMultiSelect("' + ids + '",' +
+//                     indicator +
+//                     ')');
+//             })
+//             .catch(error => {
+//                 console.error('Error:', error);
+//             });
+//     }
+
     /**
      * Filter media file on edit
      */
     function filtermediaOnEditForMultiSelect(selected_media_files, ids, indicator) {
         "use strict";
         media_current_page = 1;
-        selected_file_id = selected_media_files.split(',');
+        selected_file_id = selected_media_files ?
+            selected_media_files.split(',').filter(id => id !== '') : [];
         mediaFilterApi().then(data => {
                 let all_files = data.all_media.data;
-                let current_selected_files_id_array = selected_media_files.split(',');
+                let current_selected_files_id_array = selected_file_id;
 
                 $("#attachment-list > li").removeClass("selected")
                 for (let j = 0; j < current_selected_files_id_array.length; j++) {
                     $('#list_item_' + current_selected_files_id_array[j]).addClass("selected");
-                }
-
-                if (current_selected_files_id_array != "") {
-                    selected_file_id = current_selected_files_id_array;
-                } else {
-                    selected_file_id = [];
                 }
 
                 let filter_selected_items = all_files.filter(item => selected_file_id.some(id => id == item.id));
@@ -952,15 +992,33 @@
     /**
      * Setup media gallery for multi select 
      */
+    //     function setDataInsertableIdsForMultiSelect(ids, indicator, user_filer) {          -----Hassaan Commented
+    //     "use strict";
+    //     let id_array = ids.split(',');
+    //     let current_selected_files_id = $(id_array[0] + '_' + indicator).val();
+    //     let current_selected_files_id_array = current_selected_files_id.split(',');
+
+    //     $(id_array[1] + ' img').each(function() {
+    //         let selected_id = $(this).attr('id').split('_');
+    //         selected_file_location['file_' + selected_id[selected_id.length - 1]] = $(this).attr('src');
+    //     })
+    //     filter_by_user = user_filer;
+    //     filtermediaOnEditForMultiSelect(current_selected_files_id_array.join(','), ids, indicator);
+    // }
+
     function setDataInsertableIdsForMultiSelect(ids, indicator, user_filer) {
         "use strict";
         let id_array = ids.split(',');
         let current_selected_files_id = $(id_array[0] + '_' + indicator).val();
-        let current_selected_files_id_array = current_selected_files_id.split(',');
+        let current_selected_files_id_array = current_selected_files_id ?
+            current_selected_files_id.split(',').filter(id => id !== '') : [];
 
         $(id_array[1] + ' img').each(function() {
             let selected_id = $(this).attr('id').split('_');
-            selected_file_location['file_' + selected_id[selected_id.length - 1]] = $(this).attr('src');
+            let last = selected_id[selected_id.length - 1];
+            if (last && !isNaN(last)) {
+                selected_file_location['file_' + last] = $(this).attr('src');
+            }
         })
         filter_by_user = user_filer;
         filtermediaOnEditForMultiSelect(current_selected_files_id_array.join(','), ids, indicator);
@@ -969,39 +1027,78 @@
     /**
      * Setup input field for single select 
      */
-     function getSeletedFiles(ids) {
+    //     function getSeletedFiles(ids) {              ---Hasssaan Commenred
+    //     "use strict";
+    //     let insertableIds = ids.split(',');
+    //     for (let i = 0; i < selected_file_id.length; i++) {
+    //         let fileKey = 'file_' + selected_file_id[i];
+    //         let fileLocation = selected_file_location[fileKey];
+
+    //         fileLocation = fileLocation.replace(/^\/public/, '');
+
+    //         if (!fileLocation) {
+    //             console.error('Missing file location for:', fileKey, selected_file_location);
+    //             continue;
+    //         }
+
+    //         let splitted_file_location = fileLocation.split('.');
+
+    //         // let splitted_file_location = selected_file_location['file_' + selected_file_id[i]].split('.');
+    //         let splitted_file_extension = splitted_file_location[splitted_file_location.length - 1];
+
+    //         if (splitted_file_extension == 'mp4') {
+    //             $(insertableIds[0]).attr('src',
+    //                 '{{ project_asset('backend/assets/img/mp4-placeholder.png') }}');
+    //                 // '{{ project_asset('/backend/assets/img/mp4-placeholder.png') }}');
+    //         } else if (splitted_file_extension == 'zip') {
+    //             $(insertableIds[0]).attr('src',
+    //                 '{{ project_asset('backend/assets/img/zip-placeholder.png') }}');
+    //                 // '{{ project_asset('/backend/assets/img/zip-placeholder.png') }}');
+    //         } else if (splitted_file_extension == 'pdf') {
+    //             $(insertableIds[0]).attr('src',
+    //                 '{{ project_asset('backend/assets/img/pdf-placeholder.png') }}');
+    //                 // '{{ project_asset('/backend/assets/img/pdf-placeholder.png') }}');
+    //         } else {
+    //             $(insertableIds[0]).attr('src', selected_file_location['file_' + selected_file_id[i]]);
+    //         }
+
+    //         $(insertableIds[1]).val(selected_file_id[i]);
+    //         $(insertableIds[2]).removeClass('d-none')
+    //     }
+    //     $("#mediaUploadModal").modal("hide");
+    //     $(".media-sidebar").removeClass("active");
+    //     $(".media-sidebar").show();
+    //     $(insertableIds[2]).show();
+    // }
+
+    function getSeletedFiles(ids) {
         "use strict";
         let insertableIds = ids.split(',');
         for (let i = 0; i < selected_file_id.length; i++) {
             let fileKey = 'file_' + selected_file_id[i];
             let fileLocation = selected_file_location[fileKey];
 
-            fileLocation = fileLocation.replace(/^\/public/, '');
-
             if (!fileLocation) {
                 console.error('Missing file location for:', fileKey, selected_file_location);
                 continue;
             }
 
-            let splitted_file_location = fileLocation.split('.');
+            fileLocation = fileLocation.replace(/^\/?public/, '');
 
-            // let splitted_file_location = selected_file_location['file_' + selected_file_id[i]].split('.');
+            let splitted_file_location = fileLocation.split('.');
             let splitted_file_extension = splitted_file_location[splitted_file_location.length - 1];
 
             if (splitted_file_extension == 'mp4') {
                 $(insertableIds[0]).attr('src',
                     '{{ project_asset('backend/assets/img/mp4-placeholder.png') }}');
-                    // '{{ project_asset('/backend/assets/img/mp4-placeholder.png') }}');
             } else if (splitted_file_extension == 'zip') {
                 $(insertableIds[0]).attr('src',
                     '{{ project_asset('backend/assets/img/zip-placeholder.png') }}');
-                    // '{{ project_asset('/backend/assets/img/zip-placeholder.png') }}');
             } else if (splitted_file_extension == 'pdf') {
                 $(insertableIds[0]).attr('src',
                     '{{ project_asset('backend/assets/img/pdf-placeholder.png') }}');
-                    // '{{ project_asset('/backend/assets/img/pdf-placeholder.png') }}');
             } else {
-                $(insertableIds[0]).attr('src', selected_file_location['file_' + selected_file_id[i]]);
+                $(insertableIds[0]).attr('src', fileLocation); // ✅ use the stripped version
             }
 
             $(insertableIds[1]).val(selected_file_id[i]);
@@ -1044,21 +1141,28 @@
     /**
      * Setup input field for multiple select
      */
+
     function getSeletedFilesForMultiSelect(ids, indicator) {
         "use strict";
         let container_id = ids.split(',');
         $("#multi_input_container_" + indicator).html('');
         for (let i = 0; i < selected_file_id.length; i++) {
 
+            let fileLocation = selected_file_location['file_' + selected_file_id[i]];
+            if (!fileLocation) {
+                continue;
+            }
+            fileLocation = fileLocation.replace(/^\/?public/, '');
+//  <img src="` + selected_file_location['file_' + selected_file_id[i]] + `" alt="" width="150" class="preview_image" ---------Hassaan Commented
             let html = `<div class="preview-image-wrapper p-1" id="div_preview_${indicator}_${selected_file_id[i]}" >
-                            <img src="` + selected_file_location['file_' + selected_file_id[i]] + `" alt="" width="150" class="preview_image" 
-                            id="preview_${indicator}_${selected_file_id[i]}"/>
-                            <button type="button" title="Remove image" class="remove-btn style--three"
-                                    id="remove_${indicator}_${selected_file_id[i]}"
-                                    onclick="removeSelectionForMultiSelect('#preview_${indicator}_${selected_file_id[i]},${container_id[0]}_${indicator},#remove_${indicator}_${selected_file_id[i]},#div_preview_${indicator}_${selected_file_id[i]}',${selected_file_id[i]})"><i
-                                    class="icofont-close"></i>
-                            </button>
-                        </div>`
+                        <img src="` + fileLocation + `" alt="" width="150" class="preview_image" 
+                        id="preview_${indicator}_${selected_file_id[i]}"/>
+                        <button type="button" title="Remove image" class="remove-btn style--three"
+                                id="remove_${indicator}_${selected_file_id[i]}"
+                                onclick="removeSelectionForMultiSelect('#preview_${indicator}_${selected_file_id[i]},${container_id[0]}_${indicator},#remove_${indicator}_${selected_file_id[i]},#div_preview_${indicator}_${selected_file_id[i]}',${selected_file_id[i]})"><i
+                                class="icofont-close"></i>
+                        </button>
+                    </div>`
 
             $("#multi_input_container_" + indicator).append(html)
         }
