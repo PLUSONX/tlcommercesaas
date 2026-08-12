@@ -109,11 +109,12 @@ class EcommerceNotification
         $message = 'Thank you for your order. Payment has been received.';
         $btn_title = 'Track Your Order';
 
+        // Omit _system_logo_url_ / _footer_text_ so getEmailTemplateOf() fallbacks apply.
+        // Template 10 often lacks those keywords; passing them in $data blocks the fallbacks
+        // and leaves broken placeholders (feedback template 15 works because it registers them).
         Log::info("Mail Data", [
             'template_id'       => 10,
-            '_system_logo_url_' => self::getMailLogoUrl(),
             '_site_link_'       => url('/'),
-            '_footer_text_'     => getGeneralSetting('copyright_text'),
             'keywords'          => getEmailTemplateVariables(10, true),
         ]);
 
@@ -121,9 +122,7 @@ class EcommerceNotification
             'template_id'       => 10,
             'keywords'          => getEmailTemplateVariables(10, true),
             'subject'           => 'Invoice for Order #' . $order->order_code,
-            '_system_logo_url_' => self::getMailLogoUrl(),
             '_site_link_'       => url('/'),
-            '_footer_text_'     => getGeneralSetting('copyright_text'),
             '_order_code_'      => $order->order_code,
             '_order_details_'   => $invoice_table_html,
             '_tracking_url_'    => url('/') . $link,
@@ -531,33 +530,28 @@ class EcommerceNotification
 
         \Log::info('Ecommernotification Method: before customer region!!!');
         //Send invoice to customer
-        // if (SettingsRepository::getEcommerceSetting('send_invoice_to_customer_mail') == config('settings.general_status.active')) {
-    
-
-            // \Log::info('Ecommernotification Method: after customer region!!!');
-            // Get the customer ID based on whether they are logged in or a guest
-            
-            if($order->customer_id != null) {
-                
+        $sendInvoiceSetting = SettingsRepository::getEcommerceSetting('send_invoice_to_customer_mail');
+        if ($sendInvoiceSetting == config('settings.general_status.active')) {
+            if ($order->customer_id != null) {
                 self::sendOrderInvoiceNotification($order->id, $order->customer_id, 0);
             }
 
-            if($order->guest_customer_id != null) {
-
+            if ($order->guest_customer_id != null) {
                 \Log::info('Ecommernotification Method: inside guest customer region');
-
                 self::sendOrderInvoiceNotification($order->id, 0, $order->guest_customer_id);
             }
-            
-            // if ($customer_id) {
-            //     \Log::info('Ecommernotification Method: before sending notification to customer!!!');
-            //     // Delegate to our new clean method for Template ID 6
-            //     self::sendOrderInvoiceNotification($order->id, $customer_id);
 
-            //     \Log::info('Ecommernotification Method: after sending notification to customer!!!');
-
-            // }
-        // }
+            if ($order->customer_id == null && $order->guest_customer_id == null) {
+                \Log::warning('Customer invoice skipped: order has no customer_id or guest_customer_id', [
+                    'order_id' => $order->id,
+                ]);
+            }
+        } else {
+            \Log::warning('Customer invoice skipped: send_invoice_to_customer_mail is not active', [
+                'order_id' => $order->id,
+                'setting_value' => $sendInvoiceSetting,
+            ]);
+        }
         // if (SettingsRepository::getEcommerceSetting('send_invoice_to_customer_mail') == config('settings.general_status.active')) {
         //     $customer_email = $order->customer_info != null ? $order->customer_info?->email : $order->guest_customer?->email;
         //     $customer_name = $order->customer_info != null ? $order->customer_info?->name : 'Guest Customer';
