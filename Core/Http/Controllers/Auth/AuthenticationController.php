@@ -44,17 +44,17 @@ class AuthenticationController extends Controller
         // dd("LOGIN CONTROLLER WORKS");
         // return 'LOGIN CONTROLLER WORKS';
 
-        $rawCookie = \Cookie::get('remembered_tenant_url');
+        $rawCookie = Cookie::get('remembered_tenant_url');
         $decoded = $rawCookie ? base64_decode($rawCookie) : null;
-        
+
         // Extract the URL part - find 'http' and take everything from there
         $rememberedTenantUrl = null;
         if ($decoded && str_contains($decoded, 'http')) {
             $rememberedTenantUrl = substr($decoded, strpos($decoded, 'http'));
         }
-        
-        \Log::info('Home route hit', ['remembered_tenant_url' => $rememberedTenantUrl]);
-        
+
+        Log::info('Home route hit', ['remembered_tenant_url' => $rememberedTenantUrl]);
+
         if ($rememberedTenantUrl) {
             return redirect()->away($rememberedTenantUrl);
         }
@@ -75,17 +75,17 @@ class AuthenticationController extends Controller
      * @param  mixed $request
      * @return mixed
      */
-     public function attemptLogin(LoginRequest $request)
+    public function attemptLogin(LoginRequest $request)
     {
         $credentials = $request->only(
-            'email', 
+            'email',
             'password',
             'token',
             'remember_me'
-            );
+        );
 
         Log::info('Credentials Check 1', [
-                'credentials 1' => json_encode($credentials),
+            'credentials 1' => json_encode($credentials),
         ]);
 
         $rememberMe = $request->boolean('remember_me');
@@ -108,8 +108,7 @@ class AuthenticationController extends Controller
                 toastNotification('error', translate("Login Credentials Does not Match"));
                 return redirect()->back()->withInput($request->only('email'));
             }
-        } 
-        else {
+        } else {
             // Central domain - check BOTH central DB and tenant DBs
 
             // First, try to find user in central database
@@ -123,9 +122,8 @@ class AuthenticationController extends Controller
                 if ($centralUser->user_type == 1) {
                     // Superadmin - login normally in central context
                     Auth::login($centralUser);
-                } 
-                else {
-                     \Log::info('centralUser: ' . json_encode($centralUser));
+                } else {
+                    \Log::info('centralUser: ' . json_encode($centralUser));
                     // Not superadmin - check if they own a tenant
                     $saasAccount = DB::connection('mysql')->table('tl_saas_accounts')
                         ->where('user_id', $centralUser->id)
@@ -154,7 +152,7 @@ class AuthenticationController extends Controller
                                     'token' => hash('sha256', $loginToken),
                                     'tenant_id' => $tenant->id,
                                     'email' => $credentials['email'],
-                                    'remember_me' => $rememberMe ? 1 : 0, 
+                                    'remember_me' => $rememberMe ? 1 : 0,
                                     'created_at' => now(),
                                     'expires_at' => now()->addMinutes(5), // 5 minute expiry
                                 ]);
@@ -172,7 +170,6 @@ class AuthenticationController extends Controller
                                     Log::info('Inside of the If condition');
 
                                     $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $tenantUser->id, $tenant->id);
-
                                 }
 
                                 \Log::info('After attempting DeviceTokenController!!!');
@@ -186,16 +183,16 @@ class AuthenticationController extends Controller
 
                                 if ($rememberMe) {
                                     $tenantDashboardUrl = $this->buildTenantDashboardUrl($tenant);
-                                    
+
                                     \Log::info('Setting remembered_tenant_url cookie', ['url' => $tenantDashboardUrl]);
-                                    
+
                                     $response = $response->withCookie(
                                         \Cookie::make('remembered_tenant_url', base64_encode($tenantDashboardUrl), 60 * 24 * 365)
                                     );
                                 }
 
-                                 toastNotification('success', translate("Welcome back!"));
-                                 return $response;
+                                toastNotification('success', translate("Welcome back!"));
+                                return $response;
                                 //  return redirect()->away($tenantUrl);
                             }
 
@@ -206,9 +203,7 @@ class AuthenticationController extends Controller
                     // // User exists in central but no tenant - login normally (might be SaaS user)
                     Auth::login($centralUser);
                 }
-            } 
-
-            else {
+            } else {
 
                 Log::info('user != centralUser');
 
@@ -220,7 +215,7 @@ class AuthenticationController extends Controller
                     ->select('tl_store_users.*')
                     ->first();
 
-                     \Log::info('tl_store_user: ' . json_encode($tl_store_user));
+                \Log::info('tl_store_user: ' . json_encode($tl_store_user));
 
 
                 if (!empty($tl_store_user)) {
@@ -241,21 +236,21 @@ class AuthenticationController extends Controller
                         if ($tenantUser && \Hash::check($credentials['password'], $tenantUser->password)) {
 
                             // Create a one-time login token for secure redirect
-                                $loginToken = \Str::random(64);
+                            $loginToken = \Str::random(64);
 
-                                tenancy()->end();
+                            tenancy()->end();
 
-                                // Store token in central database with tenant and user info
-                                \DB::connection('mysql')->table('tenant_login_tokens')->insert([
-                                    'token' => hash('sha256', $loginToken),
-                                    'tenant_id' => $tenant->id,
-                                    'email' => $credentials['email'],
-                                    'remember_me' => $rememberMe ? 1 : 0, 
-                                    'created_at' => now(),
-                                    'expires_at' => now()->addMinutes(5), // 5 minute expiry
-                                ]);
+                            // Store token in central database with tenant and user info
+                            \DB::connection('mysql')->table('tenant_login_tokens')->insert([
+                                'token' => hash('sha256', $loginToken),
+                                'tenant_id' => $tenant->id,
+                                'email' => $credentials['email'],
+                                'remember_me' => $rememberMe ? 1 : 0,
+                                'created_at' => now(),
+                                'expires_at' => now()->addMinutes(5), // 5 minute expiry
+                            ]);
 
-                                
+
                             // $tenantUser->setConnection('tenant');
                             // Auth::login($tenantUser);
 
@@ -275,9 +270,9 @@ class AuthenticationController extends Controller
 
                             if ($rememberMe) {
                                 $tenantDashboardUrl = $this->buildTenantDashboardUrl($tenant);
-                                
+
                                 \Log::info('Setting remembered_tenant_url cookie', ['url' => $tenantDashboardUrl]);
-                                
+
                                 $response = $response->withCookie(
                                     \Cookie::make('remembered_tenant_url', base64_encode($tenantDashboardUrl), 60 * 24 * 365)
                                 );
@@ -358,11 +353,11 @@ class AuthenticationController extends Controller
 
             //             if ($tenant) {
             //                 tenancy()->initialize($tenant);
-    
+
             //                 $tenantUser = User::on('tenant')
             //                     ->where('email', $credentials['email'])
             //                     ->first();
-    
+
             //                 if ($tenantUser && \Hash::check($credentials['password'], $tenantUser->password)) {
             //                     // Found the correct tenant!
             //                     $tenantUser->setConnection('tenant');
@@ -375,12 +370,12 @@ class AuthenticationController extends Controller
             //                         $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $user->id, tenant('id'));
 
             //                     }
-    
+
             //                     $tenantUrl = $this->buildTenantDashboardUrl($tenant);
             //                     toastNotification('success', translate("Welcome back!"));
             //                     // return redirect()->away($tenantUrl);
             //                 }
-    
+
             //                 tenancy()->end();
             //             }
             //         }
@@ -428,7 +423,7 @@ class AuthenticationController extends Controller
             //             }
             //         }
             //     }
-                
+
 
 
             //     // Not found anywhere
@@ -457,7 +452,6 @@ class AuthenticationController extends Controller
             }
 
             $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $user->id, $tenantId);
-
         }
 
         // Check user permissions based on path
@@ -476,7 +470,7 @@ class AuthenticationController extends Controller
         toastNotification('error', translate("You don't have permission to access this area"));
         return redirect()->back();
     }
-   
+
 
     /**
      * Build the tenant dashboard URL for redirect
@@ -508,28 +502,28 @@ class AuthenticationController extends Controller
 
 
     protected function buildTenantLoginUrl($tenant)
-{
-    // Get tenant domain/subdomain
-    $domain = $tenant->domains()->first();
+    {
+        // Get tenant domain/subdomain
+        $domain = $tenant->domains()->first();
 
-    if (!$domain) {
-        throw new \Exception('No domain configured for tenant');
+        if (!$domain) {
+            throw new \Exception('No domain configured for tenant');
+        }
+
+        // Build full URL to token-login endpoint (NOT dashboard)
+        $protocol = request()->secure() ? 'https://' : 'http://';
+
+        $port = '';
+        if (!app()->environment('production') && request()->getPort() != 80 && request()->getPort() != 443) {
+            $port = ':' . request()->getPort();
+        }
+
+        $tenantUrl = $protocol . $domain->domain . $port . '/auth/token-login';
+
+        return $tenantUrl;
     }
 
-    // Build full URL to token-login endpoint (NOT dashboard)
-    $protocol = request()->secure() ? 'https://' : 'http://';
-    
-    $port = '';
-    if (!app()->environment('production') && request()->getPort() != 80 && request()->getPort() != 443) {
-        $port = ':' . request()->getPort();
-    }
-    
-    $tenantUrl = $protocol . $domain->domain . $port . '/auth/token-login';
 
-    return $tenantUrl;
-}
-
-   
 
     /**
      * Attempt logout
@@ -546,8 +540,8 @@ class AuthenticationController extends Controller
         if (!$user) {
             // return redirect()->route('subscriber.login');
             // return redirect()->route('core.login');
-        return redirect()->away('https://platepilots.com/admin/login');
-
+            // return redirect()->away('https://platepilots.com/admin/login');  --Hassaan
+            return redirect()->away($this->buildCentralLoginUrl());
         }
 
         $user_type = $user->user_type;
@@ -572,7 +566,8 @@ class AuthenticationController extends Controller
         tenancy()->end();
 
         // redirect()->away(config('app.central_domain') . '/admin/login');
-        return redirect()->away('https://platepilots.com/admin/login');
+        // return redirect()->away('https://platepilots.com/admin/login');  --Hassaan
+        return redirect()->away($this->buildCentralLoginUrl());
 
         // $centralDomain = config('tenancy.central_domains')[0];
         // $scheme = request()->isSecure() ? 'https' : 'http';
@@ -592,24 +587,24 @@ class AuthenticationController extends Controller
         // exit();
 
         //  \Log::info('LOGOUT STEP 2 - After auth logout');
-    
+
         // $response = redirect()->away('http://127.0.0.1:8000/admin/login');
-        
+
         // \Log::info('LOGOUT STEP 3 - Redirect created', [
         //     'location' => $response->getTargetUrl()
         // ]);
-        
+
         // return $response;
 
-        
-        
+
+
         // \Log::info('Redirect target', ['url' => 'http://127.0.0.1:8000/admin/login']);
         // return response()->make('', 302, ['Location' => 'http://127.0.0.1:8000/admin/login']);
-        
+
         // tenancy()->end();
-        
+
         // return response('<script>window.location.href="http://127.0.0.1:8000/admin/login";</script>');
-        
+
 
 
         // Determine redirect based on user type and context
@@ -643,6 +638,34 @@ class AuthenticationController extends Controller
         //     // return redirect()->route('subscriber.login');
         //     // return redirect()->route('core.login');
         // }
+    }
+///  Hassaan created
+    /**
+     * Build the central-domain login URL dynamically, matching whichever
+     * central domain the current tenant host actually belongs to
+     * (so local stays on 127.0.0.1 / localhost, prod stays on platepilots.com).
+     */
+    private function buildCentralLoginUrl(): string
+    {
+        $host = request()->getHost();
+        $centralDomains = config('tenancy.central_domains', []);
+
+        // Find the central domain that matches (or is contained in) the current host.
+        // e.g. tenant subdomain "shop1.127.0.0.1" -> matches "127.0.0.1"
+        $centralDomain = collect($centralDomains)->first(
+            fn($domain) => $host === $domain || str_ends_with($host, '.' . $domain) || str_contains($host, $domain)
+        ) ?? ($centralDomains[0] ?? 'localhost');
+
+        $scheme = request()->isSecure() ? 'https' : 'http';
+        $port   = request()->getPort();
+
+        $portSuffix = (($scheme === 'http' && $port != 80) || ($scheme === 'https' && $port != 443))
+            ? ':' . $port
+            : '';
+
+        $adminPrefix = trim(getAdminPrefix(), '/');
+
+        return $scheme . '://' . $centralDomain . $portSuffix . '/' . $adminPrefix . '/login';
     }
 
     /**

@@ -1,8 +1,7 @@
 @php
     $image_src = getFilePath($data, true);
-
-    $image_src = preg_replace('#^/public#', '', $image_src);
-
+    // $image_src = preg_replace('#^/public#', '', $image_src);  --Hassaan commented
+    $image_src = preg_replace('#/public/#', '/', $image_src, 1);
     $user_filter = isset($user_filter) && $user_filter == true ? 'true' : 'false';
 @endphp
 
