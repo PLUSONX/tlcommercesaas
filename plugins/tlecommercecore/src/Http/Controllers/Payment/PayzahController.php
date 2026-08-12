@@ -615,11 +615,27 @@ public function success(Request $request)
         //updating order payment status
         $this->updateOrderTransaction($orderId);
 
+        \Log::info('before finding order, using orderId');
+
         $order = Orders::find($orderId);
+
+        \Log::info('After finding order', [
+            'order' => json_encode($order)
+        ]);
+
         if ($order) {
+
+            \Log::info('inside email sending region');
+
+
             $message = 'Order payment completed by Payzah';
             EcommerceNotification::sendCustomerOrderPaymentCompletedNotification($orderId, $message);
+
+            \Log::info('after sendCustomerOrderPaymentCompletedNotification');
+
             EcommerceNotification::sendNewOrderNotification($order);
+
+            \Log::info('after sendNewOrderNotification');
         }
 
         //Redirect order success page

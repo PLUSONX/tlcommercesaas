@@ -531,8 +531,10 @@ class EcommerceNotification
 
         \Log::info('Ecommernotification Method: before customer region!!!');
         //Send invoice to customer
-        if (SettingsRepository::getEcommerceSetting('send_invoice_to_customer_mail') == config('settings.general_status.active')) {
+        // if (SettingsRepository::getEcommerceSetting('send_invoice_to_customer_mail') == config('settings.general_status.active')) {
     
+
+            // \Log::info('Ecommernotification Method: after customer region!!!');
             // Get the customer ID based on whether they are logged in or a guest
             
             if($order->customer_id != null) {
@@ -541,6 +543,8 @@ class EcommerceNotification
             }
 
             if($order->guest_customer_id != null) {
+
+                \Log::info('Ecommernotification Method: inside guest customer region');
 
                 self::sendOrderInvoiceNotification($order->id, 0, $order->guest_customer_id);
             }
@@ -553,7 +557,7 @@ class EcommerceNotification
             //     \Log::info('Ecommernotification Method: after sending notification to customer!!!');
 
             // }
-        }
+        // }
         // if (SettingsRepository::getEcommerceSetting('send_invoice_to_customer_mail') == config('settings.general_status.active')) {
         //     $customer_email = $order->customer_info != null ? $order->customer_info?->email : $order->guest_customer?->email;
         //     $customer_name = $order->customer_info != null ? $order->customer_info?->name : 'Guest Customer';
