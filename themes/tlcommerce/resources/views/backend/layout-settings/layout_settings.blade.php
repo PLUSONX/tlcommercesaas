@@ -205,7 +205,11 @@
 
 @section('main_content')
     @php
-        $showSplitScreenForm = $activeLayout && $activeLayout->name === 'split_screen';
+        $featurePaneLayouts = ['split_screen', 'modern'];
+        $showSplitScreenForm = $activeLayout && in_array($activeLayout->name, $featurePaneLayouts, true);
+        $featurePaneEditTitle = ($activeLayout && $activeLayout->name === 'modern')
+            ? translate('Edit Modern')
+            : translate('Edit Split Screen');
     @endphp
 
     <div class="row">
@@ -249,7 +253,7 @@
                                     >
                                     <div class="layout-card">
 
-                                        @if($layout->name == 'split_screen')
+                                        @if(in_array($layout->name, ['split_screen', 'modern'], true))
                                             <div class="dropdown-button" style="margin-bottom: 10px;">
                                                 <a href="#" class="d-flex align-items-center justify-content-end"
                                                     data-toggle="dropdown">
@@ -276,7 +280,7 @@
                                             @elseif($layout->name == 'sidebar_right')
                                                 <div class="preview-box content"></div>
                                                 <div class="preview-box sidebar-right"></div>
-                                            @elseif($layout->name == 'split_screen')
+                                            @elseif($layout->name == 'split_screen' || $layout->name == 'modern')
                                                 <div class="preview-box split-left"></div>
                                                 <div class="preview-box split-right"></div>
                                             @endif
@@ -309,7 +313,7 @@
             <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-body">
                     <div class="card-header d-flex justify-content-between">
-                        <h4>{{ translate('Edit Split Screen') }}</h4>
+                        <h4>{{ $featurePaneEditTitle }}</h4>
                     </div>
 
                 </div>
@@ -375,6 +379,22 @@
                                 </div>
                             </div>
 
+                            <div class="form-row mb-20">
+                                <div class="col-md-12">
+                                    <label class="font-14 bold black mb-0">{{ translate('Header Background Image') }}</label>
+                                    <p class="text-muted mb-0">{{ translate('Used by the Modern layout on non-home pages') }}</p>
+                                </div>
+                                <div class="col-md-12 mt-10">
+                                    @include('core::base.includes.media.media_input', [
+                                        'input' => 'header_background_image',
+                                        'data' => old('header_background_image', optional($splitScreenSettings)->header_background_image),
+                                    ])
+                                    @if ($errors->has('header_background_image'))
+                                        <div class="invalid-input">{{ $errors->first('header_background_image') }}</div>
+                                    @endif
+                                </div>
+                            </div>
+
                             <div class="form-row">
                                 <div class="col-12 text-right">
                                     <button type="submit" class="btn long btn-orange">{{ translate('Save') }}</button>
@@ -429,7 +449,7 @@
             }
 
             function toggleSplitScreenForm(layoutName, scrollToForm) {
-                if (layoutName === 'split_screen') {
+                if (layoutName === 'split_screen' || layoutName === 'modern') {
                     showEditForm(scrollToForm);
                 } else {
                     hideEditForm();

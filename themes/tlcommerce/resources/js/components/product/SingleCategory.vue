@@ -1,5 +1,5 @@
 <template>
-  <template v-if="isSplitScreen">
+  <template v-if="isFeaturePaneLayout">
     <div class="single-product-item single-product--split d-inline-block style--eight">
       <div class="position-relative overflow-hidden">
         <router-link :to="categoryLink" class="d-block">
@@ -57,7 +57,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("layout", ["isSplitScreen"]),
+    ...mapGetters("layout", ["isFeaturePaneLayout"]),
 
     categoryLink() {
       return `/products/category/${this.cat.slug}`;

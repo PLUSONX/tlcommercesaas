@@ -3,6 +3,7 @@
     <div class="offcanvas-container d-flex">
         <!-- Offcanvas Trigger -->
         <button
+            ref="hamburger"
             class="hamburger"
             :class="{ active: isOffcanvasOpened }"
             @click="toggleOffcanvas"
@@ -14,8 +15,8 @@
         <!-- End Offcanvas Trigger -->
 
         <teleport to="body">
-        <div class="offcanvas-wrapper" :class="{ open: isOffcanvasOpened }">
-            <div :class="this.headerStyle.custom_header==1?'offcanvas-panel custom-offcanvas-panel w-100 h-100 bg-white':'offcanvas-panel w-100 h-100 bg-white'">
+        <div class="offcanvas-wrapper" :class="{ open: isOffcanvasOpened, 'offcanvas-wrapper--rtl': isRtl }">
+            <div ref="offcanvasPanel" :class="this.headerStyle.custom_header==1?'offcanvas-panel custom-offcanvas-panel w-100 h-100 bg-white':'offcanvas-panel w-100 h-100 bg-white'">
                 <div :class="this.headerStyle.custom_header==1?'custom-offcanvas-header offcanvas-header position-relative':'offcanvas-header position-relative'">
                     <!-- Offcanvas Close -->
                     <span
@@ -97,6 +98,7 @@
 <script>
 import MenuItem from "./MenuItem.vue";
 import MenuDropdown from "./MenuDropdown.vue";
+import { mapGetters } from "vuex";
 export default {
     components: {
         MenuItem,
@@ -132,6 +134,7 @@ export default {
         };
     },
     computed: {
+        ...mapGetters("layout", ["isRtl"]),
         isGroupActive() {
             return (item, path) => {
                 let openGroup = false;
@@ -162,14 +165,74 @@ export default {
             return image.replace(/^\/public/, '');
         }
     },
+    mounted() {
+        document.addEventListener("click", this.onDocumentClick);
+    },
+    beforeUnmount() {
+        document.removeEventListener("click", this.onDocumentClick);
+    },
     methods: {
         toggleOffcanvas() {
             this.isOffcanvasOpened = !this.isOffcanvasOpened;
             document.body.classList.toggle("offcanvas-oppened");
+        },
+        closeOffcanvas() {
+            if (!this.isOffcanvasOpened) {
+                return;
+            }
+            this.isOffcanvasOpened = false;
+            document.body.classList.remove("offcanvas-oppened");
+        },
+        onDocumentClick(e) {
+            if (!this.isOffcanvasOpened) {
+                return;
+            }
+
+            const panel = this.$refs.offcanvasPanel;
+            const hamburger = this.$refs.hamburger;
+            const target = e.target;
+
+            if (panel && (panel === target || panel.contains(target))) {
+                return;
+            }
+
+            if (hamburger && (hamburger === target || hamburger.contains(target))) {
+                return;
+            }
+
+            this.closeOffcanvas();
         },
     },
 };
 </script>
 
 <style lang="scss" scoped>
+.offcanvas-wrapper--rtl {
+  direction: rtl;
+}
+.offcanvas-wrapper--rtl :deep(.offcanvas-panel) {
+  left: auto;
+  right: 0;
+  transform: translate3d(100%, 0, 0);
+}
+.offcanvas-wrapper--rtl.open :deep(.offcanvas-panel) {
+  transform: none;
+}
+.offcanvas-wrapper--rtl :deep(.offcanvas-close) {
+  right: auto;
+  left: 0;
+}
+.offcanvas-wrapper--rtl :deep(.offcanvas-menu ul ul) {
+  padding-left: 0;
+  padding-right: 30px;
+}
+.offcanvas-wrapper--rtl :deep(.offcanvas-menu .submenu-button) {
+  right: auto;
+  left: 0;
+}
+.offcanvas-wrapper--rtl :deep(.offcanvas-menu a),
+.offcanvas-wrapper--rtl :deep(.user-info),
+.offcanvas-wrapper--rtl :deep(.login-register) {
+  text-align: right;
+}
 </style>

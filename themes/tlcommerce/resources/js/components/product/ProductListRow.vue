@@ -326,7 +326,7 @@ export default {
 
     }),
 
-    ...mapGetters("layout", ["isSplitScreen", "isMobile"]),
+    ...mapGetters("layout", ["isFeaturePaneLayout", "isMobile"]),
 
     cartLine() {
 
@@ -350,7 +350,7 @@ export default {
 
     showQuickViewCustomFooter() {
 
-      return this.isSplitScreen && this.visibleQuickView && !!this.product?.id;
+      return this.isFeaturePaneLayout && this.visibleQuickView && !!this.product?.id;
 
     },
 

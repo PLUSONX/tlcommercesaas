@@ -1,7 +1,8 @@
 <template>
-  <template v-if="isSplitScreen && !isMobile">
+  <template v-if="isModernLayout || (isFeaturePaneLayout && !isMobile)">
     <section v-if="collectionReady"
       class="pt-15 pb-15 collection-section collection-section--split home-page-section force-mobile-layout mobile-content-wrapper"
+      :class="{ 'collection-section--modern': isModernLayout, 'collection-section--rtl': isRtl }"
       :style="splitScreenStyleObject">
       <div class="custom-container2">
         <div class="row align-items-center section-header-row">
@@ -17,15 +18,27 @@
           </div>
         </div>
 
-        <swiper v-if="collectionProducts.length" :slidesPerView="6" :modules="modules" :spaceBetween="1" :autoplay="{
-          delay: 4000,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: true,
-        }" :loop="true" :pagination="{
+        <swiper
+          v-if="collectionProducts.length"
+          :key="`collection-swiper-split-${content}-${collectionProducts.length}-${isModernLayout ? 'modern' : 'split'}`"
+          :slidesPerView="featurePaneSlidesPerView"
+          :modules="modules"
+          :spaceBetween="featurePaneSpaceBetween"
+          :autoplay="{
+            delay: 4000,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+          }"
+          :loop="true"
+          :pagination="{
             clickable: true,
-          }" class="product-grid-slider theme-slider-dots" :breakpoints="splitScreenSwiperBreakpoints">
+          }"
+          :dir="isRtl ? 'rtl' : 'ltr'"
+          class="product-grid-slider theme-slider-dots"
+          :breakpoints="featurePaneSwiperBreakpoints"
+        >
           <swiper-slide v-for="(item, index) in collectionProducts" :key="`slide-${index}`">
-            <single-product :item="item" />
+            <single-product :item="item" :modern-horizontal="isModernLayout" />
           </swiper-slide>
         </swiper>
       </div>
@@ -165,7 +178,19 @@ export default {
       };
     },
 
-    ...mapGetters("layout", ["isSplitScreen", "isMobile"]),
+    ...mapGetters("layout", ["isFeaturePaneLayout", "isMobile", "layoutType", "isRtl"]),
+
+    isModernLayout() {
+      return this.layoutType === "modern";
+    },
+
+    featurePaneSlidesPerView() {
+      return 2;
+    },
+
+    featurePaneSpaceBetween() {
+      return 1;
+    },
 
     splitScreenStyleObject() {
       return {
@@ -175,13 +200,17 @@ export default {
       };
     },
 
-    splitScreenSwiperBreakpoints() {
+    featurePaneSwiperBreakpoints() {
       return {
         "0": { slidesPerView: 2 },
         "480": { slidesPerView: 2 },
         "768": { slidesPerView: 2 },
         "1024": { slidesPerView: 2 },
       };
+    },
+
+    splitScreenSwiperBreakpoints() {
+      return this.featurePaneSwiperBreakpoints;
     },
   },
   mounted() {
@@ -235,5 +264,28 @@ export default {
 .collection-section--split {
   background-color: transparent !important;
   background-image: none !important;
+}
+
+.collection-section--modern :deep(.swiper),
+.collection-section--modern :deep(.swiper-slide) {
+  overflow: visible;
+}
+
+.collection-section--modern :deep(.swiper-slide) {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.collection-section--rtl.force-mobile-layout .section-header-row {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+.collection-section--rtl.force-mobile-layout .section-header-row > .text-md-end {
+  text-align: left !important;
+}
+.collection-section--rtl :deep(.section-title),
+.collection-section--rtl :deep(.section-title h2) {
+  direction: rtl;
+  text-align: right;
 }
 </style>

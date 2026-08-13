@@ -16,6 +16,10 @@ const SNAPCHAT_EVENT_MAP = {
 
 const ANALYTICS_TRACK_URL = '/api/v1/ecommerce-core/analytics/track';
 const STORE_VISIT_SESSION_KEY = 'tlc_analytics_store_visit';
+const INITIATE_CHECKOUT_SESSION_KEY = 'tlc_pixel_initiate_checkout';
+const PURCHASE_SESSION_PREFIX = 'tlc_pixel_purchase_';
+const PIXEL_WAIT_MS = 2000;
+const PIXEL_POLL_MS = 100;
 
 function mapTikTokEvent(event) {
   return TIKTOK_EVENT_MAP[event] || event;
@@ -39,6 +43,49 @@ function markStoreVisitThisSession() {
   } catch (e) {}
 }
 
+function sessionGet(key) {
+  try {
+    return window.sessionStorage?.getItem(key);
+  } catch (e) {
+    return null;
+  }
+}
+
+function sessionSet(key, value) {
+  try {
+    window.sessionStorage?.setItem(key, value);
+  } catch (e) {}
+}
+
+function sessionRemove(key) {
+  try {
+    window.sessionStorage?.removeItem(key);
+  } catch (e) {}
+}
+
+export function hasTrackedInitiateCheckout() {
+  return sessionGet(INITIATE_CHECKOUT_SESSION_KEY) === '1';
+}
+
+export function markInitiateCheckoutTracked() {
+  sessionSet(INITIATE_CHECKOUT_SESSION_KEY, '1');
+}
+
+export function hasTrackedPurchase(orderId) {
+  if (orderId == null || orderId === '') {
+    return false;
+  }
+  return sessionGet(PURCHASE_SESSION_PREFIX + String(orderId)) === '1';
+}
+
+export function markPurchaseTracked(orderId) {
+  if (orderId == null || orderId === '') {
+    return;
+  }
+  sessionSet(PURCHASE_SESSION_PREFIX + String(orderId), '1');
+  sessionRemove(INITIATE_CHECKOUT_SESSION_KEY);
+}
+
 /**
  * Extract a single product id from common pixel payload shapes.
  */
@@ -60,6 +107,54 @@ function extractProductId(payload = {}) {
   }
 
   return null;
+}
+
+function coercePayload(payload = {}) {
+  const next = { ...payload };
+  if (next.value != null && next.value !== '') {
+    const n = Number(next.value);
+    if (Number.isFinite(n)) {
+      next.value = n;
+    } else {
+      delete next.value;
+    }
+  }
+  return next;
+}
+
+function waitFor(predicate, timeoutMs = PIXEL_WAIT_MS) {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined') {
+      resolve(false);
+      return;
+    }
+    if (predicate()) {
+      resolve(true);
+      return;
+    }
+    const start = Date.now();
+    const id = setInterval(() => {
+      if (predicate()) {
+        clearInterval(id);
+        resolve(true);
+        return;
+      }
+      if (Date.now() - start >= timeoutMs) {
+        clearInterval(id);
+        resolve(false);
+      }
+    }, PIXEL_POLL_MS);
+  });
+}
+
+function metaTrackOptions(options = {}) {
+  if (!options || typeof options !== 'object') {
+    return null;
+  }
+  if (options.eventID != null && options.eventID !== '') {
+    return { eventID: String(options.eventID) };
+  }
+  return Object.keys(options).length ? options : null;
 }
 
 /**
@@ -114,35 +209,59 @@ function persistAnalyticsEvent(event, payload = {}) {
   }
 }
 
-/**
- * Fire-and-forget social pixel tracking. Each provider is isolated so
- * a failure in one SDK never affects checkout or other trackers.
- * Also mirrors selected events into tl_com_analytics_events (best-effort).
- */
-export function trackSocialPixels(event, payload = {}) {
+async function fireFacebook(event, payload, options) {
   try {
-    if (typeof window.fbq === 'function') {
+    const ready = await waitFor(() => typeof window.fbq === 'function');
+    if (!ready) {
+      return;
+    }
+    if (options) {
+      window.fbq('track', event, payload, options);
+    } else {
       window.fbq('track', event, payload);
     }
   } catch (e) {
     console.error('[pixels] fbq failed', e);
   }
+}
 
+async function fireTikTok(event, payload) {
   try {
-    if (typeof window.ttq?.track === 'function') {
-      window.ttq.track(mapTikTokEvent(event), payload);
+    const ready = await waitFor(() => typeof window.ttq?.track === 'function');
+    if (!ready) {
+      return;
     }
+    window.ttq.track(mapTikTokEvent(event), payload);
   } catch (e) {
     console.error('[pixels] ttq failed', e);
   }
+}
 
+async function fireSnapchat(event, payload) {
   try {
-    if (typeof window.snaptr === 'function') {
-      window.snaptr('track', mapSnapchatEvent(event), payload);
+    const ready = await waitFor(() => typeof window.snaptr === 'function');
+    if (!ready) {
+      return;
     }
+    window.snaptr('track', mapSnapchatEvent(event), payload);
   } catch (e) {
     console.error('[pixels] snaptr failed', e);
   }
+}
 
-  persistAnalyticsEvent(event, payload);
+/**
+ * Fire-and-forget social pixel tracking. Each provider is isolated so
+ * a failure in one SDK never affects checkout or other trackers.
+ * Also mirrors selected events into tl_com_analytics_events (best-effort).
+ * Retries briefly if the deferred pixel stub is not on window yet.
+ */
+export function trackSocialPixels(event, payload = {}, options = {}) {
+  const normalized = coercePayload(payload);
+  const fbOptions = metaTrackOptions(options);
+
+  fireFacebook(event, normalized, fbOptions);
+  fireTikTok(event, normalized);
+  fireSnapchat(event, normalized);
+
+  persistAnalyticsEvent(event, normalized);
 }

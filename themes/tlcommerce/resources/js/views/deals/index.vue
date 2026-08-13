@@ -1,5 +1,5 @@
 <template>
-  <template v-if="isSplitScreen">
+  <template v-if="isFeaturePaneLayout">
     <div :class="mtClass">
 
       <div class="custom-container2">
@@ -195,10 +195,10 @@ export default {
   },
 
   computed: {
-    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+    ...mapGetters('layout', ['isFeaturePaneLayout', 'isMobile']),
 
     mtClass() {
-      if (this.isSplitScreen && !this.isMobile) {
+      if (this.isFeaturePaneLayout && !this.isMobile) {
         return 'mt-50';
       }
       return 'mt-1';

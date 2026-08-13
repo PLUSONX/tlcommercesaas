@@ -2,7 +2,7 @@
 
   <div class="banner-feature">
 
-    <div class="banner-feature__toolbar" :class="[toolbarAlignClass, { 'banner-feature__toolbar--rtl': isRtl }]">
+    <div v-if="!isModernLayout" class="banner-feature__toolbar" :class="[toolbarAlignClass, { 'banner-feature__toolbar--rtl': isRtl }]">
 
       <the-offcanvas :user-info="customerInfo" :menu-items="offcanvas.menuItems" :header-menu-style="headerMenuStyle"
         :header-style="headerStyle" class="banner-feature__offcanvas" />
@@ -166,7 +166,11 @@ export default {
 
     }),
 
-    ...mapGetters("layout", ["effectiveContentPosition", "isRtl"]),
+    ...mapGetters("layout", ["effectiveContentPosition", "isRtl", "layoutType"]),
+
+    isModernLayout() {
+      return this.layoutType === "modern";
+    },
 
     toolbarAlignClass() {
       return this.effectiveContentPosition === "left"

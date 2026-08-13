@@ -1,5 +1,5 @@
 <template>
-  <template v-if="isSplitScreen">
+  <template v-if="isFeaturePaneLayout">
     <!-- Categories — split-screen layout -->
     <section class="category-section category-section--split home-page-section">
       <div class="px-3 px-sm-0">
@@ -94,7 +94,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("layout", ["isSplitScreen", "isMobile"]),
+    ...mapGetters("layout", ["isFeaturePaneLayout", "isMobile"]),
 
     splitScreenCategoryCount() {
       return this.properties?.categories?.length || 0;

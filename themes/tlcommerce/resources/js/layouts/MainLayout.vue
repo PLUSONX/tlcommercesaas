@@ -1,138 +1,43 @@
 <template>
   <div :class="layoutClass">
     <preloader v-if="!layoutReady" :loading="true" />
-    <template v-else>
-      <template v-if="isSplitScreen">
-        <div class="split-screen-container" :style="containerStyle">
-          <preloader :loading="preloaderLoading"></preloader>
-          <div class="split-screen-content" :class="[contentSideClass, 'force-mobile-view']" :style="contentStyle">
-            <div class="split-screen-header-sticky"
-              :class="{ 'split-screen-header-sticky--compact': isSplitScreen && isMobile }">
-              <div class="split-screen-search-inline-host"></div>
-              <custom-header :key="$route.fullPath" :site-properties="data.site_properties" :mode="mode"
-                :header-logo-style="headerLogoStyle" :cart-item="cartItem" :header-style="headerStyle"
-                :header-menu-style="headerMenuStyle" :currencies="data.currencies" :languages="data.languages"
-                :data-loading="MenuItemsLoading" @change-language-currency="setCurrencyLanguage" />
-            </div>
-
-            <div ref="splitContentScroll" class="content-split-nudge">
-              <router-view v-slot="{ Component, route }">
-                <component v-if="showRouteOutlet && Component" :is="Component"
-                  :key="`${route.name}-${outletKey}`" />
-              </router-view>
-            </div>
-
-            <company-footer v-if="showSplitScreenCompanyFooter" class="split-screen-company-footer" />
-
-            <gdpr v-if="isSplitScreen && isMobile && gdpr_properties != null && gdpr_properties.gdpr_status == 1"
-              class="split-screen-gdpr" :properties="gdpr_properties"></gdpr>
-
-          </div>
-
-          <div class="split-screen-feature" :class="featureSideClass" :style="featureStyle">
-            <BannerFeature v-if="isSplitScreen && !isMobile" :settings="splitScreenSettings" :imagePath="featureImagePath"
-              :cart-item="cartItem" :header-style="headerStyle" :header-menu-style="headerMenuStyle"
-              :currencies="data.currencies" :languages="data.languages" :data-loading="MenuItemsLoading"
-              @change-language-currency="setCurrencyLanguage" />
-
-            <!-- Dark Light Switcher -->
-            <div class="floating-mode-switcher-wrap" v-if="dark_light_status == '1'">
-              <label class="dl-switch">
-                <input class="dark-looks-mode-changer" @change="toggleDark" :checked="mode == 'dark'" type="checkbox" />
-                <span class="dl-slider"></span>
-                <span class="dl-light">Light</span>
-                <span class="dl-dark">Dark</span>
-              </label>
-            </div>
-            <!-- End Dark Light Switcher -->
-
-          </div>
-        </div>
-      </template>
-
-      <!-- Default Layout -->
-      <template v-else>
-        <div class="layout__two">
-          <preloader :loading="preloaderLoading"></preloader>
-          <top-bar-banner :properties="top_bar_banner_properties" v-if="
-            top_bar_banner_properties != null &&
-            top_bar_banner_properties.topbar_banner_status == 1
-          "></top-bar-banner>
-          <!-- Header -->
-          <header class="header__two love-sticky">
-            <header-middle :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
-              :wishlist-item="wishlistItem" :compare-item="compareItem" :header-logo-style="headerLogoStyle"
-              :header-menu-style="headerMenuStyle" :data-loading="MenuItemsLoading" :currencies="data.currencies"
-              :languages="data.languages" @change-language-currency="setCurrencyLanguage"
-              @logout-customer="logoutCustomer" class="d-none d-lg-block"></header-middle>
-            <header-bottom :data-loading="MenuItemsLoading" :mega-categories="data.megaCategories"
-              :menu-items="headerBottomMenu" :header-style="headerStyle" :header-menu-style="headerMenuStyle"
-              class="d-none d-lg-block"></header-bottom>
-          </header>
-
-          <mobile-header :site-properties="data.site_properties" :mode="mode" :cart-item="cartItem"
-            :header-style="headerStyle" :header-menu-style="headerMenuStyle" :header-logo-style="headerLogoStyle"
-            :currencies="data.currencies" :languages="data.languages" :data-loading="MenuItemsLoading"
-            @change-language-currency="setCurrencyLanguage"></mobile-header>
-          <!-- End Header -->
-
-          <div class="main_content light-bg">
-            <router-view v-slot="{ Component, route }">
-              <component v-if="showRouteOutlet && Component" :is="Component"
-                :key="`${route.name}-${outletKey}`" />
-            </router-view>
-          </div>
-
-          <StickyFooter v-if="!isSingleProduct" />
-
-          <!-- Footer -->
-          <footer :class="this.footerStyle.custom_footer == 1
-            ? 'custom-footer footer footer__two c1-bg'
-            : 'footer footer__two c1-bg'
-            " :style="{ backgroundImage: `url('${footerBgImg}')` }">
-            <!-- Footer Top -->
-            <div class="footer-top">
-              <div class="custom-container2">
-                <div class="row justify-content-between">
-                  <v-runtime-template :template="widget_html"></v-runtime-template>
-                </div>
-              </div>
-            </div>
-            <!-- End Footer Top -->
-            <!-- Footer Bottom -->
-            <div class="footer-bottom">
-              <div class="custom-container2">
-                <div class="border-top text-center py-4">
-                  <copyright :site-properties="data.site_properties" />
-                </div>
-              </div>
-            </div>
-            <!-- End Footer Bottom -->
-          </footer>
-          <!-- End Footer -->
-
-          <!--Cookie Consent-->
-          <gdpr v-if="gdpr_properties != null && gdpr_properties.gdpr_status == 1" :properties="gdpr_properties"></gdpr>
-          <!--End Cookie Consent-->
-
-          <!-- Dark Light Switcher -->
-          <div class="floating-mode-switcher-wrap" v-if="dark_light_status == '1'">
-            <label class="dl-switch">
-              <input class="dark-looks-mode-changer" @change="toggleDark" :checked="mode == 'dark'" type="checkbox" />
-              <span class="dl-slider"></span>
-              <span class="dl-light">Light</span>
-              <span class="dl-dark">Dark</span>
-            </label>
-          </div>
-          <!-- End Dark Light Switcher -->
-
-          <BackToTop />
-        </div>
-      </template>
-    </template>
+    <component
+      v-else
+      :is="activeShell"
+      :preloader-loading="preloaderLoading"
+      :top-bar-banner-properties="top_bar_banner_properties"
+      :site-properties="data.site_properties"
+      :mode="mode"
+      :cart-item="cartItem"
+      :wishlist-item="wishlistItem"
+      :compare-item="compareItem"
+      :header-logo-style="headerLogoStyle"
+      :header-menu-style="headerMenuStyle"
+      :header-style="headerStyle"
+      :menu-items-loading="MenuItemsLoading"
+      :currencies="data.currencies"
+      :languages="data.languages"
+      :mega-categories="data.megaCategories"
+      :header-bottom-menu="headerBottomMenu"
+      :show-route-outlet="showRouteOutlet"
+      :outlet-key="outletKey"
+      :is-single-product="isSingleProduct"
+      :footer-style="footerStyle"
+      :footer-bg-img="footerBgImg"
+      :widget-html="widget_html"
+      :widget-options="widget_options"
+      :social-style="socialStyle"
+      :subscription-form-style="subscriptionFormStyle"
+      :gdpr-properties="gdpr_properties"
+      :dark-light-status="dark_light_status"
+      :show-split-screen-company-footer="showSplitScreenCompanyFooter"
+      @change-language-currency="setCurrencyLanguage"
+      @logout-customer="logoutCustomer"
+      @toggle-dark="toggleDark"
+    />
 
     <!--Cookie Consent (default layout + split-screen desktop)-->
-    <gdpr v-if="gdpr_properties != null && gdpr_properties.gdpr_status == 1 && !(isSplitScreen && isMobile)"
+    <gdpr v-if="gdpr_properties != null && gdpr_properties.gdpr_status == 1 && !(isFeaturePaneLayout && isMobile)"
       :properties="gdpr_properties"></gdpr>
 
     <!-- Website popup (shared — teleported to body for correct stacking on all layouts) -->
@@ -157,11 +62,11 @@
 import { mapState, mapGetters, mapActions } from "vuex";
 import config from "../config.js";
 const axios = require("axios").default;
-import VRuntimeTemplate from "vue3-runtime-template";
 import { defineAsyncComponent, reactive } from "vue";
 import { useStore } from "vuex";
 import { safeGetItem } from "@/utils/safeStorage";
 import { scheduleBackgroundRefresh } from "@/utils/scheduleBackgroundRefresh";
+import { resolveLayoutShell } from "./shells";
 import {
   CModal,
   CButton,
@@ -170,80 +75,12 @@ import {
   CModalBody,
 } from "@coreui/vue";
 
-const HeaderMiddle = defineAsyncComponent(() =>
-  import("@/components/pageheader/HeaderMiddle.vue")
-);
-
-const address_widget = defineAsyncComponent(() =>
-  import("@/components/widget/address_widget.vue")
-);
-
-const newsletter_widget = defineAsyncComponent(() =>
-  import("@/components/widget/newsletter_widget.vue")
-);
-const social_links = defineAsyncComponent(() =>
-  import("@/components/widget/social_links.vue")
-);
-const Copyright = defineAsyncComponent(() =>
-  import("@/components/ui/Copyright.vue")
-);
-const StickyFooter = defineAsyncComponent(() =>
-  import("@/components/ui/StickyFooter.vue")
-);
 const Gdpr = defineAsyncComponent(() => import("@/components/ui/Gdpr.vue"));
-
-const TopBarBanner = defineAsyncComponent(() =>
-  import("@/components/ui/TopBarBanner.vue")
-);
-
-const HeaderTop = defineAsyncComponent(() =>
-  import("@/components/pageheader/HeaderTop.vue")
-);
-
-const HeaderBottom = defineAsyncComponent(() =>
-  import("@/components/pageheader/HeaderBottom.vue")
-);
-
-const MobileHeader = defineAsyncComponent(() =>
-  import("@/components/pageheader/MobileHeader.vue")
-);
-
-const BackToTop = defineAsyncComponent(() =>
-  import("@/components/ui/BackToTop.vue")
-);
 const Preloader = defineAsyncComponent(() =>
   import("@/components/ui/Preloader.vue")
 );
-
-const footer_left_menu = defineAsyncComponent(() =>
-  import("@/components/widget/footer_left_menu.vue")
-);
-
-const footer_right_menu = defineAsyncComponent(() =>
-  import("@/components/widget/footer_right_menu.vue")
-);
 const SubscribeForm = defineAsyncComponent(() =>
   import("@/components/widget/SubscribeForm.vue")
-);
-
-const featured_blog_widget = defineAsyncComponent(() =>
-  import("@/components/widget/featured_blog_widget.vue")
-);
-
-const recent_blog_widget = defineAsyncComponent(() =>
-  import("@/components/widget/recent_blog_widget.vue")
-);
-
-const BannerFeature = defineAsyncComponent(() =>
-  import("@/components/features/BannerFeature.vue")
-);
-
-const CustomHeader = defineAsyncComponent(() =>
-  import("@/components/pageheader/CustomHeader.vue")
-);
-
-const CompanyFooter = defineAsyncComponent(() =>
-  import("@/components/ui/CompanyFooter.vue")
 );
 
 // import ProductPage from '@/views/products/index.vue';
@@ -280,28 +117,9 @@ export default {
     CModalHeader,
     CModalTitle,
     CModalBody,
-    HeaderTop,
-    HeaderMiddle,
-    HeaderBottom,
-    MobileHeader,
-    BackToTop,
-    Copyright,
-    StickyFooter,
     Gdpr,
-    TopBarBanner,
     SubscribeForm,
-    address_widget,
-    footer_left_menu,
-    footer_right_menu,
-    newsletter_widget,
-    social_links,
-    featured_blog_widget,
-    recent_blog_widget,
-    VRuntimeTemplate,
     Preloader,
-    BannerFeature,
-    CustomHeader,
-    CompanyFooter,
   },
   setup() {
     const store = useStore();
@@ -510,11 +328,9 @@ export default {
     }),
 
     ...mapGetters('layout', [
+      'layoutType',
       'isSplitScreen',
-      'splitScreenSettings',
-      'effectiveContentPosition',
-      'featureImagePath',
-      'splitRatio',
+      'isFeaturePaneLayout',
       'isMobile',
     ]),
 
@@ -523,63 +339,19 @@ export default {
       return this.hasFetchedLayout && !this.layoutLoading;
     },
 
+    activeShell() {
+      return resolveLayoutShell(this.layoutType);
+    },
+
     layoutClass() {
-      return this.isSplitScreen ? 'layout-split-screen' : 'layout__two';
+      if (this.layoutType === 'split_screen') return 'layout-split-screen';
+      if (this.layoutType === 'modern') return 'layout-modern';
+      return 'layout__two';
     },
 
     showSplitScreenCompanyFooter() {
       return !this.productPageSuppressCompanyFooter;
     },
-
-    containerStyle() {
-      if (!this.isSplitScreen || this.isMobile) return {};
-
-      const { content, feature } = this.splitRatio;
-      const columns = this.effectiveContentPosition === 'left'
-        ? `${content}fr ${feature}fr`
-        : `${feature}fr ${content}fr`;
-
-      return {
-        display: 'grid',
-        gridTemplateColumns: columns,
-        minHeight: '100vh'
-      };
-    },
-
-    contentSideClass() {
-      return this.effectiveContentPosition === 'left' ? 'order-1' : 'order-2';
-    },
-
-    featureSideClass() {
-      return this.effectiveContentPosition === 'left' ? 'order-2' : 'order-1';
-    },
-
-    contentStyle() {
-      return {
-        backgroundColor: '#ffffff',
-      };
-    },
-
-    featureStyle() {
-      if (!this.splitScreenSettings) return {};
-      return {
-        backgroundColor: this.splitScreenSettings.background_color || '#ffffff',
-        backgroundImage: this.splitScreenSettings.feature_image
-          ? `url(${this.splitScreenSettings.feature_image})` : 'none',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
-      };
-    },
-
-    featureComponent() {
-      if (!this.splitScreenSettings) return null;
-      const componentMap = {
-        'banner': 'BannerFeature',
-        'product': 'ProductFeature',
-        'video': 'VideoFeature'
-      };
-      return componentMap[this.splitScreenSettings.feature_type] || 'BannerFeature';
-    }
   },
   // computed: {
 
@@ -723,7 +495,7 @@ export default {
     scheduleBackgroundRefresh(() => this.getThemeStyle());
     scheduleBackgroundRefresh(() => this.getFooterWidget(), 2000);
 
-    if (!(this.isSplitScreen && this.isMobile)) {
+    if (!(this.isFeaturePaneLayout && this.isMobile)) {
       scheduleBackgroundRefresh(() => this.getMegacategories(), 1500);
     }
 
@@ -803,7 +575,7 @@ export default {
     },
 
     updateSplitScreenMobileScrollLock() {
-      const shouldLock = this.isSplitScreen && this.isMobile;
+      const shouldLock = this.isFeaturePaneLayout && this.isMobile;
       document.documentElement.classList.toggle('split-screen-mobile-locked', shouldLock);
     },
 
@@ -1177,7 +949,7 @@ export default {
   },
 
   watch: {
-    isSplitScreen() {
+    isFeaturePaneLayout() {
       this.updateSplitScreenMobileScrollLock();
     },
 
@@ -1198,10 +970,6 @@ export default {
 
       this.$nextTick(() => {
         this.showRouteOutlet = true;
-        const scrollEl = this.$refs.splitContentScroll;
-        if (scrollEl) {
-          scrollEl.scrollTop = 0;
-        }
       });
     },
   },
@@ -1226,121 +994,17 @@ export default {
   right: -15px;
 }
 
-.footer {
-  display: block;
-  padding: 0;
-}
-
-.main_content {
-  min-height: 100vh;
-}
-
-.header-btn-group {
-  .btn-circle {
-    .material-icons {
-      font-size: 22px;
-    }
-
-    &:hover {
-
-      .icon-wrapper svg,
-      .icon-wrapper .icon {
-        color: #fff;
-      }
-    }
-  }
-}
-
-.split-screen-container {
-  width: 100%;
-  align-items: stretch;
-  height: 100vh;
-  height: 100dvh;
-  overflow: hidden;
-  direction: ltr;
-}
-
-.layout-split-screen {
+.layout-split-screen,
+.layout-modern {
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
 }
 
-.split-screen-content {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  padding: 0 !important;
-  margin: 0 !important;
-  height: 100vh;
-  height: 100dvh;
-  max-height: 100vh;
-  max-height: 100dvh;
-  overflow: hidden;
-}
-
-.content-split-nudge {
-  flex: 1 1 auto;
-  min-height: 0;
-  width: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-  background-color: inherit;
-}
-
-.split-screen-header-sticky {
-  flex-shrink: 0;
-}
-
-.split-screen-company-footer {
-  flex-shrink: 0;
-  width: 100%;
-}
-
-.split-screen-search-inline-host {
-  max-height: 0;
-  overflow: hidden;
-  flex-shrink: 0;
-  transition: max-height 0.25s ease-out;
-
-  &.is-open {
-    max-height: 72px;
-  }
-
-  :deep(.mobile-search-form) {
-    position: relative !important;
-    transform: none !important;
-    visibility: visible;
-  }
-}
-
-.split-screen-feature {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  max-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-// .split-screen-feature {
-//   position: absolute;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   position: sticky;
-//   top: 0;
-//   height: 100vh;
-//   // margin-top: 50px;
-// }
-
-/* Mobile split-screen: fixed app shell, single inner scroll pane */
+/* Mobile feature-pane host shell (class lives on MainLayout root) */
 @media (max-width: 768px) {
-  .layout-split-screen {
+  .layout-split-screen,
+  .layout-modern {
     display: block !important;
     position: fixed;
     inset: 0;
@@ -1349,125 +1013,6 @@ export default {
     height: 100dvh;
     overflow: hidden;
   }
-
-  .split-screen-container {
-    display: block !important;
-    grid-template-columns: none !important;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .split-screen-content {
-    display: flex !important;
-    flex-direction: column !important;
-    width: 100% !important;
-    order: initial !important;
-    height: 100% !important;
-    max-height: 100% !important;
-    overflow: hidden !important;
-  }
-
-  .split-screen-feature {
-    display: none !important;
-  }
-
-  .split-screen-header-sticky--compact {
-    position: static;
-    flex-shrink: 0;
-    z-index: 999;
-    background: #f8f9fa;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  }
-
-  .content-split-nudge {
-    flex: 1 1 auto;
-    min-height: 0;
-    width: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    background-color: inherit;
-  }
-
-  .split-screen-gdpr {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1000;
-  }
-}
-
-
-.split-screen-content.force-mobile-view {
-  /* Remove max-width constraint */
-  width: 100%;
-  // overflow-y: auto;
-  // padding: 0 20px; /* Optional: add some padding */
-}
-
-/* Hide desktop elements in split screen */
-.force-mobile-view .d-none.d-lg-block {
-  display: none !important;
-}
-
-.force-show {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-.mobile-content-wrapper {
-  /* Simulate mobile viewport */
-  max-width: 100%;
-  width: 100%;
-}
-
-/* Hide desktop-only elements in slot content */
-.mobile-content-wrapper .d-none.d-lg-block,
-.mobile-content-wrapper .d-lg-block {
-  display: none !important;
-}
-
-/* Force mobile elements to show */
-.mobile-content-wrapper .d-block.d-lg-none,
-.mobile-content-wrapper .d-lg-none {
-  display: block !important;
-}
-
-/* Override any media queries that might show desktop elements */
-@media (min-width: 992px) {
-
-  .mobile-content-wrapper .d-none.d-lg-block,
-  .mobile-content-wrapper .d-lg-block {
-    display: none !important;
-  }
-
-  .mobile-content-wrapper .d-block.d-lg-none,
-  .mobile-content-wrapper .d-lg-none {
-    display: block !important;
-  }
-}
-
-.forced-mobile-context {
-  /* 1. Force the container to a mobile width if necessary */
-  max-width: 100%;
-  /* Or 100% depending on your split design */
-  margin: 0 auto;
-}
-
-/* 2. Nuclear option: Force hide desktop elements and show mobile elements */
-.forced-mobile-context :deep(.d-lg-block),
-.forced-mobile-context :deep(.d-xl-block),
-.forced-mobile-context :deep(.hide-on-mobile) {
-  display: none !important;
-}
-
-.forced-mobile-context :deep(.d-none),
-.forced-mobile-context :deep(.show-on-mobile) {
-  /* Only show it if it's meant to be visible on mobile */
-  display: block !important;
 }
 </style>
 

@@ -230,15 +230,15 @@ export default {
     },
 
     computed: {
-        ...mapGetters('layout', ['isSplitScreen', 'isMobile', 'isRtl']),
+        ...mapGetters('layout', ['isFeaturePaneLayout', 'isMobile', 'isRtl']),
 
         forcedMobile() {
-            if (this.isSplitScreen && !this.isMobile) return true;
+            if (this.isFeaturePaneLayout && !this.isMobile) return true;
             return this.isMobile;
         },
 
         mtClass() {
-            return this.isSplitScreen && !this.isMobile ? 'mt-50' : 'mt-1';
+            return this.isFeaturePaneLayout && !this.isMobile ? 'mt-50' : 'mt-1';
         },
 
         config() {

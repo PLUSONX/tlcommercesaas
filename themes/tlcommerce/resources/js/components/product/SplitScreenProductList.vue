@@ -72,14 +72,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("layout", ["isSplitScreen", "isMobile", "isRtl"]),
+    ...mapGetters("layout", ["isFeaturePaneLayout", "isMobile", "isRtl"]),
 
     mtClass() {
       if (this.disableMargin) {
         return "";
       }
 
-      if (this.isSplitScreen && !this.isMobile) {
+      if (this.isFeaturePaneLayout && !this.isMobile) {
         return "mt-50";
       }
 

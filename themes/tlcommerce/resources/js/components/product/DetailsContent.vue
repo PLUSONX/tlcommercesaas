@@ -2,7 +2,7 @@
   <!-- Product Details Content -->
   <div
     class="product-details-content"
-    :class="{ 'product-details-content--rtl': isSplitScreen && isRtl }"
+    :class="{ 'product-details-content--rtl': isFeaturePaneLayout && isRtl }"
   >
     <!--Flash deal info-->
     <div class="d-flex flash-deal flex-wrap justify-content-between mb-20 p-2 text-white"
@@ -93,7 +93,7 @@
           </span>
 
           <!-- Option List: split-screen list-cards (desktop + mobile) -->
-          <template v-if="isSplitScreen">
+          <template v-if="isFeaturePaneLayout">
             <div class="option-list-cards d-flex flex-column">
               <component
                 :is="attr.multi_select ? 'div' : 'button'"
@@ -499,15 +499,15 @@ export default {
         : this.product.quantity;
     },
 
-    ...mapGetters('layout', ['isSplitScreen', 'isMobile', 'isRtl']),
+    ...mapGetters('layout', ['isFeaturePaneLayout', 'isMobile', 'isRtl']),
 
     isSplitScreenDesktop() {
-      return this.isSplitScreen;
+      return this.isFeaturePaneLayout;
     },
 
     showSplitProductFooter() {
-      if (this.forceShowActions && !this.isSplitScreen) return false;
-      return this.isSplitScreen || this.isMobile;
+      if (this.forceShowActions && !this.isFeaturePaneLayout) return false;
+      return this.isFeaturePaneLayout || this.isMobile;
     },
 
 

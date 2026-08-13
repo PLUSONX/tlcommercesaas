@@ -1,8 +1,9 @@
 <template>
-  <template v-if="isSplitScreen && !isMobile">
+  <template v-if="isModernLayout || (isFeaturePaneLayout && !isMobile)">
     <section
       v-if="dealReady"
       class="pt-15 pb-15 deals-section deals-section--split home-page-section force-mobile-layout mobile-content-wrapper"
+      :class="{ 'deals-section--modern': isModernLayout, 'deals-section--rtl': isRtl }"
       :style="splitScreenStyleObject"
     >
       <div class="custom-container2">
@@ -24,18 +25,19 @@
         </div>
         <swiper
           v-if="dealProducts.length"
-          :key="`deal-swiper-split-${content}-${dealProducts.length}`"
-          :slidesPerView="2"
+          :key="`deal-swiper-split-${content}-${dealProducts.length}-${isModernLayout ? 'modern' : 'split'}`"
+          :slidesPerView="featurePaneSlidesPerView"
           :modules="modules"
-          :spaceBetween="8"
+          :spaceBetween="featurePaneSpaceBetween"
           :autoplay="dealAutoplay"
           :loop="true"
           :pagination="pagination"
+          :dir="isRtl ? 'rtl' : 'ltr'"
           class="product-grid-slider product-grid-slider--split theme-slider-dots"
-          :breakpoints="splitScreenSwiperBreakpoints"
+          :breakpoints="featurePaneSwiperBreakpoints"
         >
           <swiper-slide v-for="(item, index) in dealProducts" :key="`slide-${index}`">
-            <single-product :item="item" />
+            <single-product :item="item" :modern-horizontal="isModernLayout" />
           </swiper-slide>
         </swiper>
         <div class="col-md-12 text-center mt-20">
@@ -216,7 +218,19 @@ export default {
       };
     },
 
-    ...mapGetters("layout", ["isSplitScreen", "isMobile"]),
+    ...mapGetters("layout", ["isFeaturePaneLayout", "isMobile", "layoutType", "isRtl"]),
+
+    isModernLayout() {
+      return this.layoutType === "modern";
+    },
+
+    featurePaneSlidesPerView() {
+      return 2;
+    },
+
+    featurePaneSpaceBetween() {
+      return 8;
+    },
 
     splitScreenStyleObject() {
       return {
@@ -226,10 +240,14 @@ export default {
       };
     },
 
-    splitScreenSwiperBreakpoints() {
+    featurePaneSwiperBreakpoints() {
       return {
         "0": { slidesPerView: 2, spaceBetween: 8 },
       };
+    },
+
+    splitScreenSwiperBreakpoints() {
+      return this.featurePaneSwiperBreakpoints;
     },
   },
   mounted() {
@@ -286,6 +304,33 @@ export default {
 .deals-section--split {
   background-color: transparent !important;
   background-image: none !important;
+}
+
+.deals-section--modern :deep(.swiper),
+.deals-section--modern :deep(.swiper-slide) {
+  overflow: visible;
+}
+
+.deals-section--modern :deep(.swiper-slide) {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.deals-section--rtl.force-mobile-layout .section-header-row {
+  flex-direction: row-reverse;
+  direction: ltr;
+}
+.deals-section--rtl.force-mobile-layout .section-header-row > .text-md-end {
+  text-align: left !important;
+}
+.deals-section--rtl.force-mobile-layout .section-header-row :deep(.countdown) {
+  justify-content: flex-start !important;
+  direction: ltr;
+}
+.deals-section--rtl :deep(.section-title),
+.deals-section--rtl :deep(.section-title h2) {
+  direction: rtl;
+  text-align: right;
 }
 
 .force-mobile-layout .product-content .image,

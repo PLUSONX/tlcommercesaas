@@ -1,6 +1,6 @@
 <template>
-  <!-- Split-screen layout (desktop + mobile) -->
-  <template v-if="isSplitScreen">
+  <!-- Split-screen / modern compact layout (desktop + mobile) -->
+  <template v-if="isFeaturePaneLayout">
     <!-- List row thumbnail only -->
     <router-link
       v-if="thumbnailOnly"
@@ -13,6 +13,49 @@
         :alt="item.name"
       />
     </router-link>
+    <!-- Modern deal/collection horizontal card -->
+    <div
+      v-else-if="modernHorizontal"
+      class="single-product--modern-horizontal"
+      :class="{ 'single-product--rtl': isRtl }"
+    >
+      <div class="modern-h-card__content">
+        <div class="modern-h-card__top">
+          <h4 class="modern-h-card__title">
+            <router-link :to="`/products/${item.slug}`" :title="item.name">
+              {{ item.name }}
+            </router-link>
+          </h4>
+          <p v-if="item.summary" class="modern-h-card__summary">
+            {{ item.summary }}
+          </p>
+        </div>
+
+        <div class="modern-h-card__bottom">
+          <span class="modern-h-card__price product-price d-flex flex-wrap align-items-baseline c1">
+            <the-currency :amount="item.price" tag="span" v-if="item.base_price > item.price"></the-currency>
+            <the-currency :amount="item.base_price" tag="span" v-else></the-currency>
+            <the-currency
+              :amount="item.base_price"
+              tag="del"
+              v-if="item.base_price > item.price"
+            ></the-currency>
+          </span>
+        </div>
+      </div>
+
+      <div class="modern-h-card__media">
+        <router-link :to="`/products/${item.slug}`" class="modern-h-card__media-link">
+          <v-lazy-image
+            class="modern-h-card__image"
+            :src="cleanImage(item.thumbnail_image)"
+            :alt="item.name"
+          />
+        </router-link>
+      </div>
+    </div>
+    <!-- End modern horizontal card -->
+
     <!--Product Page style-->
     <div v-else-if="styleEight" class="single-product-item single-product--split d-inline-block style--eight"
       :class="{ 'single-product--rtl': isRtl }">
@@ -689,6 +732,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    modernHorizontal: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -711,7 +758,7 @@ export default {
       currency: (state) => state.currency,
       cart: (state) => state.cart,
     }),
-    ...mapGetters("layout", ["isSplitScreen", "isMobile", "isRtl"]),
+    ...mapGetters("layout", ["isFeaturePaneLayout", "isMobile", "isRtl"]),
     cartLine() {
       return findListItemCartLine(this.cart, this.item);
     },
@@ -728,7 +775,7 @@ export default {
         : this.item.quantity;
     },
     showQuickViewCustomFooter() {
-      return this.isSplitScreen && this.visibleQuickView && !!this.product?.id;
+      return this.isFeaturePaneLayout && this.visibleQuickView && !!this.product?.id;
     },
   },
   methods: {
@@ -1863,5 +1910,138 @@ export default {
     direction: rtl;
     text-align: right;
   }
+}
+
+/* Modern deal/collection horizontal card */
+.single-product--modern-horizontal {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-height: 148px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  overflow: visible;
+  position: relative;
+}
+
+.single-product--modern-horizontal.single-product--rtl {
+  direction: ltr;
+  flex-direction: row-reverse;
+}
+
+.modern-h-card__content {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px 12px 14px 16px;
+  z-index: 1;
+}
+
+.modern-h-card__top {
+  min-width: 0;
+}
+
+.modern-h-card__title {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #1a1a1a;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.modern-h-card__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.modern-h-card__summary {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #6b7280;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.modern-h-card__bottom {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.modern-h-card__price {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+  gap: 6px;
+}
+
+.modern-h-card__price :deep(del) {
+  font-size: 12px;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+.modern-h-card__media {
+  flex: 0 0 42%;
+  max-width: 160px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px 8px 0;
+  overflow: visible;
+}
+
+.single-product--modern-horizontal.single-product--rtl .modern-h-card__media {
+  padding: 8px 0 8px 10px;
+}
+
+.single-product--modern-horizontal.single-product--rtl .modern-h-card__content {
+  padding: 16px 16px 14px 12px;
+  direction: rtl;
+}
+
+.single-product--modern-horizontal.single-product--rtl .modern-h-card__title,
+.single-product--modern-horizontal.single-product--rtl .modern-h-card__summary {
+  direction: rtl;
+  text-align: right;
+}
+
+.single-product--modern-horizontal.single-product--rtl .modern-h-card__bottom {
+  direction: ltr;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.single-product--modern-horizontal.single-product--rtl .modern-h-card__price {
+  direction: ltr;
+  justify-content: flex-end;
+  width: 100%;
+  text-align: right;
+}
+
+.modern-h-card__media-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.modern-h-card__image {
+  width: 100%;
+  height: 100%;
+  max-height: 140px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.18));
+  transform: translateY(-4px) scale(1.06);
 }
 </style>

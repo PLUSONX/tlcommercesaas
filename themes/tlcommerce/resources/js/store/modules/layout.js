@@ -138,13 +138,28 @@ export default {
     },
 
     getters: {
-        isSplitScreen: (state) => {
+        /** Runtime layout type from API/bootstrap (`default` | `split_screen` | future types). */
+        layoutType: (state) => {
+            return state.activeLayout?.type || 'default';
+        },
+
+        /** Compat alias — prefer `layoutType` for new code. */
+        isSplitScreen: (state, getters) => {
             // if (state.isMobileView) {
             //     return false; // Force default layout on mobile
             // }
-            return state.activeLayout?.type === 'split_screen';
+            return getters.layoutType === 'split_screen';
         },
 
+        /** Shared host concerns for split_screen + modern (feature-pane shells). */
+        isFeaturePaneLayout: (state, getters) => {
+            return ['split_screen', 'modern'].includes(getters.layoutType);
+        },
+
+        /**
+         * Feature-pane props blob.
+         * API key remains `split_screen` for both split_screen and modern (shared shape).
+         */
         splitScreenSettings: (state) => {
             return state.activeLayout?.split_screen || null;
         },

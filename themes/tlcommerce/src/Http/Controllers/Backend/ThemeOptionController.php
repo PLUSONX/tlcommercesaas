@@ -184,6 +184,7 @@ class ThemeOptionController extends Controller
             'content_position' => $request->content_position,
             'feature_type'     => $request->feature_type,
             'feature_image'    => $request->feature_image,
+            'header_background_image' => $request->header_background_image,
             'background_color' => $request->background_color,
         ]);
 
