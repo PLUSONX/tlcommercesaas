@@ -198,17 +198,17 @@ export default {
   },
   computed: {
 
-    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+    ...mapGetters('layout', ['isFeaturePaneLayout', 'isMobile']),
 
     forcedMobile() {
-      if (this.isSplitScreen && !this.isMobile) {
+      if (this.isFeaturePaneLayout && !this.isMobile) {
         return true;
       }
       return this.isMobile;
     },
 
     mtClass() {
-      if (this.isSplitScreen && !this.isMobile) {
+      if (this.isFeaturePaneLayout && !this.isMobile) {
         return 'mt-50';
       }
       return 'mt-1';

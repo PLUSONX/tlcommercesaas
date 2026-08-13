@@ -220,10 +220,10 @@ export default {
       couponDiscounts: (state) => state.couponDiscount ? state.couponDiscount : [],
     }),
 
-    ...mapGetters('layout', ['isSplitScreen', 'isMobile', 'isRtl']),
+    ...mapGetters('layout', ['isFeaturePaneLayout', 'isMobile', 'isRtl']),
 
     forcedMobile() {
-      if (this.isSplitScreen && !this.isMobile) {
+      if (this.isFeaturePaneLayout && !this.isMobile) {
         return true;
       }
       return this.isMobile;

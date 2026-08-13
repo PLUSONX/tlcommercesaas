@@ -6326,6 +6326,19 @@ html.rtl .offcanvas-wrapper .offcanvas-close {
   right: auto;
   left: 0;
 }
+html.rtl .offcanvas-wrapper .offcanvas-menu ul ul {
+  padding-left: 0;
+  padding-right: 30px;
+}
+html.rtl .offcanvas-wrapper .offcanvas-menu .submenu-button {
+  right: auto;
+  left: 0;
+}
+html.rtl .offcanvas-wrapper .offcanvas-menu a,
+html.rtl .offcanvas-wrapper .user-info,
+html.rtl .offcanvas-wrapper .login-register {
+  text-align: right;
+}
 @media (min-width: 992px) {
   html.rtl .text-lg-start {
     text-align: right !important;

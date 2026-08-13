@@ -41,35 +41,54 @@
         </div>
     </div>
 
-    <div class="home__two" :class="{ 'home__two--rtl': isSplitScreen && isRtl }" v-else>
+    <div class="home__two" :class="{
+        'home__two--rtl': isFeaturePaneLayout && isRtl,
+        'home__two--modern': isModernLayout,
+    }" v-else>
         <!-- Banner -->
         <!-- <section class="product-banner product-banner-overflow-auto mt-30 mb-30" v-if="dataAvailable"> -->
         <!-- <div class="mt-50"> -->
         <div :class="mtClass">
-            <section class="product-banner product-banner-overflow-auto" v-if="dataAvailable && showHomeBanners">
+            <section
+                class="product-banner product-banner-overflow-auto"
+                :class="{ 'product-banner--modern-hero': isModernLayout }"
+                v-if="dataAvailable && showHomeBanners"
+            >
 
 
                 <div v-if="sliderLoading">
-                    <div class="desktop">
+                    <div class="desktop" v-if="!isModernLayout">
                         <div class="d-flex">
                             <skeleton height="450px" class="w-25"></skeleton>
                             <skeleton height="450px" class="slider-container mx-4 skeleton"></skeleton>
                             <skeleton height="450px" class="w-25"></skeleton>
                         </div>
                     </div>
-                    <div class="mobile">
+                    <div class="mobile" v-if="!isModernLayout">
                         <skeleton height="120px" class="w-100"></skeleton>
+                    </div>
+                    <div v-if="isModernLayout" class="modern-hero-skeleton">
+                        <skeleton height="300px" class="w-100"></skeleton>
                     </div>
                 </div>
                 <div class="slider-container" v-else>
-                    <swiper v-if="banners && banners.length > 0" :slidesPerView="'auto'" :loop="true" :spaceBetween="20"
-                        :centeredSlides="true" :modules="modules" :autoplay="{
+                    <swiper v-if="banners && banners.length > 0"
+                        :slidesPerView="isModernLayout ? 1 : 'auto'"
+                        :loop="true"
+                        :spaceBetween="isModernLayout ? 0 : 20"
+                        :centeredSlides="!isModernLayout"
+                        :modules="modules"
+                        :autoplay="{
                             delay: 4000,
                             disableOnInteraction: false,
                             pauseOnMouseEnter: true,
-                        }" :pagination="{
+                        }"
+                        :pagination="{
                             clickable: true,
-                        }" class="mySwiper theme-slider-dots dots-bottom-30">
+                        }"
+                        class="mySwiper theme-slider-dots dots-bottom-30"
+                        :class="{ 'mySwiper--modern-hero': isModernLayout }"
+                    >
                         <swiper-slide v-for="(slide, index) in banners" :key="`slide-${index}`">
                             <product-banner :content="slide" :priority="index === 0" />
                         </swiper-slide>
@@ -88,7 +107,7 @@
 
         </div> -->
 
-        <HomePageDeliveryShipping v-if="showContactInfo && isSplitScreen" :enums="enums" :config="configuration"
+        <HomePageDeliveryShipping v-if="showContactInfo && isFeaturePaneLayout" :enums="enums" :config="configuration"
             :customer-address="customerAddress" :is-customer-login="isCustomerLogin" :pickup-points="pickupPoints" />
 
         <!--Dynamic Sections-->
@@ -134,9 +153,9 @@
             :customer-address="customerAddress" :is-customer-login="isCustomerLogin" :pickup-points="pickupPoints" /> -->
 
         <SplitScreenProductList
-            v-if="isSplitScreen && homeContentReady && productListViewEnabled"
+            v-if="isFeaturePaneLayout && homeContentReady && productListViewEnabled"
             :disable-margin="true" />
-        <ProductPage v-else-if="isSplitScreen && homeContentReady"
+        <ProductPage v-else-if="isFeaturePaneLayout && homeContentReady"
             :disable-margin="true" />
 
     </div>
@@ -284,9 +303,17 @@ export default {
             configuration: (state) => state.siteSettings,
         }),
 
-        ...mapGetters('layout', ['isSplitScreen', 'isMobile', 'isRtl']),
+        ...mapGetters('layout', ['isSplitScreen', 'isFeaturePaneLayout', 'isMobile', 'isRtl', 'layoutType']),
+
+        isModernLayout() {
+            return this.layoutType === 'modern';
+        },
 
         showHomeBanners() {
+            // Modern content column always shows the hero swiper (header overlays it).
+            if (this.isModernLayout) {
+                return true;
+            }
             return !this.isSplitScreen || this.isMobile;
         },
 
@@ -298,6 +325,9 @@ export default {
         },
 
         mtClass() {
+            if (this.isModernLayout) {
+                return 'mt-0';
+            }
             if (this.isSplitScreen && !this.isMobile) {
                 // return 'mt-50';
                 return 'mt-0';
@@ -449,5 +479,77 @@ export default {
 .home__two .product-banner-overflow-auto .swiper-slide {
     border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Modern layout: edge-flush compact hero under overlay header */
+.home__two--modern .product-banner--modern-hero {
+    margin: 0 0 16px;
+    width: 100%;
+    border-radius: 0 0 24px 24px;
+    overflow: hidden;
+    box-shadow: none;
+}
+
+/* Beat global .slider-container { padding: 0 15px; max-width: … } */
+.home__two--modern .product-banner--modern-hero .slider-container {
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 0 0 24px 24px;
+}
+
+.home__two--modern .product-banner--modern-hero .mySwiper--modern-hero {
+    overflow: hidden !important;
+    width: 100%;
+    border-radius: 0 0 24px 24px;
+}
+
+.home__two--modern .product-banner--modern-hero .swiper {
+    overflow: hidden !important; /* beat .home__two .product-banner-overflow-auto .swiper { overflow: initial } */
+    width: 100%;
+}
+
+.home__two--modern .product-banner--modern-hero .swiper-wrapper {
+    width: 100%;
+}
+
+.home__two--modern .product-banner--modern-hero .swiper-slide {
+    width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.home__two--modern .product-banner--modern-hero .product-banner-item,
+.home__two--modern .product-banner--modern-hero .slide-img,
+.home__two--modern .product-banner--modern-hero img {
+    width: 100%;
+    border-radius: 0;
+}
+
+.home__two--modern .product-banner--modern-hero .product-banner-item .slide-img img {
+    height: 300px;
+    max-height: 320px;
+    object-fit: cover;
+    display: block;
+}
+
+.home__two--modern .product-banner--modern-hero .theme-slider-dots .swiper-pagination {
+    bottom: 14px !important;
+}
+
+.home__two--modern .modern-hero-skeleton {
+    margin: 0 0 16px;
+    width: 100%;
+    border-radius: 0 0 24px 24px;
+    overflow: hidden;
+
+    .skeleton,
+    .w-100 {
+        height: 300px !important;
+        max-width: none;
+    }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <template v-if="isSplitScreen">
+  <template v-if="isFeaturePaneLayout">
     <!-- Categories -->
     <section
       class="pt-5 pb-5 category-section category-section--split home-page-section"
@@ -172,10 +172,10 @@ export default {
       };
     },
 
-    ...mapGetters("layout", ["isSplitScreen", "isMobile"]),
+    ...mapGetters("layout", ["isFeaturePaneLayout", "isMobile"]),
 
     forcedMobile() {
-      return this.isSplitScreen && !this.isMobile;
+      return this.isFeaturePaneLayout && !this.isMobile;
     },
 
     // production split-screen: transparent section, tight swiper gaps

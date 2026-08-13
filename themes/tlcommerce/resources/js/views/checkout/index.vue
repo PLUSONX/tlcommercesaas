@@ -2,7 +2,7 @@
   <div class="" :class="{
     'force-mobile-layout': forcedMobile,
     'mobile-content-wrapper': forcedMobile,
-    'split-screen-desktop': isSplitScreen && !isMobile
+    'split-screen-desktop': isFeaturePaneLayout && !isMobile
   }">
     <!-- <page-header class="pt-3 pb-3" :items="bItems" /> -->
     <div class="shipping-info light-bg pt-60 pb-60">
@@ -106,6 +106,11 @@ import enums from "../../enums/enums";
 import axios from "axios";
 import { mapState, mapGetters } from "vuex";
 import { prepareCheckoutShipping } from "../../utils/checkoutShippingPrep";
+import {
+  trackSocialPixels,
+  hasTrackedInitiateCheckout,
+  markInitiateCheckoutTracked,
+} from "@/utils/trackSocialPixels";
 
 const VALID_STEPS = ["cart", "details", "payment"];
 
@@ -164,10 +169,10 @@ export default {
       shippingDetails: (state) => state.shippingDetails,
     }),
 
-    ...mapGetters("layout", ["isSplitScreen", "isMobile"]),
+    ...mapGetters("layout", ["isFeaturePaneLayout", "isMobile"]),
 
     forcedMobile() {
-      if (this.isSplitScreen && !this.isMobile) {
+      if (this.isFeaturePaneLayout && !this.isMobile) {
         return true;
       }
       return this.isMobile;
@@ -204,7 +209,12 @@ export default {
           return;
         }
         this.resetCheckoutToEmptyCart();
+        return;
       }
+      this.trackInitiateCheckoutOnce();
+    },
+    checkoutItems() {
+      this.trackInitiateCheckoutOnce();
     },
     checkoutPlaceOrderRequestId() {
       this.finalizeAndPlaceOrder();
@@ -636,6 +646,34 @@ export default {
     },
     calculateTotalPayable(amount) {
       this.totalPayableAmount = amount;
+      this.trackInitiateCheckoutOnce();
+    },
+    trackInitiateCheckoutOnce() {
+      if (hasTrackedInitiateCheckout()) {
+        return;
+      }
+      const items =
+        Array.isArray(this.checkoutItems) && this.checkoutItems.length
+          ? this.checkoutItems
+          : this.cart || [];
+      if (!items.length) {
+        return;
+      }
+
+      markInitiateCheckoutTracked();
+
+      const value = Number(this.totalPayableAmount);
+      trackSocialPixels("InitiateCheckout", {
+        content_ids: items.map((item) => String(item.id)),
+        contents: items.map((item) => ({
+          id: String(item.id),
+          quantity: item.quantity ?? 1,
+        })),
+        content_type: "product",
+        currency: "KWD",
+        value: Number.isFinite(value) ? value : 0,
+        num_items: items.length,
+      });
     },
   },
 };

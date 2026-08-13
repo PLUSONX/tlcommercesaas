@@ -36,15 +36,7 @@
 
         <span class="product-list-row__price c1">
 
-          <the-currency
-
-            :amount="item.price"
-
-            tag="span"
-
-            v-if="item.base_price > item.price"
-
-          ></the-currency>
+          <the-currency :amount="item.price" tag="span" v-if="item.base_price > item.price"></the-currency>
 
           <the-currency :amount="item.base_price" tag="span" v-else></the-currency>
 
@@ -52,19 +44,8 @@
 
 
 
-        <button
-
-          v-if="!cartLine"
-
-          type="button"
-
-          class="product-list-row__add-btn"
-
-          :disabled="item.quantity < 1"
-
-          @click.prevent="handleAddClick"
-
-        >
+        <button v-if="!cartLine" type="button" class="product-list-row__add-btn" :disabled="item.quantity < 1"
+          @click.prevent="handleAddClick">
 
           <span class="product-list-row__add-icon">+</span>
 
@@ -74,49 +55,20 @@
 
 
 
-        <div
+        <div v-else class="quantity-input text-center d-flex product-list-row__quantity">
 
-          v-else
-
-          class="quantity-input text-center d-flex product-list-row__quantity"
-
-        >
-
-          <button
-
-            type="button"
-
-            class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
-
-            @click.prevent="decreaseQuantity"
-
-          >
+          <button type="button" class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
+            @click.prevent="decreaseQuantity">
 
             <span class="material-icons"> remove </span>
 
           </button>
 
-          <input
+          <input :value="cartLine.quantity" type="number" class="border-0 text-center font-weight-bold w-100"
+            @change="onQuantityInputChange" />
 
-            :value="cartLine.quantity"
-
-            type="number"
-
-            class="border-0 text-center font-weight-bold w-100"
-
-            @change="onQuantityInputChange"
-
-          />
-
-          <button
-
-            type="button"
-
-            class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
-
-            @click.prevent="increaseQuantity"
-
-          >
+          <button type="button" class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
+            @click.prevent="increaseQuantity">
 
             <span class="material-icons"> add </span>
 
@@ -154,23 +106,9 @@
 
           <div class="col-lg-6 mb-30 mb-lg-0">
 
-            <details-gallery
-
-              :gallery-images="product.galleryImages"
-
-              :voucher-list="product.voucher_list"
-
-              :product-name="product.name"
-
-              :url="product.url"
-
-              :summary="product.summary"
-
-              :networks="product.shareOptions"
-
-              :key="galleryKey"
-
-            />
+            <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
+              :product-name="product.name" :url="product.url" :summary="product.summary"
+              :networks="product.shareOptions" :key="galleryKey" />
 
           </div>
 
@@ -178,23 +116,9 @@
 
           <div class="col-lg-6">
 
-            <details-content
-
-              v-if="visibleQuickView && product.id"
-
-              :product="product"
-
-              :force-show-actions="true"
-
-              @color-variant-images="colorVariantImages"
-
-              @variant-updating="variantUpdating = $event"
-
-              @quantity-change="orderQuantity = $event"
-
-              :key="product.id"
-
-            />
+            <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true"
+              @color-variant-images="colorVariantImages" @variant-updating="variantUpdating = $event"
+              @quantity-change="orderQuantity = $event" :key="product.id" />
 
           </div>
 
@@ -204,19 +128,8 @@
 
 
 
-      <custom-footer
-
-        v-if="showQuickViewCustomFooter"
-
-        class="quick-view-custom-footer"
-
-        :item="product"
-
-        :quantity-value="orderQuantity"
-
-        :disabled="variantUpdating"
-
-      />
+      <custom-footer v-if="showQuickViewCustomFooter" class="quick-view-custom-footer" :item="product"
+        :quantity-value="orderQuantity" :disabled="variantUpdating" />
 
     </CModal>
 
@@ -326,7 +239,9 @@ export default {
 
     }),
 
-    ...mapGetters("layout", ["isSplitScreen", "isMobile", "isRtl"]),
+    ...mapGetters("layout", ["isSplitScreen", "isFeaturePaneLayout", "isMobile", "isRtl"]),
+
+    // ...mapGetters("layout", ["isSplitScreen", "isMobile", "isRtl"]),
 
     cartLine() {
 
@@ -350,7 +265,7 @@ export default {
 
     showQuickViewCustomFooter() {
 
-      return this.isSplitScreen && this.visibleQuickView && !!this.product?.id;
+      return this.isFeaturePaneLayout && this.visibleQuickView && !!this.product?.id;
 
     },
 
@@ -672,7 +587,7 @@ export default {
 
         })
 
-        .catch(() => {});
+        .catch(() => { });
 
     },
 
@@ -685,7 +600,6 @@ export default {
 
 
 <style scoped>
-
 .product-list-row {
 
   display: flex;
@@ -956,7 +870,4 @@ export default {
 .product-list-row--rtl .product-list-row__quantity.quantity-input {
   direction: ltr;
 }
-
 </style>
-
-

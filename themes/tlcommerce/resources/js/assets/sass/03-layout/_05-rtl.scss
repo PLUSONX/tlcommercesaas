@@ -406,6 +406,22 @@ html.rtl {
             right: auto;
             left: 0;
         }
+
+        .offcanvas-menu ul ul {
+            padding-left: 0;
+            padding-right: 30px;
+        }
+
+        .offcanvas-menu .submenu-button {
+            right: auto;
+            left: 0;
+        }
+
+        .offcanvas-menu a,
+        .user-info,
+        .login-register {
+            text-align: right;
+        }
     }
 
     @media (min-width: 992px) {

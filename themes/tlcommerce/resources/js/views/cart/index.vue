@@ -386,10 +386,10 @@ export default {
       couponDiscounts: (state) => state.couponDiscount ? state.couponDiscount : [],
     }),
 
-    ...mapGetters('layout', ['isSplitScreen', 'isMobile']),
+    ...mapGetters('layout', ['isFeaturePaneLayout', 'isMobile']),
 
     forcedMobile() {
-      if (this.isSplitScreen && !this.isMobile) {
+      if (this.isFeaturePaneLayout && !this.isMobile) {
         return true;
       }
       return this.isMobile;

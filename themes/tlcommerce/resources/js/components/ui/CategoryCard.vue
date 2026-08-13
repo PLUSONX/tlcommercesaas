@@ -32,10 +32,10 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("layout", ["isSplitScreen"]),
+    ...mapGetters("layout", ["isFeaturePaneLayout"]),
 
     isSplitScreenLayout() {
-      return this.isSplitScreen;
+      return this.isFeaturePaneLayout;
     },
 
     cardClass() {

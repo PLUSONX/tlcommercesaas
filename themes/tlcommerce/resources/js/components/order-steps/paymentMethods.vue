@@ -203,7 +203,6 @@
 import axios from "axios";
 import { mapState, mapGetters } from "vuex";
 import { CSpinner } from "@coreui/vue";
-import { trackSocialPixels } from "@/utils/trackSocialPixels";
 export default {
   name: "PaymentMethods",
   emits: ["previous-step", "request-place-order"],
@@ -638,19 +637,6 @@ export default {
         formData.append("receipt", this.return_images);
       }
       formData.append("products", JSON.stringify(this.productPackages));
-
-      const items = this.$store.state.checkoutItems ?? [];
-
-      trackSocialPixels('InitiateCheckout', {
-        content_ids: items.map(item => String(item.id)),
-        contents: items.map(item => ({
-          id: String(item.id),
-          quantity: item.quantity ?? 1,
-        })),
-        currency: 'KWD',
-        value: this.cartTotal,   // numeric total
-        num_items: items.length,
-      });
 
       axios
         .post("/api/v1/ecommerce-core/guest/checkout", formData)

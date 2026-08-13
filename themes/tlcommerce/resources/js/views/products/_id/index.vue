@@ -3,10 +3,10 @@
     class="product-page-root"
     :class="{
       'has-product-footer': showProductStickyFooter,
-      'product-page--rtl': isSplitScreen && isRtl,
+      'product-page--rtl': isFeaturePaneLayout && isRtl,
     }"
   >
-    <div v-if="isSplitScreen && !isMobile" class="page-container split-screen-product-layout">
+    <div v-if="isFeaturePaneLayout" class="page-container split-screen-product-layout">
       <div class="productDetails split-screen-product-scroll" :class="{
         'force-mobile-layout': forcedMobile,
         'mobile-content-wrapper': forcedMobile,
@@ -573,7 +573,7 @@ export default {
     }),
 
     ...mapGetters('layout', [
-      'isSplitScreen',
+      'isFeaturePaneLayout',
       'isMobile',
       'isRtl',
       'contentColumnPercent',
@@ -581,7 +581,7 @@ export default {
     ]),
 
     isSplitScreenDesktop() {
-      return this.isSplitScreen;
+      return this.isFeaturePaneLayout;
     },
 
     forcedMobile() {
@@ -595,13 +595,13 @@ export default {
     showProductStickyFooter() {
       return (
         !!this.productData &&
-        (this.isSplitScreen || this.isMobile) &&
+        (this.isFeaturePaneLayout || this.isMobile) &&
         !this.isCurrentProductInCart
       );
     },
 
     splitContentFooterStyle() {
-      if (!this.isSplitScreen || this.isMobile) return {};
+      if (!this.isFeaturePaneLayout || this.isMobile) return {};
 
       const style = { width: `${this.contentColumnPercent}%` };
 

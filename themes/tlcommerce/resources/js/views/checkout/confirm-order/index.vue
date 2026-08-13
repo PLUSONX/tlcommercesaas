@@ -282,7 +282,11 @@ import PageHeader from "@/components/pageheader/PageHeader.vue";
 import ProductVariant from "@/components/ui/ProductVariant.vue";
 import axios from "axios";
 import { mapState, mapGetters } from "vuex";
-import { trackSocialPixels } from "@/utils/trackSocialPixels";
+import {
+  trackSocialPixels,
+  hasTrackedPurchase,
+  markPurchaseTracked,
+} from "@/utils/trackSocialPixels";
 import {
   CTable,
   CTableHead,
@@ -333,10 +337,10 @@ export default {
       isCustomerLogin: (state) => state.isCustomerLogin,
     }),
 
-    ...mapGetters('layout', ['isSplitScreen', 'isMobile', 'isRtl']),
+    ...mapGetters('layout', ['isFeaturePaneLayout', 'isMobile', 'isRtl']),
 
     forcedMobile() {
-      if (this.isSplitScreen && !this.isMobile) {
+      if (this.isFeaturePaneLayout && !this.isMobile) {
         return true;
       }
       return this.isMobile;
@@ -433,23 +437,37 @@ export default {
 
 
     trackMetaPurchase(order) {
+      if (!order?.id || hasTrackedPurchase(order.id)) {
+        return;
+      }
+
       const items = order.products?.data ?? [];
 
-      const contentIds = items.map(item => String(item.id));
+      const contentIds = items.map((item) =>
+        String(item.product_id ?? item.id)
+      );
 
-      const contents = items.map(item => ({
-        id: String(item.id),
+      const contents = items.map((item) => ({
+        id: String(item.product_id ?? item.id),
         quantity: item.quantity ?? 1,
       }));
 
-      trackSocialPixels('Purchase', {
-        content_ids: contentIds,
-        contents: contents,
-        content_type: 'product',
-        value: order.total_payable_amount,
-        currency: 'KWD',
-        num_items: items.length,
-      });
+      const value = Number(order.total_payable_amount);
+
+      markPurchaseTracked(order.id);
+
+      trackSocialPixels(
+        "Purchase",
+        {
+          content_ids: contentIds,
+          contents: contents,
+          content_type: "product",
+          value: Number.isFinite(value) ? value : 0,
+          currency: "KWD",
+          num_items: items.length,
+        },
+        { eventID: String(order.id) }
+      );
     }
     // guestCustomerOrderDetails() {
     //   console.log("guestCustomerOrderDetails method called!!!");

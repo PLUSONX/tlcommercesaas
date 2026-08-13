@@ -11,6 +11,9 @@ class LayoutSettingsRepository {
 
     private const ACTIVE_LAYOUT_CACHE_KEY = 'active-store-layout';
 
+    /** Layouts that use feature-pane props (same table/shape as split_screen). */
+    private const FEATURE_PANE_LAYOUTS = ['split_screen', 'modern'];
+
     /**
      * Get all layouts and the currently active layout
      * * @return array
@@ -23,10 +26,11 @@ class LayoutSettingsRepository {
             $activeLayout = $layouts->firstWhere('name', 'standard') ?? $layouts->first();
         }
 
-        $splitScreenLayout = $layouts->firstWhere('name', 'split_screen');
-        $splitScreenSettings = $splitScreenLayout
-            ? $this->getSplitScreenProperties($splitScreenLayout->id)
-            : null;
+        // Load feature-pane props for the active layout when it uses that settings shape
+        $splitScreenSettings = null;
+        if ($activeLayout && $this->isFeaturePaneLayout($activeLayout->name)) {
+            $splitScreenSettings = $this->getSplitScreenProperties($activeLayout->id);
+        }
 
         return [
             'layouts' => $layouts,
@@ -44,11 +48,14 @@ class LayoutSettingsRepository {
     {
         return DB::table('tl_store_layouts_split_screen_properties as props')
             ->leftJoin('tl_uploaded_files as files', 'props.feature_image', '=', 'files.id')
+            ->leftJoin('tl_uploaded_files as header_bg_files', 'props.header_background_image', '=', 'header_bg_files.id')
             ->where('props.layout_id', $layoutId)
             ->select(
                 'props.*',
                 'files.path as feature_image_path',
-                'files.name as feature_image_name'
+                'files.name as feature_image_name',
+                'header_bg_files.path as header_background_image_path',
+                'header_bg_files.name as header_background_image_name'
             )
             ->first();
     }
@@ -80,26 +87,35 @@ class LayoutSettingsRepository {
             return null;
         }
 
-        if ($layout->name === 'split_screen') {
-            $splitScreenSettings = $this->getSplitScreenProperties($layout->id);
+        if ($this->isFeaturePaneLayout($layout->name)) {
+            $featurePaneSettings = $this->getSplitScreenProperties($layout->id);
 
-            if ($splitScreenSettings && !empty($splitScreenSettings->feature_image)) {
-                $displayPath = getDisplayImagePath($splitScreenSettings->feature_image, 1600, false);
+            if ($featurePaneSettings && !empty($featurePaneSettings->feature_image)) {
+                $displayPath = getDisplayImagePath($featurePaneSettings->feature_image, 1600, false);
                 if ($displayPath) {
                     // BannerFeature expects a path without the /public prefix
-                    $splitScreenSettings->feature_image_path = preg_replace('#^/public/#', '', $displayPath);
-                    $splitScreenSettings->feature_image_path = ltrim($splitScreenSettings->feature_image_path, '/');
+                    $featurePaneSettings->feature_image_path = preg_replace('#^/public/#', '', $displayPath);
+                    $featurePaneSettings->feature_image_path = ltrim($featurePaneSettings->feature_image_path, '/');
                 }
             }
 
-            // Normalize to arrays for cache / JSON bootstrap
+            if ($featurePaneSettings && !empty($featurePaneSettings->header_background_image)) {
+                $headerBgPath = getDisplayImagePath($featurePaneSettings->header_background_image, 1600, false);
+                if ($headerBgPath) {
+                    $featurePaneSettings->header_background_image_path = preg_replace('#^/public/#', '', $headerBgPath);
+                    $featurePaneSettings->header_background_image_path = ltrim($featurePaneSettings->header_background_image_path, '/');
+                }
+            }
+
+            // Normalize to arrays for cache / JSON bootstrap.
+            // Key `split_screen` = feature-pane props blob (shared by split_screen + modern).
             return [
                 'id' => $layout->id,
                 'name' => $layout->name,
-                'type' => 'split_screen',
+                'type' => $layout->name,
                 'settings' => json_decode($layout->settings, true),
-                'split_screen' => $splitScreenSettings
-                    ? json_decode(json_encode($splitScreenSettings), true)
+                'split_screen' => $featurePaneSettings
+                    ? json_decode(json_encode($featurePaneSettings), true)
                     : null,
             ];
         }
@@ -125,6 +141,11 @@ class LayoutSettingsRepository {
         return tenantCacheKey(self::ACTIVE_LAYOUT_CACHE_KEY);
     }
 
+    private function isFeaturePaneLayout(?string $name): bool
+    {
+        return in_array($name, self::FEATURE_PANE_LAYOUTS, true);
+    }
+
     /**
      * Update Layout Settings
      * @return boolean
@@ -140,8 +161,12 @@ class LayoutSettingsRepository {
                 $updated = DB::table('tl_store_layouts')
                     ->where('id', $layoutId)
                     ->update(['is_active' => 1]);
-                
-                if ($layoutId == 4) {
+
+                $layoutName = DB::table('tl_store_layouts')
+                    ->where('id', $layoutId)
+                    ->value('name');
+
+                if ($this->isFeaturePaneLayout($layoutName)) {
                     $this->ensureSplitScreenDefaults($layoutId);
                 }
                     
@@ -160,7 +185,7 @@ class LayoutSettingsRepository {
     }
 
     /**
-     * Ensures default properties exist for the split screen layout
+     * Ensures default properties exist for a feature-pane layout (split_screen / modern)
      * @param int $layoutId
      */
     private function ensureSplitScreenDefaults($layoutId)
@@ -218,6 +243,10 @@ class LayoutSettingsRepository {
 
         if (isset($data['feature_image'])) {
             $updateData['feature_image'] = $data['feature_image'];
+        }
+
+        if (array_key_exists('header_background_image', $data)) {
+            $updateData['header_background_image'] = $data['header_background_image'] ?: null;
         }
 
         if (isset($data['background_color'])) {
