@@ -1,9 +1,18 @@
 <template>
+  <!-- Loader -->
+  <div class="product-details-loader" v-show="isLoading">
+    <div class="loader-spinner"></div>
+  </div>
   <!-- Product Details Content -->
+<<<<<<< Updated upstream
   <div
     class="product-details-content"
     :class="{ 'product-details-content--rtl': isFeaturePaneLayout && isRtl }"
   >
+=======
+  <div v-show="!isLoading" class="product-details-content"
+    :class="{ 'product-details-content--rtl': isSplitScreen && isRtl }">
+>>>>>>> Stashed changes
     <!--Flash deal info-->
     <div class="d-flex flash-deal flex-wrap justify-content-between mb-20 p-2 text-white"
       v-if="product.has_deal != null">
@@ -19,14 +28,11 @@
     <h1 class="product-title">{{ product.name }}</h1>
     <!--End Title-->
     <!-- Rating -->
-    <div
-      class="align-items-center d-flex rating-wrap"
-      v-if="
-        config?.enable_product_reviews == enums.status.ACTIVE &&
-        (config?.enable_product_star_rating == enums.status.ACTIVE ||
-          product.total_reviews > 0)
-      "
-    >
+    <div class="align-items-center d-flex rating-wrap" v-if="
+      config?.enable_product_reviews == enums.status.ACTIVE &&
+      (config?.enable_product_star_rating == enums.status.ACTIVE ||
+        product.total_reviews > 0)
+    ">
       <div class="d-flex align-items-center mr-15" v-if="config?.enable_product_star_rating == enums.status.ACTIVE">
         <div class="product-rating-wrapper">
           <i :data-star="product.rating" :title="product.rating"></i>
@@ -74,7 +80,13 @@
     <div class="product-price unit-price mt-25">
       <h6 class="mb-1">{{ $t("Price") }}</h6>
       <div class="price d-flex align-items-center">
-        <the-currency :amount="product.price" tag="h3" class="mb-0"></the-currency>
+        <span
+  class="price-current-wrap"
+  :class="{ 'price-flash': priceFlash }"
+  :style="priceFlashColor ? { '--price-flash-color': priceFlashColor } : {}"
+>
+          <the-currency :amount="product.price" tag="h3" class="mb-0"></the-currency>
+        </span> 
         <the-currency v-if="product.oldPrice > product.price" :amount="product.oldPrice" tag="del"
           class="ml-20"></the-currency>
       </div>
@@ -95,33 +107,19 @@
           <!-- Option List: split-screen list-cards (desktop + mobile) -->
           <template v-if="isFeaturePaneLayout">
             <div class="option-list-cards d-flex flex-column">
-              <component
-                :is="attr.multi_select ? 'div' : 'button'"
-                v-for="(option, j) in attr.options"
-                :key="option.id"
-                :type="attr.multi_select ? undefined : 'button'"
-                class="option-list-card text-start"
-                :class="{
+              <component :is="attr.multi_select ? 'div' : 'button'" v-for="(option, j) in attr.options" :key="option.id"
+                :type="attr.multi_select ? undefined : 'button'" class="option-list-card text-start" :class="{
                   'is-selected': attr.multi_select
                     ? getOptionSelectionCount(attr, option) > 0
                     : isOptionSelected(attr, option),
                   'option-list-card--multi-select': attr.multi_select,
-                }"
-                :aria-pressed="attr.multi_select
+                }" :aria-pressed="attr.multi_select
                   ? getOptionSelectionCount(attr, option) > 0
                   : isOptionSelected(attr, option)"
-                @click.prevent="!attr.multi_select && updateSelectedVariant(attr, option)"
-              >
+                @click.prevent="!attr.multi_select && updateSelectedVariant(attr, option)">
                 <template v-if="attr.title == 'color'">
-                  <span
-                    class="option-list-card__swatch"
-                    :style="{ backgroundColor: option.value }"
-                  >
-                    <img
-                      v-if="option.image"
-                      :src="cleanImage(option.image)"
-                      :alt="`${option.name}`"
-                    />
+                  <span class="option-list-card__swatch" :style="{ backgroundColor: option.value }">
+                    <img v-if="option.image" :src="cleanImage(option.image)" :alt="`${option.name}`" />
                   </span>
                   <span class="option-list-card__label text-capitalize">{{
                     option.name
@@ -140,28 +138,17 @@
                   </span>
                 </template>
 
-                <div
-                  v-if="attr.multi_select"
-                  class="multi-select-option-qty"
-                  @click.stop
-                >
-                  <button
-                    type="button"
-                    class="multi-select-option-qty__btn"
+                <div v-if="attr.multi_select" class="multi-select-option-qty" @click.stop>
+                  <button type="button" class="multi-select-option-qty__btn"
                     :disabled="getOptionSelectionCount(attr, option) === 0"
-                    @click.prevent="decreaseOptionSelection(attr, option)"
-                  >
+                    @click.prevent="decreaseOptionSelection(attr, option)">
                     −
                   </button>
                   <span class="multi-select-option-qty__count">{{
                     getOptionSelectionCount(attr, option)
                   }}</span>
-                  <button
-                    type="button"
-                    class="multi-select-option-qty__btn"
-                    :disabled="!canAddOptionSelection(attr)"
-                    @click.prevent="increaseOptionSelection(attr, option)"
-                  >
+                  <button type="button" class="multi-select-option-qty__btn" :disabled="!canAddOptionSelection(attr)"
+                    @click.prevent="increaseOptionSelection(attr, option)">
                     +
                   </button>
                 </div>
@@ -172,33 +159,21 @@
           <template v-else>
             <div class="checkbox-group d-flex flex-wrap">
               <div v-for="(option, j) in attr.options" :key="option.id">
-                <div
-                  v-if="attr.multi_select"
-                  class="multi-select-option d-flex align-items-center"
-                  :class="{
-                    'is-selected': getOptionSelectionCount(attr, option) > 0,
-                  }"
-                >
-                  <span
-                    class="multi-select-option__label checkmark text-capitalize"
-                    :class="{
-                      'p-0': attr.title == 'color',
-                      'text-uppercase': attr.title == 'size',
-                    }"
-                    :style="attr.title == 'color'
-                      ? {
-                        backgroundColor: option.value,
-                        height: '50px',
-                        width: '50px',
-                      }
-                      : null"
-                  >
+                <div v-if="attr.multi_select" class="multi-select-option d-flex align-items-center" :class="{
+                  'is-selected': getOptionSelectionCount(attr, option) > 0,
+                }">
+                  <span class="multi-select-option__label checkmark text-capitalize" :class="{
+                    'p-0': attr.title == 'color',
+                    'text-uppercase': attr.title == 'size',
+                  }" :style="attr.title == 'color'
+                    ? {
+                      backgroundColor: option.value,
+                      height: '50px',
+                      width: '50px',
+                    }
+                    : null">
                     <template v-if="attr.title == 'color'">
-                      <img
-                        :src="cleanImage(option.image)"
-                        :alt="`${option.name}`"
-                        v-if="option.image"
-                      />
+                      <img :src="cleanImage(option.image)" :alt="`${option.name}`" v-if="option.image" />
                       <p v-else>{{ option.name }}</p>
                     </template>
                     <template v-else-if="attr.title == 'size'">
@@ -209,40 +184,25 @@
                     </template>
                   </span>
                   <div class="multi-select-option-qty">
-                    <button
-                      type="button"
-                      class="multi-select-option-qty__btn"
+                    <button type="button" class="multi-select-option-qty__btn"
                       :disabled="getOptionSelectionCount(attr, option) === 0"
-                      @click.prevent="decreaseOptionSelection(attr, option)"
-                    >
+                      @click.prevent="decreaseOptionSelection(attr, option)">
                       −
                     </button>
                     <span class="multi-select-option-qty__count">{{
                       getOptionSelectionCount(attr, option)
                     }}</span>
-                    <button
-                      type="button"
-                      class="multi-select-option-qty__btn"
-                      :disabled="!canAddOptionSelection(attr)"
-                      @click.prevent="increaseOptionSelection(attr, option)"
-                    >
+                    <button type="button" class="multi-select-option-qty__btn" :disabled="!canAddOptionSelection(attr)"
+                      @click.prevent="increaseOptionSelection(attr, option)">
                       +
                     </button>
                   </div>
                 </div>
-                <label
-                  v-else
-                  class="custom-checkbox--two position-relative"
-                  :for="`p${product.id}-${attr.id}-option-${option.id}`"
-                >
-                  <input
-                    :id="`p${product.id}-${attr.id}-option-${option.id}`"
-                    type="radio"
-                    :name="`product_${product.id}_${attr.id}`"
-                    :value="option"
-                    :checked="isOptionSelected(attr, option)"
-                    v-on:change="updateSelectedVariant(attr, option)"
-                  />
+                <label v-else class="custom-checkbox--two position-relative"
+                  :for="`p${product.id}-${attr.id}-option-${option.id}`">
+                  <input :id="`p${product.id}-${attr.id}-option-${option.id}`" type="radio"
+                    :name="`product_${product.id}_${attr.id}`" :value="option" :checked="isOptionSelected(attr, option)"
+                    v-on:change="updateSelectedVariant(attr, option)" />
 
                   <template v-if="attr.title == 'color'">
                     <span class="checkmark p-0" :style="{
@@ -405,7 +365,7 @@ import {
   stripMultiSelectSegments,
 } from "@/utils/variantSelection";
 export default {
-  emits: ["goto-section", "color-variant-images", "variant-updating", "quantity-change"],
+  emits: ["goto-section", "color-variant-images", "variant-updating", "quantity-change", "ready"],
   components: {
     Countdown,
   },
@@ -423,19 +383,25 @@ export default {
       default: null,
     },
   },
-  data() {
-    return {
-      enums: enums,
-      errors: [],
-      attachment: null,
-      variantUpdating: false,
-      quantityValue:
-        this.product.min_item_on_purchase != null &&
-          this.product.min_item_on_purchase > 0
-          ? parseInt(this.product.min_item_on_purchase)
-          : 1,
-    };
-  },
+data() {
+  return {
+    enums: enums,
+    errors: [],
+    attachment: null,
+    variantUpdating: false,
+    isLoading: true,
+    priceFlash: false,
+    priceFlashColor: null,
+    priceFlashTimeout: null,
+    flashColors: ["#ff5a1f", "#0d6efd", "#198754", "#d63384", "#6f42c1", "#fd7e14"],
+    flashColorIndex: 0,
+    quantityValue:
+  this.product.min_item_on_purchase != null &&
+    this.product.min_item_on_purchase > 0
+    ? parseInt(this.product.min_item_on_purchase)
+    : 1,
+  };
+},
   computed: mapState({
     customerToken: (state) => state.customerToken,
     isCustomerLogin: (state) => state.isCustomerLogin,
@@ -513,6 +479,9 @@ export default {
 
   }),
   watch: {
+     "product.id"() {
+    this.startLoading();
+  },
     quantitySeed: {
       handler(value) {
         if (value == null || value === "") {
@@ -540,10 +509,40 @@ export default {
     },
   },
   mounted() {
-    this.initializeMultiSelectAttributes();
-    this.$emit("quantity-change", this.quantityValue);
+     this.initializeMultiSelectAttributes();
+  this.$emit("quantity-change", this.quantityValue);
+  this.startLoading();
   },
-  methods: {
+methods: {
+  startLoading() {
+    const minTime = new Promise((resolve) => setTimeout(resolve, 600));
+    const imagesLoaded = new Promise((resolve) => {
+      this.$nextTick(() => {
+        const imgs = this.$el.querySelectorAll ? this.$el.querySelectorAll("img") : [];
+        if (!imgs.length) return resolve();
+        let loaded = 0;
+        imgs.forEach((img) => {
+          if (img.complete) {
+            loaded++;
+            if (loaded === imgs.length) resolve();
+          } else {
+            img.addEventListener("load", () => { loaded++; if (loaded === imgs.length) resolve(); });
+            img.addEventListener("error", () => { loaded++; if (loaded === imgs.length) resolve(); });
+          }
+        });
+      });
+    });
+    Promise.all([minTime, imagesLoaded]).then(() => {
+      this.isLoading = false;
+      this.$emit("ready");
+    });
+  },
+  nextFlashColor() {
+    const color = this.flashColors[this.flashColorIndex % this.flashColors.length];
+    this.flashColorIndex++;
+    return color;
+  },
+
     decreaseQuantity() {
       if (this.quantityValue > this.min_qty) {
         this.quantityValue--;
@@ -663,6 +662,20 @@ export default {
             this.product.selectedVariant = response.data.new_variant;
             this.product.quantity = response.data.quantity;
             this.product.oldPrice = response.data.oldPrice;
+
+            if (this.priceFlashTimeout) {
+  clearTimeout(this.priceFlashTimeout);
+              }
+              this.priceFlash = false;
+              this.$nextTick(() => {
+                this.priceFlashColor = this.nextFlashColor();
+                this.priceFlash = true;
+                // small delay just to retrigger the pulse animation class next time,
+                // NOT to revert the color
+                this.priceFlashTimeout = setTimeout(() => {
+                  this.priceFlash = false; // only resets the animation trigger class
+                }, 700);
+              });
           } else {
             this.$toast.error(this.$t("Something went wrong"));
           }
@@ -854,6 +867,87 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "../../assets/sass/00-abstracts/01-variables";
+
+.product-details-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  width: 100%;
+
+  .loader-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba($c1, 0.2);
+    border-top-color: $c1;
+    border-radius: 50%;
+    animation: product-details-spin 0.7s linear infinite;
+  }
+}
+
+@keyframes product-details-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes priceFlashAnim {
+  0% {
+    color: var(--price-flash-color, $c1);
+  }
+  100% {
+    color: #222;
+  }
+}
+
+.unit-price .price h3 {
+  font-size: 25px;
+  font-weight: 700;
+  // color: #222;
+}
+
+/* Price range sizing — applies everywhere, LTR and RTL */
+.product-price.price-range {
+  max-width: 240px;
+
+  h6 {
+    font-size: 12px;
+  }
+
+  .price {
+    h3 {
+      font-size: 16px;
+      margin-right: 10px !important;
+    }
+
+    del {
+      font-size: 12px;
+    }
+  }
+}
+
+.price-current-wrap.price-flash {
+  :deep(h3) {
+    animation: priceFlashPulse 0.7s ease;
+  }
+}
+
+@keyframes priceFlashPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+.price-current-wrap {
+  :deep(h3) {
+    color: var(--price-flash-color, #222);
+    transition: color 0.25s ease;
+  }
+}
+
+// .price-flash {
+//   animation: priceFlashAnim 0.7s ease;
+// }
 
 .option-label {
   font-weight: 700;
@@ -1122,6 +1216,7 @@ export default {
 
 /* RTL — explicit swap (split-screen content column is direction: ltr) */
 .product-details-content--rtl {
+
   .product-title,
   .product-summary-section,
   h6 {
@@ -1134,7 +1229,7 @@ export default {
     direction: rtl;
     justify-content: flex-start;
 
-    > .d-flex.align-items-center {
+    >.d-flex.align-items-center {
       flex-direction: row-reverse;
       direction: ltr;
     }

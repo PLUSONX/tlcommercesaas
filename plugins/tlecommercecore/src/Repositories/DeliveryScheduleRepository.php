@@ -53,6 +53,8 @@ class DeliveryScheduleRepository
             'delivery_scheduling_lead_time_unit' => SettingsRepository::getEcommerceSetting('delivery_scheduling_lead_time_unit') ?: config('tlecommercecore.time_unit.Hours'),
             'delivery_scheduling_required' => SettingsRepository::getEcommerceSetting('delivery_scheduling_required'),
             'delivery_scheduling_horizon_days' => $this->bookingHorizonDays(),
+            'delivery_cutoff_time' =>
+            SettingsRepository::getEcommerceSetting('delivery_cutoff_time') ?: '21:00',
         ];
     }
 
@@ -77,6 +79,8 @@ class DeliveryScheduleRepository
                     ? config('settings.general_status.active')
                     : config('settings.general_status.in_active'),
                 'delivery_scheduling_horizon_days' => max(1, min(90, (int) $request->input('delivery_scheduling_horizon_days', 30))),
+                'delivery_cutoff_time' =>
+                $request->input('delivery_cutoff_time', '21:00'),
             ];
 
             foreach ($settings as $key => $value) {
@@ -270,7 +274,7 @@ class DeliveryScheduleRepository
         return DB::table(self::ORDER_SCHEDULES_TABLE)
             ->whereIn('order_id', $orderIds)
             ->get()
-            ->mapWithKeys(fn ($row) => [(int) $row->order_id => $this->mapOrderScheduleRow($row)])
+            ->mapWithKeys(fn($row) => [(int) $row->order_id => $this->mapOrderScheduleRow($row)])
             ->all();
     }
 
@@ -419,8 +423,10 @@ class DeliveryScheduleRepository
                     $startTime = $this->normalizeTime($slot['start_time'] ?? '');
                     $endTime = $this->normalizeTime($slot['end_time'] ?? '');
 
-                    if ($this->hasOverlap($scheduleDate, $startTime, $endTime)
-                        || $this->hasPendingOverlap($pendingSlots, $startTime, $endTime)) {
+                    if (
+                        $this->hasOverlap($scheduleDate, $startTime, $endTime)
+                        || $this->hasPendingOverlap($pendingSlots, $startTime, $endTime)
+                    ) {
                         $skippedCount++;
                         continue;
                     }
@@ -530,8 +536,10 @@ class DeliveryScheduleRepository
                     $startTime = $this->normalizeTime($slot['start_time'] ?? '');
                     $endTime = $this->normalizeTime($slot['end_time'] ?? '');
 
-                    if ($this->hasOverlap($scheduleDate, $startTime, $endTime)
-                        || $this->hasPendingOverlap($pendingSlots, $startTime, $endTime)) {
+                    if (
+                        $this->hasOverlap($scheduleDate, $startTime, $endTime)
+                        || $this->hasPendingOverlap($pendingSlots, $startTime, $endTime)
+                    ) {
                         $skippedCount++;
                         continue;
                     }
@@ -610,8 +618,10 @@ class DeliveryScheduleRepository
                     ];
                 }
 
-                if ($this->hasOverlap($scheduleDate, $startTime, $endTime)
-                    || $this->hasPendingOverlap($pendingSlots, $startTime, $endTime)) {
+                if (
+                    $this->hasOverlap($scheduleDate, $startTime, $endTime)
+                    || $this->hasPendingOverlap($pendingSlots, $startTime, $endTime)
+                ) {
                     DB::rollBack();
 
                     return [
@@ -855,8 +865,10 @@ class DeliveryScheduleRepository
                 $startTime = $this->normalizeTime($slot->start_time);
                 $endTime = $this->normalizeTime($slot->end_time);
 
-                if ($this->hasOverlap($targetDate, $startTime, $endTime)
-                    || $this->hasPendingOverlap($pendingSlots, $startTime, $endTime)) {
+                if (
+                    $this->hasOverlap($targetDate, $startTime, $endTime)
+                    || $this->hasPendingOverlap($pendingSlots, $startTime, $endTime)
+                ) {
                     $skippedCount++;
                     continue;
                 }
