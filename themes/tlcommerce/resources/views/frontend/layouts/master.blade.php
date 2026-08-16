@@ -135,11 +135,21 @@
             'https://connect.facebook.net/en_US/fbevents.js');
             fbq('init', '{{ $fbPixelId }}');
             fbq('track', 'PageView');
+            console.log('[tlc-pixel] init', '{{ $fbPixelId }}', 'fbq=', typeof fbq);
+            console.log('[tlc-pixel] PageView queued');
         </script>
         <noscript>
             <img height="1" width="1" style="display:none"
                  src="https://www.facebook.com/tr?id={{ $fbPixelId }}&ev=PageView&noscript=1"/>
         </noscript>
+    @else
+        <script>
+            console.warn('[tlc-pixel] skipped', {
+                integration: {{ $facebook_integration ? 'true' : 'false' }},
+                active: {{ $facebook_integration && $facebook_integration->is_active ? 'true' : 'false' }},
+                hasPixelId: {{ $fbPixelId ? 'true' : 'false' }},
+            });
+        </script>
     @endif
 
     @if ($tiktokPixelId)

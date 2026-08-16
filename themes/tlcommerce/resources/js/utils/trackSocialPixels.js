@@ -212,9 +212,12 @@ function persistAnalyticsEvent(event, payload = {}) {
 async function fireFacebook(event, payload, options) {
   try {
     const ready = await waitFor(() => typeof window.fbq === 'function');
+    console.log('[tlc-pixel] fbq wait', event, ready);
     if (!ready) {
+      console.warn('[tlc-pixel] fbq missing, drop', event);
       return false;
     }
+    console.log('[tlc-pixel] fbq track', event, payload, options || null);
     if (options) {
       window.fbq('track', event, payload, options);
     } else {
