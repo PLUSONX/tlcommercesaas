@@ -18,7 +18,7 @@ const ANALYTICS_TRACK_URL = '/api/v1/ecommerce-core/analytics/track';
 const STORE_VISIT_SESSION_KEY = 'tlc_analytics_store_visit';
 const INITIATE_CHECKOUT_SESSION_KEY = 'tlc_pixel_initiate_checkout';
 const PURCHASE_SESSION_PREFIX = 'tlc_pixel_purchase_';
-const PIXEL_WAIT_MS = 2000;
+const PIXEL_WAIT_MS = 5000;
 const PIXEL_POLL_MS = 100;
 
 function mapTikTokEvent(event) {
@@ -213,15 +213,17 @@ async function fireFacebook(event, payload, options) {
   try {
     const ready = await waitFor(() => typeof window.fbq === 'function');
     if (!ready) {
-      return;
+      return false;
     }
     if (options) {
       window.fbq('track', event, payload, options);
     } else {
       window.fbq('track', event, payload);
     }
+    return true;
   } catch (e) {
     console.error('[pixels] fbq failed', e);
+    return false;
   }
 }
 
@@ -253,15 +255,18 @@ async function fireSnapchat(event, payload) {
  * Fire-and-forget social pixel tracking. Each provider is isolated so
  * a failure in one SDK never affects checkout or other trackers.
  * Also mirrors selected events into tl_com_analytics_events (best-effort).
- * Retries briefly if the deferred pixel stub is not on window yet.
+ * Retries briefly if the pixel stub is not on window yet.
+ * Resolves true when Facebook fbq('track') ran.
  */
 export function trackSocialPixels(event, payload = {}, options = {}) {
   const normalized = coercePayload(payload);
   const fbOptions = metaTrackOptions(options);
 
-  fireFacebook(event, normalized, fbOptions);
+  const fbFired = fireFacebook(event, normalized, fbOptions);
   fireTikTok(event, normalized);
   fireSnapchat(event, normalized);
 
   persistAnalyticsEvent(event, normalized);
+
+  return fbFired;
 }

@@ -379,12 +379,12 @@ export default {
             },
           }
         )
-        .then((response) => {
+        .then(async (response) => {
           if (response.data.success) {
             this.orderDetails = response.data.data;
             this.success = true;
             try {
-              this.trackMetaPurchase(response.data.data);
+              await this.trackMetaPurchase(response.data.data);
             } catch (trackingError) {
               console.error("trackMetaPurchase failed:", trackingError);
             }
@@ -407,7 +407,7 @@ export default {
         .post("/api/v1/ecommerce-core/guest/order/details", {
           order_code: this.order_code,
         })
-        .then((response) => {
+        .then(async (response) => {
           // console.log("response: ", response);
           // console.log("response.data.success: ", response.data.success);  // debug
           // console.log("response.data.data: ", response.data.data);        // debug
@@ -417,7 +417,7 @@ export default {
             this.success = true;
 
             try {
-              this.trackMetaPurchase(response.data.data);
+              await this.trackMetaPurchase(response.data.data);
             } catch (trackingError) {
               console.error("trackMetaPurchase failed:", trackingError);
             }
@@ -436,7 +436,7 @@ export default {
     },
 
 
-    trackMetaPurchase(order) {
+    async trackMetaPurchase(order) {
       if (!order?.id || hasTrackedPurchase(order.id)) {
         return;
       }
@@ -454,9 +454,7 @@ export default {
 
       const value = Number(order.total_payable_amount);
 
-      markPurchaseTracked(order.id);
-
-      trackSocialPixels(
+      const fired = await trackSocialPixels(
         "Purchase",
         {
           content_ids: contentIds,
@@ -468,6 +466,10 @@ export default {
         },
         { eventID: String(order.id) }
       );
+
+      if (fired) {
+        markPurchaseTracked(order.id);
+      }
     }
     // guestCustomerOrderDetails() {
     //   console.log("guestCustomerOrderDetails method called!!!");
