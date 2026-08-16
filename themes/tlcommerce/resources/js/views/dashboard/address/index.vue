@@ -106,7 +106,7 @@
               {{ $t("Phone") }} <span class="text-danger">*</span></label>
             <div class="">
               <div class="phone-number-wrap d-flex">
-                <input type="tel" v-bind:placeholder="$t('Phone Number')" class="theme-input-style" required
+                <input type="tel" v-bind:placeholder="kuwaitMobileHint" class="theme-input-style" required
                   v-model="addressInfo.phone" />
               </div>
               <template v-if="errors.phone">
@@ -246,7 +246,7 @@
               {{ $t("Phone") }} <span class="text-danger">*</span></label>
             <div class="">
               <div class="phone-number-wrap d-flex">
-                <input type="tel" v-bind:placeholder="$t('Phone Number')" class="theme-input-style" required
+                <input type="tel" v-bind:placeholder="kuwaitMobileHint" class="theme-input-style" required
                   v-model="editAddressInfo.phone" />
               </div>
               <template v-if="errors.phone">
@@ -426,6 +426,11 @@ import {
   CModalBody,
   CModalFooter,
 } from "@coreui/vue";
+import {
+  isValidKuwaitMobile,
+  KUWAIT_MOBILE_ERROR,
+  KUWAIT_MOBILE_HINT,
+} from "@/utils/kuwaitPhone";
 
 export default {
   name: "CustomerAddress",
@@ -484,6 +489,12 @@ export default {
         return true;
       }
       return this.isMobile;
+    },
+    kuwaitMobileHint() {
+      return this.$t(KUWAIT_MOBILE_HINT);
+    },
+    kuwaitMobileError() {
+      return this.$t(KUWAIT_MOBILE_ERROR);
     },
   },
   // computed: mapState({
@@ -596,6 +607,11 @@ export default {
      */
     saveAddress() {
       this.new_address_submitting = true;
+      if (!isValidKuwaitMobile(this.addressInfo.phone)) {
+        this.errors = { phone: [this.kuwaitMobileError] };
+        this.new_address_submitting = false;
+        return;
+      }
       let formData = new FormData();
       formData.append("name", this.addressInfo.name);
       formData.append("phone_code", this.addressInfo.phone_code);
@@ -690,6 +706,11 @@ export default {
      */
     updateAddress() {
       this.update_address_submitting = true;
+      if (!isValidKuwaitMobile(this.editAddressInfo.phone)) {
+        this.errors = { phone: [this.kuwaitMobileError] };
+        this.update_address_submitting = false;
+        return;
+      }
       let formData = new FormData();
       formData.append("id", this.editAddressInfo.id);
       formData.append("name", this.editAddressInfo.name);

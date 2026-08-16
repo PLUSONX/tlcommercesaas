@@ -1,20 +1,14 @@
 <template>
-  <div
-    class="delivery-time-section"
-    :class="{
-      'col-12 mb-20': !isHomepageVariant,
-      'delivery-time-section--homepage': isHomepageVariant,
-      'delivery-time-section--rtl': isRtl,
-    }"
-  >
+  <div class="delivery-time-section" :class="{
+    'col-12 mb-20': !isHomepageVariant,
+    'delivery-time-section--homepage': isHomepageVariant,
+    'delivery-time-section--rtl': isRtl,
+  }">
     <template v-if="!isHomepageVariant">
       <h5 class="mb-3">{{ $t("Delivery Time") }}:</h5>
 
       <!-- Dynamic delivery cutoff note -->
-      <p
-        v-if="deliveryInfoText"
-        class="delivery-time-note mb-3"
-      >
+      <p v-if="deliveryInfoText" class="delivery-time-note mb-3">
         <span class="material-icons delivery-time-note__icon">
           info
         </span>
@@ -26,85 +20,49 @@
 
       <div class="delivery-time-options">
         <label v-if="!isSchedulingRequired" class="d-flex align-items-center gap-2 radio-label mb-2">
-          <input
-            type="radio"
-            name="delivery-time-mode"
-            value="now"
-            :checked="deliveryMode === 'now'"
-            @change="selectMode('now')"
-          />
+          <input type="radio" name="delivery-time-mode" value="now" :checked="deliveryMode === 'now'"
+            @change="selectMode('now')" />
           <span class="radio-text">{{ $t("Now") }}</span>
         </label>
 
         <label class="d-flex align-items-center gap-2 radio-label mb-2">
-          <input
-            type="radio"
-            name="delivery-time-mode"
-            value="scheduled"
-            :checked="deliveryMode === 'scheduled'"
-            @change="selectMode('scheduled')"
-          />
+          <input type="radio" name="delivery-time-mode" value="scheduled" :checked="deliveryMode === 'scheduled'"
+            @change="selectMode('scheduled')" />
           <span class="radio-text">{{ $t("Choose Delivery Time") }}</span>
         </label>
       </div>
 
-      <div
-        v-if="deliveryMode === 'scheduled' && !selectedSlot"
-        class="delivery-time-prompt"
-        role="button"
-        tabindex="0"
-        @click="openSlotModal(false)"
-        @keyup.enter="openSlotModal(false)"
-      >
+      <div v-if="deliveryMode === 'scheduled' && !selectedSlot" class="delivery-time-prompt" role="button" tabindex="0"
+        @click="openSlotModal(false)" @keyup.enter="openSlotModal(false)">
         <span class="material-icons delivery-time-prompt__icon">schedule</span>
         <span>{{ $t("Please select your preferred delivery time") }}</span>
       </div>
 
-      <div
-        v-if="deliveryMode === 'scheduled' && selectedSlot"
-        class="delivery-time-summary"
-      >
+      <div v-if="deliveryMode === 'scheduled' && selectedSlot" class="delivery-time-summary">
         <div class="delivery-time-summary__content">
           <span class="material-icons delivery-time-summary__icon">schedule</span>
           <span>{{ formatSelectedSlot(selectedSlot) }}</span>
         </div>
 
-        <button
-          type="button"
-          class="btn_underline"
-          @click.prevent="openSlotModal(true)"
-        >
+        <button type="button" class="btn_underline" @click.prevent="openSlotModal(true)">
           {{ $t("Change") }}
         </button>
       </div>
 
-      <p
-        v-if="scheduleError"
-        class="text-danger validation-error mb-0 mt-2"
-      >
+      <p v-if="scheduleError" class="text-danger validation-error mb-0 mt-2">
         {{ scheduleError }}
       </p>
     </template>
 
-    <CModal
-      scrollable
-      alignment="center"
-      :visible="slotModalVisible"
-      size="md"
-      :class="['delivery-schedule-modal', { 'delivery-schedule-modal--rtl': isRtl }]"
-      @close.prevent="closeSlotModal"
-    >
+    <CModal scrollable alignment="center" :visible="slotModalVisible" size="md"
+      :class="['delivery-schedule-modal', { 'delivery-schedule-modal--rtl': isRtl }]" @close.prevent="closeSlotModal">
       <CModalHeader class="delivery-modal-header-wrapper">
         <div class="delivery-modal-header">
 
           <div class="delivery-modal-header__title-area">
             <div class="delivery-modal-header__title-row">
-              <button
-                v-if="isHomepageVariant && modalStep === 'schedule'"
-                type="button"
-                class="delivery-modal-back"
-                @click.prevent="backToOptionsStep"
-              >
+              <button v-if="isHomepageVariant && modalStep === 'schedule'" type="button" class="delivery-modal-back"
+                @click.prevent="backToOptionsStep">
                 <span class="material-icons">{{ isRtl ? 'arrow_forward' : 'arrow_back' }}</span>
               </button>
 
@@ -112,10 +70,7 @@
             </div>
 
             <!-- Dynamic delivery cutoff note inside modal -->
-            <div
-              v-if="isHomepageVariant && modalStep === 'options' && deliveryInfoText"
-              class="delivery-modal-note"
-            >
+            <div v-if="isHomepageVariant && modalStep === 'options' && deliveryInfoText" class="delivery-modal-note">
               <span class="material-icons delivery-modal-note__icon">
                 info
               </span>
@@ -126,32 +81,18 @@
             </div>
           </div>
 
-          <button
-            type="button"
-            class="delivery-modal-close"
-            @click.prevent="closeSlotModal"
-          >
+          <button type="button" class="delivery-modal-close" @click.prevent="closeSlotModal">
             <span class="material-icons">close</span>
           </button>
         </div>
       </CModalHeader>
 
       <CModalBody ref="modalBody">
-        <div
-          v-if="isHomepageVariant && modalStep === 'options'"
-          class="delivery-time-options delivery-time-options--modal"
-        >
-          <label
-            v-if="!isSchedulingRequired"
-            class="delivery-modal-option"
-          >
-            <input
-              type="radio"
-              name="delivery-time-mode-homepage"
-              value="now"
-              :checked="deliveryMode === 'now'"
-              @change="selectHomepageMode('now')"
-            />
+        <div v-if="isHomepageVariant && modalStep === 'options'"
+          class="delivery-time-options delivery-time-options--modal">
+          <label v-if="!isSchedulingRequired" class="delivery-modal-option">
+            <input type="radio" name="delivery-time-mode-homepage" value="now" :checked="deliveryMode === 'now'"
+              @change="selectHomepageMode('now')" />
 
             <span class="radio-text">
               {{ $t("Now") }}
@@ -160,25 +101,16 @@
 
           <div class="delivery-modal-option-row">
             <label class="delivery-modal-option mb-0">
-              <input
-                type="radio"
-                name="delivery-time-mode-homepage"
-                value="scheduled"
-                :checked="deliveryMode === 'scheduled'"
-                @change="selectHomepageMode('scheduled')"
-              />
+              <input type="radio" name="delivery-time-mode-homepage" value="scheduled"
+                :checked="deliveryMode === 'scheduled'" @change="selectHomepageMode('scheduled')" />
 
               <span class="radio-text">
                 {{ $t("Choose Delivery Time") }}
               </span>
             </label>
 
-            <button
-              v-if="deliveryMode === 'scheduled'"
-              type="button"
-              class="delivery-modal-change-btn"
-              @click.prevent="goToScheduleStep(true)"
-            >
+            <button v-if="deliveryMode === 'scheduled'" type="button" class="delivery-modal-change-btn"
+              @click.prevent="goToScheduleStep(true)">
               {{ selectedSlot ? $t("Change") : $t("Select Time") }}
             </button>
           </div>
@@ -189,10 +121,7 @@
             {{ $t("Loading") }}...
           </div>
 
-          <div
-            v-else-if="availableDates.length === 0"
-            class="p-3 text-center text-muted"
-          >
+          <div v-else-if="availableDates.length === 0" class="p-3 text-center text-muted">
             {{ $t("No delivery times available") }}
           </div>
 
@@ -209,75 +138,45 @@
               </div>
 
               <div class="delivery-calendar__weekdays">
-                <span
-                  v-for="day in weekdayLabels"
-                  :key="day"
-                >
+                <span v-for="day in weekdayLabels" :key="day">
                   {{ day }}
                 </span>
               </div>
 
               <div class="delivery-calendar__grid">
-                <button
-                  v-for="(cell, index) in calendarCells"
-                  :key="index"
-                  type="button"
-                  class="delivery-calendar__day"
+                <button v-for="(cell, index) in calendarCells" :key="index" type="button" class="delivery-calendar__day"
                   :class="{
                     'delivery-calendar__day--outside': !cell.inMonth,
                     'delivery-calendar__day--selectable': cell.isSelectable,
                     'delivery-calendar__day--selected': cell.isSelected,
                     'delivery-calendar__day--today': cell.isToday,
-                  }"
-                  :disabled="!cell.isSelectable"
-                  @click.prevent="selectCalendarDate(cell.date)"
-                >
+                  }" :disabled="!cell.isSelectable" @click.prevent="selectCalendarDate(cell.date)">
                   {{ cell.dayNumber }}
                 </button>
               </div>
             </div>
 
-            <div
-              ref="slotsPanel"
-              class="delivery-slots-panel"
-            >
+            <div ref="slotsPanel" class="delivery-slots-panel">
               <h6 class="delivery-slots-panel__title">
                 {{ $t("Select Delivery Time") }}
               </h6>
 
-              <p
-                v-if="pendingDate"
-                class="delivery-slots-panel__date text-muted"
-              >
+              <p v-if="pendingDate" class="delivery-slots-panel__date text-muted">
                 {{ pendingDateLabel }}
               </p>
 
-              <p
-                v-else
-                class="delivery-slots-panel__hint text-muted"
-              >
+              <p v-else class="delivery-slots-panel__hint text-muted">
                 {{ $t("Select a date above") }}
               </p>
 
-              <div
-                v-if="pendingDate && slotsForPendingDate.length === 0"
-                class="text-center text-muted py-3"
-              >
+              <div v-if="pendingDate && slotsForPendingDate.length === 0" class="text-center text-muted py-3">
                 {{ $t("No delivery times available") }}
               </div>
 
-              <div
-                v-else-if="pendingDate"
-                class="delivery-time-slots-grid"
-              >
-                <button
-                  v-for="slot in slotsForPendingDate"
-                  :key="slot.id"
-                  type="button"
-                  class="delivery-time-slot-btn"
+              <div v-else-if="pendingDate" class="delivery-time-slots-grid">
+                <button v-for="slot in slotsForPendingDate" :key="slot.id" type="button" class="delivery-time-slot-btn"
                   :class="{ active: pendingSlot && pendingSlot.id === slot.id }"
-                  @click.prevent="selectPendingSlot(slot)"
-                >
+                  @click.prevent="selectPendingSlot(slot)">
                   {{ formatSlotDisplay(slot) }}
                 </button>
               </div>
@@ -286,16 +185,8 @@
         </template>
       </CModalBody>
 
-      <CModalFooter
-        v-if="showConfirmFooter"
-        class="delivery-modal-footer"
-      >
-        <button
-          type="button"
-          class="btn btn_fill w-100"
-          :disabled="!pendingSlot?.id"
-          @click.prevent="confirmSelection"
-        >
+      <CModalFooter v-if="showConfirmFooter" class="delivery-modal-footer">
+        <button type="button" class="btn btn_fill w-100" :disabled="!pendingSlot?.id" @click.prevent="confirmSelection">
           {{ $t("Confirm") }}
         </button>
       </CModalFooter>
@@ -572,9 +463,9 @@ export default {
 
   mounted() {
 
-      console.log("DELIVERY CONFIG:", this.config);
-  console.log("CUTOFF TIME:", this.config?.delivery_cutoff_time);
-  
+    // console.log("DELIVERY CONFIG:", this.config);
+    // console.log("CUTOFF TIME:", this.config?.delivery_cutoff_time);
+
     this.restoreFromStore();
 
     if (this.isHomepageVariant) {
@@ -902,7 +793,7 @@ export default {
       if (
         modalBody &&
         typeof modalBody.scrollTop ===
-          "number"
+        "number"
       ) {
         modalBody.scrollTo({
           top: panel.offsetTop - 8,
@@ -958,8 +849,8 @@ export default {
       const dateLabel =
         slot.schedule_date
           ? this.formatDateLabel(
-              slot.schedule_date
-            )
+            slot.schedule_date
+          )
           : "";
 
       const timePart =
@@ -987,7 +878,7 @@ export default {
       ) {
         if (
           this.deliveryMode !==
-            "scheduled" ||
+          "scheduled" ||
           !this.selectedSlot?.id
         ) {
           this.scheduleError =
@@ -1012,7 +903,7 @@ export default {
 
       if (
         this.deliveryMode ===
-          "scheduled" &&
+        "scheduled" &&
         !this.selectedSlot?.id
       ) {
         this.scheduleError =
@@ -1527,7 +1418,7 @@ export default {
 }
 
 /* RTL — explicit swap (split-screen content column is direction: ltr) */
-.delivery-time-section--rtl > h5,
+.delivery-time-section--rtl>h5,
 .delivery-time-section--rtl .validation-error {
   direction: rtl;
   text-align: right;
@@ -1552,7 +1443,7 @@ export default {
   direction: ltr;
 }
 
-.delivery-time-section--rtl .delivery-time-prompt > span:not(.material-icons) {
+.delivery-time-section--rtl .delivery-time-prompt>span:not(.material-icons) {
   direction: rtl;
   text-align: right;
   flex: 1 1 auto;
@@ -1570,7 +1461,7 @@ export default {
   min-width: 0;
 }
 
-.delivery-time-section--rtl .delivery-time-summary__content > span:not(.material-icons) {
+.delivery-time-section--rtl .delivery-time-summary__content>span:not(.material-icons) {
   direction: rtl;
   text-align: right;
 }

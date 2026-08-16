@@ -4,6 +4,7 @@ namespace Plugin\TlcommerceCore\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
+use Plugin\TlcommerceCore\Rules\KuwaitMobile;
 use Session;
 
 class CustomerAddressRequest extends FormRequest
@@ -29,7 +30,7 @@ class CustomerAddressRequest extends FormRequest
         if (getEcommerceSetting('hide_country_state_city_in_checkout') == config('settings.general_status.active')) {
             return [
                 'name' => 'required',
-                'phone' => 'required',
+                'phone' => ['required', new KuwaitMobile],
                 'address' => 'required',
                 'postal_code' => getEcommerceSetting('post_code_required_in_checkout') == config('settings.general_status.active') ? 'required' : 'nullable'
             ];
@@ -38,7 +39,7 @@ class CustomerAddressRequest extends FormRequest
         if (getEcommerceSetting('hide_country_state_city_in_checkout') != config('settings.general_status.active')) {
             return [
                 'name' => 'required',
-                'phone' => 'required',
+                'phone' => ['required', new KuwaitMobile],
                 'address' => 'required',
                 'country' => 'required|exists:Plugin\TlcommerceCore\Models\Country,id',
                 'state' => 'required|exists:Plugin\TlcommerceCore\Models\States,id',
