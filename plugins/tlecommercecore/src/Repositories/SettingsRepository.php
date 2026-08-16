@@ -292,6 +292,7 @@ class SettingsRepository
                 'delivery_scheduling_lead_time' => (int) (self::getEcommerceSetting('delivery_scheduling_lead_time') ?: 0),
                 'delivery_scheduling_lead_time_unit' => self::getEcommerceSetting('delivery_scheduling_lead_time_unit') ?: config('tlecommercecore.time_unit.Hours'),
                 'delivery_scheduling_horizon_days' => max(1, min(90, (int) (self::getEcommerceSetting('delivery_scheduling_horizon_days') ?: 30))),
+                'delivery_cutoff_time' => self::getEcommerceSetting('delivery_cutoff_time', '21:00') ?: '21:00',
             ];
 
             return $data;

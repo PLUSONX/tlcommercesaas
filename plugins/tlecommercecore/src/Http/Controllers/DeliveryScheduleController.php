@@ -24,6 +24,7 @@ class DeliveryScheduleController extends Controller
             'delivery_scheduling_lead_time' => 'nullable|integer|min:0',
             'delivery_scheduling_lead_time_unit' => 'nullable|in:Days,Hours,Minutes',
             'delivery_scheduling_horizon_days' => 'nullable|integer|min:1|max:90',
+            'delivery_cutoff_time' => ['required','date_format:H:i', ],
         ]);
 
         if ($this->delivery_schedule_repository->updateSettings($request)) {
