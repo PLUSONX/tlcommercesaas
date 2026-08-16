@@ -1,18 +1,14 @@
 <template>
 
-<<<<<<< Updated upstream
   <div class="product-list-row" :class="{ 'product-list-row--rtl': isRtl }">
 
-=======
-  <router-link :to="`/products/${item.slug}`" class="product-list-row">
->>>>>>> Stashed changes
     <div class="product-list-row__thumb">
       <single-product :item="item" thumbnail-only />
     </div>
 
     <div class="product-list-row__body">
       <h4 class="product-list-row__title" :title="item.name">
-        {{ item.name }}
+        <router-link :to="`/products/${item.slug}`">{{ item.name }}</router-link>
       </h4>
 
       <p v-if="item.summary" class="product-list-row__summary">
@@ -21,55 +17,24 @@
 
       <div class="product-list-row__footer">
         <span class="product-list-row__price c1">
-<<<<<<< Updated upstream
-
           <the-currency :amount="item.price" tag="span" v-if="item.base_price > item.price"></the-currency>
-
-=======
-          <the-currency :amount="item.price" tag="span" v-if="item.base_price > item.price"></the-currency>
->>>>>>> Stashed changes
           <the-currency :amount="item.base_price" tag="span" v-else></the-currency>
         </span>
 
-<<<<<<< Updated upstream
-
-
-        <button v-if="!cartLine" type="button" class="product-list-row__add-btn" :disabled="item.quantity < 1"
-          @click.prevent="handleAddClick">
-
-=======
         <button v-if="!cartLine" type="button" class="product-list-row__add-btn" :disabled="item.quantity < 1"
           @click.prevent.stop="handleAddClick">
->>>>>>> Stashed changes
           <span class="product-list-row__add-icon">+</span>
           {{ $t("Add") }}
         </button>
 
-<<<<<<< Updated upstream
-
-
-        <div v-else class="quantity-input text-center d-flex product-list-row__quantity">
-
-          <button type="button" class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
-            @click.prevent="decreaseQuantity">
-
-=======
         <div v-else class="quantity-input text-center d-flex product-list-row__quantity" @click.stop>
           <button type="button" class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
             @click.prevent.stop="decreaseQuantity">
->>>>>>> Stashed changes
             <span class="material-icons"> remove </span>
           </button>
 
           <input :value="cartLine.quantity" type="number" class="border-0 text-center font-weight-bold w-100"
-<<<<<<< Updated upstream
-            @change="onQuantityInputChange" />
-
-          <button type="button" class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
-            @click.prevent="increaseQuantity">
-=======
             @change="onQuantityInputChange" @click.stop />
->>>>>>> Stashed changes
 
           <button type="button" class="d-flex align-items-center justify-content-center p-0 bg-transparent border-0"
             @click.prevent.stop="increaseQuantity">
@@ -78,7 +43,7 @@
         </div>
       </div>
     </div>
-  </router-link>
+  </div>
 
 
 
@@ -99,32 +64,8 @@
 
 
       <CModalBody :class="{ 'quick-view-modal-body--has-footer': showQuickViewCustomFooter }">
-<<<<<<< Updated upstream
-
-        <div class="row" v-if="visibleQuickView && product.id">
-
-          <div class="col-lg-6 mb-30 mb-lg-0">
-
-            <details-gallery :gallery-images="product.galleryImages" :voucher-list="product.voucher_list"
-              :product-name="product.name" :url="product.url" :summary="product.summary"
-              :networks="product.shareOptions" :key="galleryKey" />
-
-          </div>
-
-
-
-          <div class="col-lg-6">
-
-            <details-content v-if="visibleQuickView && product.id" :product="product" :force-show-actions="true"
-              @color-variant-images="colorVariantImages" @variant-updating="variantUpdating = $event"
-              @quantity-change="orderQuantity = $event" :key="product.id" />
-
-          </div>
-
-=======
         <div class="quick-view-loader" v-show="!galleryReady || !contentReady">
           <div class="loader-spinner"></div>
->>>>>>> Stashed changes
         </div>
 
         <div class="row" v-show="galleryReady && contentReady" v-if="visibleQuickView && product.id">
@@ -868,7 +809,6 @@ export default {
   margin: 0;
 
 }
-<<<<<<< Updated upstream
 
 /* RTL — explicit swap (split-screen content column is direction: ltr) */
 .product-list-row--rtl {
@@ -898,6 +838,4 @@ export default {
 .product-list-row--rtl .product-list-row__quantity.quantity-input {
   direction: ltr;
 }
-=======
->>>>>>> Stashed changes
 </style>

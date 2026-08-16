@@ -1,5 +1,4 @@
 <template>
-<<<<<<< Updated upstream
   <div
     class="delivery-time-section"
     :class="{
@@ -8,11 +7,6 @@
       'delivery-time-section--rtl': isRtl,
     }"
   >
-=======
-  <div class="delivery-time-section"
-    :class="{ 'col-12 mb-20': !isHomepageVariant, 'delivery-time-section--homepage': isHomepageVariant }">
-
->>>>>>> Stashed changes
     <template v-if="!isHomepageVariant">
       <h5 class="mb-3">{{ $t("Delivery Time") }}:</h5>
 
@@ -111,7 +105,7 @@
                 class="delivery-modal-back"
                 @click.prevent="backToOptionsStep"
               >
-                <span class="material-icons">arrow_back</span>
+                <span class="material-icons">{{ isRtl ? 'arrow_forward' : 'arrow_back' }}</span>
               </button>
 
               <CModalTitle>{{ modalTitle }}</CModalTitle>
@@ -122,11 +116,6 @@
               v-if="isHomepageVariant && modalStep === 'options' && deliveryInfoText"
               class="delivery-modal-note"
             >
-<<<<<<< Updated upstream
-              <span class="material-icons">{{ isRtl ? 'arrow_forward' : 'arrow_back' }}</span>
-            </button>
-            <CModalTitle>{{ modalTitle }}</CModalTitle>
-=======
               <span class="material-icons delivery-modal-note__icon">
                 info
               </span>
@@ -135,7 +124,6 @@
                 {{ deliveryInfoText }}
               </span>
             </div>
->>>>>>> Stashed changes
           </div>
 
           <button
@@ -211,33 +199,12 @@
           <div v-else class="delivery-schedule-scroll">
             <div class="delivery-calendar">
               <div class="delivery-calendar__nav">
-<<<<<<< Updated upstream
                 <button type="button" class="delivery-calendar__nav-btn" @click.prevent="prevMonth">
                   <span class="material-icons">{{ isRtl ? 'chevron_right' : 'chevron_left' }}</span>
                 </button>
                 <span class="delivery-calendar__month">{{ calendarMonthLabel }}</span>
                 <button type="button" class="delivery-calendar__nav-btn" @click.prevent="nextMonth">
                   <span class="material-icons">{{ isRtl ? 'chevron_left' : 'chevron_right' }}</span>
-=======
-                <button
-                  type="button"
-                  class="delivery-calendar__nav-btn"
-                  @click.prevent="prevMonth"
-                >
-                  <span class="material-icons">chevron_left</span>
-                </button>
-
-                <span class="delivery-calendar__month">
-                  {{ calendarMonthLabel }}
-                </span>
-
-                <button
-                  type="button"
-                  class="delivery-calendar__nav-btn"
-                  @click.prevent="nextMonth"
-                >
-                  <span class="material-icons">chevron_right</span>
->>>>>>> Stashed changes
                 </button>
               </div>
 
@@ -1558,7 +1525,6 @@ export default {
     grid-template-columns: 1fr;
   }
 }
-<<<<<<< Updated upstream
 
 /* RTL — explicit swap (split-screen content column is direction: ltr) */
 .delivery-time-section--rtl > h5,
@@ -1674,6 +1640,3 @@ export default {
   direction: rtl;
 }
 </style>
-=======
-</style>
->>>>>>> Stashed changes

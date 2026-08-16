@@ -13,22 +13,13 @@
         ->sum('total_payable_amount');
 
     $recent_orders = \Plugin\TlcommerceCore\Models\Orders::with(['customer_info', 'guest_customer'])
-<<<<<<< Updated upstream
-    ->select('order_code', 'id', 'created_at', 'total_payable_amount', 'customer_id', 'guest_customer_id', 'delivery_status', 'payment_status')
-    ->where('payment_status', $paidPaymentStatus)
-    ->where('delivery_status', '!=', $cancelledDeliveryStatus)
-    // ->where('delivery_status', config('tlecommercecore.order_delivery_status.delivered')) 
-    ->orderBy('id', 'DESC')
-    ->take(5)
-    ->get();
-=======
         ->select('order_code', 'id', 'created_at', 'total_payable_amount', 'customer_id', 'guest_customer_id', 'delivery_status', 'payment_status')
-        ->where('payment_status', config('tlecommercecore.order_payment_status.paid'))
+        ->where('payment_status', $paidPaymentStatus)
+        ->where('delivery_status', '!=', $cancelledDeliveryStatus)
         // ->where('delivery_status', config('tlecommercecore.order_delivery_status.delivered'))
         ->orderBy('id', 'DESC')
         ->take(5)
         ->get();
->>>>>>> Stashed changes
 
     $paidOrdersConstraint = function ($query) use ($paidPaymentStatus, $cancelledDeliveryStatus) {
         $query->where('payment_status', $paidPaymentStatus)

@@ -4,15 +4,11 @@
     <div class="loader-spinner"></div>
   </div>
   <!-- Product Details Content -->
-<<<<<<< Updated upstream
   <div
+    v-show="!isLoading"
     class="product-details-content"
     :class="{ 'product-details-content--rtl': isFeaturePaneLayout && isRtl }"
   >
-=======
-  <div v-show="!isLoading" class="product-details-content"
-    :class="{ 'product-details-content--rtl': isSplitScreen && isRtl }">
->>>>>>> Stashed changes
     <!--Flash deal info-->
     <div class="d-flex flash-deal flex-wrap justify-content-between mb-20 p-2 text-white"
       v-if="product.has_deal != null">

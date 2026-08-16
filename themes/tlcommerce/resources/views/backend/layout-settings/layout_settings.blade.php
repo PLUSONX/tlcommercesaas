@@ -245,30 +245,15 @@
                                             {{ $activeLayout->id == $layout->id ? 'checked' : '' }} required>
                                         <div class="layout-card">
 
-<<<<<<< Updated upstream
-                                        @if(in_array($layout->name, ['split_screen', 'modern'], true))
-                                            <div class="dropdown-button" style="margin-bottom: 10px;">
-                                                <a href="#" class="d-flex align-items-center justify-content-end"
-                                                    data-toggle="dropdown">
-                                                    <div class="menu-icon mr-0">
-                                                        <span></span>
-                                                        <span></span>
-                                                        <span></span>
-                                                    </div>
-                                                </a>
-                                                <div class="dropdown-menu dropdown-menu-right">
-                                                    <a href="#" class="edit-layout-btn">
-                                                        {{ translate('Edit') }}
-=======
-                                            @if ($layout->name == 'split_screen')
+                                            @if(in_array($layout->name, ['split_screen', 'modern'], true))
                                                 <div class="dropdown-button" style="margin-bottom: 10px;">
-                                                    <a href="#" class="d-flex align-items-center justify-content-end" data-toggle="dropdown">
+                                                    <a href="#" class="d-flex align-items-center justify-content-end"
+                                                        data-toggle="dropdown">
                                                         <div class="menu-icon mr-0">
                                                             <span></span>
                                                             <span></span>
                                                             <span></span>
                                                         </div>
->>>>>>> Stashed changes
                                                     </a>
                                                     <div class="dropdown-menu dropdown-menu-right">
                                                         <a href="#" class="edit-layout-btn">
@@ -278,23 +263,8 @@
                                                 </div>
                                             @endif
 
-<<<<<<< Updated upstream
-                                        <div class="layout-preview layout-preview-{{ $layout->name }}">
-                                            @if($layout->name == 'standard')
-                                                <div class="preview-box full"></div>
-                                            @elseif($layout->name == 'sidebar_left')
-                                                <div class="preview-box sidebar-left"></div>
-                                                <div class="preview-box content"></div>
-                                            @elseif($layout->name == 'sidebar_right')
-                                                <div class="preview-box content"></div>
-                                                <div class="preview-box sidebar-right"></div>
-                                            @elseif($layout->name == 'split_screen' || $layout->name == 'modern')
-                                                <div class="preview-box split-left"></div>
-                                                <div class="preview-box split-right"></div>
-                                            @endif
-=======
                                             <div class="layout-preview layout-preview-{{ $layout->name }}">
-                                                @if ($layout->name == 'standard')
+                                                @if($layout->name == 'standard')
                                                     <div class="preview-box full"></div>
                                                 @elseif($layout->name == 'sidebar_left')
                                                     <div class="preview-box sidebar-left"></div>
@@ -302,7 +272,7 @@
                                                 @elseif($layout->name == 'sidebar_right')
                                                     <div class="preview-box content"></div>
                                                     <div class="preview-box sidebar-right"></div>
-                                                @elseif($layout->name == 'split_screen')
+                                                @elseif($layout->name == 'split_screen' || $layout->name == 'modern')
                                                     <div class="preview-box split-left"></div>
                                                     <div class="preview-box split-right"></div>
                                                 @endif
@@ -313,7 +283,6 @@
                                                     <span class="badge badge-success">{{ translate('Active') }}</span>
                                                 @endif
                                             </div>
->>>>>>> Stashed changes
                                         </div>
                                     </label>
                                 </div>
@@ -395,32 +364,25 @@
                             </div>
                         </div>
 
-<<<<<<< Updated upstream
-                            <div class="form-row mb-20">
-                                <div class="col-md-12">
-                                    <label class="font-14 bold black mb-0">{{ translate('Header Background Image') }}</label>
-                                    <p class="text-muted mb-0">{{ translate('Used by the Modern layout on non-home pages') }}</p>
-                                </div>
-                                <div class="col-md-12 mt-10">
-                                    @include('core::base.includes.media.media_input', [
-                                        'input' => 'header_background_image',
-                                        'data' => old('header_background_image', optional($splitScreenSettings)->header_background_image),
-                                    ])
-                                    @if ($errors->has('header_background_image'))
-                                        <div class="invalid-input">{{ $errors->first('header_background_image') }}</div>
-                                    @endif
-                                </div>
+                        <div class="form-row mb-20">
+                            <div class="col-md-12">
+                                <label class="font-14 bold black mb-0">{{ translate('Header Background Image') }}</label>
+                                <p class="text-muted mb-0">{{ translate('Used by the Modern layout on non-home pages') }}</p>
                             </div>
+                            <div class="col-md-12 mt-10">
+                                @include('core::base.includes.media.media_input', [
+                                    'input' => 'header_background_image',
+                                    'data' => old('header_background_image', optional($splitScreenSettings)->header_background_image),
+                                ])
+                                @if ($errors->has('header_background_image'))
+                                    <div class="invalid-input">{{ $errors->first('header_background_image') }}</div>
+                                @endif
+                            </div>
+                        </div>
 
-                            <div class="form-row">
-                                <div class="col-12 text-right">
-                                    <button type="submit" class="btn long btn-orange">{{ translate('Save') }}</button>
-                                </div>
-=======
                         <div class="form-row">
                             <div class="col-12 text-right">
                                 <button type="submit" class="btn long btn-orange">{{ translate('Save') }}</button>
->>>>>>> Stashed changes
                             </div>
                         </div>
                     </form>
