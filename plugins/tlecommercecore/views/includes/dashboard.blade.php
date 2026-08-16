@@ -13,6 +13,7 @@
         ->sum('total_payable_amount');
 
     $recent_orders = \Plugin\TlcommerceCore\Models\Orders::with(['customer_info', 'guest_customer'])
+<<<<<<< Updated upstream
     ->select('order_code', 'id', 'created_at', 'total_payable_amount', 'customer_id', 'guest_customer_id', 'delivery_status', 'payment_status')
     ->where('payment_status', $paidPaymentStatus)
     ->where('delivery_status', '!=', $cancelledDeliveryStatus)
@@ -20,6 +21,14 @@
     ->orderBy('id', 'DESC')
     ->take(5)
     ->get();
+=======
+        ->select('order_code', 'id', 'created_at', 'total_payable_amount', 'customer_id', 'guest_customer_id', 'delivery_status', 'payment_status')
+        ->where('payment_status', config('tlecommercecore.order_payment_status.paid'))
+        // ->where('delivery_status', config('tlecommercecore.order_delivery_status.delivered'))
+        ->orderBy('id', 'DESC')
+        ->take(5)
+        ->get();
+>>>>>>> Stashed changes
 
     $paidOrdersConstraint = function ($query) use ($paidPaymentStatus, $cancelledDeliveryStatus) {
         $query->where('payment_status', $paidPaymentStatus)
@@ -127,6 +136,8 @@
 @endphp
 @push('head')
     {{-- Push custom script or style into head tag --}}
+    {{-- Date Range Picker library (single-calendar range picker, driven by the one .selectFilter dropdown) --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <style>
         .summary-card {
             /* background: url('/public/backend/assets/img/summery-bg1.png'); */
@@ -152,8 +163,8 @@
         }
 
         /* .apexcharts-toolbar {
-                                        top: -30px !important;
-                                    } */
+                                                                    top: -30px !important;
+                                                                } */
         .apexcharts-toolbar {
             display: none !important;
         }
@@ -180,88 +191,71 @@
         }
 
         /* .glass-card {
-                              position: relative;
-                              border-radius: 18px;
+                                                          position: relative;
+                                                          border-radius: 18px;
 
-                              /* Core glass layer */
+                                                          /* Core glass layer */
         /* background: linear-gradient(
-                                135deg,
-                                rgba(255, 255, 255, 0.22),
-                                rgba(255, 255, 255, 0.06)
-                              );
+                                                            135deg,
+                                                            rgba(255, 255, 255, 0.22),
+                                                            rgba(255, 255, 255, 0.06)
+                                                          );
 
-                              backdrop-filter: blur(22px) saturate(180%);
-                              -webkit-backdrop-filter: blur(22px) saturate(180%);
+                                                          backdrop-filter: blur(22px) saturate(180%);
+                                                          -webkit-backdrop-filter: blur(22px) saturate(180%);
 
-                              /* Thin glass edge */
+                                                          /* Thin glass edge */
         /* border: 1px solid rgba(255, 255, 255, 0.35); */
         /* Soft elevation */
         /* box-shadow:
-                                0 20px 40px rgba(0, 0, 0, 0.25),
-                                inset 0 1px 1px rgba(255, 255, 255, 0.35);
+                                                            0 20px 40px rgba(0, 0, 0, 0.25),
+                                                            inset 0 1px 1px rgba(255, 255, 255, 0.35);
 
-                              overflow: hidden;
-                            }
+                                                          overflow: hidden;
+                                                        }
 
-                            .glass-card:hover {
-                                scale: 1.05;
-                              box-shadow:
-                                0 30px 60px rgba(0, 0, 0, 0.35),
-                                inset 0 1px 1px rgba(255, 255, 255, 0.45);
-                            } */
-        /* Customize date range picker */
-        .customize-date-range {
-            gap: 8px;
+                                                        .glass-card:hover {
+                                                            scale: 1.05;
+                                                          box-shadow:
+                                                            0 30px 60px rgba(0, 0, 0, 0.35),
+                                                            inset 0 1px 1px rgba(255, 255, 255, 0.45);
+                                                        } */
+        /* Single hidden anchor used to open the date range calendar from the one dropdown.
+                                       It has no visible size, so no second input/dropdown is shown on the page. */
+        .customize-date-trigger {
+            position: absolute;
+            width: 0;
+            height: 0;
+            padding: 0;
+            margin: 0;
+            border: 0;
+            overflow: hidden;
+            pointer-events: none;
         }
 
-        .customize-date-range input[type="date"] {
-            height: 48px;
-            padding: 0 12px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
-            background: #fff;
-            border: 1px solid #dcdcdc;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        /* Theme the date range picker popup to match the dashboard's accent color */
+        .daterangepicker td.active,
+        .daterangepicker td.active:hover {
+            background-color: #ff5A1f !important;
         }
 
-        .customize-date-range input[type="date"]:focus {
-            outline: none;
-            border-color: #ff5A1f;
-            box-shadow: 0 0 0 3px rgba(255, 90, 31, 0.15);
+        .daterangepicker td.in-range {
+            background-color: rgba(255, 90, 31, 0.12) !important;
         }
 
-        .customize-date-range .apply-date-range {
-            height: 48px;
-            padding: 0 18px;
-            border-radius: 10px;
-            background-color: #ff5A1f;
-            border-color: #ff5A1f;
-            color: #fff;
-            font-weight: 600;
-            font-size: 14px;
+        .daterangepicker .ranges li.active {
+            background-color: #ff5A1f !important;
+            color: #fff !important;
         }
 
-        .customize-date-range .apply-date-range:hover {
-            background-color: #e64f1b;
-            border-color: #e64f1b;
-            color: #fff;
+        .daterangepicker .btn.btn-primary {
+            background-color: #ff5A1f !important;
+            border-color: #ff5A1f !important;
         }
 
-        @media (max-width: 576px) {
-            .customize-date-range {
-                width: 100%;
-                flex-wrap: wrap;
-            }
-
-            .customize-date-range input[type="date"] {
-                flex: 1 1 45%;
-            }
-
-            .customize-date-range .apply-date-range {
-                width: 100%;
-            }
+        .daterangepicker:before,
+        .daterangepicker:after {
+            display: none !important;
         }
     </style>
 @endpush
@@ -273,21 +267,18 @@
     <div class="dashboard-header d-sm-flex justify-content-between align-items-center ml-3 mr-3 w-100">
         <h4 class="font-20 mb-0">{{ translate('Dashboard') }}</h4>
 
-        <div class="filter">
+        <div class="filter" style="position: relative;">
             <select name="filter" class="theme-input-style selectFilter">
                 <option value="daily">Today</option>
                 <option value="weekly">This week</option>
                 <option value="monthly">This month</option>
                 <option value="all-time" selected>All Time</option>
-                <option value="customize">{{ translate('Customize') }}</option>
+                <option value="customize" class="customize-option">{{ translate('Customize') }}</option>
             </select>
 
-            <div class="customize-date-range d-none align-items-center mt-2 mt-sm-0">
-                <input type="date" class="filter-start-date" />
-                <span>{{ translate('to') }}</span>
-                <input type="date" class="filter-end-date" />
-                <button type="button" class="btn apply-date-range">{{ translate('Apply') }}</button>
-            </div>
+            {{-- Single hidden anchor: this is what the date range calendar opens against.
+                 No second dropdown/input is rendered anywhere on the page. --}}
+            <span class="customize-date-trigger"></span>
         </div>
     </div>
     <!--<div class="col-xl-3 col-sm-6">
@@ -1001,84 +992,137 @@
 </div>
 
 @push('script')
+    {{-- Date Range Picker library scripts (single-calendar range picker) --}}
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
     <script>
         (function($) {
             "use strict";
             let chart_data_type = "monthly";
             let categories = [];
-            // Restrict date pickers to not allow future dates
-            const todayStr = new Date().toISOString().split('T')[0];
-            $('.filter-start-date, .filter-end-date').attr('max', todayStr);
 
+            // Track whether a custom range has actually been applied at least once.
+            let hasCustomRange = false;
+            let lastStartDate = null;
+            let lastEndDate = null;
+            const defaultCustomizeLabel = '{{ translate('Customize') }}';
+
+            function updateDashboardCounts(data) {
+                $('.total-customers-count').text(data.total_customers);
+                $('.total-products-count').text(data.total_products ?? 0);
+                $('.total-sales-count').text(data.total_sales ?? 0);
+                $('.total-orders-count').text(data.total_orders ?? 0);
+                $('.analytics-store-visits-count').text(data.analytics_store_visits ?? 0);
+                $('.analytics-add-to-cart-count').text(data.analytics_add_to_cart ?? 0);
+                $('.analytics-checkout-count').text(data.analytics_checkout ?? 0);
+                $('.analytics-content-view-count').text(data.analytics_content_view ?? 0);
+            }
+
+            function fetchDashboardData(filter, startDate, endDate) {
+                $.ajax({
+                    url: '{{ route('dashboard.filter') }}',
+                    data: {
+                        filter: filter,
+                        start_date: startDate ?? null,
+                        end_date: endDate ?? null
+                    },
+                    success: function(data) {
+                        updateDashboardCounts(data);
+                    },
+                    error: function(err) {
+                        console.error('Filter error:', err);
+                    }
+                });
+            }
+
+            // Initialize date range picker
+            $('.customize-date-trigger').daterangepicker({
+                autoUpdateInput: false,
+                autoApply: true,
+                opens: 'left',
+                maxDate: moment(),
+                locale: {
+                    format: 'DD MMM YYYY',
+                    customRangeLabel: '{{ translate('Customize') }}'
+                }
+            });
+
+            function openCustomizeCalendar() {
+                $('.selectFilter').val('customize');
+
+                const picker = $('.customize-date-trigger').data('daterangepicker');
+
+                if (!picker) {
+                    return;
+                }
+
+                // Restore previously selected range
+                if (hasCustomRange && lastStartDate && lastEndDate) {
+                    picker.setStartDate(lastStartDate);
+                    picker.setEndDate(lastEndDate);
+                }
+
+                // Open picker directly
+                picker.show();
+            }
+
+
+            // Native <select> does NOT fire 'change' when you reselect the option that's
+            // already active. Binding click directly on the option itself fires every
+            // time it's clicked, which is what lets the calendar reopen on a second click.
+            $(document).on('click', '.selectFilter option.customize-option', function() {
+                openCustomizeCalendar();
+            });
+
+            $('.customize-date-trigger').on('apply.daterangepicker', function(ev, picker) {
+
+                hasCustomRange = true;
+
+                lastStartDate = picker.startDate.clone();
+                lastEndDate = picker.endDate.clone();
+
+                const startDate = picker.startDate.format('YYYY-MM-DD');
+                const endDate = picker.endDate.format('YYYY-MM-DD');
+
+                const displayLabel =
+                    picker.startDate.format('DD MMM') +
+                    ' - ' +
+                    picker.endDate.format('DD MMM YYYY');
+
+                $('.selectFilter option.customize-option').text(displayLabel);
+                $('.selectFilter').val('customize');
+
+                fetchDashboardData('customize', startDate, endDate);
+            });
+
+            $('.customize-date-trigger').on('cancel.daterangepicker', function() {
+
+                if (!hasCustomRange) {
+                    $('.selectFilter option.customize-option')
+                        .text(defaultCustomizeLabel);
+
+                    $('.selectFilter').val('all-time');
+                }
+            });
+
+            // Filter change
             $('.selectFilter').on('change', function() {
+
                 const filter = $(this).val();
 
                 if (filter === 'customize') {
-                    $('.customize-date-range').removeClass('d-none').addClass('d-flex');
+                    openCustomizeCalendar();
                     return;
                 }
 
-                $('.customize-date-range').removeClass('d-flex').addClass('d-none');
-                $('.filter-start-date, .filter-end-date').val('');
+                // Reset custom range when another filter is selected
+                hasCustomRange = false;
 
-                $.ajax({
-                    url: '{{ route('dashboard.filter') }}',
-                    data: {
-                        filter: filter
-                    },
-                    success: function(data) {
-                        console.log("customers: ", data.total_customers);
-                        console.log(typeof data.total_customers);
-                        $('.total-customers-count').text(data.total_customers);
-                        $('.total-products-count').text(data.total_products ?? 0);
-                        $('.total-sales-count').text(data.total_sales ?? 0);
-                        $('.total-orders-count').text(data.total_orders ?? 0);
-                        $('.analytics-store-visits-count').text(data.analytics_store_visits ?? 0);
-                        $('.analytics-add-to-cart-count').text(data.analytics_add_to_cart ?? 0);
-                        $('.analytics-checkout-count').text(data.analytics_checkout ?? 0);
-                        $('.analytics-content-view-count').text(data.analytics_content_view ?? 0);
-                    },
-                    error: function(err) {
-                        console.error('Filter error:', err);
-                    }
-                });
-            });
+                $('.selectFilter option.customize-option')
+                    .text(defaultCustomizeLabel);
 
-            $(document).on('click', '.apply-date-range', function() {
-                const startDate = $('.filter-start-date').val();
-                const endDate = $('.filter-end-date').val();
-
-                if (!startDate || !endDate) {
-                    alert('{{ translate('Please select both a start and end date') }}');
-                    return;
-                }
-
-                if (startDate > endDate) {
-                    alert('{{ translate('Start date cannot be after end date') }}');
-                    return;
-                }
-
-                $.ajax({
-                    url: '{{ route('dashboard.filter') }}',
-                    data: {
-                        filter: 'customize',
-                        start_date: startDate,
-                        end_date: endDate
-                    },
-                    success: function(data) {
-                        $('.total-customers-count').text(data.total_customers ?? 0);
-                        $('.total-products-count').text(data.total_products ?? 0);
-                        $('.total-sales-count').text(data.total_sales ?? 0);
-                        $('.total-orders-count').text(data.total_orders ?? 0);
-                        $('.analytics-store-visits-count').text(data.analytics_store_visits ?? 0);
-                        $('.analytics-add-to-cart-count').text(data.analytics_add_to_cart ?? 0);
-                        $('.analytics-checkout-count').text(data.analytics_checkout ?? 0);
-                        $('.analytics-content-view-count').text(data.analytics_content_view ?? 0);
-                    },
-                    error: function(err) {
-                        console.error('Filter error:', err);
-                    }
-                });
+                fetchDashboardData(filter);
             });
 
             function openAnalyticsBreakdown(eventType) {

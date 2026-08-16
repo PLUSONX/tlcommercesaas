@@ -87,6 +87,30 @@
                                 </div>
                             </div>
                         </div>
+<div class="form-row mb-20">
+    <div class="col-sm-6">
+        <label class="font-14 bold black">
+            {{ translate('Same-day delivery cutoff time') }}
+        </label>
+
+        <p class="text-muted font-13 mb-0">
+            {{ translate('Orders placed after this time will be delivered on the next available day.') }}
+        </p>
+    </div>
+
+    <div class="col-sm-6">
+        <input
+            type="time"
+            name="delivery_cutoff_time"
+            value="{{ old(
+                'delivery_cutoff_time',
+                $settings['delivery_cutoff_time'] ?? '21:00'
+            ) }}"
+            class="theme-input-style"
+            required
+        >
+    </div>
+</div>
                         <button type="submit" class="btn long btn-orange">{{ translate('Save Settings') }}</button>
                     </form>
                 </div>

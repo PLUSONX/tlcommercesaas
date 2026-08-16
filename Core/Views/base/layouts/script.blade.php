@@ -12,6 +12,8 @@
 <script src="{{ asset('backend/assets/plugins/moment/moment.min.js') }}"></script>
 <script src="{{ asset('backend/assets/plugins/dropzone/dropzone.min.js') }}"></script>
 @include('core::base.includes.summernote_video_helper')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.1.0/daterangepicker.min.js"></script>
 <!-- ======= BEGIN GLOBAL MANDATORY SCRIPTS ======= -->
 
 <!-- ======= Dom Purify ======= -->
