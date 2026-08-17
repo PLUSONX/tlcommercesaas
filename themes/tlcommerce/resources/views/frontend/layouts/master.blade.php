@@ -301,51 +301,119 @@
             contain: strict;
             transform: translateZ(0);
             will-change: opacity;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         #tlc-boot-loader.is-done {
             opacity: 0;
             pointer-events: none;
         }
-        #tlc-boot-spinner {
-            display: block;
+        #tlc-boot-loader .loader {
+            --color-1: #fff;
+            --color-2: var(--mainC, #e62d04);
+            --size: 1px;
+
+            width: calc(54 * var(--size));
+            height: calc(54 * var(--size));
             position: relative;
-            left: 50%;
-            top: 50%;
-            width: 150px;
-            height: 150px;
-            margin: -75px 0 0 -75px;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            border-top-color: var(--mainC, #e62d04);
-            animation: tlc-boot-spin 2s linear infinite;
-            will-change: transform;
+            border-radius: calc(4 * var(--size));
+            background-color: var(--color-1);
+            background-image:
+                radial-gradient(circle calc(5 * var(--size)), var(--color-2) 100%, transparent 0),
+                radial-gradient(circle calc(5 * var(--size)), var(--color-2) 100%, transparent 0),
+                radial-gradient(circle calc(5 * var(--size)), var(--color-2) 100%, transparent 0),
+                radial-gradient(circle calc(5 * var(--size)), var(--color-2) 100%, transparent 0),
+                radial-gradient(circle calc(5 * var(--size)), var(--color-2) 100%, transparent 0),
+                radial-gradient(circle calc(5 * var(--size)), var(--color-2) 100%, transparent 0);
+            background-repeat: no-repeat;
+            animation:
+                tlc-boot-move 4s linear infinite,
+                tlc-boot-rotate 2s linear infinite;
         }
-        #tlc-boot-spinner:before,
-        #tlc-boot-spinner:after {
-            content: "";
-            position: absolute;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            border-top-color: var(--mainC, #e62d04);
-            will-change: transform;
+        @keyframes tlc-boot-rotate {
+            0%,
+            20% {
+                transform: rotate(0deg);
+            }
+            30%,
+            40% {
+                transform: rotate(90deg);
+            }
+            50%,
+            60% {
+                transform: rotate(180deg);
+            }
+            70%,
+            80% {
+                transform: rotate(270deg);
+            }
+            90%,
+            100% {
+                transform: rotate(360deg);
+            }
         }
-        #tlc-boot-spinner:before {
-            top: 5px;
-            left: 5px;
-            right: 5px;
-            bottom: 5px;
-            animation: tlc-boot-spin 3s linear infinite;
-        }
-        #tlc-boot-spinner:after {
-            top: 15px;
-            left: 15px;
-            right: 15px;
-            bottom: 15px;
-            animation: tlc-boot-spin 1.5s linear infinite;
-        }
-        @keyframes tlc-boot-spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes tlc-boot-move {
+            0%,
+            9% {
+                background-position:
+                    calc(-12 * var(--size)) calc(-15 * var(--size)),
+                    calc(-12 * var(--size)) 0,
+                    calc(-12 * var(--size)) calc(15 * var(--size)),
+                    calc(12 * var(--size)) calc(-15 * var(--size)),
+                    calc(12 * var(--size)) 0,
+                    calc(12 * var(--size)) calc(15 * var(--size));
+            }
+            10%,
+            25% {
+                background-position:
+                    0 calc(-15 * var(--size)),
+                    calc(-12 * var(--size)) 0,
+                    calc(-12 * var(--size)) calc(15 * var(--size)),
+                    calc(34 * var(--size)) calc(-15 * var(--size)),
+                    calc(12 * var(--size)) 0,
+                    calc(12 * var(--size)) calc(15 * var(--size));
+            }
+            30%,
+            45% {
+                background-position:
+                    0 calc(-34 * var(--size)),
+                    calc(-12 * var(--size)) calc(-10 * var(--size)),
+                    calc(-12 * var(--size)) calc(12 * var(--size)),
+                    calc(34 * var(--size)) calc(-15 * var(--size)),
+                    calc(12 * var(--size)) calc(-10 * var(--size)),
+                    calc(12 * var(--size)) calc(12 * var(--size));
+            }
+            50%,
+            65% {
+                background-position:
+                    0 calc(-34 * var(--size)),
+                    calc(-12 * var(--size)) calc(-34 * var(--size)),
+                    calc(-12 * var(--size)) calc(12 * var(--size)),
+                    calc(34 * var(--size)) calc(-12 * var(--size)),
+                    0 calc(-10 * var(--size)),
+                    calc(12 * var(--size)) calc(12 * var(--size));
+            }
+            70%,
+            85% {
+                background-position:
+                    0 calc(-34 * var(--size)),
+                    calc(-12 * var(--size)) calc(-34 * var(--size)),
+                    0 calc(12 * var(--size)),
+                    calc(34 * var(--size)) calc(-12 * var(--size)),
+                    0 calc(-10 * var(--size)),
+                    calc(34 * var(--size)) calc(12 * var(--size));
+            }
+            90%,
+            100% {
+                background-position:
+                    0 calc(-34 * var(--size)),
+                    calc(-12 * var(--size)) calc(-34 * var(--size)),
+                    0 0,
+                    calc(34 * var(--size)) calc(-12 * var(--size)),
+                    0 0,
+                    calc(34 * var(--size)) calc(12 * var(--size));
+            }
         }
     </style>
 
@@ -388,7 +456,7 @@
 
 <body class="antialiased">
     <div id="tlc-boot-loader" role="status" aria-live="polite" aria-busy="true" aria-label="Loading">
-        <div id="tlc-boot-spinner"></div>
+        <div class="loader"></div>
     </div>
     <script>
         (function () {
