@@ -232,17 +232,21 @@ import enums from "../enums/enums";
 import { mapState, mapGetters } from "vuex";
 import { trackSocialPixels } from "@/utils/trackSocialPixels";
 import { hideBootSplash } from "@/utils/bootSplash";
+import { scheduleBackgroundRefresh } from "@/utils/scheduleBackgroundRefresh";
 // import CompanyFooter from "../components/ui/CompanyFooter.vue";
 const axios = require("axios").default;
 
+function readStorefrontBootstrap() {
+    try {
+        return typeof window !== "undefined" ? window.__TLC_BOOTSTRAP__ ?? null : null;
+    } catch (e) {
+        return null;
+    }
+}
+
 function readBootstrapProductListViewEnabled() {
     try {
-        const settings =
-            typeof window !== "undefined"
-                ? window.__TLC_BOOTSTRAP__?.productListViewSettings
-                : null;
-
-        return !!settings?.is_list_view_enabled;
+        return !!readStorefrontBootstrap()?.productListViewSettings?.is_list_view_enabled;
     } catch (e) {
         return false;
     }
@@ -356,7 +360,7 @@ export default {
     mounted() {
         this.homeContentReady = false;
         document.title = localStorage.getItem("site_title");
-        this.getSections();
+        this.initHomeSections();
 
         // console.log("isCustomerLogin: ", this.isCustomerLogin);
 
@@ -380,18 +384,8 @@ export default {
         removePageContentStyles(this.contentStyleId);
     },
 
-    async created() {
-        try {
-            const response = await axios.get(
-                "/api/theme/tlcommerce/v1/active-sliders"
-            );
-            if (response.status === 200) {
-                this.banners = response.data?.data ?? [];
-                this.sliderLoading = false;
-            }
-        } catch (error) {
-            this.sliderLoading = false;
-        }
+    created() {
+        this.initSliders();
     },
 
     methods: {
@@ -411,6 +405,65 @@ export default {
             this.page.content = prepared.htmlWithoutStyles;
             this.hasCustomContentStyles = prepared.hasCustomStyles;
         },
+        initSliders() {
+            const sliders = readStorefrontBootstrap()?.sliders;
+            if (sliders && (Array.isArray(sliders.data) || sliders.success)) {
+                this.applySliders(sliders);
+                scheduleBackgroundRefresh(() => this.fetchSliders());
+                return;
+            }
+            this.fetchSliders();
+        },
+        applySliders(payload) {
+            this.banners = payload?.data ?? [];
+            this.sliderLoading = false;
+        },
+        fetchSliders() {
+            axios
+                .get("/api/theme/tlcommerce/v1/active-sliders")
+                .then((response) => {
+                    if (response.status === 200) {
+                        this.applySliders(response.data);
+                    } else {
+                        this.sliderLoading = false;
+                    }
+                })
+                .catch(() => {
+                    this.sliderLoading = false;
+                });
+        },
+        initHomeSections() {
+            const sections = readStorefrontBootstrap()?.homePageSections;
+            if (
+                sections &&
+                typeof sections === "object" &&
+                (sections.success || sections.active_pagebuilder || Array.isArray(sections.data))
+            ) {
+                this.applyHomeSections(sections);
+                scheduleBackgroundRefresh(() => this.getSections());
+                return;
+            }
+            this.getSections();
+        },
+        applyHomeSections(payload) {
+            if (payload?.success) {
+                this.dataAvailable = true;
+                this.sections = payload.data ?? [];
+                this.page = payload.page ?? {};
+                this.page_section = payload.page_sections ?? {};
+                this.active_pagebuilder = payload.active_pagebuilder ?? false;
+                this.page_builder_widgets = payload.page_builder_widgets ?? {};
+                if (this.page?.content) {
+                    const styleKey = this.page.permalink || this.page.id || "default";
+                    this.setPageContent(this.page.content, styleKey);
+                }
+                if (!this.active_pagebuilder) {
+                    this.loaded();
+                }
+            } else {
+                this.loaded();
+            }
+        },
         /**
          * Get active sections
          */
@@ -418,25 +471,7 @@ export default {
             axios
                 .get("/api/theme/tlcommerce/v1/active-home-page-sections")
                 .then((response) => {
-                    if (response.data.success) {
-                        this.dataAvailable = true;
-                        this.sections = response.data.data ?? [];
-                        this.page = response.data.page ?? {};
-                        this.page_section = response.data.page_sections ?? {};
-                        this.active_pagebuilder =
-                            response.data.active_pagebuilder ?? false;
-                        this.page_builder_widgets =
-                            response.data.page_builder_widgets ?? {};
-                        if (this.page?.content) {
-                            const styleKey = this.page.permalink || this.page.id || "default";
-                            this.setPageContent(this.page.content, styleKey);
-                        }
-                        if (!this.active_pagebuilder) {
-                            this.loaded();
-                        }
-                    } else {
-                        this.loaded();
-                    }
+                    this.applyHomeSections(response.data);
                 })
                 .catch((error) => {
                     this.sections = [];

@@ -82,13 +82,22 @@ class LayoutSettingsController extends Controller
      */
     public function getAllMenusForEcommerceHome()
     {
-        try {
+        return response()->json($this->menusPayload());
+    }
 
+    /**
+     * Header menus JSON for the API and Blade bootstrap.
+     *
+     * @return array
+     */
+    public function menusPayload(): array
+    {
+        try {
             $header_bottom_middle_menus = Cache::rememberForever(tenantCacheKey('header-bottom-middle-menus'), function () {
                 return $this->headerBottomMiddleMenus();
             });
 
-            if ($header_bottom_middle_menus['success']) {
+            if (!empty($header_bottom_middle_menus['success'])) {
                 array_shift($header_bottom_middle_menus);
             }
 
@@ -96,7 +105,7 @@ class LayoutSettingsController extends Controller
                 return $this->headerTopRightMenus();
             });
 
-            if ($header_top_right_menus['success']) {
+            if (!empty($header_top_right_menus['success'])) {
                 array_shift($header_top_right_menus);
             }
 
@@ -104,21 +113,20 @@ class LayoutSettingsController extends Controller
                 return $this->headerTopLeftMenus();
             });
 
-            if ($header_top_left_menus['success']) {
+            if (!empty($header_top_left_menus['success'])) {
                 array_shift($header_top_left_menus);
             }
 
-
-            return response()->json([
+            return [
                 'success' => true,
                 'header_bottom_middle_menus' => $header_bottom_middle_menus,
                 'header_top_right_menus' => $header_top_right_menus,
-                'header_top_left_menus' => $header_top_left_menus
-            ]);
+                'header_top_left_menus' => $header_top_left_menus,
+            ];
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false
-            ]);
+            return [
+                'success' => false,
+            ];
         }
     }
 

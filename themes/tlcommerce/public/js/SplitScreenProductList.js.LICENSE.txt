@@ -130,6 +130,8 @@
 
 /*! @/utils/cartLineMatch */
 
+/*! @/utils/scheduleBackgroundRefresh */
+
 /*! @/utils/trackSocialPixels */
 
 /*! @/utils/variantSelection */

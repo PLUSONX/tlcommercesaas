@@ -360,6 +360,8 @@
 
 /*! @/utils/pageContentStyles */
 
+/*! @/utils/scheduleBackgroundRefresh */
+
 /*! @/utils/sectionProps */
 
 /*! @/utils/trackSocialPixels */

@@ -49,8 +49,19 @@
 <script>
 import ProductListRow from "@/components/product/ProductListRow.vue";
 import { mapGetters } from "vuex";
+import { scheduleBackgroundRefresh } from "@/utils/scheduleBackgroundRefresh";
 
 const axios = require("axios").default;
+
+function readSplitScreenProductListBootstrap() {
+  try {
+    return typeof window !== "undefined"
+      ? window.__TLC_BOOTSTRAP__?.splitScreenProductList ?? null
+      : null;
+  } catch (e) {
+    return null;
+  }
+}
 
 export default {
   name: "SplitScreenProductList",
@@ -96,29 +107,49 @@ export default {
     },
   },
   mounted() {
+    const boot = readSplitScreenProductListBootstrap();
+    if (this.applyProductListPayload(boot)) {
+      this.loading = false;
+      this.$emit("ready");
+      scheduleBackgroundRefresh(() => this.fetchProductList(true));
+      return;
+    }
     this.fetchProductList();
   },
   methods: {
-    fetchProductList() {
-      this.loading = true;
+    applyProductListPayload(payload) {
+      if (!payload?.success) {
+        return false;
+      }
+      const data = payload.data ?? {};
+      this.organiseByCategory = !!data.organise_by_category;
+      this.sections = data.sections ?? [];
+      this.flatProducts = data.products ?? [];
+      return true;
+    },
+    fetchProductList(isBackground = false) {
+      if (!isBackground) {
+        this.loading = true;
+      }
 
       axios
         .get("/api/theme/tlcommerce/v1/split-screen-product-list")
         .then((response) => {
           if (response.status === 200 && response.data?.success) {
-            const data = response.data.data ?? {};
-            this.organiseByCategory = !!data.organise_by_category;
-            this.sections = data.sections ?? [];
-            this.flatProducts = data.products ?? [];
+            this.applyProductListPayload(response.data);
           }
         })
         .catch(() => {
-          this.sections = [];
-          this.flatProducts = [];
+          if (!isBackground) {
+            this.sections = [];
+            this.flatProducts = [];
+          }
         })
         .finally(() => {
-          this.loading = false;
-          this.$emit("ready");
+          if (!isBackground) {
+            this.loading = false;
+            this.$emit("ready");
+          }
         });
     },
   },

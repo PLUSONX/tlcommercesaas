@@ -6,9 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Theme\TLCommerce\Models\Sliders;
-use Illuminate\Support\Facades\Cache;
 use Theme\TLCommerce\Http\Requests\SliderRequest;
-use Theme\TLCommerce\Http\Resources\SliderResource;
 
 class SliderController extends Controller
 {
@@ -167,8 +165,5 @@ class SliderController extends Controller
     public function resetSliderResourceCache()
     {
         cache()->forget(tenantCacheKey('home-page-sliders-resource'));
-        Cache::rememberForever(tenantCacheKey('home-page-sliders-resource'), function () {
-            return new SliderResource(Sliders::select('url', 'desktop', 'mobile')->where('status', config('settings.general_status.active'))->get());
-        });
     }
 }

@@ -27,17 +27,16 @@ if (!function_exists('defaultLanguage')) {
      */
     function defaultLanguage()
     {
-        $default_language_id = getGeneralSetting('default_language');
-        if ($default_language_id != null) {
-            $lang_details = Language::where('id', $default_language_id)->select('id', 'code')->first();
-            if ($lang_details != null) {
-                return $lang_details->code;
-            } else {
-                return 'en';
+        return Cache::rememberForever(tenantCacheKey('default-language-code'), function () {
+            $default_language_id = getGeneralSetting('default_language');
+            if ($default_language_id != null) {
+                $lang_details = Language::where('id', $default_language_id)->select('id', 'code')->first();
+                if ($lang_details != null) {
+                    return $lang_details->code;
+                }
             }
-        } else {
             return 'en';
-        }
+        });
     }
 }
 
