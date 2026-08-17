@@ -234,6 +234,62 @@
         --mainC: {{ $theme_primary_color }};
         --color-primary: {{ $theme_primary_color }};
     }</style>
+    <style>
+        #tlc-boot-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f0f8ff94;
+            z-index: 99999;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        #tlc-boot-loader.is-done {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #tlc-boot-spinner {
+            display: block;
+            position: relative;
+            left: 50%;
+            top: 50%;
+            width: 150px;
+            height: 150px;
+            margin: -75px 0 0 -75px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--mainC, #e62d04);
+            animation: tlc-boot-spin 2s linear infinite;
+        }
+        #tlc-boot-spinner:before,
+        #tlc-boot-spinner:after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--mainC, #e62d04);
+        }
+        #tlc-boot-spinner:before {
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            animation: tlc-boot-spin 3s linear infinite;
+        }
+        #tlc-boot-spinner:after {
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            animation: tlc-boot-spin 1.5s linear infinite;
+        }
+        @keyframes tlc-boot-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 
     <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('back_to_top.css')) }}?v={{ $assetVersion }}">
     <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('header.css')) }}?v={{ $assetVersion }}">
@@ -279,6 +335,40 @@
 </head>
 
 <body class="antialiased">
+    <div id="tlc-boot-loader" role="status" aria-live="polite" aria-busy="true" aria-label="Loading">
+        <div id="tlc-boot-spinner"></div>
+    </div>
+    <script>
+        (function () {
+            var hideTimer = null;
+            window.__TLC_HIDE_BOOT_LOADER__ = function () {
+                if (window.__TLC_BOOT_LOADER_HIDDEN__) {
+                    return;
+                }
+                window.__TLC_BOOT_LOADER_HIDDEN__ = true;
+                if (hideTimer) {
+                    clearTimeout(hideTimer);
+                    hideTimer = null;
+                }
+                var el = document.getElementById('tlc-boot-loader');
+                if (!el) {
+                    return;
+                }
+                el.classList.add('is-done');
+                el.setAttribute('aria-busy', 'false');
+                setTimeout(function () {
+                    if (el && el.parentNode) {
+                        el.parentNode.removeChild(el);
+                    }
+                }, 300);
+            };
+            hideTimer = setTimeout(function () {
+                if (typeof window.__TLC_HIDE_BOOT_LOADER__ === 'function') {
+                    window.__TLC_HIDE_BOOT_LOADER__();
+                }
+            }, 30000);
+        })();
+    </script>
     <div id="app">
     </div>
     <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('custom_css.css')) }}?v={{ $assetVersion }}">

@@ -154,9 +154,11 @@
 
         <SplitScreenProductList
             v-if="isFeaturePaneLayout && homeContentReady && productListViewEnabled"
-            :disable-margin="true" />
+            :disable-margin="true"
+            @ready="onFeaturePaneProductsReady" />
         <ProductPage v-else-if="isFeaturePaneLayout && homeContentReady"
-            :disable-margin="true" />
+            :disable-margin="true"
+            @ready="onFeaturePaneProductsReady" />
 
     </div>
 
@@ -229,6 +231,7 @@ import HomePageDeliveryShipping from '@/components/order-steps/homePageDeliveryS
 import enums from "../enums/enums";
 import { mapState, mapGetters } from "vuex";
 import { trackSocialPixels } from "@/utils/trackSocialPixels";
+import { hideBootSplash } from "@/utils/bootSplash";
 // import CompanyFooter from "../components/ui/CompanyFooter.vue";
 const axios = require("axios").default;
 
@@ -271,6 +274,7 @@ export default {
         };
     },
     name: "HomeView",
+    bootSplashManual: true,
     data() {
         return {
             pageLoading: true,
@@ -293,6 +297,7 @@ export default {
             pickupPoints: [],
 
             productListViewEnabled: readBootstrapProductListViewEnabled(),
+            featurePaneProductsReady: false,
         };
     },
     computed: {
@@ -333,8 +338,20 @@ export default {
                 return 'mt-0';
             }
             return 'mt-1';
-        }
+        },
 
+        needsFeaturePaneProducts() {
+            return this.isFeaturePaneLayout && !this.active_pagebuilder;
+        },
+
+    },
+    watch: {
+        pageLoading() {
+            this.tryHideBootSplash();
+        },
+        needsFeaturePaneProducts() {
+            this.tryHideBootSplash();
+        },
     },
     mounted() {
         this.homeContentReady = false;
@@ -433,7 +450,23 @@ export default {
             this.pageLoading = false;
             this.$nextTick(() => {
                 this.homeContentReady = true;
+                this.tryHideBootSplash();
             });
+        },
+
+        onFeaturePaneProductsReady() {
+            this.featurePaneProductsReady = true;
+            this.tryHideBootSplash();
+        },
+
+        tryHideBootSplash() {
+            if (this.pageLoading) {
+                return;
+            }
+            if (this.needsFeaturePaneProducts && !this.featurePaneProductsReady) {
+                return;
+            }
+            hideBootSplash();
         },
 
         //-------- HomePageDeliveryShipping --------

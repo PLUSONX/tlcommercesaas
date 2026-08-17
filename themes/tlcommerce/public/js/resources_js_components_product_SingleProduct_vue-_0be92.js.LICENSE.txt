@@ -1,3 +1,7 @@
+/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Countdown.vue?vue&type=style&index=0&id=51e03521&lang=scss */
+
+/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsContent.vue?vue&type=style&index=0&id=7aaf0cbc&lang=scss&scoped=true */
+
 /*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true */
 
 /*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SingleProduct.vue?vue&type=style&index=0&id=630a158c&lang=scss&scoped=true */
@@ -16,13 +20,25 @@
 
 /*! !../style-loader/dist/runtime/injectStylesIntoStyleTag.js */
 
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Countdown.vue?vue&type=script&lang=js */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsContent.vue?vue&type=script&lang=js */
+
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsGallery.vue?vue&type=script&lang=js */
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SingleProduct.vue?vue&type=script&lang=js */
 
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Countdown.vue?vue&type=template&id=51e03521 */
+
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsContent.vue?vue&type=template&id=7aaf0cbc&scoped=true */
+
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsGallery.vue?vue&type=template&id=59bea7fb&scoped=true */
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SingleProduct.vue?vue&type=template&id=630a158c&scoped=true */
+
+/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./Countdown.vue?vue&type=style&index=0&id=51e03521&lang=scss */
+
+/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsContent.vue?vue&type=style&index=0&id=7aaf0cbc&lang=scss&scoped=true */
 
 /*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true */
 
@@ -34,7 +50,23 @@
 
 /*! ../../config.js */
 
+/*! ../../enums/enums */
+
 /*! ../css-loader/dist/runtime/api.js */
+
+/*! ../ui/Countdown.vue */
+
+/*! ./Countdown.vue?vue&type=script&lang=js */
+
+/*! ./Countdown.vue?vue&type=style&index=0&id=51e03521&lang=scss */
+
+/*! ./Countdown.vue?vue&type=template&id=51e03521 */
+
+/*! ./DetailsContent.vue?vue&type=script&lang=js */
+
+/*! ./DetailsContent.vue?vue&type=style&index=0&id=7aaf0cbc&lang=scss&scoped=true */
+
+/*! ./DetailsContent.vue?vue&type=template&id=7aaf0cbc&scoped=true */
 
 /*! ./DetailsGallery.vue?vue&type=script&lang=js */
 
@@ -59,6 +91,8 @@
 /*! @/utils/cartLineMatch */
 
 /*! @/utils/trackSocialPixels */
+
+/*! @/utils/variantSelection */
 
 /*! @coreui/vue */
 
@@ -94,6 +128,10 @@
   !*** ./node_modules/swiper/swiper.min.css ***!
   \********************************************/
 
+/*!**************************************************!*\
+  !*** ./resources/js/components/ui/Countdown.vue ***!
+  \**************************************************/
+
 /*!*********************************************************!*\
   !*** ./node_modules/v-lazy-image/dist/v-lazy-image.mjs ***!
   \*********************************************************/
@@ -122,17 +160,37 @@
   !*** ./node_modules/swiper/modules/navigation/navigation.min.css ***!
   \*******************************************************************/
 
+/*!**************************************************************************!*\
+  !*** ./resources/js/components/ui/Countdown.vue?vue&type=script&lang=js ***!
+  \**************************************************************************/
+
+/*!********************************************************************************!*\
+  !*** ./resources/js/components/ui/Countdown.vue?vue&type=template&id=51e03521 ***!
+  \********************************************************************************/
+
 /*!***********************************************************************************!*\
   !*** ./resources/js/components/product/SingleProduct.vue?vue&type=script&lang=js ***!
   \***********************************************************************************/
 
 /*!************************************************************************************!*\
+  !*** ./resources/js/components/product/DetailsContent.vue?vue&type=script&lang=js ***!
+  \************************************************************************************/
+
+/*!************************************************************************************!*\
   !*** ./resources/js/components/product/DetailsGallery.vue?vue&type=script&lang=js ***!
   \************************************************************************************/
+
+/*!***********************************************************************************************!*\
+  !*** ./resources/js/components/ui/Countdown.vue?vue&type=style&index=0&id=51e03521&lang=scss ***!
+  \***********************************************************************************************/
 
 /*!*****************************************************************************************************!*\
   !*** ./resources/js/components/product/SingleProduct.vue?vue&type=template&id=630a158c&scoped=true ***!
   \*****************************************************************************************************/
+
+/*!******************************************************************************************************!*\
+  !*** ./resources/js/components/product/DetailsContent.vue?vue&type=template&id=7aaf0cbc&scoped=true ***!
+  \******************************************************************************************************/
 
 /*!******************************************************************************************************!*\
   !*** ./resources/js/components/product/DetailsGallery.vue?vue&type=template&id=59bea7fb&scoped=true ***!
@@ -141,6 +199,10 @@
 /*!********************************************************************************************************************!*\
   !*** ./resources/js/components/product/SingleProduct.vue?vue&type=style&index=0&id=630a158c&lang=scss&scoped=true ***!
   \********************************************************************************************************************/
+
+/*!*********************************************************************************************************************!*\
+  !*** ./resources/js/components/product/DetailsContent.vue?vue&type=style&index=0&id=7aaf0cbc&lang=scss&scoped=true ***!
+  \*********************************************************************************************************************/
 
 /*!*********************************************************************************************************************!*\
   !*** ./resources/js/components/product/DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true ***!
@@ -162,33 +224,65 @@
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/swiper/modules/navigation/navigation.min.css ***!
   \***************************************************************************************************************************************************************************************************/
 
+/*!******************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/Countdown.vue?vue&type=script&lang=js ***!
+  \******************************************************************************************************************************************************************************************************/
+
 /*!***************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/SingleProduct.vue?vue&type=script&lang=js ***!
   \***************************************************************************************************************************************************************************************************************/
 
 /*!****************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsContent.vue?vue&type=script&lang=js ***!
+  \****************************************************************************************************************************************************************************************************************/
+
+/*!****************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsGallery.vue?vue&type=script&lang=js ***!
   \****************************************************************************************************************************************************************************************************************/
+
+/*!**********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/Countdown.vue?vue&type=template&id=51e03521 ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!*******************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/SingleProduct.vue?vue&type=template&id=630a158c&scoped=true ***!
   \*******************************************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!********************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsContent.vue?vue&type=template&id=7aaf0cbc&scoped=true ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsGallery.vue?vue&type=template&id=59bea7fb&scoped=true ***!
   \********************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/Countdown.vue?vue&type=style&index=0&id=51e03521&lang=scss ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/SingleProduct.vue?vue&type=style&index=0&id=630a158c&lang=scss&scoped=true ***!
   \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsContent.vue?vue&type=style&index=0&id=7aaf0cbc&lang=scss&scoped=true ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true ***!
   \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/Countdown.vue?vue&type=style&index=0&id=51e03521&lang=scss ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/SingleProduct.vue?vue&type=style&index=0&id=630a158c&lang=scss&scoped=true ***!
   \***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsContent.vue?vue&type=style&index=0&id=7aaf0cbc&lang=scss&scoped=true ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/product/DetailsGallery.vue?vue&type=style&index=0&id=59bea7fb&lang=scss&scoped=true ***!

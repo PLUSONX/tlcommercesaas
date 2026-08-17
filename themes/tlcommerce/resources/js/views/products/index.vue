@@ -212,6 +212,7 @@ const axios = require("axios").default;
 import { mapGetters } from "vuex";
 export default {
   name: "Products",
+  emits: ["ready"],
   components: {
     PageHeader,
     SingleProduct,
@@ -303,6 +304,13 @@ export default {
     this.getBrands();
     this.getProducts();
     document.title = this.$t("All Products");
+  },
+  watch: {
+    productsLoading(loading) {
+      if (!loading) {
+        this.$emit("ready");
+      }
+    },
   },
 
   methods: {

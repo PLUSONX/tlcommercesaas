@@ -54,6 +54,7 @@ const axios = require("axios").default;
 
 export default {
   name: "SplitScreenProductList",
+  emits: ["ready"],
   components: {
     ProductListRow,
   },
@@ -117,6 +118,7 @@ export default {
         })
         .finally(() => {
           this.loading = false;
+          this.$emit("ready");
         });
     },
   },

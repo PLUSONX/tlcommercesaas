@@ -15,12 +15,14 @@ import NotFound from "./components/global/NotFound.vue"
 import { isChunkLoadError, reloadOnceForChunkError } from "./utils/chunkLoadRecovery";
 import { loadLanguageAsync } from "./i18n_setup";
 import { safeGetItem } from "./utils/safeStorage";
+import { createBootSplashMixin, hideBootSplash } from "./utils/bootSplash";
 
 const VSelect = defineAsyncComponent(() =>
   import("vue-select").then((m) => m.default)
 );
 
 function showBootFallback(message) {
+  hideBootSplash();
   const el = document.getElementById("app");
   if (!el || el.childElementCount > 0) {
     return;
@@ -80,6 +82,7 @@ try {
   app.component("v-select", VSelect);
   app.component('the-not-found', NotFound);
   app.component('skeleton', Skeleton);
+  app.mixin(createBootSplashMixin());
   app.mount("#app");
 
   import("vue-social-sharing")
