@@ -161,7 +161,7 @@
 @endphp
 
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="tlc-booting">
 
 <head>
     {{-- Force browsers / Instagram WebView to revalidate HTML so they pick up new ?v= assets --}}
@@ -285,16 +285,22 @@
         --color-primary: {{ $theme_primary_color }};
     }</style>
     <style>
+        html.tlc-booting #app {
+            display: none;
+        }
         #tlc-boot-loader {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #f0f8ff94;
+            background: #f0f8ff;
             z-index: 99999;
             opacity: 1;
             transition: opacity 0.3s ease;
+            contain: strict;
+            transform: translateZ(0);
+            will-change: opacity;
         }
         #tlc-boot-loader.is-done {
             opacity: 0;
@@ -312,6 +318,7 @@
             border: 3px solid transparent;
             border-top-color: var(--mainC, #e62d04);
             animation: tlc-boot-spin 2s linear infinite;
+            will-change: transform;
         }
         #tlc-boot-spinner:before,
         #tlc-boot-spinner:after {
@@ -320,6 +327,7 @@
             border-radius: 50%;
             border: 3px solid transparent;
             border-top-color: var(--mainC, #e62d04);
+            will-change: transform;
         }
         #tlc-boot-spinner:before {
             top: 5px;
@@ -372,6 +380,9 @@
         *:not(.material-icons):not([class*="fa-"]):not([class*="ti-"]) {
             font-family: 'Bricolage Grotesque', sans-serif !important;
         }
+        #tlc-boot-loader, #tlc-boot-loader * {
+            font-family: sans-serif !important;
+        }
     </style>
 </head>
 
@@ -391,17 +402,27 @@
                     clearTimeout(hideTimer);
                     hideTimer = null;
                 }
+                document.documentElement.classList.remove('tlc-booting');
                 var el = document.getElementById('tlc-boot-loader');
                 if (!el) {
                     return;
                 }
-                el.classList.add('is-done');
                 el.setAttribute('aria-busy', 'false');
-                setTimeout(function () {
-                    if (el && el.parentNode) {
-                        el.parentNode.removeChild(el);
-                    }
-                }, 300);
+                var fade = function () {
+                    el.classList.add('is-done');
+                    setTimeout(function () {
+                        if (el && el.parentNode) {
+                            el.parentNode.removeChild(el);
+                        }
+                    }, 300);
+                };
+                if (typeof requestAnimationFrame === 'function') {
+                    requestAnimationFrame(function () {
+                        requestAnimationFrame(fade);
+                    });
+                } else {
+                    setTimeout(fade, 50);
+                }
             };
             hideTimer = setTimeout(function () {
                 if (typeof window.__TLC_HIDE_BOOT_LOADER__ === 'function') {
