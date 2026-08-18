@@ -6,7 +6,7 @@
         auth()->user()->can('Manage Layout Settings') ||
         auth()->user()->can('Manage Quiz'))
     <li style="padding-left: 0 !important;"
-        class="hide-menu {{ Request::routeIs(['theme.tlcommerce.home.page.sections.edit', 'theme.tlcommerce.home.page.sections.new', 'theme.tlcommerce.home.page.sections', 'theme.tlcommerce.sliders.edit', 'theme.tlcommerce.sliders.new', 'theme.tlcommerce.sliders', 'theme.tlcommerce.options', 'theme.tlcommerce.quiz.list', 'theme.tlcommerce.quiz.new', 'theme.tlcommerce.quiz.edit', 'theme.tlcommerce.quiz.questions', 'theme.tlcommerce.quiz.answers', 'theme.tlcommerce.quiz.scores']) ? 'active sub-menu-opened' : '' }}">
+        class="hide-menu {{ Request::routeIs(['theme.tlcommerce.home.page.sections.edit', 'theme.tlcommerce.home.page.sections.new', 'theme.tlcommerce.home.page.sections', 'theme.tlcommerce.sliders.edit', 'theme.tlcommerce.sliders.new', 'theme.tlcommerce.sliders', 'theme.tlcommerce.options', 'theme.tlcommerce.widgets', 'theme.tlcommerce.layoutSettings', 'theme.tlcommerce.quiz.list', 'theme.tlcommerce.quiz.new', 'theme.tlcommerce.quiz.edit', 'theme.tlcommerce.quiz.questions', 'theme.tlcommerce.quiz.answers', 'theme.tlcommerce.quiz.scores']) ? 'active sub-menu-opened' : '' }}">
         <!-- <li style="padding-left: 0 !important;"> -->
         <a href="#">
             <!-- <i class="icofont-ui-theme"></i> -->
@@ -78,6 +78,19 @@
         background-color: #ff5A1f !important;
         color: #ffffff !important;
         border-radius: 12px;
+    }
+
+    /* 4. Keep non-active submenu links visible on hover */
+    .sidebar .nav li.sub-menu-opened .sub-menu li:not(.active) > a:hover,
+    .sidebar .nav li.sub-menu-opened .sub-menu li:not(.active) > a:focus {
+        background-color: rgba(255, 90, 31, 0.08) !important;
+        color: #ff5A1f !important;
+        border-radius: 12px;
+    }
+
+    .sidebar .nav li.sub-menu-opened .sub-menu li:not(.active) > a:hover .link-title,
+    .sidebar .nav li.sub-menu-opened .sub-menu li:not(.active) > a:focus .link-title {
+        color: #ff5A1f !important;
     }
 
     @media (max-width: 900px) {

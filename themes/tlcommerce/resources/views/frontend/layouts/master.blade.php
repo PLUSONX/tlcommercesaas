@@ -86,6 +86,14 @@
             ->get();
     });
 
+    $rtlLanguageCodes = Cache::rememberForever(tenantCacheKey('-rtl-language-codes'), function () {
+        return Language::where('status', config('settings.general_status.active'))
+            ->where('is_rtl', 1)
+            ->pluck('code')
+            ->values()
+            ->all();
+    });
+
     $bootstrapCurrencies = Cache::rememberForever(tenantCacheKey('active-currencies'), function () {
         return Currency::where('status', config('settings.general_status.active'))
             ->select('id', 'name', 'code', 'symbol', 'conversion_rate', 'position', 'thousand_separator', 'decimal_separator', 'number_of_decimal')
@@ -111,6 +119,7 @@
     $homeSectionsBootstrap = null;
     $menusBootstrap = null;
     $splitScreenListBootstrap = null;
+    $footerWidgetsBootstrap = null;
     $isHomePath = request()->is('/') || request()->path() === '' || request()->path() === '/';
 
     if ($isHomePath) {
@@ -130,6 +139,12 @@
             $menusBootstrap = app(LayoutSettingsController::class)->menusPayload();
         } catch (\Throwable $e) {
             Log::warning('Home menus bootstrap failed: ' . $e->getMessage());
+        }
+
+        try {
+            $footerWidgetsBootstrap = app(LayoutSettingsController::class)->footerWidgetsPayload();
+        } catch (\Throwable $e) {
+            Log::warning('Home footer widgets bootstrap failed: ' . $e->getMessage());
         }
 
         $layoutType = is_array($activeLayoutBootstrap) ? ($activeLayoutBootstrap['type'] ?? null) : null;
@@ -229,6 +244,22 @@
     @endif
 
     @if (isActivePluging('tlecommercecore'))
+        {{-- Apply document direction before Vue/Swiper boot so hero sliders init in the correct RTL/LTR context --}}
+        <script>
+            (function () {
+                try {
+                    var rtlCodes = @json($rtlLanguageCodes);
+                    var locale = localStorage.getItem('locale') || @json($default_language);
+                    var isRtl = rtlCodes.indexOf(locale) !== -1;
+                    var html = document.documentElement;
+                    html.classList.toggle('rtl', isRtl);
+                    html.setAttribute('dir', isRtl ? 'rtl' : 'ltr');
+                    if (locale) {
+                        html.setAttribute('lang', locale);
+                    }
+                } catch (e) {}
+            })();
+        </script>
         {{-- Download in parallel with CSS; runs after parse, after the pixel snippets above --}}
         <script defer src="{{ asset('themes/tlcommerce/js/main.js?v=' . $assetVersion) }}"></script>
     @endif
@@ -596,6 +627,7 @@
             sliders: @json($homeSlidersBootstrap),
             homePageSections: @json($homeSectionsBootstrap),
             menus: @json($menusBootstrap),
+            footerWidgets: @json($footerWidgetsBootstrap),
             splitScreenProductList: @json($splitScreenListBootstrap),
         };
     </script>

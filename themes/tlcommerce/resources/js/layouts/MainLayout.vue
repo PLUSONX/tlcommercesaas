@@ -109,6 +109,52 @@ function hasUsableBootstrapSiteData(boot) {
   );
 }
 
+function buildFooterWidgetHtml(widgetOptions = {}) {
+  let widgetHtml = "";
+
+  for (const [key] of Object.entries(widgetOptions || {})) {
+    if (key == "address_widget") {
+      widgetHtml +=
+        '<div class="col-lg-3 col-sm-6"><' +
+        key +
+        " :" +
+        key +
+        '="widget_options.' +
+        key +
+        '" :footer-style="footerStyle"/><social_links class="widget" :social_links="widget_options.address_widget.social_links" :social-style="socialStyle"/></div>';
+    } else if (key == "newsletter_widget") {
+      widgetHtml +=
+        '<div class="col-lg-3 col-sm-6"><' +
+        key +
+        " :" +
+        key +
+        '="widget_options.' +
+        key +
+        '" :subscription-form-style="subscriptionFormStyle" :footer-style="footerStyle"/></div>';
+    } else if (key == "footer_left_menu" || key == "footer_right_menu") {
+      widgetHtml +=
+        '<div class="col-lg-3 col-sm-6"><' +
+        key +
+        " :" +
+        key +
+        '="widget_options.' +
+        key +
+        '" :footer-style="footerStyle"/></div>';
+    } else {
+      widgetHtml +=
+        '<div class="col-lg-3 col-sm-6"><' +
+        key +
+        " :" +
+        key +
+        '="widget_options.' +
+        key +
+        '"/></div>';
+    }
+  }
+
+  return widgetHtml;
+}
+
 export default {
   name: "MainLayout",
   components: {
@@ -493,10 +539,10 @@ export default {
     body.className = this.mode == "dark" ? "dark" : "";
     this.initHeaderMenus();
     scheduleBackgroundRefresh(() => this.getThemeStyle());
-    scheduleBackgroundRefresh(() => this.getFooterWidget(), 2000);
+    this.initFooterWidgets();
 
     if (!(this.isFeaturePaneLayout && this.isMobile)) {
-      scheduleBackgroundRefresh(() => this.getMegacategories(), 1500);
+      this.getMegacategories();
     }
 
     if (this.isCustomerLogin) {
@@ -659,6 +705,14 @@ export default {
       }
       this.getAllMenusForEcommerceHome();
     },
+    initFooterWidgets() {
+      const footerWidgets = readStorefrontBootstrap()?.footerWidgets;
+      if (this.applyFooterWidgetsPayload(footerWidgets)) {
+        scheduleBackgroundRefresh(() => this.getFooterWidget());
+        return;
+      }
+      this.getFooterWidget();
+    },
     applyMenusPayload(payload) {
       if (!payload?.success) {
         return false;
@@ -667,6 +721,14 @@ export default {
       this.leftMenuItems = payload.header_top_left_menus?.menus ?? [];
       this.headerBottomMenu = payload.header_bottom_middle_menus?.menus ?? [];
       this.MenuItemsLoading = false;
+      return true;
+    },
+    applyFooterWidgetsPayload(payload) {
+      if (!payload?.success) {
+        return false;
+      }
+      this.widget_options = payload.widget_options ?? {};
+      this.widget_html = buildFooterWidgetHtml(this.widget_options);
       return true;
     },
     /**
@@ -714,62 +776,7 @@ export default {
           headers: headers,
         })
         .then((response) => {
-          if (response.data.success) {
-            this.widget_options = response.data.widget_options;
-            for (const [key, value] of Object.entries(this.widget_options)) {
-              if (key == "address_widget") {
-                this.widget_html =
-                  this.widget_html +
-                  '<div class="col-lg-3 col-sm-6"><' +
-                  key +
-                  " :" +
-                  key +
-                  '="widget_options.' +
-                  key +
-                  '" :footer-style="footerStyle"/><social_links class="widget" :social_links="widget_options.address_widget.social_links" :social-style="socialStyle"/></div>';
-              } else if (key == "newsletter_widget") {
-                this.widget_html =
-                  this.widget_html +
-                  '<div class="col-lg-3 col-sm-6"><' +
-                  key +
-                  " :" +
-                  key +
-                  '="widget_options.' +
-                  key +
-                  '" :subscription-form-style="subscriptionFormStyle" :footer-style="footerStyle"/></div>';
-              } else if (key == "footer_left_menu") {
-                this.widget_html =
-                  this.widget_html +
-                  '<div class="col-lg-3 col-sm-6"><' +
-                  key +
-                  " :" +
-                  key +
-                  '="widget_options.' +
-                  key +
-                  '" :footer-style="footerStyle"/></div>';
-              } else if (key == "footer_right_menu") {
-                this.widget_html =
-                  this.widget_html +
-                  '<div class="col-lg-3 col-sm-6"><' +
-                  key +
-                  " :" +
-                  key +
-                  '="widget_options.' +
-                  key +
-                  '" :footer-style="footerStyle"/></div>';
-              } else {
-                this.widget_html =
-                  this.widget_html +
-                  '<div class="col-lg-3 col-sm-6"><' +
-                  key +
-                  " :" +
-                  key +
-                  '="widget_options.' +
-                  key +
-                  '"/></div>';
-              }
-            }
-          }
+          this.applyFooterWidgetsPayload(response.data);
         })
         .catch((error) => { });
     },

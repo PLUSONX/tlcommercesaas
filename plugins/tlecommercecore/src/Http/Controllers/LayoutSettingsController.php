@@ -151,8 +151,17 @@ class LayoutSettingsController extends Controller
      */
     public function getFooterWidgets(Request $request)
     {
-        try {
+        return response()->json($this->footerWidgetsPayload());
+    }
 
+    /**
+     * Footer widgets JSON for the API and Blade bootstrap.
+     *
+     * @return array
+     */
+    public function footerWidgetsPayload(): array
+    {
+        try {
             $sidebar_id = getThemeSidebarId('footer_sidebar');
             $all_blog_sidebar_widgets = getAllSidebarWidgets($sidebar_id);
 
@@ -223,18 +232,15 @@ class LayoutSettingsController extends Controller
                     $widget_options[$widget_key] = getSidebarWidgetValues($sidebar_has_widget, Session::get('api_locale'));
                 }
             }
-            return response()->json(
-                [
-                    'success' => true,
-                    'widget_options' => $widget_options,
-                ]
-            );
+
+            return [
+                'success' => true,
+                'widget_options' => $widget_options,
+            ];
         } catch (Exception $e) {
-            return response()->json(
-                [
-                    'success' => false
-                ]
-            );
+            return [
+                'success' => false
+            ];
         }
     }
 

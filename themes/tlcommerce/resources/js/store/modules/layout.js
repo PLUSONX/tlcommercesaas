@@ -23,6 +23,20 @@ function detectMobileView() {
   }
 }
 
+function detectInitialRtl() {
+  if (typeof document === "undefined") {
+    return false;
+  }
+  try {
+    return (
+      document.documentElement.dir === "rtl" ||
+      document.documentElement.classList.contains("rtl")
+    );
+  } catch (e) {
+    return false;
+  }
+}
+
 function readLayoutHint() {
   const hint = safeSessionJsonParse(LAYOUT_HINT_KEY, null);
   if (hint && typeof hint === "object" && hint.type) {
@@ -73,7 +87,7 @@ export default {
         hasFetched: hasInitialLayout,
         error: null,
         isMobileView: detectMobileView(),
-        isRtl: false,
+        isRtl: detectInitialRtl(),
     },
 
     mutations: {

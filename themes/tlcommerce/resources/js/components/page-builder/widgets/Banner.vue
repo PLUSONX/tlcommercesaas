@@ -19,6 +19,8 @@
         <div class="slider-container" v-else>
             <swiper
                 v-if="properties && Object.keys(properties).length > 0"
+                :key="`builder-banner-${isRtl ? 'rtl' : 'ltr'}-${sliders.length}`"
+                :dir="isRtl ? 'rtl' : 'ltr'"
                 :slidesPerView="'auto'"
                 :loop="true"
                 :spaceBetween="20"
@@ -47,6 +49,7 @@
 import { defineAsyncComponent } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Autoplay, Pagination } from "swiper";
+import { mapGetters } from "vuex";
 
 const ProductBanner = defineAsyncComponent(() =>
     import("@/components/ui/ProductBanner.vue")
@@ -79,6 +82,10 @@ export default {
             type: Object,
             default: {},
         },
+    },
+
+    computed: {
+        ...mapGetters("layout", ["isRtl"]),
     },
 
     mounted() {

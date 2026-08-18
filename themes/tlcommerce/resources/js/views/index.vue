@@ -3,16 +3,19 @@
 
     <!-- <h1 style="color: red; position:fixed;top:0;left:0;z-index:9999;background:yellow;padding:10px;">Test</h1> -->
 
-    <div class="light-bg" v-if="pageLoading">
-        <Skeleton class="w-100 pt-20" style="height: 100vh;"></skeleton>
-        <!-- <skeleton height="100vh" class="w-100 pt-20"></skeleton> -->
-    </div>
+    <template v-if="pageLoading">
+        <div class="light-bg">
+            <Skeleton class="w-100 pt-20" style="height: 100vh;"></skeleton>
+            <!-- <skeleton height="100vh" class="w-100 pt-20"></skeleton> -->
+        </div>
+    </template>
 
-    <!-- From Page Builder -->
-    <builder-section :page="page" :sections="page_section" :widgets="page_builder_widgets" @section-loaded="loaded"
-        v-if="active_pagebuilder && page.page_type == 'builder'" />
+    <template v-else-if="active_pagebuilder && page.page_type == 'builder'">
+        <!-- From Page Builder -->
+        <builder-section :page="page" :sections="page_section" :widgets="page_builder_widgets" @section-loaded="loaded" />
+    </template>
 
-    <div class="pt-30 pt-lg-60 pb-60 light-bg" v-else-if="active_pagebuilder && page.page_type == 'default'">
+    <div v-else-if="active_pagebuilder && page.page_type == 'default'" class="pt-30 pt-lg-60 pb-60 light-bg">
         <div class="custom-container2">
             <div class="row">
                 <div class="col-lg-12">
@@ -41,10 +44,10 @@
         </div>
     </div>
 
-    <div class="home__two" :class="{
+    <div v-else class="home__two" :class="{
         'home__two--rtl': isFeaturePaneLayout && isRtl,
         'home__two--modern': isModernLayout,
-    }" v-else>
+    }">
         <!-- Banner -->
         <!-- <section class="product-banner product-banner-overflow-auto mt-30 mb-30" v-if="dataAvailable"> -->
         <!-- <div class="mt-50"> -->
@@ -73,6 +76,8 @@
                 </div>
                 <div class="slider-container" v-else>
                     <swiper v-if="banners && banners.length > 0"
+                        :key="`home-banner-${isRtl ? 'rtl' : 'ltr'}-${banners.length}`"
+                        :dir="isRtl ? 'rtl' : 'ltr'"
                         :slidesPerView="isModernLayout ? 1 : 'auto'"
                         :loop="true"
                         :spaceBetween="isModernLayout ? 0 : 20"
