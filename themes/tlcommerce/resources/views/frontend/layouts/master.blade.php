@@ -491,6 +491,8 @@
     </div>
     <script>
         (function () {
+            var bootLoaderStartedAt = Date.now();
+            var minimumBootLoaderDuration = 2000;
             var hideTimer = null;
             window.__TLC_HIDE_BOOT_LOADER__ = function () {
                 if (window.__TLC_BOOT_LOADER_HIDDEN__) {
@@ -515,13 +517,19 @@
                         }
                     }, 300);
                 };
-                if (typeof requestAnimationFrame === 'function') {
-                    requestAnimationFrame(function () {
-                        requestAnimationFrame(fade);
-                    });
-                } else {
-                    setTimeout(fade, 50);
-                }
+                var fadeAfter = Math.max(
+                    0,
+                    minimumBootLoaderDuration - (Date.now() - bootLoaderStartedAt)
+                );
+                setTimeout(function () {
+                    if (typeof requestAnimationFrame === 'function') {
+                        requestAnimationFrame(function () {
+                            requestAnimationFrame(fade);
+                        });
+                    } else {
+                        setTimeout(fade, 50);
+                    }
+                }, fadeAfter);
             };
             hideTimer = setTimeout(function () {
                 if (typeof window.__TLC_HIDE_BOOT_LOADER__ === 'function') {
