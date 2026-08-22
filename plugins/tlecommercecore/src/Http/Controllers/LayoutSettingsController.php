@@ -82,13 +82,22 @@ class LayoutSettingsController extends Controller
      */
     public function getAllMenusForEcommerceHome()
     {
-        try {
+        return response()->json($this->menusPayload());
+    }
 
+    /**
+     * Header menus JSON for the API and Blade bootstrap.
+     *
+     * @return array
+     */
+    public function menusPayload(): array
+    {
+        try {
             $header_bottom_middle_menus = Cache::rememberForever(tenantCacheKey('header-bottom-middle-menus'), function () {
                 return $this->headerBottomMiddleMenus();
             });
 
-            if ($header_bottom_middle_menus['success']) {
+            if (!empty($header_bottom_middle_menus['success'])) {
                 array_shift($header_bottom_middle_menus);
             }
 
@@ -96,7 +105,7 @@ class LayoutSettingsController extends Controller
                 return $this->headerTopRightMenus();
             });
 
-            if ($header_top_right_menus['success']) {
+            if (!empty($header_top_right_menus['success'])) {
                 array_shift($header_top_right_menus);
             }
 
@@ -104,21 +113,20 @@ class LayoutSettingsController extends Controller
                 return $this->headerTopLeftMenus();
             });
 
-            if ($header_top_left_menus['success']) {
+            if (!empty($header_top_left_menus['success'])) {
                 array_shift($header_top_left_menus);
             }
 
-
-            return response()->json([
+            return [
                 'success' => true,
                 'header_bottom_middle_menus' => $header_bottom_middle_menus,
                 'header_top_right_menus' => $header_top_right_menus,
-                'header_top_left_menus' => $header_top_left_menus
-            ]);
+                'header_top_left_menus' => $header_top_left_menus,
+            ];
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false
-            ]);
+            return [
+                'success' => false,
+            ];
         }
     }
 
@@ -143,8 +151,17 @@ class LayoutSettingsController extends Controller
      */
     public function getFooterWidgets(Request $request)
     {
-        try {
+        return response()->json($this->footerWidgetsPayload());
+    }
 
+    /**
+     * Footer widgets JSON for the API and Blade bootstrap.
+     *
+     * @return array
+     */
+    public function footerWidgetsPayload(): array
+    {
+        try {
             $sidebar_id = getThemeSidebarId('footer_sidebar');
             $all_blog_sidebar_widgets = getAllSidebarWidgets($sidebar_id);
 
@@ -215,18 +232,15 @@ class LayoutSettingsController extends Controller
                     $widget_options[$widget_key] = getSidebarWidgetValues($sidebar_has_widget, Session::get('api_locale'));
                 }
             }
-            return response()->json(
-                [
-                    'success' => true,
-                    'widget_options' => $widget_options,
-                ]
-            );
+
+            return [
+                'success' => true,
+                'widget_options' => $widget_options,
+            ];
         } catch (Exception $e) {
-            return response()->json(
-                [
-                    'success' => false
-                ]
-            );
+            return [
+                'success' => false
+            ];
         }
     }
 

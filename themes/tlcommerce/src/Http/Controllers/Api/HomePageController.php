@@ -34,7 +34,26 @@ class HomePageController extends Controller
      */
     public function homePageSections()
     {
+        return response()->json($this->homePageSectionsPayload());
+    }
 
+    /**
+     * Resolved home-sections JSON (cached) for the API and Blade bootstrap.
+     *
+     * @return array
+     */
+    public function homePageSectionsPayload(): array
+    {
+        return Cache::remember(tenantCacheKey('home-page-sections-response'), 100 * 60, function () {
+            return $this->buildHomePageSectionsPayload();
+        });
+    }
+
+    /**
+     * @return array
+     */
+    private function buildHomePageSectionsPayload(): array
+    {
         $sections = Cache::remember(tenantCacheKey('home-page-sections'), 100 * 60, function () {
             return
                 HomePageSection::with(['section_properties' => function ($q) {
@@ -54,18 +73,32 @@ class HomePageController extends Controller
         if (isActivePluging('tlcommerce-pagebuilder')) {
             $page = TlPage::where('is_home', true)->first();
             if ($page != null) {
-                return $this->pageBuilderResponse($page);
+                return $this->pageBuilderPayload($page);
             }
         }
 
-        return (new HomePageSectionResource($sections));
-    }
+        $resource = new HomePageSectionResource($sections);
 
+        return json_decode($resource->toResponse(request())->getContent(), true) ?: [
+            'data' => [],
+            'success' => true,
+            'status' => 200,
+        ];
+    }
 
     /**
      * Page Builder Plugin Response
      */
     public function pageBuilderResponse($page)
+    {
+        return response()->json($this->pageBuilderPayload($page));
+    }
+
+    /**
+     * @param \Core\Models\TlPage $page
+     * @return array
+     */
+    private function pageBuilderPayload($page): array
     {
         if (isset($page->page_image)) {
             $page->page_image = getFilePath($page->page_image);
@@ -80,16 +113,16 @@ class HomePageController extends Controller
             $page_sections = \Plugin\TlPageBuilder\Helpers\BuilderHelper::getSectionLayoutWidgets($page->id, Session::get('api_locale'));
             $page_builder_widgets = \Plugin\TlPageBuilder\Helpers\BuilderHelper::$widget_list;
         }
-        
-        return response()->json(
-            [
-                'success' => true,
-                'page' => $page,
-                'page_sections' => $page_sections,
-                'active_pagebuilder' => true,
-                'page_builder_widgets' => $page_builder_widgets
-            ]
-        );
+
+        $payload = [
+            'success' => true,
+            'page' => $page,
+            'page_sections' => $page_sections,
+            'active_pagebuilder' => true,
+            'page_builder_widgets' => $page_builder_widgets,
+        ];
+
+        return json_decode(json_encode($payload), true);
     }
 
 

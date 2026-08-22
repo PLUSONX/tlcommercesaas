@@ -63,6 +63,16 @@ class ProductListViewRepository
      */
     public function getSplitScreenProductList(): array
     {
+        return Cache::remember(tenantCacheKey('split-screen-product-list'), 100 * 60, function () {
+            return $this->buildSplitScreenProductList();
+        });
+    }
+
+    /**
+     * @return array
+     */
+    private function buildSplitScreenProductList(): array
+    {
         $settings = $this->getSettings();
 
         if (!(bool) $settings->is_list_view_enabled) {
@@ -308,6 +318,7 @@ class ProductListViewRepository
     public function clearCache(): void
     {
         Cache::forget($this->cacheKey());
+        Cache::forget(tenantCacheKey('split-screen-product-list'));
     }
 
     private function seedDefaultSettings(): void

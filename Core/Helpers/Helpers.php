@@ -1451,7 +1451,7 @@ if (!function_exists('getGeneralSettingsDetails')) {
 
     function getGeneralSettingsDetails()
     {
-
+        return cache()->rememberForever(tenantCacheKey('general-settings-details'), function () {
         $data = [
             'tl_general_settings.name',
             'tl_general_settings_has_values.settings_id',
@@ -1524,6 +1524,7 @@ if (!function_exists('getGeneralSettingsDetails')) {
         }
 
         return $data;
+        });
     }
 }
 

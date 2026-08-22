@@ -230,6 +230,7 @@ export default {
   mounted() {
     this.updateDocumentTitle();
     this.CheckCheckoutConfig();
+    this.showPaymentErrorFromQuery();
     if (this.pendingPaymentPrep) {
       this.ensurePaymentPrep();
     }
@@ -263,6 +264,22 @@ export default {
         return "payment";
       }
       return step;
+    },
+    showPaymentErrorFromQuery() {
+      const message = this.$route.query.payment_error;
+      if (!message) {
+        return;
+      }
+
+      this.$store.dispatch("setCheckoutLeavingForPayment", {
+        leaving: false,
+        startedAt: null,
+      });
+      this.$toast.error(String(message));
+
+      const query = { ...this.$route.query };
+      delete query.payment_error;
+      this.$router.replace({ query });
     },
     resetCheckoutToEmptyCart() {
       this.currentStep = "cart";

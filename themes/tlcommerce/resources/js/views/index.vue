@@ -3,16 +3,19 @@
 
     <!-- <h1 style="color: red; position:fixed;top:0;left:0;z-index:9999;background:yellow;padding:10px;">Test</h1> -->
 
-    <div class="light-bg" v-if="pageLoading">
-        <Skeleton class="w-100 pt-20" style="height: 100vh;"></skeleton>
-        <!-- <skeleton height="100vh" class="w-100 pt-20"></skeleton> -->
-    </div>
+    <template v-if="pageLoading">
+        <div class="light-bg">
+            <Skeleton class="w-100 pt-20" style="height: 100vh;"></skeleton>
+            <!-- <skeleton height="100vh" class="w-100 pt-20"></skeleton> -->
+        </div>
+    </template>
 
-    <!-- From Page Builder -->
-    <builder-section :page="page" :sections="page_section" :widgets="page_builder_widgets" @section-loaded="loaded"
-        v-if="active_pagebuilder && page.page_type == 'builder'" />
+    <template v-else-if="active_pagebuilder && page.page_type == 'builder'">
+        <!-- From Page Builder -->
+        <builder-section :page="page" :sections="page_section" :widgets="page_builder_widgets" @section-loaded="loaded" />
+    </template>
 
-    <div class="pt-30 pt-lg-60 pb-60 light-bg" v-else-if="active_pagebuilder && page.page_type == 'default'">
+    <div v-else-if="active_pagebuilder && page.page_type == 'default'" class="pt-30 pt-lg-60 pb-60 light-bg">
         <div class="custom-container2">
             <div class="row">
                 <div class="col-lg-12">
@@ -41,10 +44,10 @@
         </div>
     </div>
 
-    <div class="home__two" :class="{
+    <div v-else class="home__two" :class="{
         'home__two--rtl': isFeaturePaneLayout && isRtl,
         'home__two--modern': isModernLayout,
-    }" v-else>
+    }">
         <!-- Banner -->
         <!-- <section class="product-banner product-banner-overflow-auto mt-30 mb-30" v-if="dataAvailable"> -->
         <!-- <div class="mt-50"> -->
@@ -73,6 +76,8 @@
                 </div>
                 <div class="slider-container" v-else>
                     <swiper v-if="banners && banners.length > 0"
+                        :key="`home-banner-${isRtl ? 'rtl' : 'ltr'}-${banners.length}`"
+                        :dir="isRtl ? 'rtl' : 'ltr'"
                         :slidesPerView="isModernLayout ? 1 : 'auto'"
                         :loop="true"
                         :spaceBetween="isModernLayout ? 0 : 20"
@@ -154,9 +159,11 @@
 
         <SplitScreenProductList
             v-if="isFeaturePaneLayout && homeContentReady && productListViewEnabled"
-            :disable-margin="true" />
+            :disable-margin="true"
+            @ready="onFeaturePaneProductsReady" />
         <ProductPage v-else-if="isFeaturePaneLayout && homeContentReady"
-            :disable-margin="true" />
+            :disable-margin="true"
+            @ready="onFeaturePaneProductsReady" />
 
     </div>
 
@@ -229,17 +236,22 @@ import HomePageDeliveryShipping from '@/components/order-steps/homePageDeliveryS
 import enums from "../enums/enums";
 import { mapState, mapGetters } from "vuex";
 import { trackSocialPixels } from "@/utils/trackSocialPixels";
+import { hideBootSplash } from "@/utils/bootSplash";
+import { scheduleBackgroundRefresh } from "@/utils/scheduleBackgroundRefresh";
 // import CompanyFooter from "../components/ui/CompanyFooter.vue";
 const axios = require("axios").default;
 
+function readStorefrontBootstrap() {
+    try {
+        return typeof window !== "undefined" ? window.__TLC_BOOTSTRAP__ ?? null : null;
+    } catch (e) {
+        return null;
+    }
+}
+
 function readBootstrapProductListViewEnabled() {
     try {
-        const settings =
-            typeof window !== "undefined"
-                ? window.__TLC_BOOTSTRAP__?.productListViewSettings
-                : null;
-
-        return !!settings?.is_list_view_enabled;
+        return !!readStorefrontBootstrap()?.productListViewSettings?.is_list_view_enabled;
     } catch (e) {
         return false;
     }
@@ -271,6 +283,7 @@ export default {
         };
     },
     name: "HomeView",
+    bootSplashManual: true,
     data() {
         return {
             pageLoading: true,
@@ -293,6 +306,7 @@ export default {
             pickupPoints: [],
 
             productListViewEnabled: readBootstrapProductListViewEnabled(),
+            featurePaneProductsReady: false,
         };
     },
     computed: {
@@ -333,13 +347,25 @@ export default {
                 return 'mt-0';
             }
             return 'mt-1';
-        }
+        },
 
+        needsFeaturePaneProducts() {
+            return this.isFeaturePaneLayout && !this.active_pagebuilder;
+        },
+
+    },
+    watch: {
+        pageLoading() {
+            this.tryHideBootSplash();
+        },
+        needsFeaturePaneProducts() {
+            this.tryHideBootSplash();
+        },
     },
     mounted() {
         this.homeContentReady = false;
         document.title = localStorage.getItem("site_title");
-        this.getSections();
+        this.initHomeSections();
 
         // console.log("isCustomerLogin: ", this.isCustomerLogin);
 
@@ -363,18 +389,8 @@ export default {
         removePageContentStyles(this.contentStyleId);
     },
 
-    async created() {
-        try {
-            const response = await axios.get(
-                "/api/theme/tlcommerce/v1/active-sliders"
-            );
-            if (response.status === 200) {
-                this.banners = response.data?.data ?? [];
-                this.sliderLoading = false;
-            }
-        } catch (error) {
-            this.sliderLoading = false;
-        }
+    created() {
+        this.initSliders();
     },
 
     methods: {
@@ -394,6 +410,65 @@ export default {
             this.page.content = prepared.htmlWithoutStyles;
             this.hasCustomContentStyles = prepared.hasCustomStyles;
         },
+        initSliders() {
+            const sliders = readStorefrontBootstrap()?.sliders;
+            if (sliders && (Array.isArray(sliders.data) || sliders.success)) {
+                this.applySliders(sliders);
+                scheduleBackgroundRefresh(() => this.fetchSliders());
+                return;
+            }
+            this.fetchSliders();
+        },
+        applySliders(payload) {
+            this.banners = payload?.data ?? [];
+            this.sliderLoading = false;
+        },
+        fetchSliders() {
+            axios
+                .get("/api/theme/tlcommerce/v1/active-sliders")
+                .then((response) => {
+                    if (response.status === 200) {
+                        this.applySliders(response.data);
+                    } else {
+                        this.sliderLoading = false;
+                    }
+                })
+                .catch(() => {
+                    this.sliderLoading = false;
+                });
+        },
+        initHomeSections() {
+            const sections = readStorefrontBootstrap()?.homePageSections;
+            if (
+                sections &&
+                typeof sections === "object" &&
+                (sections.success || sections.active_pagebuilder || Array.isArray(sections.data))
+            ) {
+                this.applyHomeSections(sections);
+                scheduleBackgroundRefresh(() => this.getSections());
+                return;
+            }
+            this.getSections();
+        },
+        applyHomeSections(payload) {
+            if (payload?.success) {
+                this.dataAvailable = true;
+                this.sections = payload.data ?? [];
+                this.page = payload.page ?? {};
+                this.page_section = payload.page_sections ?? {};
+                this.active_pagebuilder = payload.active_pagebuilder ?? false;
+                this.page_builder_widgets = payload.page_builder_widgets ?? {};
+                if (this.page?.content) {
+                    const styleKey = this.page.permalink || this.page.id || "default";
+                    this.setPageContent(this.page.content, styleKey);
+                }
+                if (!this.active_pagebuilder) {
+                    this.loaded();
+                }
+            } else {
+                this.loaded();
+            }
+        },
         /**
          * Get active sections
          */
@@ -401,25 +476,7 @@ export default {
             axios
                 .get("/api/theme/tlcommerce/v1/active-home-page-sections")
                 .then((response) => {
-                    if (response.data.success) {
-                        this.dataAvailable = true;
-                        this.sections = response.data.data ?? [];
-                        this.page = response.data.page ?? {};
-                        this.page_section = response.data.page_sections ?? {};
-                        this.active_pagebuilder =
-                            response.data.active_pagebuilder ?? false;
-                        this.page_builder_widgets =
-                            response.data.page_builder_widgets ?? {};
-                        if (this.page?.content) {
-                            const styleKey = this.page.permalink || this.page.id || "default";
-                            this.setPageContent(this.page.content, styleKey);
-                        }
-                        if (!this.active_pagebuilder) {
-                            this.loaded();
-                        }
-                    } else {
-                        this.loaded();
-                    }
+                    this.applyHomeSections(response.data);
                 })
                 .catch((error) => {
                     this.sections = [];
@@ -433,7 +490,23 @@ export default {
             this.pageLoading = false;
             this.$nextTick(() => {
                 this.homeContentReady = true;
+                this.tryHideBootSplash();
             });
+        },
+
+        onFeaturePaneProductsReady() {
+            this.featurePaneProductsReady = true;
+            this.tryHideBootSplash();
+        },
+
+        tryHideBootSplash() {
+            if (this.pageLoading) {
+                return;
+            }
+            if (this.needsFeaturePaneProducts && !this.featurePaneProductsReady) {
+                return;
+            }
+            hideBootSplash();
         },
 
         //-------- HomePageDeliveryShipping --------

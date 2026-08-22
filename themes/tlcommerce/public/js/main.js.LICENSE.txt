@@ -431,6 +431,8 @@
 
 /*! ./utils/assetVersionPurge */
 
+/*! ./utils/bootSplash */
+
 /*! ./utils/chunkLoadRecovery */
 
 /*! ./utils/safeStorage */
@@ -672,6 +674,10 @@
 /*!*****************************************!*\
   !*** ./resources/js/store/mutations.js ***!
   \*****************************************/
+
+/*!******************************************!*\
+  !*** ./resources/js/utils/bootSplash.js ***!
+  \******************************************/
 
 /*!*******************************************!*\
   !*** ./resources/js/assets/sass/app.scss ***!

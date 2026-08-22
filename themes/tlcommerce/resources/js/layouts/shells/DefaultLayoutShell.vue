@@ -81,13 +81,9 @@
 <script>
 import { defineAsyncComponent } from "vue";
 import VRuntimeTemplate from "vue3-runtime-template";
+import HeaderMiddle from "@/components/pageheader/HeaderMiddle.vue";
+import HeaderBottom from "@/components/pageheader/HeaderBottom.vue";
 
-const HeaderMiddle = defineAsyncComponent(() =>
-  import("@/components/pageheader/HeaderMiddle.vue")
-);
-const HeaderBottom = defineAsyncComponent(() =>
-  import("@/components/pageheader/HeaderBottom.vue")
-);
 const MobileHeader = defineAsyncComponent(() =>
   import("@/components/pageheader/MobileHeader.vue")
 );

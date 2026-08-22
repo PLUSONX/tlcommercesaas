@@ -3,6 +3,7 @@
 namespace Plugin\TlcommerceCore\Repositories;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class IntegrationsRepository {
 
@@ -37,7 +38,7 @@ class IntegrationsRepository {
             return false;
         }
 
-        return DB::table('tl_com_social_media_integrations')->updateOrInsert(
+        $updated = DB::table('tl_com_social_media_integrations')->updateOrInsert(
             ['provider' => $provider],
             [
                 'is_active'  => $isActive,
@@ -46,6 +47,10 @@ class IntegrationsRepository {
                 'created_at' => DB::raw('IFNULL(created_at, NOW())') 
             ]
         );
+
+        Cache::forget(tenantCacheKey('social-pixel-integrations'));
+
+        return $updated;
     }
 
 }

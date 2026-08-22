@@ -41,9 +41,11 @@ class SettingsRepository
      */
     public static function defaultCurrency()
     {
-        return Currency::where('id', self::getEcommerceSetting('default_currency'))
-            ->select('id', 'name', 'code', 'symbol', 'conversion_rate', 'position', 'thousand_separator', 'decimal_separator', 'number_of_decimal')
-            ->first();
+        return cache()->rememberForever(tenantCacheKey('default-currency-details'), function () {
+            return Currency::where('id', self::getEcommerceSetting('default_currency'))
+                ->select('id', 'name', 'code', 'symbol', 'conversion_rate', 'position', 'thousand_separator', 'decimal_separator', 'number_of_decimal')
+                ->first();
+        });
     }
 
     /**
