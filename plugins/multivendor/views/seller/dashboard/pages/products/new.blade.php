@@ -4,10 +4,12 @@
 @endsection
 @section('custom_css')
     <!--Select2-->
-    <link rel="stylesheet" href="{{ asset('/public/backend/assets/plugins/select2/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/assets/plugins/select2/select2.min.css') }}">
+    <!-- <link rel="stylesheet" href="{{ asset('/public/backend/assets/plugins/select2/select2.min.css') }}"> -->
     <!--End select2-->
     <!--Editor-->
-    <link href="{{ asset('/public/backend/assets/plugins/summernote/summernote-lite.css') }}" rel="stylesheet" />
+    <link href="{{ asset('backend/assets/plugins/summernote/summernote-lite.css') }}" rel="stylesheet" />
+    <!-- <link href="{{ asset('/public/backend/assets/plugins/summernote/summernote-lite.css') }}" rel="stylesheet" /> -->
     <!--End editor-->
     <style>
         #codCountries {

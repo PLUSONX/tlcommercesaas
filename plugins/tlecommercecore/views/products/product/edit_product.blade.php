@@ -664,7 +664,6 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    @if (!$isModernLayoutActive)
                     <div class="form-row mb-20">
                         <div class="col-sm-3">
                             <label class="font-14 bold black mb-0">{{ translate('Thumbnail Image') }} </label>
@@ -675,13 +674,9 @@
                                 'input' => 'thumbnail_image',
                                 'data' => $product_details->thumbnail_image,
                             ])
-                            @if ($errors->has('thumbnail_image'))
-                                <div class="invalid-input">{{ $errors->first('thumbnail_image') }}</div>
-                            @endif
                             <div id="thumbnail-image-live-error" class="product-media-live-error d-none" role="alert"></div>
                         </div>
                     </div>
-                    @endif
                     <div
                         class="form-row mb-20 product-gallery-images {{ count($product_details->color_choices) > 0 ? 'd-none' : '' }}">
                         <div class="col-sm-3">
@@ -698,7 +693,7 @@
                                 'input' => 'gallery_images',
                                 'data' => implode(',', $gallary_images),
                                 'indicator' => 1,
-                                'container_id' => '#multi_input_1',
+                                'container_id' => '#multi_input_container_1',
                             ])
                             @if ($errors->has('gallery_images'))
                                 <div class="invalid-input">{{ $errors->first('gallery_images') }}

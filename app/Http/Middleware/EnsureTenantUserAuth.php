@@ -23,7 +23,7 @@ class EnsureTenantUserAuth
                 $request->session()->regenerateToken();
                 
                 toastNotification('error', translate("Please login with a valid store account"));
-                return redirect()->away('https://platepilots.com/admin/login');
+                return redirect()->away($this->centralLoginUrl());
                 // return redirect()->route('core.login');
             }
             
@@ -34,6 +34,36 @@ class EnsureTenantUserAuth
         }
         
         return $next($request);
+    }
+
+    private function centralLoginUrl(): string
+    {
+        $scheme = request()->isSecure() ? 'https' : 'http';
+        $port = request()->getPort();
+
+        if (app()->environment('production')) {
+            $parsedCentralUrl = parse_url((string) config('app.url', ''));
+            $parsedCentralUrl = is_array($parsedCentralUrl) ? $parsedCentralUrl : [];
+            $centralDomain = $parsedCentralUrl['host'] ?? null;
+
+            if ($centralDomain) {
+                $scheme = $parsedCentralUrl['scheme'] ?? $scheme;
+                $port = $parsedCentralUrl['port'] ?? null;
+            } else {
+                $centralDomains = config('tenancy.central_domains', []);
+                $centralDomain = $centralDomains[0] ?? 'localhost';
+            }
+        } else {
+            $centralDomain = config('tenancy.local_central_domain', '127.0.0.1');
+        }
+
+        $portSuffix = ($port !== null && (($scheme === 'http' && $port != 80) || ($scheme === 'https' && $port != 443)))
+            ? ':' . $port
+            : '';
+
+        $adminPrefix = trim(getAdminPrefix(), '/');
+
+        return $scheme . '://' . $centralDomain . $portSuffix . '/' . $adminPrefix . '/login';
     }
     // public function handle(Request $request, Closure $next)
     // {
