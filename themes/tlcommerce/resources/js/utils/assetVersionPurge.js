@@ -76,6 +76,13 @@ export function purgeStaleClientStorageIfNeeded() {
   safeSessionRemoveItem(SESSION_LAYOUT_KEY);
   purgeChunkReloadFlags();
   safeSetItem(VERSION_KEY, deployed);
+
+  // First visit should not force a second paint or navigation; only
+  // hard-reload when we are correcting a real version mismatch.
+  if (stored === null) {
+    return;
+  }
+
   reloadOnceWithCacheBuster(versionReloadKey(deployed));
 }
 

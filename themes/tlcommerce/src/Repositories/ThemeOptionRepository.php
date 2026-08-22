@@ -19,6 +19,7 @@ class ThemeOptionRepository
         $active_theme = getActiveTheme();
         $data = [];
         $option_name = $request->option_name;
+        $this->forgetThemeOptionCache($active_theme->id, $option_name);
         foreach ($request->all() as $key => $value) {
             if (!($key == '_token' || $key == 'submitType' || $key == 'option_name'
                 || $key == 'social_icon_title' || $key == 'social_icon' || $key == 'social_icon_url')) {
@@ -97,6 +98,8 @@ class ThemeOptionRepository
             default:
                 break;
         }
+
+        $this->rebuildTenantCssBundle();
     }
 
     /**
@@ -839,8 +842,103 @@ class ThemeOptionRepository
         $options = $options->update([
             'field_value' =>  DB::raw('field_reset_value')
         ]);
+
+        if ($request->submitType == 'reset_section') {
+            $this->forgetThemeOptionCache($active_theme->id, $request->option_name);
+        } else {
+            $this->forgetThemeOptionCache($active_theme->id);
+        }
+        $this->rebuildTenantCssBundle();
     }
 
+
+    public static function tenantCssBundleFiles()
+    {
+        return [
+            'back_to_top.css',
+            'header.css',
+            'header_logo.css',
+            'menu.css',
+            'blog.css',
+            'sidebar_options.css',
+            'page_404.css',
+            'subscribe.css',
+            'footer.css',
+            'social_icon.css',
+            'custom_css.css',
+        ];
+    }
+
+    /**
+     * Concatenate per-tenant theme CSS into a single file.
+     */
+    public function rebuildTenantCssBundle()
+    {
+        $parts = [];
+        foreach (self::tenantCssBundleFiles() as $filename) {
+            $path = tenantCssDiskPath($filename);
+            if (is_readable($path)) {
+                $contents = file_get_contents($path);
+                if ($contents !== false && $contents !== '') {
+                    $parts[] = "/* {$filename} */\n" . $contents;
+                }
+            }
+        }
+
+        $bundlePath = tenantCssDiskPath('tenant-bundle.css');
+        if (!File::isDirectory(dirname($bundlePath))) {
+            File::makeDirectory(dirname($bundlePath), 0755, true, true);
+        }
+        setFolderPermissions($bundlePath);
+        file_put_contents($bundlePath, implode("\n\n", $parts));
+    }
+
+    /**
+     * Build tenant-bundle.css once if it does not exist yet (existing tenants).
+     */
+    public function ensureTenantCssBundle()
+    {
+        $bundlePath = tenantCssDiskPath('tenant-bundle.css');
+        if (!is_file($bundlePath)) {
+            $this->rebuildTenantCssBundle();
+        }
+    }
+
+    /**
+     * Drop cached getThemeOption() payloads after admin saves.
+     */
+    public function forgetThemeOptionCache($themeId, $optionName = null)
+    {
+        if ($optionName) {
+            cache()->forget(tenantCacheKey("theme-option-{$themeId}-{$optionName}"));
+            return;
+        }
+
+        $names = [
+            'back_to_top',
+            'header',
+            'header_logo',
+            'menu',
+            'blog',
+            'sidebar_options',
+            'page_404',
+            'subscribe',
+            'footer',
+            'social',
+            'theme_color',
+            'custom_css',
+            'custom_js',
+            'dark_light_switcher',
+            'body_typography',
+            'paragraph_typography',
+            'heading_typography',
+            'menu_typography',
+            'button_typography',
+        ];
+        foreach ($names as $name) {
+            cache()->forget(tenantCacheKey("theme-option-{$themeId}-{$name}"));
+        }
+    }
 
     /**
      **  save social link
@@ -886,6 +984,7 @@ class ThemeOptionRepository
         $option->field_value = xss_clean($encoded_data);
 
         $option->exists ? $option->update() : $option->save();
+        $this->forgetThemeOptionCache($active_theme->id, 'social');
     }
 
     /**

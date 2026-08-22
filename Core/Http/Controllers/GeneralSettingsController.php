@@ -145,6 +145,8 @@ class GeneralSettingsController extends Controller
     public function resetSitePropertiesCache()
     {
         cache()->forget(tenantCacheKey('site-properties'));
+        cache()->forget(tenantCacheKey('general-settings-details'));
+        cache()->forget(tenantCacheKey('default-language-code'));
         Cache::rememberForever(tenantCacheKey('site-properties'), function () {
             return SettingsRepository::SiteProperties();
         });

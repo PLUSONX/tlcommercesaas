@@ -353,6 +353,7 @@ class HomePageController extends Controller
         });
 
         cache()->forget(tenantCacheKey('home-page-sections'));
+        cache()->forget(tenantCacheKey('home-page-sections-response'));
         Cache::remember(tenantCacheKey('home-page-sections'), 100 * 60, function () {
             return
                 HomePageSection::with(['section_properties' => function ($q) {

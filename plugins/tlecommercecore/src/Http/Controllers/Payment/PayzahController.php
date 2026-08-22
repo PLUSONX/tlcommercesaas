@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Http;
 use Plugin\TlcommerceCore\Models\Orders;
 use Plugin\TlcommerceCore\Models\OrderHasProducts;
 use Plugin\TlcommerceCore\Repositories\EcommerceNotification;
+use Plugin\TlcommerceCore\Support\KuwaitPhone;
 
 class PayzahController extends Controller
 {
@@ -128,7 +129,7 @@ class PayzahController extends Controller
     // Validate we have required data
     if (!$orderId || !$payableAmount) {
         Log::error('Payzah payment missing required session data');
-        return redirect()->route('checkout')->with('error', 'Payment session expired');
+        return $this->redirectToCheckoutWithPaymentError('Payment session expired');
     }
 
     try {
@@ -216,7 +217,9 @@ class PayzahController extends Controller
         ]);
         
         // return redirect()->route('checkout')->with('error', 'Payment initialization failed');
-        return back()->with('error', 'Payment initialization failed');
+        return $this->redirectToCheckoutWithPaymentError(
+            $this->customerFacingPayzahError($e)
+        );
     }
 }
 
@@ -274,8 +277,9 @@ private function buildPayzahCustomerPayload(int $orderId): array
     if (!empty($email)) {
         $payload['customer_email'] = $email;
     }
-    if (!empty($phone)) {
-        $payload['customer_phone'] = $phone;
+    $normalizedPhone = KuwaitPhone::normalize($phone);
+    if (!empty($normalizedPhone)) {
+        $payload['customer_phone'] = $normalizedPhone;
     }
     if (!empty($order->order_code)) {
         $payload['udf1'] = (string) $order->order_code;
@@ -323,6 +327,53 @@ private function generateTrackId($orderId)
     return $orderId . time();
 }
 
+/**
+ * Send the shopper back to Vue checkout with a visible payment error.
+ */
+private function redirectToCheckoutWithPaymentError(string $message)
+{
+    return redirect('/checkout?payment_error=' . urlencode($message));
+}
+
+/**
+ * Map Payzah/internal exceptions to a short customer-facing sentence.
+ */
+private function customerFacingPayzahError(\Exception $e): string
+{
+    $message = trim((string) $e->getMessage());
+    $lower = strtolower($message);
+
+    if (
+        str_contains($lower, 'improper mobile')
+        || str_contains($lower, 'mobile number')
+    ) {
+        return KuwaitPhone::ERROR_MESSAGE;
+    }
+
+    $internalHints = [
+        'private key',
+        'missing from settings',
+        'connection',
+        'timeout',
+        'could not connect',
+        'http',
+        'sql',
+        'trace',
+    ];
+
+    foreach ($internalHints as $hint) {
+        if (str_contains($lower, $hint)) {
+            return 'Payment initialization failed';
+        }
+    }
+
+    if ($message !== '' && strlen($message) <= 180 && !str_contains($message, "\n")) {
+        return $message;
+    }
+
+    return 'Payment initialization failed';
+}
+
     /**
  * Call Payzah API to initiate payment
  */
@@ -352,7 +403,8 @@ private function initiatePayzahPayment($paymentData)
         // Check for Payzah-specific logical failure
         if (!isset($responseData['status']) || $responseData['status'] !== true) {
             Log::warning('Payzah Logical Failure', ['response' => $responseData]);
-            throw new \Exception($responseData['msg'] ?? 'Payzah payment initialization failed');
+            $gatewayMessage = $responseData['message'] ?? $responseData['msg'] ?? 'Payzah payment initialization failed';
+            throw new \Exception($gatewayMessage);
         }
 
         return $responseData;

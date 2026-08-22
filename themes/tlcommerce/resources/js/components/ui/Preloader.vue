@@ -1,15 +1,16 @@
 <template>
-  <div id="preloader" v-if="loading">
-    <div id="loader"></div>
+  <div v-if="loading" id="preloader">
+    <span class="circle-preloader"></span>
   </div>
 </template>
+
 <script>
 export default {
   name: "Preloader",
+
   props: {
     loading: {
       type: Boolean,
-      required: true,
       default: false,
     },
   },
@@ -18,76 +19,39 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../assets/sass/00-abstracts/01-variables";
+
 #preloader {
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
-  background: #f0f8ff94;
-  z-index: 9999;
+  background-color: rgba(240, 248, 255, 0.58);
+  z-index: 99999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-#loader {
-  display: block;
-  position: relative;
-  left: 50%;
-  top: 50%;
-  width: 150px;
-  height: 150px;
-  margin: -75px 0 0 -75px;
+
+.circle-preloader {
+  width: 48px;
+  height: 48px;
+  display: inline-block;
+  box-sizing: border-box;
+
+  border: 5px solid #ffffff;
+  border-bottom-color: $c1;
   border-radius: 50%;
-  border: 3px solid transparent;
-  border-top-color: $c1;
-  -webkit-animation: spin 2s linear infinite;
-  animation: spin 2s linear infinite;
+
+  animation: circle-preloader-rotation 1s linear infinite;
 }
-#loader:before {
-  content: "";
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  right: 5px;
-  bottom: 5px;
-  border-radius: 50%;
-  border: 3px solid transparent;
-  border-top-color: $c1;
-  -webkit-animation: spin 3s linear infinite;
-  animation: spin 3s linear infinite;
-}
-#loader:after {
-  content: "";
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  right: 15px;
-  bottom: 15px;
-  border-radius: 50%;
-  border: 3px solid transparent;
-  border-top-color: $c1;
-  -webkit-animation: spin 1.5s linear infinite;
-  animation: spin 1.5s linear infinite;
-}
-@-webkit-keyframes spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-    -ms-transform: rotate(0deg);
+
+@keyframes circle-preloader-rotation {
+  from {
     transform: rotate(0deg);
   }
-  100% {
-    -webkit-transform: rotate(360deg);
-    -ms-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
-}
-@keyframes spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-    -ms-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-    -ms-transform: rotate(360deg);
+
+  to {
     transform: rotate(360deg);
   }
 }

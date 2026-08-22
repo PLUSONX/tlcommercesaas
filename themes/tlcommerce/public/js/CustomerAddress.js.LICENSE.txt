@@ -68,6 +68,8 @@
 
 /*! @/components/ui/ShowingPerPage.vue */
 
+/*! @/utils/kuwaitPhone */
+
 /*! @/views/dashboard.vue */
 
 /*! @coreui/vue */
@@ -85,6 +87,10 @@
 /*!******************************************!*\
   !*** ./resources/js/views/dashboard.vue ***!
   \******************************************/
+
+/*!*******************************************!*\
+  !*** ./resources/js/utils/kuwaitPhone.js ***!
+  \*******************************************/
 
 /*!*******************************************************!*\
   !*** ./resources/js/components/ui/ShowingPerPage.vue ***!

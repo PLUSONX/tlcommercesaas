@@ -354,9 +354,13 @@
 
 /*! @/components/ui/ProductBanner.vue */
 
+/*! @/utils/bootSplash */
+
 /*! @/utils/deliveryTimeFormat */
 
 /*! @/utils/pageContentStyles */
+
+/*! @/utils/scheduleBackgroundRefresh */
 
 /*! @/utils/sectionProps */
 

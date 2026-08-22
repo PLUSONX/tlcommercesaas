@@ -296,7 +296,7 @@
             <label class="font-weight-bold fz-12 mb-2">
               {{ $t("Phone Number") }} <span class="text-danger">*</span>
             </label>
-            <input type="tel" v-bind:placeholder="$t('Phone Number')" v-model="guestShippingInfo.phone"
+            <input type="tel" v-bind:placeholder="kuwaitMobileHint" v-model="guestShippingInfo.phone"
               class="theme-input-style" />
             <div v-for="error in errors" :key="error.shipping_phone">
               <p class="text-danger validation-error" v-if="error.shipping_phone">
@@ -472,7 +472,7 @@
             <label class="font-weight-bold fz-12 mb-2">
               {{ $t("Phone Number") }} <span class="text-danger">*</span>
             </label>
-            <input type="tel" v-bind:placeholder="$t('Phone Number')" v-model="guestBillingInfo.phone"
+            <input type="tel" v-bind:placeholder="kuwaitMobileHint" v-model="guestBillingInfo.phone"
               class="theme-input-style" />
             <div v-for="error in errors" :key="error.billing_phone">
               <p class="text-danger validation-error" v-if="error.billing_phone">
@@ -814,6 +814,11 @@ import {
   CModalFooter,
 } from "@coreui/vue";
 import DeliveryTimeSelector from "./DeliveryTimeSelector.vue";
+import {
+  isValidKuwaitMobile,
+  KUWAIT_MOBILE_ERROR,
+  KUWAIT_MOBILE_HINT,
+} from "@/utils/kuwaitPhone";
 export default {
   name: "deliveryShipping",
   emits: ["next-step", "previous-step", "shipping-prep-updated"],
@@ -886,6 +891,12 @@ export default {
         !this.isActivePickupPoint &&
         this.config?.enable_delivery_scheduling == this.enums.status.ACTIVE
       );
+    },
+    kuwaitMobileHint() {
+      return this.$t(KUWAIT_MOBILE_HINT);
+    },
+    kuwaitMobileError() {
+      return this.$t(KUWAIT_MOBILE_ERROR);
     },
   },
   mounted() {
@@ -1501,6 +1512,11 @@ export default {
               ),
             });
             this.$toast.error(this.$t("Please select shipping address"));
+          } else if (!isValidKuwaitMobile(this.customerShippingInfo.phone)) {
+            this.errors.push({
+              customer_shipping_address: this.kuwaitMobileError,
+            });
+            this.$toast.error(this.kuwaitMobileError);
           }
           //validate customer billing address
           if (
@@ -1515,6 +1531,11 @@ export default {
                 ),
               });
               this.$toast.error(this.$t("Please select billing address"));
+            } else if (!isValidKuwaitMobile(this.customerBillingInfo.phone)) {
+              this.errors.push({
+                customer_billing_address: this.kuwaitMobileError,
+              });
+              this.$toast.error(this.kuwaitMobileError);
             }
           }
         }
@@ -1575,6 +1596,8 @@ export default {
 
             if (!this.guestBillingInfo.phone) {
               this.errors.push({ billing_phone: this.$t("Phone is required") });
+            } else if (!isValidKuwaitMobile(this.guestBillingInfo.phone)) {
+              this.errors.push({ billing_phone: this.kuwaitMobileError });
             }
 
             if (!this.guestBillingInfo.address) {
@@ -1634,6 +1657,8 @@ export default {
           //Phone validation
           if (!this.guestShippingInfo.phone) {
             this.errors.push({ shipping_phone: this.$t("Phone is required") });
+          } else if (!isValidKuwaitMobile(this.guestShippingInfo.phone)) {
+            this.errors.push({ shipping_phone: this.kuwaitMobileError });
           }
 
           //address validation

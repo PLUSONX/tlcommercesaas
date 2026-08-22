@@ -31,6 +31,8 @@ use Plugin\TlcommerceCore\Repositories\PaymentMethodRepository;
 use Plugin\TlcommerceCore\Http\Requests\AttachmentUploadRequest;
 use Plugin\TlcommerceCore\Http\Resources\PaymentMethodCollection;
 use Plugin\TlcommerceCore\Http\Resources\RefundRequestCollection;
+use Plugin\TlcommerceCore\Models\CustomerAddress;
+use Plugin\TlcommerceCore\Support\KuwaitPhone;
 
 class OrderController extends Controller
 {
@@ -728,6 +730,18 @@ class OrderController extends Controller
             ]);
         }
 
+        $phoneErrors = $this->validateCustomerCheckoutPhones($request);
+        if (!empty($phoneErrors)) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => translate(KuwaitPhone::ERROR_MESSAGE, session()->get('api_locale')),
+                    'errors' => $phoneErrors,
+                ],
+                422
+            );
+        }
+
         $response_url = $this->order_repository->customerCheckout($request);
         if ($response_url != NULL) {
             return response()->json(
@@ -770,6 +784,44 @@ class OrderController extends Controller
             );
         }
     }
+
+    /**
+     * Validate saved customer address phones before creating the order.
+     *
+     * @return array<string, array<int, string>>
+     */
+    private function validateCustomerCheckoutPhones(Request $request): array
+    {
+        $phoneError = translate(KuwaitPhone::ERROR_MESSAGE, session()->get('api_locale'));
+        $errors = [];
+        $customerId = auth('jwt-customer')->id();
+
+        if (!$customerId) {
+            return $errors;
+        }
+
+        $fields = [
+            'shipping_address' => 'shipping_phone',
+            'billing_address' => 'billing_phone',
+        ];
+
+        foreach ($fields as $field => $errorKey) {
+            if (!$request->filled($field) || !is_numeric($request->input($field))) {
+                continue;
+            }
+
+            $address = CustomerAddress::where('id', $request->input($field))
+                ->where('customer_id', $customerId)
+                ->first();
+
+            if ($address && !KuwaitPhone::isValid($address->phone)) {
+                $errors[$errorKey] = [$phoneError];
+            }
+        }
+
+        return $errors;
+    }
+
     /**
      * Will cancel a order
      *

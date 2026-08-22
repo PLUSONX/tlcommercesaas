@@ -160,6 +160,8 @@
 
 /*! @/utils/formatVariantDisplay */
 
+/*! @/utils/kuwaitPhone */
+
 /*! @/utils/trackSocialPixels */
 
 /*! @coreui/vue */
@@ -175,6 +177,10 @@
 /*!*************************************!*\
   !*** ./resources/js/enums/enums.js ***!
   \*************************************/
+
+/*!*******************************************!*\
+  !*** ./resources/js/utils/kuwaitPhone.js ***!
+  \*******************************************/
 
 /*!***********************************************!*\
   !*** ./resources/js/views/checkout/index.vue ***!
