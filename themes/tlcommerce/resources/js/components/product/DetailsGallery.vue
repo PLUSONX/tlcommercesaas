@@ -1,5 +1,8 @@
 <template>
-  <div class="product-image-gallery" :class="{ 'is-loading': isLoading }">
+  <div class="product-image-gallery" :class="{
+    'is-loading': isLoading,
+    'product-image-gallery--modern': modernLayout
+  }">
     <div class="gallery-loader" v-show="isLoading">
       <div class="loader-spinner"></div>
     </div>
@@ -7,33 +10,125 @@
     <div class="gallery-content">
       <FsLightbox :toggler="toggler" :sources="zoomImages" :slide="slide" />
       <div class="carousel-wrapper">
-        <swiper :style="{
-          '--swiper-navigation-color': '#fff',
-          '--swiper-pagination-color': '#fff',
-        }" :spaceBetween="10" :navigation="true" :thumbs="{ swiper: thumbsSwiper }" :modules="modules"
-          class="mySwiper2">
-          <swiper-slide v-for="(image, imageIndex) in galleryImages" :key="imageIndex" class="gallery-image">
+        <!-- Modern desktop: main image + a visible rail containing every gallery image. -->
+        <template v-if="modernLayout && !isActualMobile">
+          <swiper
+            :style="{
+              '--swiper-navigation-color': '#6f4c3b',
+              '--swiper-pagination-color': '#6f4c3b',
+            }"
+            :spaceBetween="10"
+            :navigation="displayGalleryImages.length > 1"
+            :pagination="displayGalleryImages.length > 1 ? { clickable: true } : false"
+            :autoplay="displayGalleryImages.length > 1
+              ? { delay: 2800, disableOnInteraction: true, pauseOnMouseEnter: true }
+              : false"
+            :rewind="displayGalleryImages.length > 1"
+            :grabCursor="displayGalleryImages.length > 1"
+            :observer="true"
+            :observeParents="true"
+            :modules="modules"
+            class="mySwiper2 modern-desktop-main-swiper"
+            @swiper="setMainSwiper"
+            @slideChange="onMainSlideChange"
+          >
+            <swiper-slide
+              v-for="(image, imageIndex) in displayGalleryImages"
+              :key="`modern-main-${imageIndex}-${image.regular || image.video_link || image.thumbnail || ''}`"
+              class="gallery-image"
+            >
+              <div v-if="image.type === 'image'" @click="openGalleryItem(imageIndex)">
+                <v-lazy-image :src="cleanImage(image.regular)" />
+              </div>
+
+              <div
+                v-else
+                class="video-thumb modern-main-video"
+                :style="{
+                  backgroundImage: image.thumbnail ? `url(${cleanImage(image.thumbnail)})` : 'none',
+                  backgroundColor: '#f7f8fa',
+                }"
+                @click="openGalleryItem(imageIndex)"
+              ></div>
+            </swiper-slide>
+          </swiper>
+
+          <!-- Desktop thumbnail rail: plain flex rail so every Gallery Image is rendered. -->
+          <div
+            v-if="displayGalleryImages.length > 1"
+            class="modern-gallery-thumbs"
+          >
+            <button
+              v-for="(image, imageIndex) in displayGalleryImages"
+              :key="`modern-thumb-${imageIndex}-${image.regular || image.video_link || image.thumbnail || ''}`"
+              type="button"
+              class="modern-gallery-thumb"
+              :class="{ 'modern-gallery-thumb--active': activeSlideIndex === imageIndex }"
+              :aria-label="`${productName} ${imageIndex + 1}`"
+              @click="goToGalleryImage(imageIndex)"
+            >
+              <img
+                v-if="image.type === 'image'"
+                :src="cleanImage(image.regular)"
+                :alt="`${productName}-${imageIndex + 1}`"
+              />
+              <span
+                v-else
+                class="modern-gallery-thumb-video"
+                :style="{
+                  backgroundImage: image.thumbnail ? `url(${cleanImage(image.thumbnail)})` : 'none',
+                }"
+              >
+                <span class="material-icons">play_arrow</span>
+              </span>
+            </button>
+          </div>
+        </template>
+
+        <!-- Modern mobile: keep the working auto/manual Swiper behavior. -->
+        <swiper
+          v-else-if="modernLayout"
+          :style="{
+            '--swiper-navigation-color': '#fff',
+            '--swiper-pagination-color': '#6f4c3b',
+          }"
+          :spaceBetween="10"
+          :navigation="false"
+          :pagination="{ clickable: true, dynamicBullets: displayGalleryImages.length > 7 }"
+          :autoplay="displayGalleryImages.length > 1
+            ? { delay: 2800, disableOnInteraction: true, pauseOnMouseEnter: true }
+            : false"
+          :rewind="displayGalleryImages.length > 1"
+          :grabCursor="true"
+          :observer="true"
+          :observeParents="true"
+          :modules="modules"
+          class="mySwiper2"
+          @swiper="setMainSwiper"
+          @slideChange="onMainSlideChange"
+        >
+          <swiper-slide
+            v-for="(image, imageIndex) in displayGalleryImages"
+            :key="`${imageIndex}-${image.regular || image.video_link || image.thumbnail || ''}`"
+            class="gallery-image"
+          >
             <!--Image Thumbnail-->
-            <div v-if="image.type === 'image'" @click="
-              () => {
-                slide = imageIndex + 1;
-                toggler = !toggler;
-              }
-            ">
+            <div v-if="image.type === 'image'" @click="openGalleryItem(imageIndex)">
               <!-- <v-lazy-image :src="image.regular" /> -->
               <v-lazy-image :src="cleanImage(image.regular)" />
             </div>
             <!--End Image Thumbnail-->
             <!--Video Thumbnail-->
-            <div v-if="image.type === 'video'" class="video-thumb" :style="{
-              backgroundImage: `url(${image.thumbnail})`,
-              backgroundColor: '#f7f8fa',
-            }" :key="imageIndex" @click="
-                () => {
-                  slide = imageIndex + 1;
-                  toggler = !toggler;
-                }
-              ">
+            <div
+              v-if="image.type === 'video'"
+              class="video-thumb"
+              :style="{
+                backgroundImage: `url(${image.thumbnail})`,
+                backgroundColor: '#f7f8fa',
+              }"
+              :key="imageIndex"
+              @click="openGalleryItem(imageIndex)"
+            >
               <!-- <img
                 src="themes/tlcommerce/assets/img/play-big.png"
                 class="play-icon gallery-preview-panel__video-player"
@@ -48,30 +143,98 @@
             <!--End Video thumbnail-->
           </swiper-slide>
         </swiper>
-        <swiper @swiper="setThumbsSwiper" :spaceBetween="10" :slidesPerView="5" :freeMode="true"
-          :watchSlidesProgress="true" :modules="modules" class="mySwiper mt-10">
-          <swiper-slide v-for="(image, imageIndex) in galleryImages" :key="imageIndex" class="gallery-image">
-            <img :src="cleanImage(image.regular)" v-if="image.type === 'image'" />
-            <!-- <img :src="image.regular" v-if="image.type === 'image'" /> -->
 
+        <!-- Original gallery behavior for every non-Modern theme. -->
+        <template v-else>
+          <swiper
+            :style="{
+              '--swiper-navigation-color': '#fff',
+              '--swiper-pagination-color': '#fff',
+            }"
+            :spaceBetween="10"
+            :navigation="true"
+            :thumbs="{ swiper: thumbsSwiper }"
+            :modules="modules"
+            class="mySwiper2"
+          >
+            <swiper-slide v-for="(image, imageIndex) in galleryImages" :key="imageIndex" class="gallery-image">
+              <!--Image Thumbnail-->
+              <div
+                v-if="image.type === 'image'"
+                @click="
+                  () => {
+                    slide = imageIndex + 1;
+                    toggler = !toggler;
+                  }
+                "
+              >
+                <!-- <v-lazy-image :src="image.regular" /> -->
+                <v-lazy-image :src="cleanImage(image.regular)" />
+              </div>
+              <!--End Image Thumbnail-->
+              <!--Video Thumbnail-->
+              <div
+                v-if="image.type === 'video'"
+                class="video-thumb"
+                :style="{
+                  backgroundImage: `url(${image.thumbnail})`,
+                  backgroundColor: '#f7f8fa',
+                }"
+                :key="imageIndex"
+                @click="
+                  () => {
+                    slide = imageIndex + 1;
+                    toggler = !toggler;
+                  }
+                "
+              >
+                <!-- <img
+                  src="themes/tlcommerce/assets/img/play-big.png"
+                  class="play-icon gallery-preview-panel__video-player"
+                  alt="video"
+                /> -->
+                <!-- <img
+                  src="/public/themes/tlcommerce/assets/img/play-big.png"
+                  class="play-icon gallery-preview-panel__video-player"
+                  alt="video"
+                /> -->
+              </div>
+              <!--End Video thumbnail-->
+            </swiper-slide>
+          </swiper>
 
-            <div class="item-gallery__image-wrapper" v-else>
-              <!-- <img
-                class="item-gallery__video-icon"
-                src="themes/tlcommerce/assets/img/play-show.png"
-                :alt="`product-gallery-image-${imageIndex}`"
-              /> -->
-              <!-- <img
-                class="item-gallery__video-icon"
-                src="/public/themes/tlcommerce/assets/img/play-show.png"
-                :alt="`product-gallery-image-${imageIndex}`"
-              /> -->
-            </div>
-          </swiper-slide>
-        </swiper>
+          <swiper
+            @swiper="setThumbsSwiper"
+            :spaceBetween="10"
+            :slidesPerView="5"
+            :freeMode="true"
+            :watchSlidesProgress="true"
+            :modules="modules"
+            class="mySwiper mt-10"
+          >
+            <swiper-slide v-for="(image, imageIndex) in galleryImages" :key="imageIndex" class="gallery-image">
+              <img :src="cleanImage(image.regular)" v-if="image.type === 'image'" />
+              <!-- <img :src="image.regular" v-if="image.type === 'image'" /> -->
+
+              <div class="item-gallery__image-wrapper" v-else>
+                <!-- <img
+                  class="item-gallery__video-icon"
+                  src="themes/tlcommerce/assets/img/play-show.png"
+                  :alt="`product-gallery-image-${imageIndex}`"
+                /> -->
+                <!-- <img
+                  class="item-gallery__video-icon"
+                  src="/public/themes/tlcommerce/assets/img/play-show.png"
+                  :alt="`product-gallery-image-${imageIndex}`"
+                /> -->
+              </div>
+            </swiper-slide>
+          </swiper>
+        </template>
       </div>
       <!--Coupon collect area-->
-      <div class="mt-30 d-flex flex-column align-items-center" v-if="voucherList.length > 0">
+      <div class="mt-30 d-flex flex-column align-items-center"
+        v-if="!modernLayout && voucherList && voucherList.length > 0">
         <div class="coupon-wrap w-100">
           <div class="coupon p-2 text-center text-white" @click="showVoucherList = !showVoucherList">
             <h5 class="mb-0 text-white">
@@ -109,7 +272,7 @@
       </div>
       <!--End coupon collect area-->
       <!--Social media share options-->
-      <ul class="nav share-list justify-content-center my-3">
+      <ul v-if="!modernLayout" class="nav share-list justify-content-center my-3">
         <li class="social-link" v-for="network in networks" :key="network.network" :title="network.network">
           <ShareNetwork :network="network.network" :key="network.network" :url="url" :title="productName"
             :description="summary">
@@ -129,7 +292,8 @@
 import { Swiper, SwiperSlide } from "swiper/vue";
 import VLazyImage from "v-lazy-image";
 // import required modules
-import { FreeMode, Navigation, Thumbs } from "swiper";
+import "swiper/css/pagination";
+import { FreeMode, Navigation, Thumbs, Pagination, Autoplay } from "swiper";
 import config from "../../config.js";
 // Import Swiper styles
 import "swiper/css";
@@ -148,7 +312,7 @@ export default {
   },
   setup() {
     return {
-      modules: [FreeMode, Navigation, Thumbs],
+      modules: [FreeMode, Navigation, Thumbs, Pagination, Autoplay],
     };
   },
   props: {
@@ -156,38 +320,77 @@ export default {
       type: Array,
       required: true,
     },
+
+    thumbnailImage: {
+      type: [String, Object, Array],
+      default: null,
+    },
+
     voucherList: {
       type: Array,
       required: false,
     },
+
     productName: {
       type: String,
       default: "",
     },
+
     summary: {
       type: String,
       default: "",
     },
+
     url: {
       type: String,
       default: "",
     },
+
     networks: {
       type: Array,
       required: false,
     },
+
+    modernLayout: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
-    zoomImages() {
-      let images = [];
+    isActualMobile() {
+      return this.viewportWidth <= 768;
+    },
 
-      for (let i = 0; i < this.galleryImages.length; i++) {
-        const item = this.galleryImages[i];
+    normalizedThumbnailUrl() {
+      return this.resolveImageUrl(this.thumbnailImage);
+    },
+
+    displayGalleryImages() {
+      // The saved product Thumbnail Image is shown in the Modern top header.
+      // The gallery below contains Gallery Images only.
+      return Array.isArray(this.galleryImages)
+        ? this.galleryImages.filter(Boolean)
+        : [];
+    },
+
+    zoomImages() {
+      const images = [];
+
+      for (let i = 0; i < this.displayGalleryImages.length; i++) {
+        const item = this.displayGalleryImages[i];
+
+        if (!item) continue;
 
         if (item.type === "image") {
-          images.push(this.cleanImage(item.zoom));
+          const imageUrl = this.resolveImageUrl(item.zoom || item.regular);
+          if (imageUrl) {
+            images.push(this.cleanImage(imageUrl));
+          }
         } else {
-          images.push(this.cleanImage(item.video_link));
+          const videoUrl = this.resolveImageUrl(item.video_link);
+          if (videoUrl) {
+            images.push(this.cleanImage(videoUrl));
+          }
         }
       }
 
@@ -217,31 +420,145 @@ export default {
       thumbsSwiper: null,
       shareIconFailed: {},
       isLoading: true,
+      viewportWidth: typeof window !== "undefined" ? window.innerWidth : 0,
+      mainSwiper: null,
+      activeSlideIndex: 0,
     };
   },
- mounted() {
+  mounted() {
+    if (typeof window !== "undefined") {
+      this.viewportWidth = window.innerWidth;
+      window.addEventListener("resize", this.handleViewportResize);
+    }
     this.startLoading();
   },
+  beforeUnmount() {
+    if (typeof window !== "undefined") {
+      window.removeEventListener("resize", this.handleViewportResize);
+    }
+  },
   methods: {
+    handleViewportResize() {
+      this.viewportWidth = window.innerWidth;
+    },
+
+    openGalleryItem(index) {
+      this.slide = index + 1;
+      this.toggler = !this.toggler;
+    },
+
+    setMainSwiper(swiper) {
+      this.mainSwiper = swiper;
+      this.activeSlideIndex = swiper?.realIndex ?? swiper?.activeIndex ?? 0;
+    },
+
+    onMainSlideChange(swiper) {
+      this.activeSlideIndex = swiper?.realIndex ?? swiper?.activeIndex ?? 0;
+    },
+
+    goToGalleryImage(index) {
+      if (!this.mainSwiper) return;
+      this.mainSwiper.slideTo(index);
+      this.activeSlideIndex = index;
+    },
+
+    resolveImageUrl(value, depth = 0) {
+      if (value == null || depth > 5) {
+        return null;
+      }
+
+      if (typeof value === "string") {
+        const trimmed = value.trim();
+        if (!trimmed || /^\d+$/.test(trimmed)) {
+          return null;
+        }
+        return trimmed;
+      }
+
+      if (Array.isArray(value)) {
+        for (const item of value) {
+          const resolved = this.resolveImageUrl(item, depth + 1);
+          if (resolved) return resolved;
+        }
+        return null;
+      }
+
+      if (typeof value === "object") {
+        const preferredKeys = [
+          "regular",
+          "zoom",
+          "original",
+          "large",
+          "medium",
+          "url",
+          "path",
+          "src",
+          "image_path",
+          "imagePath",
+          "thumbnail_image_path",
+          "thumbnailImagePath",
+          "thumbnail_path",
+          "thumbnailPath",
+          "thumbnail_image_url",
+          "thumbnailImageUrl",
+          "thumbnail_url",
+          "thumbnailUrl",
+          "featured_image_path",
+          "featuredImagePath",
+          "image",
+          "thumbnail_image",
+          "thumbnailImage",
+          "thumbnail",
+          "featured_image",
+          "featuredImage",
+        ];
+
+        for (const key of preferredKeys) {
+          if (!Object.prototype.hasOwnProperty.call(value, key)) continue;
+          const resolved = this.resolveImageUrl(value[key], depth + 1);
+          if (resolved) return resolved;
+        }
+      }
+
+      return null;
+    },
+
     startLoading() {
-      const minTime = new Promise((resolve) => setTimeout(resolve, 600));
+      const minTime = new Promise((resolve) =>
+        setTimeout(resolve, 600)
+      );
 
       const firstImageReady = new Promise((resolve) => {
-        const first = this.galleryImages && this.galleryImages[0];
+        const first =
+          this.displayGalleryImages &&
+          this.displayGalleryImages[0];
+
         if (!first || first.type !== "image") {
-          return resolve(); // video slide or no images — nothing to wait for
+          return resolve();
         }
+
         this.$nextTick(() => {
           const img = this.$el.querySelector(".mySwiper2 img");
+
           if (!img) return resolve();
-          if (img.complete && img.naturalWidth > 0) return resolve();
-          img.addEventListener("load", resolve, { once: true });
-          img.addEventListener("error", resolve, { once: true });
+
+          if (img.complete && img.naturalWidth > 0) {
+            return resolve();
+          }
+
+          img.addEventListener("load", resolve, {
+            once: true,
+          });
+
+          img.addEventListener("error", resolve, {
+            once: true,
+          });
         });
       });
 
-      // Safety net: never hang forever, even if lazy-load never fires
-      const hardTimeout = new Promise((resolve) => setTimeout(resolve, 4000));
+      const hardTimeout = new Promise((resolve) =>
+        setTimeout(resolve, 4000)
+      );
 
       Promise.race([
         Promise.all([minTime, firstImageReady]),
@@ -252,8 +569,9 @@ export default {
       });
     },
     cleanImage(img) {
-      if (!img) return '';
-      return img.startsWith('/public') ? img.slice(7) : img;
+      const resolved = this.resolveImageUrl(img);
+      if (!resolved) return '';
+      return resolved.startsWith('/public') ? resolved.slice(7) : resolved;
     },
 
     isShareIconHtml(icon) {
@@ -556,6 +874,159 @@ export default {
     i,
     .fa {
       font-size: 14px;
+    }
+  }
+}
+
+/* ========================================
+   MODERN THEME PRODUCT GALLERY
+======================================== */
+
+/* Modern desktop gallery: one hero image with every Gallery Image visible below. */
+.modern-desktop-main-swiper {
+  width: 100%;
+}
+
+.modern-gallery-thumbs {
+  width: 100%;
+  padding: 0 14px 14px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
+.modern-gallery-thumb {
+  flex: 0 0 68px;
+  width: 68px;
+  height: 68px;
+  padding: 4px;
+  border: 1px solid #e5ded9;
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+  box-sizing: border-box;
+  cursor: pointer;
+  opacity: 0.62;
+  transition: opacity 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modern-gallery-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  object-fit: contain;
+}
+
+.modern-gallery-thumb--active {
+  opacity: 1;
+  border-color: #6f4c3b;
+  box-shadow: 0 0 0 1px #6f4c3b;
+}
+
+.modern-gallery-thumb-video {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f7f8fa;
+  background-size: cover;
+  background-position: center;
+}
+
+.modern-gallery-thumb-video .material-icons {
+  font-size: 22px;
+  color: #6f4c3b;
+}
+
+.product-image-gallery--modern {
+  width: 100%;
+  background: #f8f5f3;
+  border-radius: 0 0 28px 28px;
+  overflow: hidden;
+
+  .gallery-content {
+    width: 100%;
+  }
+
+  .carousel-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  :deep(.mySwiper2) {
+    width: 100%;
+    padding-bottom: 34px;
+  }
+
+  :deep(.mySwiper2 .swiper-slide) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 245px;
+  }
+
+  :deep(.mySwiper2 .gallery-image > div) {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :deep(.mySwiper2 img) {
+    display: block;
+    width: 100%;
+    max-width: 310px;
+    height: 225px;
+    margin: auto;
+    padding: 10px 18px 4px;
+    object-fit: contain;
+  }
+
+  :deep(.swiper-pagination) {
+    bottom: 12px !important;
+  }
+
+  :deep(.swiper-pagination-bullet) {
+    width: 6px;
+    height: 6px;
+    opacity: 0.35;
+    background: #6f4c3b;
+  }
+
+  :deep(.swiper-pagination-bullet-active) {
+    width: 7px;
+    height: 7px;
+    opacity: 1;
+    background: #6f4c3b;
+  }
+
+  .gallery-loader {
+    min-height: 300px;
+    background: #f8f5f3;
+  }
+}
+
+@media (max-width: 575px) {
+  .product-image-gallery--modern {
+    :deep(.mySwiper2 .swiper-slide) {
+      min-height: 260px;
+    }
+
+    :deep(.mySwiper2 img) {
+      max-width: 280px;
+      height: 245px;
+      padding: 12px 20px 4px;
+    }
+
+    :deep(.swiper-button-prev),
+    :deep(.swiper-button-next) {
+      display: none !important;
     }
   }
 }

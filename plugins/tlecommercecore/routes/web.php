@@ -48,10 +48,10 @@ Route::prefix('payment')->group(function () {
     Route::post('/payzah/success', [PayzahController::class, 'success'])
         ->name('payzah.success');
 
-        Route::post('/payzah/cancel', [PayzahController::class, 'cancel'])
-            ->name('payzah.cancel');
-        });
-        // Route::get('/payzah/success', [PayzahController::class, 'success'])->name('payment.payzah.success');
+    Route::post('/payzah/cancel', [PayzahController::class, 'cancel'])
+        ->name('payzah.cancel');
+});
+// Route::get('/payzah/success', [PayzahController::class, 'success'])->name('payment.payzah.success');
 // Route::get('/payzah/cancel', [PayzahController::class, 'cancel'])->name('payment.payzah.error');
 Route::get('/payzah/test', [PayzahController::class, 'test'])->name('payzah.test');
 
@@ -70,7 +70,7 @@ Route::post('/upayments/webhook', [UpaymentsController::class, 'webhook'])->name
 Route::get('/myfatoorah/pay', [MyFatoorahController::class, 'pay'])->name('myfatoorah.pay');
 Route::get('/myfatoorah/callback', [MyFatoorahController::class, 'callback']);
 // Route::prefix('payment')->group(function () {
-    
+
 //     Route::post('/myfatoorah/callback', [MyFatoorahController::class, 'callback'])
 //         ->name('myfatoorah.callback');
 // });
@@ -233,6 +233,10 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
         Route::post('/store-collection-products', [ProductCollectionController::class, 'storeCollectionProducts'])->name('plugin.tlcommercecore.product.collection.products.store');
         Route::post('/remove-collection-product', [ProductCollectionController::class, 'removeCollectionProduct'])->name('plugin.tlcommercecore.product.collection.products.remove')->middleware('demo');
         Route::post('/bulk-remove-collection-product', [ProductCollectionController::class, 'removeBulkCollectionProduct'])->name('plugin.tlcommercecore.product.collection.products.remove.bulk')->middleware('demo');
+        Route::post(
+            'product/validate-media-selection',
+            [ProductController::class, 'validateProductMediaSelection']
+        )->name('plugin.tlcommercecore.product.validate.media');
     });
 
     /**
@@ -404,8 +408,7 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
         });
         Route::middleware(['can:Manage Transaction history'])->group(function () {
             Route::get('/transaction-history', [PaymentController::class, 'transactionHistory'])->name('plugin.tlcommercecore.payments.transactions.history');
-        Route::post('/print-transaction-history', [PaymentController::class, 'printTransactionHistory'])->name('plugin.tlcommercecore.payment.print.transaction.history');
-
+            Route::post('/print-transaction-history', [PaymentController::class, 'printTransactionHistory'])->name('plugin.tlcommercecore.payment.print.transaction.history');
         });
     });
 
@@ -455,8 +458,6 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
 
     Route::get('/social-media-integration', [SocialMediaController::class, 'socialMediaIntegration'])->name('plugin.tlcommercecore.marketing.social.media.integration');
     Route::post('/update-social-media-integration', [SocialMediaController::class, 'updateIntegrationSettings'])->name('plugin.tlcommercecore.marketing.social.media.integration.update');
-
-
 });
 
 /**
@@ -483,7 +484,7 @@ Route::get('/paypal/success', [PaypalController::class, 'success'])->name('paypa
 Route::get('/paypal/cancel', [PaypalController::class, 'cancel'])->name('paypal.cancel');
 
 
-        
+
 
 
 /**

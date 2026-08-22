@@ -42,6 +42,7 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
     Route::get('product-configuration', [ProductController::class, 'productConfiguration']);
     Route::post('products', [ProductController::class, 'products']);
     Route::post('product-details', [ProductController::class, 'productDetails']);
+    Route::post('modern-product-media', [ProductController::class, 'modernProductMedia']);
     Route::post('single-variant-info', [ProductController::class, 'singleVariantInfo']);
     Route::post('color-variant-images', [ProductController::class, 'colorVariantImages']);
     Route::post('related-products', [ProductController::class, 'relatedProducts']);
@@ -52,8 +53,6 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
     Route::get('categories', [ProductController::class, 'categories']);
     Route::get('parent-categories', [ProductController::class, 'parentCategories']);
     Route::post('mega-categories', [ProductController::class, 'megaCategories']);
-
-
 
     Route::post('category-details', [ProductController::class, 'categoryDetails']);
     Route::post('deals-details', [ProductController::class, 'dealsDetails']);
@@ -92,7 +91,6 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
         Route::post('customer-login', [CustomerController::class, 'customerLogin']);
         Route::post('customer-refresh-auth', [CustomerController::class, 'refresh']);
         Route::get('customer-logout', [CustomerController::class, 'customerLogout']);
-    
     });
 
     /**
@@ -107,7 +105,7 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
          * 
          * /api/v1/ecommerce-core/customer
          * 
-        */
+         */
         Route::post('submit-customer-review', [CustomerController::class, 'submitCustomerReview']);
 
 
@@ -175,7 +173,7 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
         Route::get('mark-as-read-all-notification', [NotificationController::class, 'markAsReadAllNotification']);
     });
 
-        /**
+    /**
      * Guest routes
      * 
      * /api/v1/ecommerce-core/guest

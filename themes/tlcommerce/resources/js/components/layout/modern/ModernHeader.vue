@@ -1,7 +1,11 @@
 <template>
   <header class="modern-header" :class="[
     isHomePage ? 'modern-header--home' : 'modern-header--page',
-    { 'modern-header--rtl': isRtl },
+    { 'modern-header--rtl': isRtl },  //remove
+    // {
+    //   'modern-header--rtl': isRtl,
+    //   'modern-header--product': isProductPage,
+    // },
   ]">
     <div v-if="!isHomePage" class="modern-header__media" :style="pageHeaderStyle" aria-hidden="true">
       <div class="modern-header__overlay"></div>
@@ -162,6 +166,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    // pageHeaderImage: {
+    //   type: [String, Object, Array],
+    //   default: null,
+    // },
   },
   inject: {
     resetRouteOutlet: {
@@ -202,6 +210,10 @@ export default {
       return this.$route.name === "home";
     },
 
+    // isProductPage() {
+    //   return this.$route.name === "product";
+    // },
+
     cartCountLabel() {
       return this.cartItemCount > 99 ? "99+" : String(this.cartItemCount);
     },
@@ -213,14 +225,84 @@ export default {
       return cleaned ? `/${cleaned}` : null;
     },
 
-    pageHeaderStyle() {
+      pageHeaderStyle() {
       if (this.isHomePage || !this.headerBackgroundPath) {
         return {};
       }
       return {
         backgroundImage: `url('${this.headerBackgroundPath}')`,
       };
-    },
+    },   // remove
+
+    // resolvedPageHeaderImage() {
+    //   const resolveImageUrl = (value, depth = 0) => {
+    //     if (value == null || depth > 5) return null;
+
+    //     if (typeof value === "string") {
+    //       const trimmed = value.trim();
+    //       if (!trimmed || /^\d+$/.test(trimmed)) return null;
+    //       if (/^(https?:)?\/\//i.test(trimmed) || trimmed.startsWith("data:") || trimmed.startsWith("blob:")) {
+    //         return trimmed;
+    //       }
+    //       const cleaned = trimmed.replace(/^\/public\//, "").replace(/^\//, "");
+    //       return cleaned ? `/${cleaned}` : null;
+    //     }
+
+    //     if (Array.isArray(value)) {
+    //       for (const item of value) {
+    //         const resolved = resolveImageUrl(item, depth + 1);
+    //         if (resolved) return resolved;
+    //       }
+    //       return null;
+    //     }
+
+    //     if (typeof value === "object") {
+    //       const keys = [
+    //         "regular", "zoom", "original", "large", "medium", "url", "path", "src",
+    //         "image_path", "imagePath", "thumbnail_image_path", "thumbnailImagePath",
+    //         "thumbnail_path", "thumbnailPath", "thumbnail_image_url", "thumbnailImageUrl",
+    //         "thumbnail_url", "thumbnailUrl", "featured_image_path", "featuredImagePath",
+    //         "image", "thumbnail_image", "thumbnailImage", "thumbnail", "featured_image", "featuredImage"
+    //       ];
+    //       for (const key of keys) {
+    //         if (!Object.prototype.hasOwnProperty.call(value, key)) continue;
+    //         const resolved = resolveImageUrl(value[key], depth + 1);
+    //         if (resolved) return resolved;
+    //       }
+    //     }
+
+    //     return null;
+    //   };
+
+    //   if (this.$route.name === "product") {
+    //     // Product Detail must use ONLY the dynamic product Thumbnail Image.
+    //     // Never fall back to the generic Modern theme header image.
+    //     return resolveImageUrl(this.pageHeaderImage);
+    //   }
+
+    //   return this.headerBackgroundPath;
+    // },
+
+    // pageHeaderStyle() {
+    //   if (this.isHomePage || !this.resolvedPageHeaderImage) {
+    //     return {};
+    //   }
+
+    //   const style = {
+    //     backgroundImage: `url('${this.resolvedPageHeaderImage}')`,
+    //   };
+
+    //   if (this.isProductPage && this.pageHeaderImage) {
+    //     // Product Detail must show the saved Thumbnail Image itself, not crop it
+    //     // like a gallery/banner image.
+    //     style.backgroundSize = "contain";
+    //     style.backgroundPosition = "center";
+    //     style.backgroundRepeat = "no-repeat";
+    //     style.backgroundColor = "#eeeae7";
+    //   }
+
+    //   return style;
+    // },
 
     pageTitle() {
       if (this.$route.meta?.title) {
@@ -365,6 +447,25 @@ export default {
   gap: 28px;
   direction: ltr;
 }
+
+// /* Product detail only: use the dynamic product thumbnail as a taller hero header. */
+// .modern-header--product {
+//   min-height: 280px;
+//   padding-bottom: 22px;
+// }
+
+// .modern-header--product .modern-header__media {
+//   background-position: center;
+//   background-repeat: no-repeat;
+// }
+
+// .modern-header--product .modern-header__overlay {
+//   background: linear-gradient(
+//     180deg,
+//     rgba(30, 20, 14, 0.30) 0%,
+//     rgba(30, 20, 14, 0.58) 100%
+//   );
+// }
 
 .modern-header--page::before,
 .modern-header--page::after {
@@ -734,4 +835,11 @@ export default {
 .modern-header--page:not([style*="background-image"]) {
   background-image: linear-gradient(135deg, #5a4030 0%, #2c1c14 100%);
 }
+
+// @media (max-width: 768px) {
+//   .modern-header--product {
+//     min-height: 230px;
+//     padding-bottom: 20px;
+//   }
+// }
 </style>
