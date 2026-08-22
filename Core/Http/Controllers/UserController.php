@@ -201,6 +201,7 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
             $user = User::find($request['id']);
+            $oldEmail = $user->getOriginal('email');
             $user->name  = xss_clean($request['name']);
             $user->email = xss_clean($request['email']);
             $user->image = $request['pro_pic'];
@@ -214,7 +215,7 @@ class UserController extends Controller
                 }
             }
 
-            $this->syncStoreUser($user);
+            $this->syncStoreUser($user, [], $oldEmail);
 
             DB::commit();
 
@@ -286,6 +287,7 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
             $user = User::find($request['id']);
+            $oldEmail = $user->getOriginal('email');
             if (request('old_password') != null) {
                 if (!Hash::check($request['old_password'], $user->password)) {
                     return back()->withErrors([
@@ -310,7 +312,7 @@ class UserController extends Controller
             if ($passwordChanged) {
                 $extra['password'] = $user->password;
             }
-            $this->syncStoreUser($user, $extra);
+            $this->syncStoreUser($user, $extra, $oldEmail);
 
             DB::commit();
             toastNotification('success', translate('Profile updated successfully'));
@@ -327,11 +329,12 @@ class UserController extends Controller
      *
      * @param  User  $user
      * @param  array  $extra
+     * @param  string|null  $oldEmail
      * @return void
      */
-    protected function syncStoreUser(User $user, array $extra = [])
+    protected function syncStoreUser(User $user, array $extra = [], ?string $oldEmail = null)
     {
-        if (!tenancy()->initialized || empty($user->uid)) {
+        if (!tenancy()->initialized) {
             return;
         }
 
@@ -342,10 +345,35 @@ class UserController extends Controller
             'updated_at' => Carbon::now(),
         ], $extra);
 
-        DB::connection('mysql')->table('tl_store_users')
-            ->where('uid', $user->uid)
+        $storeUsers = DB::connection('mysql')->table('tl_store_users')
             ->where('tenant_id', tenant('id'))
-            ->update($data);
+            ->where(function ($query) use ($user, $oldEmail) {
+                if (!empty($user->uid)) {
+                    $query->where('uid', $user->uid);
+                }
+
+                if (!empty($oldEmail) && $oldEmail !== $user->email) {
+                    $query->orWhere('email', $oldEmail);
+                }
+            });
+
+        $storeUsers->update($data);
+
+        // Keep the central subscriber record in sync when this tenant user
+        // is the tenant owner. This prevents a previous owner email from
+        // continuing to authenticate through the central login flow.
+        $owner = DB::connection('mysql')->table('tl_saas_accounts')
+            ->join('tl_users', 'tl_saas_accounts.user_id', '=', 'tl_users.id')
+            ->where('tl_saas_accounts.tenant_id', tenant('id'))
+            ->whereIn('tl_users.email', array_filter([$oldEmail, $user->email]))
+            ->select('tl_users.id')
+            ->first();
+
+        if ($owner) {
+            DB::connection('mysql')->table('tl_users')
+                ->where('id', $owner->id)
+                ->update($data);
+        }
     }
 
     /**

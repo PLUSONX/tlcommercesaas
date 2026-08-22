@@ -210,8 +210,11 @@ class AuthenticationController extends Controller
                         }
                     }
 
-                    // // User exists in central but no tenant - login normally (might be SaaS user)
-                    Auth::login($centralUser);
+                    // A non-superadmin central account without a valid tenant
+                    // must not be authenticated into the central dashboard.
+                    // This also handles deprecated accounts whose tenant was
+                    // removed or deactivated.
+                    return $this->invalidLoginResponse($request);
                 }
             } else {
 
@@ -335,10 +338,7 @@ class AuthenticationController extends Controller
                 }
 
                 // Not found anywhere
-                toastNotification('error', translate("Login Credentials Does not Match"));
-                return redirect()->back()
-                    ->withInput($request->only('email'))
-                    ->withErrors(['password' => translate("Login Credentials Does not Match")]);
+                return $this->invalidLoginResponse($request);
             }
 
             // else {
@@ -481,6 +481,16 @@ class AuthenticationController extends Controller
         Auth::logout();
         toastNotification('error', translate("You don't have permission to access this area"));
         return redirect()->back();
+    }
+
+    private function invalidLoginResponse(LoginRequest $request)
+    {
+        toastNotification('error', translate("Login Credentials Does not Match"));
+
+        return redirect()->route('core.login')
+            ->withInput($request->only('email'))
+            ->withErrors(['password' => translate("Login Credentials Does not Match")])
+            ->withoutCookie('remembered_tenant_url');
     }
 
 
