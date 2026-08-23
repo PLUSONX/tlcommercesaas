@@ -13,7 +13,8 @@
         <modern-header :key="$route.fullPath" :site-properties="siteProperties" :mode="mode"
           :header-logo-style="headerLogoStyle" :cart-item="cartItem" :header-style="headerStyle"
           :header-menu-style="headerMenuStyle" :currencies="currencies" :languages="languages"
-          :data-loading="menuItemsLoading" @change-language-currency="forwardChangeLanguageCurrency" />
+          :data-loading="menuItemsLoading" :page-header-image="modernPageHeaderImage"
+          @change-language-currency="forwardChangeLanguageCurrency" />
       </div>
 
       <div ref="splitContentScroll" class="content-split-nudge">
@@ -98,6 +99,19 @@ export default {
     gdprProperties: { type: Object, default: null },
     darkLightStatus: { type: String, default: "0" },
   },
+
+  provide() {
+    return {
+      setModernPageHeaderImage: (image) => {
+        this.modernPageHeaderImage = image || null;
+      },
+    };
+  },
+  data() {
+    return {
+      modernPageHeaderImage: null,
+    };
+  },
   computed: {
     ...mapGetters("layout", [
       "splitScreenSettings",
@@ -166,6 +180,10 @@ export default {
   },
   watch: {
     $route() {
+      // Clear the previous product hero immediately on navigation. The product
+      // page will push the new product thumbnail back in after its API response.
+      this.modernPageHeaderImage = null;
+
       this.$nextTick(() => {
         const scrollEl = this.$refs.splitContentScroll;
         if (scrollEl) {

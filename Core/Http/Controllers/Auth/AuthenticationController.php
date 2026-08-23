@@ -46,6 +46,7 @@ class AuthenticationController extends Controller
 
         $rawCookie = Cookie::get('remembered_tenant_url');
         $decoded = $rawCookie ? base64_decode($rawCookie) : null;
+        $loggedOut = request()->boolean('logged_out');
 
         // Extract the URL part - find 'http' and take everything from there
         $rememberedTenantUrl = null;
@@ -55,7 +56,7 @@ class AuthenticationController extends Controller
 
         Log::info('Home route hit', ['remembered_tenant_url' => $rememberedTenantUrl]);
 
-        if ($rememberedTenantUrl) {
+        if ($rememberedTenantUrl && !$loggedOut && !session()->has('errors')) {
             return redirect()->away($rememberedTenantUrl);
         }
 
@@ -64,7 +65,14 @@ class AuthenticationController extends Controller
             return redirect()->route('admin.dashboard');
         } else {
             // return view('core.login');
-            return view('core::base.auth.login');
+            $loginView = view('core::base.auth.login');
+
+            if ($loggedOut) {
+                return response()->view('core::base.auth.login')
+                    ->withoutCookie('remembered_tenant_url');
+            }
+
+            return $loginView;
         }
     }
 
@@ -106,7 +114,9 @@ class AuthenticationController extends Controller
                 Auth::login($user);
             } else {
                 toastNotification('error', translate("Login Credentials Does not Match"));
-                return redirect()->back()->withInput($request->only('email'));
+                return redirect()->back()
+                    ->withInput($request->only('email'))
+                    ->withErrors(['password' => translate("Login Credentials Does not Match")]);
             }
         } else {
             // Central domain - check BOTH central DB and tenant DBs
@@ -200,8 +210,11 @@ class AuthenticationController extends Controller
                         }
                     }
 
-                    // // User exists in central but no tenant - login normally (might be SaaS user)
-                    Auth::login($centralUser);
+                    // A non-superadmin central account without a valid tenant
+                    // must not be authenticated into the central dashboard.
+                    // This also handles deprecated accounts whose tenant was
+                    // removed or deactivated.
+                    return $this->invalidLoginResponse($request);
                 }
             } else {
 
@@ -325,8 +338,7 @@ class AuthenticationController extends Controller
                 }
 
                 // Not found anywhere
-                toastNotification('error', translate("Login Credentials Does not Match"));
-                return redirect()->back()->withInput($request->only('email'));
+                return $this->invalidLoginResponse($request);
             }
 
             // else {
@@ -471,6 +483,16 @@ class AuthenticationController extends Controller
         return redirect()->back();
     }
 
+    private function invalidLoginResponse(LoginRequest $request)
+    {
+        toastNotification('error', translate("Login Credentials Does not Match"));
+
+        return redirect()->route('core.login')
+            ->withInput($request->only('email'))
+            ->withErrors(['password' => translate("Login Credentials Does not Match")])
+            ->withoutCookie('remembered_tenant_url');
+    }
+
 
     /**
      * Build the tenant dashboard URL for redirect
@@ -541,7 +563,8 @@ class AuthenticationController extends Controller
             // return redirect()->route('subscriber.login');
             // return redirect()->route('core.login');
             // return redirect()->away('https://platepilots.com/admin/login');  --Hassaan
-            return redirect()->away($this->buildCentralLoginUrl());
+            return redirect()->away($this->buildCentralLoginUrl() . '?logged_out=1')
+                ->withoutCookie('remembered_tenant_url');
         }
 
         $user_type = $user->user_type;
@@ -567,7 +590,8 @@ class AuthenticationController extends Controller
 
         // redirect()->away(config('app.central_domain') . '/admin/login');
         // return redirect()->away('https://platepilots.com/admin/login');  --Hassaan
-        return redirect()->away($this->buildCentralLoginUrl());
+        return redirect()->away($this->buildCentralLoginUrl() . '?logged_out=1')
+            ->withoutCookie('remembered_tenant_url');
 
         // $centralDomain = config('tenancy.central_domains')[0];
         // $scheme = request()->isSecure() ? 'https' : 'http';
@@ -641,25 +665,34 @@ class AuthenticationController extends Controller
     }
 ///  Hassaan created
     /**
-     * Build the central-domain login URL dynamically, matching whichever
-     * central domain the current tenant host actually belongs to
-     * (so local stays on 127.0.0.1 / localhost, prod stays on platepilots.com).
+     * Build the central-domain login URL.
+     *
+     * Production uses the canonical application URL. Local development uses
+     * the configured local central domain instead of a production APP_URL.
      */
     private function buildCentralLoginUrl(): string
     {
-        $host = request()->getHost();
         $centralDomains = config('tenancy.central_domains', []);
-
-        // Find the central domain that matches (or is contained in) the current host.
-        // e.g. tenant subdomain "shop1.127.0.0.1" -> matches "127.0.0.1"
-        $centralDomain = collect($centralDomains)->first(
-            fn($domain) => $host === $domain || str_ends_with($host, '.' . $domain) || str_contains($host, $domain)
-        ) ?? ($centralDomains[0] ?? 'localhost');
-
         $scheme = request()->isSecure() ? 'https' : 'http';
-        $port   = request()->getPort();
+        $port = request()->getPort();
 
-        $portSuffix = (($scheme === 'http' && $port != 80) || ($scheme === 'https' && $port != 443))
+        if (app()->environment('production')) {
+            $centralUrl = (string) config('app.url', '');
+            $parsedCentralUrl = parse_url($centralUrl);
+            $parsedCentralUrl = is_array($parsedCentralUrl) ? $parsedCentralUrl : [];
+            $centralDomain = $parsedCentralUrl['host'] ?? null;
+
+            if ($centralDomain) {
+                $scheme = $parsedCentralUrl['scheme'] ?? $scheme;
+                $port = $parsedCentralUrl['port'] ?? null;
+            } else {
+                $centralDomain = $centralDomains[0] ?? 'localhost';
+            }
+        } else {
+            $centralDomain = config('tenancy.local_central_domain', '127.0.0.1');
+        }
+
+        $portSuffix = ($port !== null && (($scheme === 'http' && $port != 80) || ($scheme === 'https' && $port != 443)))
             ? ':' . $port
             : '';
 

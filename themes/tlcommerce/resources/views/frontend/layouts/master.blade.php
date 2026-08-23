@@ -1,5 +1,3 @@
-
-
 @php
     use Plugin\TlcommerceCore\Repositories\SettingsRepository;
     use Core\Repositories\SettingsRepository as CoreSettingRepository;
@@ -345,105 +343,21 @@
             --color-2: var(--mainC, #e62d04);
             --size: 1px;
 
-            width: calc(54 * var(--size));
-            height: calc(54 * var(--size));
-            position: relative;
-            border-radius: calc(4 * var(--size));
-            background-color: var(--color-1);
-            background-image:
-                radial-gradient(circle calc(5 * var(--size)), var(--color-2) 100%, transparent 0),
-                radial-gradient(circle calc(5 * var(--size)), var(--color-2) 100%, transparent 0),
-                radial-gradient(circle calc(5 * var(--size)), var(--color-2) 100%, transparent 0),
-                radial-gradient(circle calc(5 * var(--size)), var(--color-2) 100%, transparent 0),
-                radial-gradient(circle calc(5 * var(--size)), var(--color-2) 100%, transparent 0),
-                radial-gradient(circle calc(5 * var(--size)), var(--color-2) 100%, transparent 0);
-            background-repeat: no-repeat;
-            animation:
-                tlc-boot-move 4s linear infinite,
-                tlc-boot-rotate 2s linear infinite;
+            width: calc(48 * var(--size));
+            height: calc(48 * var(--size));
+            border: calc(5 * var(--size)) solid var(--color-1);
+            border-bottom-color: var(--color-2);
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: tlc-boot-rotation 1s linear infinite;
         }
-        @keyframes tlc-boot-rotate {
-            0%,
-            20% {
+        @keyframes tlc-boot-rotation {
+            0% {
                 transform: rotate(0deg);
             }
-            30%,
-            40% {
-                transform: rotate(90deg);
-            }
-            50%,
-            60% {
-                transform: rotate(180deg);
-            }
-            70%,
-            80% {
-                transform: rotate(270deg);
-            }
-            90%,
             100% {
                 transform: rotate(360deg);
-            }
-        }
-        @keyframes tlc-boot-move {
-            0%,
-            9% {
-                background-position:
-                    calc(-12 * var(--size)) calc(-15 * var(--size)),
-                    calc(-12 * var(--size)) 0,
-                    calc(-12 * var(--size)) calc(15 * var(--size)),
-                    calc(12 * var(--size)) calc(-15 * var(--size)),
-                    calc(12 * var(--size)) 0,
-                    calc(12 * var(--size)) calc(15 * var(--size));
-            }
-            10%,
-            25% {
-                background-position:
-                    0 calc(-15 * var(--size)),
-                    calc(-12 * var(--size)) 0,
-                    calc(-12 * var(--size)) calc(15 * var(--size)),
-                    calc(34 * var(--size)) calc(-15 * var(--size)),
-                    calc(12 * var(--size)) 0,
-                    calc(12 * var(--size)) calc(15 * var(--size));
-            }
-            30%,
-            45% {
-                background-position:
-                    0 calc(-34 * var(--size)),
-                    calc(-12 * var(--size)) calc(-10 * var(--size)),
-                    calc(-12 * var(--size)) calc(12 * var(--size)),
-                    calc(34 * var(--size)) calc(-15 * var(--size)),
-                    calc(12 * var(--size)) calc(-10 * var(--size)),
-                    calc(12 * var(--size)) calc(12 * var(--size));
-            }
-            50%,
-            65% {
-                background-position:
-                    0 calc(-34 * var(--size)),
-                    calc(-12 * var(--size)) calc(-34 * var(--size)),
-                    calc(-12 * var(--size)) calc(12 * var(--size)),
-                    calc(34 * var(--size)) calc(-12 * var(--size)),
-                    0 calc(-10 * var(--size)),
-                    calc(12 * var(--size)) calc(12 * var(--size));
-            }
-            70%,
-            85% {
-                background-position:
-                    0 calc(-34 * var(--size)),
-                    calc(-12 * var(--size)) calc(-34 * var(--size)),
-                    0 calc(12 * var(--size)),
-                    calc(34 * var(--size)) calc(-12 * var(--size)),
-                    0 calc(-10 * var(--size)),
-                    calc(34 * var(--size)) calc(12 * var(--size));
-            }
-            90%,
-            100% {
-                background-position:
-                    0 calc(-34 * var(--size)),
-                    calc(-12 * var(--size)) calc(-34 * var(--size)),
-                    0 0,
-                    calc(34 * var(--size)) calc(-12 * var(--size)),
-                    0 0,
-                    calc(34 * var(--size)) calc(12 * var(--size));
             }
         }
     </style>

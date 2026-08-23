@@ -1,12 +1,68 @@
 <template>
-  <div
-    class="product-page-root"
-    :class="{
-      'has-product-footer': showProductStickyFooter,
-      'product-page--rtl': isFeaturePaneLayout && isRtl,
-    }"
-  >
-    <div v-if="isFeaturePaneLayout" class="page-container split-screen-product-layout">
+  <div class="product-page-root" :class="{
+    'has-product-footer': showProductStickyFooter,
+    'product-page--rtl': isFeaturePaneLayout && isRtl,
+  }">
+    <!-- ============================= -->
+    <!-- MODERN PRODUCT DETAIL LAYOUT -->
+    <!-- ============================= -->
+    <div v-if="layoutType === 'modern'" class="page-container modern-product-page">
+      <div class="productDetails modern-product-scroll">
+
+        <!-- Product loaded -->
+        <template v-if="!productLoading && product != null">
+
+          <!-- Product Gallery -->
+          <div class="modern-product-gallery">
+            <details-gallery :gallery-images="modernProductGallery" :thumbnail-image="modernProductThumbnail"
+              :voucher-list="product.voucher_list" :product-name="product.name" :url="product.url"
+              :summary="product.summary" :networks="product.shareOptions" :key="galleryKey" :modern-layout="true" />
+          </div>
+
+          <!-- Product Information -->
+          <div class="modern-product-information">
+            <details-content :product="product" :quantity-seed="orderQuantity" :modern-layout="true"
+              @goto-section="goSec" @color-variant-images="colorVariantImages"
+              @variant-updating="variantUpdating = $event" @quantity-change="onOrderQuantityChange" />
+
+            <!-- PDF specification -->
+            <div v-if="product.pdf_specifications" class="modern-product-pdf">
+              <a :href="product.pdf_specifications" target="_blank" rel="noopener">
+                {{ $t("Download Pdf Specifications") }}
+              </a>
+            </div>
+
+            <!-- Reviews -->
+            <div v-if="hasProductReviewsTab" ref="productDetails" class="modern-product-reviews">
+              <h3 class="modern-section-title">
+                {{ $t("Buyer Review") }}
+              </h3>
+
+              <ProductReview :product-id="product.id" :config="site_config" :key="product.id" />
+            </div>
+          </div>
+
+        </template>
+
+        <!-- Product not found -->
+        <div v-else-if="!productLoading" class="modern-product-not-found">
+          <the-not-found title="Sorry! Product not found"></the-not-found>
+        </div>
+
+        <!-- Loading -->
+        <div v-else class="modern-product-loading">
+          <gallery-image-skeleton />
+          <product-details-skeleton />
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============================= -->
+    <!-- EXISTING FEATURE-PANE LAYOUT -->
+    <!-- DO NOT CHANGE ITS CONTENT -->
+    <!-- ============================= -->
+    <div v-else-if="isFeaturePaneLayout" class="page-container split-screen-product-layout">
       <div class="productDetails split-screen-product-scroll" :class="{
         'force-mobile-layout': forcedMobile,
         'mobile-content-wrapper': forcedMobile,
@@ -43,10 +99,8 @@
                       :networks="product.shareOptions" :key="galleryKey" />
                   </div>
                   <div class="col-lg-7">
-                    <details-content :product="product" :quantity-seed="orderQuantity"
-                      @goto-section="goSec"
-                      @color-variant-images="colorVariantImages"
-                      @variant-updating="variantUpdating = $event"
+                    <details-content :product="product" :quantity-seed="orderQuantity" @goto-section="goSec"
+                      @color-variant-images="colorVariantImages" @variant-updating="variantUpdating = $event"
                       @quantity-change="onOrderQuantityChange" />
                   </div>
                 </template>
@@ -147,25 +201,15 @@
                     </CNavItem>
                   </CNav>
                   <CTabContent>
-                    <CTabPane
-                      v-if="hasProductOverviewContent"
-                      role="tabpanel"
-                      aria-labelledby="home-tab"
-                      click="product-overview"
-                      :visible="tabPaneActiveKey === 1"
-                    >
+                    <CTabPane v-if="hasProductOverviewContent" role="tabpanel" aria-labelledby="home-tab"
+                      click="product-overview" :visible="tabPaneActiveKey === 1">
                       <div v-if="hasMeaningfulHtml(product.description)" v-html="product.description"></div>
                       <div v-if="product.pdf_specifications">
                         <a :href="product.pdf_specifications" target="_blank">Download Pdf Specifications</a>
                       </div>
                     </CTabPane>
-                    <CTabPane
-                      v-if="hasProductReviewsTab"
-                      role="tabpanel"
-                      click="buyer-review "
-                      aria-labelledby="profile-tab"
-                      :visible="tabPaneActiveKey === 2"
-                    >
+                    <CTabPane v-if="hasProductReviewsTab" role="tabpanel" click="buyer-review "
+                      aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 2">
                       <ProductReview :product-id="product.id" :config="site_config" :key="product.id"></ProductReview>
                     </CTabPane>
                   </CTabContent>
@@ -262,10 +306,8 @@
                     :networks="product.shareOptions" :key="galleryKey" />
                 </div>
                 <div class="col-lg-7">
-                  <details-content :product="product" :quantity-seed="orderQuantity"
-                    @goto-section="goSec"
-                    @color-variant-images="colorVariantImages"
-                    @variant-updating="variantUpdating = $event"
+                  <details-content :product="product" :quantity-seed="orderQuantity" @goto-section="goSec"
+                    @color-variant-images="colorVariantImages" @variant-updating="variantUpdating = $event"
                     @quantity-change="onOrderQuantityChange" />
                 </div>
               </template>
@@ -368,25 +410,15 @@
                   </CNavItem>
                 </CNav>
                 <CTabContent>
-                  <CTabPane
-                    v-if="hasProductOverviewContent"
-                    role="tabpanel"
-                    aria-labelledby="home-tab"
-                    click="product-overview"
-                    :visible="tabPaneActiveKey === 1"
-                  >
+                  <CTabPane v-if="hasProductOverviewContent" role="tabpanel" aria-labelledby="home-tab"
+                    click="product-overview" :visible="tabPaneActiveKey === 1">
                     <div v-if="hasMeaningfulHtml(product.description)" v-html="product.description"></div>
                     <div v-if="product.pdf_specifications">
                       <a :href="product.pdf_specifications" target="_blank">Download Pdf Specifications</a>
                     </div>
                   </CTabPane>
-                  <CTabPane
-                    v-if="hasProductReviewsTab"
-                    role="tabpanel"
-                    click="buyer-review "
-                    aria-labelledby="profile-tab"
-                    :visible="tabPaneActiveKey === 2"
-                  >
+                  <CTabPane v-if="hasProductReviewsTab" role="tabpanel" click="buyer-review "
+                    aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 2">
                     <ProductReview :product-id="product.id" :config="site_config" :key="product.id"></ProductReview>
                   </CTabPane>
                 </CTabContent>
@@ -431,14 +463,8 @@
       <!-- End Related Product -->
     </div>
 
-    <custom-footer
-      v-if="showProductStickyFooter"
-      class="custom-footer"
-      :item="productData"
-      :quantity-value="orderQuantity"
-      :disabled="variantUpdating"
-      :style="splitContentFooterStyle"
-    />
+    <custom-footer v-if="showProductStickyFooter" class="custom-footer" :item="productData"
+      :quantity-value="orderQuantity" :disabled="variantUpdating" :style="splitContentFooterStyle" />
   </div>
 </template>
 
@@ -537,6 +563,11 @@ export default {
     SingleShop,
     CustomFooter
   },
+  inject: {
+    setModernPageHeaderImage: {
+      default: null,
+    },
+  },
   data() {
     return {
       enums: enums,
@@ -556,6 +587,10 @@ export default {
       relatedProducts: [],
       topSellingProducts: [],
       galleryKey: 1,
+      modernThumbnail: null,
+      modernGalleryImages: [],
+      modernBaseGalleryImages: [],
+      modernMediaLoading: false,
       sectionTitle: this.$t("Related Products"),
       productLoading: true,
       variantUpdating: false,
@@ -573,12 +608,32 @@ export default {
     }),
 
     ...mapGetters('layout', [
+      'layoutType',
       'isFeaturePaneLayout',
       'isMobile',
       'isRtl',
       'contentColumnPercent',
       'effectiveContentPosition',
     ]),
+
+    modernProductThumbnail() {
+      return this.modernThumbnail || null;
+    },
+
+    modernProductGallery() {
+      if (
+        Array.isArray(this.modernGalleryImages) &&
+        this.modernGalleryImages.length > 0
+      ) {
+        return this.modernGalleryImages;
+      }
+
+      // Safe fallback while the Modern-only media request is loading.
+      // Other themes continue to use product.galleryImages exactly as before.
+      return Array.isArray(this.product?.galleryImages)
+        ? this.product.galleryImages
+        : [];
+    },
 
     isSplitScreenDesktop() {
       return this.isFeaturePaneLayout;
@@ -698,6 +753,13 @@ export default {
         return;
       }
       this.tabPaneActiveKey = 1;
+      this.modernThumbnail = null;
+      this.modernGalleryImages = [];
+      this.modernBaseGalleryImages = [];
+      this.modernMediaLoading = false;
+      if (typeof this.setModernPageHeaderImage === "function") {
+        this.setModernPageHeaderImage(null);
+      }
       this.getProductDetails();
       window.scrollTo(0, 0);
     },
@@ -710,6 +772,9 @@ export default {
     this.getTopSellingProducts();
   },
   beforeUnmount() {
+    if (typeof this.setModernPageHeaderImage === "function") {
+      this.setModernPageHeaderImage(null);
+    }
     this._isUnmounted = true;
     if (this._orderQuantitySyncTimer) {
       clearTimeout(this._orderQuantitySyncTimer);
@@ -720,6 +785,10 @@ export default {
     window.removeEventListener("scroll", this.scrollHandler);
     this.productLoading = true;
     this.product = null;
+    this.modernThumbnail = null;
+    this.modernGalleryImages = [];
+    this.modernBaseGalleryImages = [];
+    this.modernMediaLoading = false;
     this.relatedProducts = [];
   },
   methods: {
@@ -815,6 +884,137 @@ export default {
       return this.requestCancelSource.token;
     },
 
+    normalizeModernMediaPath(value) {
+      if (!value || typeof value !== "string") {
+        return null;
+      }
+
+      const trimmed = value.trim();
+      if (!trimmed) {
+        return null;
+      }
+
+      if (
+        /^(https?:)?\/\//i.test(trimmed) ||
+        trimmed.startsWith("data:") ||
+        trimmed.startsWith("blob:")
+      ) {
+        return trimmed;
+      }
+
+      // Keep the same path behavior already used throughout this storefront.
+      return trimmed;
+    },
+
+    mergeModernGalleryImages(primaryImages = [], secondaryImages = []) {
+      const combined = [
+        ...(Array.isArray(primaryImages) ? primaryImages : []),
+        ...(Array.isArray(secondaryImages) ? secondaryImages : []),
+      ];
+
+      const seen = new Set();
+
+      return combined.filter((image) => {
+        if (!image) return false;
+
+        const rawKey =
+          image.regular ||
+          image.zoom ||
+          image.video_link ||
+          image.thumbnail;
+
+        if (!rawKey) return false;
+
+        const key = String(rawKey).split("?")[0];
+        if (seen.has(key)) return false;
+
+        seen.add(key);
+        return true;
+      });
+    },
+
+    getModernProductMedia() {
+      // This request is intentionally Modern-only. Existing themes and their
+      // existing product-details/gallery behavior are not touched.
+      if (
+        this.layoutType !== "modern" ||
+        !this.product?.id ||
+        this.$route.name !== "product"
+      ) {
+        return;
+      }
+
+      this.modernMediaLoading = true;
+      this.modernThumbnail = null;
+      this.modernGalleryImages = [];
+      this.modernBaseGalleryImages = [];
+
+      if (typeof this.setModernPageHeaderImage === "function") {
+        this.setModernPageHeaderImage(null);
+      }
+
+      axios
+        .post(
+          "/api/v1/ecommerce-core/modern-product-media",
+          {
+            product_id: this.product.id,
+          },
+          { cancelToken: this.getCancelToken() }
+        )
+        .then((response) => {
+          if (
+            this._isUnmounted ||
+            this.$route.name !== "product" ||
+            this.layoutType !== "modern"
+          ) {
+            return;
+          }
+
+          if (!response.data?.success) {
+            return;
+          }
+
+          this.modernThumbnail = this.normalizeModernMediaPath(
+            response.data.thumbnail
+          );
+
+          const mediaGallery = Array.isArray(response.data.galleryImages)
+            ? response.data.galleryImages.filter(Boolean)
+            : [];
+
+          this.modernBaseGalleryImages = [...mediaGallery];
+          this.modernGalleryImages = [...mediaGallery];
+
+          // Re-create only the Modern gallery after its dedicated media arrives.
+          this.galleryKey += 1;
+
+          if (typeof this.setModernPageHeaderImage === "function") {
+            this.setModernPageHeaderImage(this.modernThumbnail || null);
+          }
+
+          console.log("MODERN THUMBNAIL:", this.modernThumbnail);
+          console.log("MODERN GALLERY:", this.modernGalleryImages);
+          console.log("MODERN GALLERY COUNT:", this.modernGalleryImages.length);
+        })
+        .catch((error) => {
+          if (axios.isCancel(error) || this._isUnmounted) {
+            return;
+          }
+
+          console.error("Modern product media error:", error);
+          this.modernThumbnail = null;
+          this.modernGalleryImages = [];
+          this.modernBaseGalleryImages = [];
+
+          if (typeof this.setModernPageHeaderImage === "function") {
+            this.setModernPageHeaderImage(null);
+          }
+        })
+        .finally(() => {
+          this.modernMediaLoading = false;
+        });
+    },
+
     /**
      * Get single product details
      */
@@ -824,6 +1024,17 @@ export default {
       }
       this.beginRequestCycle();
       this.orderQuantity = 1;
+
+      if (this.layoutType === "modern") {
+        this.modernThumbnail = null;
+        this.modernGalleryImages = [];
+        this.modernBaseGalleryImages = [];
+        this.modernMediaLoading = false;
+        if (typeof this.setModernPageHeaderImage === "function") {
+          this.setModernPageHeaderImage(null);
+        }
+      }
+
       axios
         .post(
           "/api/v1/ecommerce-core/product-details",
@@ -845,6 +1056,11 @@ export default {
             document.title = response.data.data.name;
             this.product = response.data.data;
             this.productLoading = false;
+
+            if (this.layoutType === "modern") {
+              this.getModernProductMedia();
+            }
+
             this.syncOrderQuantityFromProduct();
             this.syncProductDetailsTab();
 
@@ -950,16 +1166,30 @@ export default {
      * Color variant gallery images
      */
     colorVariantImages(color_id) {
-      this.galleryKey = this.galleryKey + 1;
       axios
         .post("/api/v1/ecommerce-core/color-variant-images", {
           product_id: this.product.id,
           color_id: color_id,
         })
         .then((response) => {
-          if (response.data.success) {
-            this.product.galleryImages = response.data.images;
+          if (!response.data.success) {
+            return;
           }
+
+          // Preserve the original behavior for every non-Modern theme.
+          if (this.layoutType !== "modern") {
+            this.galleryKey = this.galleryKey + 1;
+            this.product.galleryImages = response.data.images;
+            return;
+          }
+
+          // Modern keeps all saved Gallery Images visible. Variant images, when
+          // present, are placed first without deleting the Modern base gallery.
+          this.modernGalleryImages = this.mergeModernGalleryImages(
+            response.data.images,
+            this.modernBaseGalleryImages
+          );
+          this.galleryKey = this.galleryKey + 1;
         })
         .catch((error) => {
         });
@@ -1283,5 +1513,75 @@ export default {
 .product-page--rtl .overview-wrap :deep(.tab-content) {
   direction: rtl;
   text-align: right;
+}
+
+/* ========================================
+   MODERN PRODUCT DETAIL PAGE
+======================================== */
+
+.modern-product-page {
+  width: 100%;
+  min-height: 100%;
+  background: #f7f4f2;
+}
+
+.modern-product-scroll {
+  width: 100%;
+  min-height: 100%;
+  padding: 0 0 90px;
+  background: #f7f4f2;
+}
+
+.modern-product-gallery {
+  width: 100%;
+  background: #f8f5f3;
+}
+
+.modern-product-information {
+  width: calc(100% - 16px);
+  margin: 8px auto 0;
+  background: #fff;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(45, 33, 27, 0.04);
+}
+
+.modern-product-pdf {
+  padding: 0 16px 20px;
+
+  a {
+    font-size: 12px;
+    font-weight: 600;
+  }
+}
+
+.modern-product-reviews {
+  margin-top: 8px;
+  padding: 18px 16px 24px;
+  border-top: 1px solid #eee9e6;
+
+  .modern-section-title {
+    margin-bottom: 15px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+}
+
+.modern-product-loading {
+  padding: 16px;
+  background: #fff;
+}
+
+.modern-product-not-found {
+  padding: 40px 16px;
+  background: #fff;
+}
+
+@media (max-width: 575px) {
+  .modern-product-information {
+    width: calc(100% - 12px);
+    margin-top: 6px;
+    border-radius: 18px;
+  }
 }
 </style>

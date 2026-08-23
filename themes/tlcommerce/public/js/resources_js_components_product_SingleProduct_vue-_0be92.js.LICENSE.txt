@@ -10,6 +10,8 @@
 
 /*! !!../../../css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./navigation.min.css */
 
+/*! !!../../../css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./pagination.min.css */
+
 /*! !!../../../css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./thumbs.min.css */
 
 /*! !!../css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./swiper.min.css */
@@ -110,6 +112,8 @@
 
 /*! swiper/css/navigation */
 
+/*! swiper/css/pagination */
+
 /*! swiper/css/thumbs */
 
 /*! swiper/vue */
@@ -158,6 +162,10 @@
 
 /*!*******************************************************************!*\
   !*** ./node_modules/swiper/modules/navigation/navigation.min.css ***!
+  \*******************************************************************/
+
+/*!*******************************************************************!*\
+  !*** ./node_modules/swiper/modules/pagination/pagination.min.css ***!
   \*******************************************************************/
 
 /*!**************************************************************************!*\
@@ -222,6 +230,10 @@
 
 /*!***************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/swiper/modules/navigation/navigation.min.css ***!
+  \***************************************************************************************************************************************************************************************************/
+
+/*!***************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/swiper/modules/pagination/pagination.min.css ***!
   \***************************************************************************************************************************************************************************************************/
 
 /*!******************************************************************************************************************************************************************************************************!*\

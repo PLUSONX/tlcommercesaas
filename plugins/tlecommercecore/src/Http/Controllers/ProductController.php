@@ -4,6 +4,7 @@ namespace Plugin\TlcommerceCore\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\Controller;
 use Plugin\TlcommerceCore\Models\Cities;
 use Plugin\TlcommerceCore\Models\States;
@@ -31,6 +32,38 @@ use Plugin\TlcommerceCore\Repositories\ProductCollectionRepository;
 
 class ProductController extends Controller
 {
+
+    /**
+     * Product image standards.
+     *
+     * We validate media-manager image IDs before ProductRepository persists them.
+     * Existing unchanged legacy images are not revalidated on edit.
+     */
+    private const THUMBNAIL_MIN_WIDTH = 800;
+    private const THUMBNAIL_MIN_HEIGHT = 800;
+    private const THUMBNAIL_MAX_WIDTH = 1600;
+    private const THUMBNAIL_MAX_HEIGHT = 1600;
+    private const THUMBNAIL_MAX_BYTES = 2097152; // 2 MB
+
+    private const GALLERY_MIN_WIDTH = 1000;
+    private const GALLERY_MIN_HEIGHT = 1000;
+    private const GALLERY_MAX_WIDTH = 2400;
+    private const GALLERY_MAX_HEIGHT = 2400;
+    private const GALLERY_MAX_BYTES = 3145728; // 3 MB
+    private const GALLERY_MAX_COUNT = 8;
+
+    private const VARIANT_MIN_WIDTH = 1000;
+    private const VARIANT_MIN_HEIGHT = 1000;
+    private const VARIANT_MAX_WIDTH = 2400;
+    private const VARIANT_MAX_HEIGHT = 2400;
+    private const VARIANT_MAX_BYTES = 3145728; // 3 MB
+    private const VARIANT_MAX_COUNT_PER_COLOR = 4;
+
+    private const ALLOWED_IMAGE_MIMES = [
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+    ];
 
     protected $product_repository;
     protected $category_repository;
@@ -193,13 +226,24 @@ class ProductController extends Controller
      */
     public function addNewProduct()
     {
+        $isModernLayoutActive = $this->isModernLayoutActive();
+
         return view('plugin/tlecommercecore::products.product.add_new_product')->with([
             'units' => $this->unit_repository->unitList(),
             'conditions' => $this->product_condition_repository->conditionList(),
             'shipping_profiles' => ShippingProfile::all(),
-            'colors' => $this->color_repository->colorList([config('settings.general_status.active')]),
-            'attributes' => $this->product_attribute_repository->attributeList(config('settings.general_status.active')),
-            'product_collections' => $this->collection_repository->collections([config('settings.general_status.active')])
+            'colors' => $this->color_repository->colorList([
+                config('settings.general_status.active')
+            ]),
+            'attributes' => $this->product_attribute_repository->attributeList(
+                config('settings.general_status.active')
+            ),
+            'product_collections' => $this->collection_repository->collections([
+                config('settings.general_status.active')
+            ]),
+
+            // Layout check
+            'isModernLayoutActive' => $isModernLayoutActive,
         ]);
     }
     /**
@@ -210,6 +254,9 @@ class ProductController extends Controller
      */
     public function storeNewProduct(ProductRequest $request)
     {
+        // Validate newly selected product media before anything is stored.
+        $this->validateProductMedia($request);
+
         if ($request['product_type'] == config('tlecommercecore.product_variant.variable') && !$request->has('variations')) {
             toastNotification('error', 'Invalid Product Variations');
             return redirect()->back();
@@ -232,15 +279,25 @@ class ProductController extends Controller
      */
     public function editProduct($id, Request $request)
     {
+        $isModernLayoutActive = $this->isModernLayoutActive();
+
         return view('plugin/tlecommercecore::products.product.edit_product')->with([
             'product_details' => $this->product_repository->editProduct($id),
             'lang' => $request->lang ?? getDefaultLang(),
             'shipping_profiles' => ShippingProfile::all(),
+            'isModernLayoutActive' => $isModernLayoutActive,
         ]);
     }
 
     public function updateProduct(ProductRequest $request)
     {
+        // Non-default language edits only change translations in ProductRepository,
+        // so do not block them because of legacy media dimensions.
+        if ($request->input('lang') == null || $request->input('lang') == getDefaultLang()) {
+            $existingProduct = Product::with(['gallery_images', 'color_images'])->find($request->id);
+            $this->validateProductMedia($request, $existingProduct);
+        }
+
         if ($request['product_type'] == config('tlecommercecore.product_variant.variable') && !$request->has('variations')) {
             toastNotification('error', 'Invalid Product Variations');
             return redirect()->back();
@@ -858,5 +915,459 @@ class ProductController extends Controller
             toastNotification('error', translate('Review delete failed'));
             return redirect()->back();
         }
+    }
+
+    /**
+     * Validate a media-manager selection immediately from the product form.
+     *
+     * Read-only endpoint: it does not save/update/delete anything.
+     * It reuses the exact same image standards as validateProductMedia().
+     */
+    public function validateProductMediaSelection(Request $request)
+    {
+        $type = trim((string) $request->input('type', ''));
+        $field = trim((string) $request->input('field', ''));
+        $value = $request->input('value');
+        $errors = [];
+
+        if ($type === 'thumbnail') {
+            $thumbnailId = $this->normalizeMediaId($value);
+
+            if ($thumbnailId === null) {
+                $errors[] = 'Thumbnail image is required.';
+            } else {
+                $error = $this->validateMediaImage(
+                    $thumbnailId,
+                    'Thumbnail image',
+                    self::THUMBNAIL_MIN_WIDTH,
+                    self::THUMBNAIL_MIN_HEIGHT,
+                    self::THUMBNAIL_MAX_WIDTH,
+                    self::THUMBNAIL_MAX_HEIGHT,
+                    self::THUMBNAIL_MAX_BYTES,
+                    true
+                );
+
+                if ($error !== null) {
+                    $errors[] = $error;
+                }
+            }
+        } elseif ($type === 'gallery') {
+            $galleryIds = $this->parseMediaIds($value);
+
+            if (count($galleryIds) > self::GALLERY_MAX_COUNT) {
+                $errors[] = 'Gallery can contain a maximum of ' . self::GALLERY_MAX_COUNT . ' images.';
+            } else {
+                foreach ($galleryIds as $index => $imageId) {
+                    $error = $this->validateMediaImage(
+                        $imageId,
+                        'Gallery image #' . ($index + 1),
+                        self::GALLERY_MIN_WIDTH,
+                        self::GALLERY_MIN_HEIGHT,
+                        self::GALLERY_MAX_WIDTH,
+                        self::GALLERY_MAX_HEIGHT,
+                        self::GALLERY_MAX_BYTES,
+                        true
+                    );
+
+                    if ($error !== null) {
+                        $errors[] = $error;
+                    }
+                }
+            }
+        } elseif ($type === 'variant') {
+            if (!preg_match('/^color_.+_image$/', $field)) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => ['Invalid color variant image field.'],
+                ], 422);
+            }
+
+            $variantIds = $this->parseMediaIds($value);
+
+            if (count($variantIds) > self::VARIANT_MAX_COUNT_PER_COLOR) {
+                $errors[] = 'A color can contain a maximum of '
+                    . self::VARIANT_MAX_COUNT_PER_COLOR
+                    . ' variant images.';
+            } else {
+                foreach ($variantIds as $index => $imageId) {
+                    $error = $this->validateMediaImage(
+                        $imageId,
+                        'Color variant image #' . ($index + 1),
+                        self::VARIANT_MIN_WIDTH,
+                        self::VARIANT_MIN_HEIGHT,
+                        self::VARIANT_MAX_WIDTH,
+                        self::VARIANT_MAX_HEIGHT,
+                        self::VARIANT_MAX_BYTES,
+                        true
+                    );
+
+                    if ($error !== null) {
+                        $errors[] = $error;
+                    }
+                }
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'errors' => ['Invalid product media validation type.'],
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => empty($errors),
+            'errors' => $errors,
+        ]);
+    }
+
+    /**
+     * Validate media-manager images selected for a product.
+     *
+     * IMPORTANT:
+     * - thumbnail_image and gallery_images in this project are media IDs, not UploadedFile objects.
+     * - Therefore normal Laravel rules such as `image|dimensions` cannot validate these values directly.
+     * - This method resolves the selected media ID with getFilePath(), finds the local file,
+     *   then validates MIME, file size, dimensions and aspect ratio before ProductRepository stores IDs.
+     * - On update, unchanged existing images are intentionally skipped so old products are not broken.
+     */
+    private function validateProductMedia(ProductRequest $request, ?Product $existingProduct = null): void
+    {
+        $errors = [];
+
+        /*
+        |--------------------------------------------------------------------------
+        | Thumbnail
+        |--------------------------------------------------------------------------
+        | Standard:
+        | - JPEG / PNG / WEBP
+        | - square 1:1
+        | - 800x800 minimum
+        | - 1600x1600 maximum
+        | - 2 MB maximum
+        */
+        $thumbnailId = $this->normalizeMediaId($request->input('thumbnail_image'));
+        $existingThumbnailId = $existingProduct
+            ? $this->normalizeMediaId($existingProduct->thumbnail_image)
+            : null;
+
+        if ($existingProduct === null && $thumbnailId === null) {
+            $errors['thumbnail_image'][] = 'Thumbnail image is required.';
+        }
+
+        $thumbnailChanged = $existingProduct === null
+            ? $thumbnailId !== null
+            : $thumbnailId !== null && $thumbnailId !== $existingThumbnailId;
+
+        if ($thumbnailChanged) {
+            $error = $this->validateMediaImage(
+                $thumbnailId,
+                'Thumbnail image',
+                self::THUMBNAIL_MIN_WIDTH,
+                self::THUMBNAIL_MIN_HEIGHT,
+                self::THUMBNAIL_MAX_WIDTH,
+                self::THUMBNAIL_MAX_HEIGHT,
+                self::THUMBNAIL_MAX_BYTES,
+                true
+            );
+
+            if ($error !== null) {
+                $errors['thumbnail_image'][] = $error;
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Gallery images
+        |--------------------------------------------------------------------------
+        | Standard:
+        | - up to 8 images
+        | - JPEG / PNG / WEBP
+        | - square 1:1
+        | - 1000x1000 minimum
+        | - 2400x2400 maximum
+        | - 3 MB maximum per image
+        |
+        | Gallery remains optional to preserve the existing product behavior.
+        */
+        $galleryIds = $this->parseMediaIds($request->input('gallery_images'));
+
+        if (count($galleryIds) > self::GALLERY_MAX_COUNT) {
+            $errors['gallery_images'][] = 'Gallery can contain a maximum of ' . self::GALLERY_MAX_COUNT . ' images.';
+        }
+
+        $existingGalleryIds = [];
+        if ($existingProduct !== null) {
+            $existingProduct->loadMissing('gallery_images');
+            $existingGalleryIds = $existingProduct->gallery_images
+                ->pluck('image_id')
+                ->map(fn($id) => $this->normalizeMediaId($id))
+                ->filter()
+                ->values()
+                ->all();
+        }
+
+        $galleryChanged = $existingProduct === null
+            ? !empty($galleryIds)
+            : $this->mediaIdSetsDiffer($galleryIds, $existingGalleryIds);
+
+        if ($galleryChanged && count($galleryIds) <= self::GALLERY_MAX_COUNT) {
+            foreach ($galleryIds as $index => $imageId) {
+                $error = $this->validateMediaImage(
+                    $imageId,
+                    'Gallery image #' . ($index + 1),
+                    self::GALLERY_MIN_WIDTH,
+                    self::GALLERY_MIN_HEIGHT,
+                    self::GALLERY_MAX_WIDTH,
+                    self::GALLERY_MAX_HEIGHT,
+                    self::GALLERY_MAX_BYTES,
+                    true
+                );
+
+                if ($error !== null) {
+                    $errors['gallery_images'][] = $error;
+                }
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Color variant images
+        |--------------------------------------------------------------------------
+        | Validate only a color whose submitted image list is new/changed.
+        | This protects existing products with older image dimensions.
+        */
+        if ($request->has('selected_colors') && is_array($request->input('selected_colors'))) {
+            if ($existingProduct !== null) {
+                $existingProduct->loadMissing('color_images');
+            }
+
+            foreach ($request->input('selected_colors') as $colorId) {
+                $inputName = 'color_' . $colorId . '_image';
+
+                if (!$request->has($inputName)) {
+                    continue;
+                }
+
+                $variantIds = $this->parseMediaIds($request->input($inputName));
+
+                if (count($variantIds) > self::VARIANT_MAX_COUNT_PER_COLOR) {
+                    $errors[$inputName][] = 'A color can contain a maximum of '
+                        . self::VARIANT_MAX_COUNT_PER_COLOR
+                        . ' variant images.';
+                    continue;
+                }
+
+                $existingVariantIds = [];
+                if ($existingProduct !== null) {
+                    $existingVariantIds = $existingProduct->color_images
+                        ->where('color_id', $colorId)
+                        ->pluck('image')
+                        ->map(fn($id) => $this->normalizeMediaId($id))
+                        ->filter()
+                        ->values()
+                        ->all();
+                }
+
+                $variantChanged = $existingProduct === null
+                    ? !empty($variantIds)
+                    : $this->mediaIdSetsDiffer($variantIds, $existingVariantIds);
+
+                if (!$variantChanged) {
+                    continue;
+                }
+
+                foreach ($variantIds as $index => $imageId) {
+                    $error = $this->validateMediaImage(
+                        $imageId,
+                        'Color variant image #' . ($index + 1),
+                        self::VARIANT_MIN_WIDTH,
+                        self::VARIANT_MIN_HEIGHT,
+                        self::VARIANT_MAX_WIDTH,
+                        self::VARIANT_MAX_HEIGHT,
+                        self::VARIANT_MAX_BYTES,
+                        true
+                    );
+
+                    if ($error !== null) {
+                        $errors[$inputName][] = $error;
+                    }
+                }
+            }
+        }
+
+        if (!empty($errors)) {
+            throw ValidationException::withMessages($errors);
+        }
+    }
+
+    /**
+     * Validate one media-manager image ID.
+     */
+    private function validateMediaImage(
+        $mediaId,
+        string $label,
+        int $minWidth,
+        int $minHeight,
+        int $maxWidth,
+        int $maxHeight,
+        int $maxBytes,
+        bool $requireSquare = true
+    ): ?string {
+        if ($mediaId === null) {
+            return $label . ' is required.';
+        }
+
+        $displayPath = getFilePath($mediaId);
+        if (!$displayPath || !is_string($displayPath)) {
+            return $label . ' is invalid or the selected media file no longer exists.';
+        }
+
+        $absolutePath = $this->resolveMediaAbsolutePath($displayPath);
+        if ($absolutePath === null || !is_file($absolutePath)) {
+            return $label . ' file could not be found on the server.';
+        }
+
+        $imageInfo = @getimagesize($absolutePath);
+        if ($imageInfo === false) {
+            return $label . ' must be a valid image file.';
+        }
+
+        $mime = strtolower((string) ($imageInfo['mime'] ?? ''));
+        if (!in_array($mime, self::ALLOWED_IMAGE_MIMES, true)) {
+            return $label . ' must be JPG, JPEG, PNG, or WEBP.';
+        }
+
+        $fileSize = @filesize($absolutePath);
+        if ($fileSize === false) {
+            return $label . ' file size could not be checked.';
+        }
+
+        if ($fileSize > $maxBytes) {
+            return $label . ' must not exceed ' . $this->formatBytesForMessage($maxBytes) . '.';
+        }
+
+        $width = (int) ($imageInfo[0] ?? 0);
+        $height = (int) ($imageInfo[1] ?? 0);
+
+        if ($width < $minWidth || $height < $minHeight) {
+            return $label . ' is too small. Minimum size is '
+                . $minWidth . 'x' . $minHeight . ' px; uploaded image is '
+                . $width . 'x' . $height . ' px.';
+        }
+
+        if ($width > $maxWidth || $height > $maxHeight) {
+            return $label . ' is too large. Maximum size is '
+                . $maxWidth . 'x' . $maxHeight . ' px; uploaded image is '
+                . $width . 'x' . $height . ' px.';
+        }
+
+        if ($requireSquare && $width !== $height) {
+            return $label . ' must use a 1:1 square aspect ratio. Uploaded image is '
+                . $width . 'x' . $height . ' px.';
+        }
+
+        return null;
+    }
+
+    /**
+     * Convert the public URL/path returned by getFilePath() to a real local file.
+     * Supports the common /public/..., /storage/... and direct public paths.
+     */
+    private function resolveMediaAbsolutePath(string $displayPath): ?string
+    {
+        $path = parse_url($displayPath, PHP_URL_PATH);
+        $path = $path !== null && $path !== false ? $path : $displayPath;
+        $path = rawurldecode($path);
+        $relative = ltrim($path, '/');
+
+        if ($relative === '') {
+            return null;
+        }
+
+        $candidates = [];
+
+        if (strpos($relative, 'public/') === 0) {
+            $withoutPrefix = substr($relative, strlen('public/'));
+            $candidates[] = public_path($withoutPrefix);
+            $candidates[] = storage_path('app/public/' . $withoutPrefix);
+        } elseif (strpos($relative, 'storage/') === 0) {
+            $withoutPrefix = substr($relative, strlen('storage/'));
+            $candidates[] = public_path($relative);
+            $candidates[] = storage_path('app/public/' . $withoutPrefix);
+        } else {
+            $candidates[] = public_path($relative);
+            $candidates[] = storage_path('app/public/' . $relative);
+        }
+
+        foreach (array_unique($candidates) as $candidate) {
+            if (is_file($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Accept the project's comma-separated media IDs and normalize them.
+     */
+    private function parseMediaIds($value): array
+    {
+        if ($value === null || $value === '') {
+            return [];
+        }
+
+        if (is_array($value)) {
+            $values = $value;
+        } else {
+            $values = explode(',', (string) $value);
+        }
+
+        $ids = [];
+        foreach ($values as $valueItem) {
+            $id = $this->normalizeMediaId($valueItem);
+            if ($id !== null) {
+                $ids[] = $id;
+            }
+        }
+
+        return array_values(array_unique($ids));
+    }
+
+    private function normalizeMediaId($value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $value = trim((string) $value);
+        return $value === '' ? null : $value;
+    }
+
+    private function mediaIdSetsDiffer(array $first, array $second): bool
+    {
+        $first = array_values(array_unique(array_map('strval', $first)));
+        $second = array_values(array_unique(array_map('strval', $second)));
+        sort($first, SORT_STRING);
+        sort($second, SORT_STRING);
+
+        return $first !== $second;
+    }
+
+    private function formatBytesForMessage(int $bytes): string
+    {
+        if ($bytes >= 1048576) {
+            $mb = $bytes / 1048576;
+            return rtrim(rtrim(number_format($mb, 1, '.', ''), '0'), '.') . ' MB';
+        }
+
+        return (string) $bytes . ' bytes';
+    }
+
+    private function isModernLayoutActive(): bool
+    {
+        return DB::table('tl_store_layouts')
+            ->where('name', 'modern')
+            ->where('is_active', 1)
+            ->exists();
     }
 }

@@ -7,7 +7,10 @@
   <div
     v-show="!isLoading"
     class="product-details-content"
-    :class="{ 'product-details-content--rtl': isFeaturePaneLayout && isRtl }"
+    :class="{
+  'product-details-content--rtl': isFeaturePaneLayout && isRtl,
+  'product-details-content--modern': modernLayout
+}"
   >
     <!--Flash deal info-->
     <div class="d-flex flash-deal flex-wrap justify-content-between mb-20 p-2 text-white"
@@ -21,11 +24,31 @@
     </div>
     <!--End flash deal info-->
     <!-- Title -->
-    <h1 class="product-title">{{ product.name }}</h1>
+    <div
+  v-if="modernLayout"
+  class="modern-product-title-row"
+>
+  <h1 class="product-title">
+    {{ product.name }}
+  </h1>
+
+  <button
+    type="button"
+    class="modern-product-wishlist"
+    :aria-label="$t('Add to wishlist')"
+    @click.prevent="addToWishlist"
+  >
+    <span class="material-icons">favorite_border</span>
+  </button>
+</div>
+
+<h1 v-else class="product-title">
+  {{ product.name }}
+</h1>
     <!--End Title-->
     <!-- Rating -->
     <div class="align-items-center d-flex rating-wrap" v-if="
-      config?.enable_product_reviews == enums.status.ACTIVE &&
+  config?.enable_product_reviews == enums.status.ACTIVE &&
       (config?.enable_product_star_rating == enums.status.ACTIVE ||
         product.total_reviews > 0)
     ">
@@ -43,11 +66,34 @@
     </div>
     <!-- End Rating -->
     <!-- Summary -->
-    <div v-if="product.summary" class="product-summary-section mt-20">
-      <div class="product-description" v-html="product.summary"></div>
-    </div>
+   <div
+  v-if="modernLayout && (product.description || product.summary)"
+  class="product-summary-section modern-description-section"
+>
+  <h6 class="modern-description-heading">
+    {{ $t("Description") }}
+  </h6>
+
+  <div
+    class="product-description"
+    v-html="product.description || product.summary"
+  ></div>
+</div>
+
+<div
+  v-else-if="product.summary"
+  class="product-summary-section mt-20"
+>
+  <div
+    class="product-description"
+    v-html="product.summary"
+  ></div>
+</div>
     <!--End Summary-->
-    <hr class="divider bg-secondary" />
+    <hr
+  v-if="!modernLayout"
+  class="divider bg-secondary"
+/>
     <!--Price Range-->
     <div class="product-price price-range" v-if="
       product.price_range_min &&
@@ -74,7 +120,9 @@
     <!-- End  Price Range-->
     <!-- Total Price -->
     <div class="product-price unit-price mt-25">
-      <h6 class="mb-1">{{ $t("Price") }}</h6>
+      <h6 v-if="!modernLayout" class="mb-1">
+  {{ $t("Price") }}
+</h6>
       <div class="price d-flex align-items-center">
         <span
   class="price-current-wrap"
@@ -378,6 +426,10 @@ export default {
       type: Number,
       default: null,
     },
+      modernLayout: {
+    type: Boolean,
+    default: false,
+  },
   },
 data() {
   return {
@@ -1333,6 +1385,142 @@ methods: {
   .attach-input-wrapper h6 {
     margin-right: 0;
     margin-left: 10px;
+  }
+}
+
+/* ========================================
+   MODERN THEME PRODUCT INFORMATION
+======================================== */
+
+.product-details-content--modern {
+  position: relative;
+  width: 100%;
+  padding: 14px 16px 24px;
+  background: #fff;
+
+  .modern-product-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .product-title {
+    flex: 1;
+    margin: 0;
+    color: #24201e;
+    font-size: 17px;
+    line-height: 1.3;
+    font-weight: 600;
+  }
+
+  .modern-product-wishlist {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #766963;
+    cursor: pointer;
+
+    .material-icons {
+      font-size: 21px;
+    }
+  }
+
+  .unit-price {
+    margin-top: 4px !important;
+
+    .price {
+      align-items: center;
+    }
+
+    :deep(h3) {
+      margin: 0;
+      color: #6f4c3b;
+      font-size: 15px;
+      line-height: 1.3;
+      font-weight: 700;
+    }
+
+    :deep(del) {
+      margin-left: 8px !important;
+      color: #aaa;
+      font-size: 12px;
+    }
+  }
+
+  .modern-description-section {
+    margin-top: 18px;
+  }
+
+  .modern-description-heading {
+    margin: 0 0 7px;
+    color: #24201e;
+    font-size: 14px;
+    line-height: 1.3;
+    font-weight: 700;
+  }
+
+  .product-description {
+    color: #5f5a57;
+    font-size: 12px;
+    line-height: 1.55;
+
+    :deep(p) {
+      margin-bottom: 8px;
+    }
+
+    :deep(p:last-child) {
+      margin-bottom: 0;
+    }
+  }
+
+  .option-choice-form {
+    margin-top: 22px !important;
+  }
+
+  .option-label {
+    color: #24201e;
+    font-size: 13px;
+  }
+
+  .option-list-card {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border-color: #ece7e4;
+
+    &.is-selected {
+      border-color: #795548;
+      background: rgba(121, 85, 72, 0.06);
+      box-shadow: 0 0 0 1px #795548;
+    }
+  }
+
+  .product-details-quantity {
+    margin-top: 20px;
+  }
+
+  .quantity-input {
+    height: 38px;
+    border: 1px solid #e8e3e0;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #faf9f8;
+
+    button {
+      width: 38px;
+    }
+
+    input {
+      min-width: 42px;
+      background: transparent;
+    }
   }
 }
 </style>

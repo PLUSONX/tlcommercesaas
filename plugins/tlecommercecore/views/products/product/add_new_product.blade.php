@@ -4,9 +4,7 @@
         ->select(['status', 'id'])
         ->first();
     $is_active_cod = $cod_info != null ? $cod_info->status : config('settings.general_status.in_active');
-    $tax_profiles = \Plugin\TlcommerceCore\Models\TaxProfile::where('status', config('settings.general_status.active'))
-        ->select('id', 'title')
-        ->get();
+    $tax_profiles = \Plugin\TlcommerceCore\Models\TaxProfile::where('status', config('settings.general_status.active'))->select('id', 'title')->get();
 @endphp
 @extends('core::base.layouts.master')
 @section('title')
@@ -45,37 +43,69 @@
         #codCities~span {
             width: 100% !important;
         }
+
+        /* Immediate product media validation */
+        .product-media-live-error {
+            margin-top: 8px;
+            padding: 9px 12px;
+            border: 1px solid #dc3545;
+            border-radius: 6px;
+            background: #fff5f5;
+            color: #dc3545;
+            font-size: 13px;
+            line-height: 1.45;
+            font-weight: 600;
+        }
+
+        .product-media-live-error ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .product-media-live-error li+li {
+            margin-top: 4px;
+        }
+
+        .product-media-validating {
+            margin-top: 8px;
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .product-media-invalid-wrap {
+            border-radius: 8px;
+            box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.12);
+        }
     </style>
 @endsection
 @section('main_content')
     <!-- <div class="align-items-center border-bottom2 d-flex flex-wrap gap-10 justify-content-between mb-4 pb-3">
-        <h4><i class="icofont-plugin"></i> {{ translate('Add New Product') }}</h4>
-    </div> -->
+            <h4><i class="icofont-plugin"></i> {{ translate('Add New Product') }}</h4>
+        </div> -->
 
-<div class="row">
+    <div class="row">
 
-    <div class="col-12">
-        <div class="card bg-transparent mb-20">
+        <div class="col-12">
+            <div class="card bg-transparent mb-20">
 
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h4 class="" style="font-size: 30px;">{{ translate('Add New Product') }}</h4>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="" style="font-size: 30px;">{{ translate('Add New Product') }}</h4>
+                    </div>
                 </div>
-            </div>
 
+            </div>
         </div>
     </div>
-</div>
-    <form method="POST" class="row" enctype="multipart/form-data" id="product-form"
-        action="{{ route('plugin.tlcommercecore.product.store.new') }}">
+    <form method="POST" class="row" enctype="multipart/form-data" id="product-form" action="{{ route('plugin.tlcommercecore.product.store.new') }}">
         @csrf
         <!--Left side-->
         <div class="col-lg-8">
             <!-- <div class="mb-3">
-                <p class="alert alert-info">You are inserting
-                    <strong>"{{ getLanguageNameByCode(getDefaultLang()) }}"</strong> version
-                </p>
-            </div> -->
+                    <p class="alert alert-info">You are inserting
+                        <strong>"{{ getLanguageNameByCode(getDefaultLang()) }}"</strong> version
+                    </p>
+                </div> -->
             <!--Product information-->
             <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-header bg-white border-bottom2 py-3">
@@ -89,8 +119,8 @@
                             <label class="font-14 bold black">{{ translate('Name') }} </label>
                         </div>
                         <div class="col-md-12">
-                            <input type="text" name="name" class="theme-input-style product_name"
-                                placeholder="{{ translate('Product Name') }}" value="{{ old('name') }}" required>
+                            <input type="text" name="name" class="theme-input-style product_name" placeholder="{{ translate('Product Name') }}" value="{{ old('name') }}"
+                                required>
                             <input type="hidden" name="permalink" id="permalink_input_field" required>
                             @if ($errors->has('name'))
                                 <div class="invalid-input">{{ $errors->first('name') }}</div>
@@ -98,25 +128,20 @@
                         </div>
                     </div>
                     <!--Permalink-->
-                    <div
-                        class="form-row mb-20 permalink-input-group d-none @if ($errors->has('permalink')) d-flex @endif">
+                    <div class="form-row mb-20 permalink-input-group d-none @if ($errors->has('permalink')) d-flex @endif">
                         <div class="col-sm-3">
                             <label class="font-14 bold black">{{ translate('Permalink') }} </label>
                         </div>
                         <div class="col-md-12">
-                            <a href="#">{{ url('') }}/products/<span
-                                    id="permalink">{{ old('permalink') }}</span><span
+                            <a href="#">{{ url('') }}/products/<span id="permalink">{{ old('permalink') }}</span><span
                                     class="btn custom-btn ml-1 permalink-edit-btn">{{ translate('Edit') }}</span></a>
                             @if ($errors->has('permalink'))
                                 <div class="invalid-input">{{ $errors->first('permalink') }}</div>
                             @endif
                             <div class="permalink-editor d-none">
-                                <input type="text" class="theme-input-style" id="permalink-updated-input"
-                                    placeholder="{{ translate('Type here') }}">
-                                <button type="button" class="btn long mt-2 btn-danger permalink-cancel-btn"
-                                    data-dismiss="modal">{{ translate('Cancel') }}</button>
-                                <button type="button"
-                                    class="btn long mt-2 permalink-save-btn">{{ translate('Save') }}</button>
+                                <input type="text" class="theme-input-style" id="permalink-updated-input" placeholder="{{ translate('Type here') }}">
+                                <button type="button" class="btn long mt-2 btn-danger permalink-cancel-btn" data-dismiss="modal">{{ translate('Cancel') }}</button>
+                                <button type="button" class="btn long mt-2 permalink-save-btn">{{ translate('Save') }}</button>
                             </div>
                         </div>
                     </div>
@@ -208,8 +233,7 @@
                     <div class="form-group mb-4 pt-1">
                         <div class="d-flex d-sm-inline-flex align-items-center mr-sm-5 mb-3">
                             <div class="custom-radio mr-3">
-                                <input type="radio" name="product_type" id="single_product"
-                                    value="{{ config('tlecommercecore.product_variant.single') }}" checked
+                                <input type="radio" name="product_type" id="single_product" value="{{ config('tlecommercecore.product_variant.single') }}" checked
                                     onchange="switchProductType('single')">
                                 <label for="single_product"></label>
                             </div>
@@ -218,10 +242,8 @@
 
                         <div class="d-flex d-sm-inline-flex align-items-center mr-sm-5 mb-3">
                             <div class="custom-radio mr-3">
-                                <input type="radio" name="product_type" id="variant_product"
-                                    value="{{ config('tlecommercecore.product_variant.variable') }}"
-                                    @if (old('product_type') == config('tlecommercecore.product_variant.variable')) checked @endif
-                                    onchange="switchProductType('variant')">
+                                <input type="radio" name="product_type" id="variant_product" value="{{ config('tlecommercecore.product_variant.variable') }}"
+                                    @if (old('product_type') == config('tlecommercecore.product_variant.variable')) checked @endif onchange="switchProductType('variant')">
                                 <label for="variant_product"></label>
                             </div>
                             <label for="variant_product">{{ translate('Variant Product') }}</label>
@@ -244,8 +266,7 @@
                         </div>
                         <div class="col-md-12">
                             <div class="d-flex">
-                                <select class="product-colors-select form-control" disabled name="selected_colors[]"
-                                    multiple onchange="selectColorVariant()">
+                                <select class="product-colors-select form-control" disabled name="selected_colors[]" multiple onchange="selectColorVariant()">
                                     @foreach ($colors as $color)
                                         <option value="{{ $color->id }}">
                                             {{ $color->name }}
@@ -268,8 +289,7 @@
                             <label class="font-14 bold black ">{{ translate('Choice Options') }} </label>
                         </div>
                         <div class="col-md-12">
-                            <select class="product-choice-option-select form-control attributes"
-                                onchange="selectProductChoiceOption(this)">
+                            <select class="product-choice-option-select form-control attributes" onchange="selectProductChoiceOption(this)">
                                 @foreach ($attributes as $attribute)
                                     <option></option>
                                     <option value="{{ $attribute->id }}">
@@ -299,8 +319,7 @@
                             <label class="font-14 bold black ">{{ translate('Purchase Price') }} </label>
                         </div>
                         <div class="col-md-12">
-                            <input type="number" name="purchase_price" class="theme-input-style" placeholder="0.00"
-                                value="{{ old('purchase_price') }}">
+                            <input type="number" name="purchase_price" class="theme-input-style" placeholder="0.00" value="{{ old('purchase_price') }}">
                             @if ($errors->has('purchase_price'))
                                 <div class="invalid-input">{{ $errors->first('purchase_price') }}</div>
                             @endif
@@ -311,9 +330,7 @@
                             <label class="font-14 bold black ">{{ translate('Unit Price') }} </label>
                         </div>
                         <div class="col-md-12">
-                            <input type="text" name="unit_price" class="theme-input-style"
-                                placeholder="{{ translate('Type here') }}"
-                                value="{{ old('unit_price') }}">
+                            <input type="text" name="unit_price" class="theme-input-style" placeholder="{{ translate('Type here') }}" value="{{ old('unit_price') }}">
                             @if ($errors->has('unit_price'))
                                 <div class="invalid-input">{{ $errors->first('unit_price') }}</div>
                             @endif
@@ -324,8 +341,7 @@
                             <label class="font-14 bold black ">{{ translate('Quantity') }} </label>
                         </div>
                         <div class="col-md-12">
-                            <input type="number" name="quantity" class="theme-input-style" placeholder="00"
-                                value="{{ old('quantity') }}">
+                            <input type="number" name="quantity" class="theme-input-style" placeholder="00" value="{{ old('quantity') }}">
                             @if ($errors->has('quantity'))
                                 <div class="invalid-input">{{ $errors->first('quantity') }}</div>
                             @endif
@@ -336,8 +352,7 @@
                             <label class="font-14 bold black ">{{ translate('Sku') }} </label>
                         </div>
                         <div class="col-md-12">
-                            <input type="text" name="sku" class="theme-input-style"
-                                placeholder="{{ translate('Type product sku') }}" value="{{ old('sku') }}">
+                            <input type="text" name="sku" class="theme-input-style" placeholder="{{ translate('Type product sku') }}" value="{{ old('sku') }}">
                             @if ($errors->has('sku'))
                                 <div class="invalid-input">{{ $errors->first('sku') }}</div>
                             @endif
@@ -365,8 +380,7 @@
                                 <label class="font-14 bold black ">{{ translate('Discount') }} </label>
                             </div>
                             <div class="col-md-6 mb-30">
-                                <input type="number" name="discount_amount" class="theme-input-style"
-                                    placeholder="0.00" value="{{ old('discount_amount') }}">
+                                <input type="number" name="discount_amount" class="theme-input-style" placeholder="0.00" value="{{ old('discount_amount') }}">
                                 @if ($errors->has('discount_amount'))
                                     <div class="invalid-input">{{ $errors->first('discount_amount') }}</div>
                                 @endif
@@ -389,8 +403,7 @@
                     @if (getEcommerceSetting('enable_product_discount') != config('settings.general_status.active'))
                         <p class="mt-0 font-13">
                             {{ translate('Product discount is disabled. You can enable discount from') }}
-                            <a href="{{ route('plugin.tlcommercecore.ecommerce.configuration', ['tab' => 'products']) }}"
-                                class="btn-link">{{ translate('Products Settings') }}
+                            <a href="{{ route('plugin.tlcommercecore.ecommerce.configuration', ['tab' => 'products']) }}" class="btn-link">{{ translate('Products Settings') }}
                             </a>
                         </p>
                     @endif
@@ -458,9 +471,7 @@
                                 'input' => 'thumbnail_image',
                                 'data' => old('thumbnail_image'),
                             ])
-                            @if ($errors->has('thumbnail_image'))
-                                <div class="invalid-input">{{ $errors->first('thumbnail_image') }}</div>
-                            @endif
+                            <div id="thumbnail-image-live-error" class="product-media-live-error d-none" role="alert"></div>
                         </div>
                     </div>
                     <div class="form-row mb-20 product-gallery-images">
@@ -473,12 +484,13 @@
                                 'input' => 'gallery_images',
                                 'data' => old('gallery_images'),
                                 'indicator' => 1,
-                                'container_id' => '#multi_input_1',
+                                'container_id' => '#multi_input_container_1',
                             ])
                             @if ($errors->has('gallery_images'))
                                 <div class="invalid-input">{{ $errors->first('gallery_images') }}
                                 </div>
                             @endif
+                            <div id="gallery-images-live-error" class="product-media-live-error d-none" role="alert"></div>
                         </div>
                     </div>
                 </div>
@@ -522,8 +534,7 @@
                             <label class="font-14 bold black ">{{ translate('Youtube Link') }} </label>
                         </div>
                         <div class="col-md-12">
-                            <input type="text" name="video" class="theme-input-style"
-                                placeholder="{{ translate('Type here') }}" value="{{ old('video') }}">
+                            <input type="text" name="video" class="theme-input-style" placeholder="{{ translate('Type here') }}" value="{{ old('video') }}">
                             @if ($errors->has('video'))
                                 <div class="invalid-input">{{ $errors->first('video') }}</div>
                             @endif
@@ -545,8 +556,7 @@
                             <label class="font-14 bold black ">{{ translate('Meta Title') }} </label>
                         </div>
                         <div class="col-md-12">
-                            <input type="text" name="meta_title" class="theme-input-style"
-                                placeholder="{{ translate('Type here') }}" value="{{ old('meta_title') }}">
+                            <input type="text" name="meta_title" class="theme-input-style" placeholder="{{ translate('Type here') }}" value="{{ old('meta_title') }}">
                             @if ($errors->has('meta_title'))
                                 <div class="invalid-input">{{ $errors->first('meta_title') }}</div>
                             @endif
@@ -594,8 +604,7 @@
                 <div class="card-body">
                     <!--Profile Based Shipping Rate-->
                     @if (SettingsRepository::getEcommerceSetting('shipping_option') != null &&
-                            SettingsRepository::getEcommerceSetting('shipping_option') ==
-                                config('tlecommercecore.shipping_cost_options.profile_wise_rate'))
+                            SettingsRepository::getEcommerceSetting('shipping_option') == config('tlecommercecore.shipping_cost_options.profile_wise_rate'))
                         <div class="profile-wise-shiping-cost">
                             @if ($shipping_profiles->count() > 0)
                                 <div class="form-row">
@@ -621,8 +630,7 @@
                     <!--End Profile Based Shipping Rate-->
                     <!--Flat Rate Shipping Cost-->
                     @if (SettingsRepository::getEcommerceSetting('shipping_option') == null ||
-                            SettingsRepository::getEcommerceSetting('shipping_option') ==
-                                config('tlecommercecore.shipping_cost_options.flat_rate'))
+                            SettingsRepository::getEcommerceSetting('shipping_option') == config('tlecommercecore.shipping_cost_options.flat_rate'))
                         <div class="profile-wise-shiping-cost">
                             <p class="font-13 mb-0">
                                 {{ translate('Product wise shipping cost or profile based shiping cost is disable') }}
@@ -635,14 +643,12 @@
                     <!--End Flat Rate Shipping Cost-->
                     <!--Product Wise shipping Cost-->
                     @if (SettingsRepository::getEcommerceSetting('shipping_option') != null &&
-                            SettingsRepository::getEcommerceSetting('shipping_option') ==
-                                config('tlecommercecore.shipping_cost_options.product_wise_rate'))
+                            SettingsRepository::getEcommerceSetting('shipping_option') == config('tlecommercecore.shipping_cost_options.product_wise_rate'))
                         <div class="product-wise-shiping-cost">
                             <div class="form-row mb-20">
                                 <label class="font-14 bold black">{{ translate('Shipping Cost') }} </label>
                                 <div class="input-group addon">
-                                    <input type="number" name="product_shipping_cost" class="theme-input-style"
-                                        placeholder="0.00">
+                                    <input type="number" name="product_shipping_cost" class="theme-input-style" placeholder="0.00">
                                 </div>
                                 @if ($errors->has('product_shipping_cost'))
                                     <div class="invalid-input">{{ $errors->first('product_shipping_cost') }}</div>
@@ -662,8 +668,7 @@
                             </div>
                             <p class="font-13 mb-0">
                                 {{ translate('You can manage shipping cost configuration from') }}
-                                <a href="{{ route('plugin.tlcommercecore.shipping.configuration') }}"
-                                    class="btn-link">{{ translate('Shipping & Delivery') }}
+                                <a href="{{ route('plugin.tlcommercecore.shipping.configuration') }}" class="btn-link">{{ translate('Shipping & Delivery') }}
                                 </a>
                             </p>
                         </div>
@@ -674,8 +679,7 @@
             <!--End Shipping Configuration-->
             <!--Shipping Information-->
             @if (SettingsRepository::getEcommerceSetting('shipping_option') == null ||
-                    SettingsRepository::getEcommerceSetting('shipping_option') ==
-                        config('tlecommercecore.shipping_cost_options.profile_wise_rate'))
+                    SettingsRepository::getEcommerceSetting('shipping_option') == config('tlecommercecore.shipping_cost_options.profile_wise_rate'))
                 <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                     <div class="card-header bg-white border-bottom2 py-3">
                         <div class="d-sm-flex justify-content-between align-items-center">
@@ -687,8 +691,7 @@
                             <div class="form-row mb-20">
                                 <label class="font-14 bold black  col-3">{{ translate('Weight') }} </label>
                                 <div class="input-group addon col-12">
-                                    <input type="number" name="weight" class="form-control style--two"
-                                        placeholder="0.00">
+                                    <input type="number" name="weight" class="form-control style--two" placeholder="0.00">
                                     <div class="input-group-append">
                                         <div class="input-group-text px-3  bold">gm</div>
                                     </div>
@@ -700,8 +703,7 @@
                             <div class="form-row mb-20">
                                 <label class="font-14 bold black  col-3">{{ translate('Height') }} </label>
                                 <div class="input-group addon col-12">
-                                    <input type="number" name="height" class="form-control style--two"
-                                        placeholder="0.00">
+                                    <input type="number" name="height" class="form-control style--two" placeholder="0.00">
                                     <div class="input-group-append">
                                         <div class="input-group-text px-3  bold">cm</div>
                                     </div>
@@ -713,8 +715,7 @@
                             <div class="form-row mb-20">
                                 <label class="font-14 bold black  col-3">{{ translate('Length') }} </label>
                                 <div class="input-group addon col-12">
-                                    <input type="number" name="length" class="form-control style--two"
-                                        placeholder="0.00">
+                                    <input type="number" name="length" class="form-control style--two" placeholder="0.00">
                                     <div class="input-group-append">
                                         <div class="input-group-text px-3  bold">cm</div>
                                     </div>
@@ -726,8 +727,7 @@
                             <div class="form-row mb-20">
                                 <label class="font-14 bold black  col-3">{{ translate('Width') }} </label>
                                 <div class="input-group addon col-12">
-                                    <input type="number" name="width" class="form-control style--two"
-                                        placeholder="0.00">
+                                    <input type="number" name="width" class="form-control style--two" placeholder="0.00">
                                     <div class="input-group-append">
                                         <div class="input-group-text px-3  bold">cm</div>
                                     </div>
@@ -743,59 +743,59 @@
             <!--End Shipping Information-->
             <!--Vat & Tax-->
             <!-- <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
-                <div class="card-header bg-white border-bottom2 py-3">
-                    <div class="d-sm-flex justify-content-between align-items-center">
-                        <h4>{{ translate('Tax Configuration') }}</h4>
+                    <div class="card-header bg-white border-bottom2 py-3">
+                        <div class="d-sm-flex justify-content-between align-items-center">
+                            <h4>{{ translate('Tax Configuration') }}</h4>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    @if (getEcommerceSetting('enable_tax_in_checkout') != config('settings.general_status.active'))
-                        <p class="mt-0 font-13">
-                            {{ translate('Product tax is disabled. You can enable tax from') }}
-                            <a href="{{ route('plugin.tlcommercecore.ecommerce.configuration', ['tab' => 'tax']) }}"
-                                class="btn-link">{{ translate('Tax Settings') }}
-                            </a>
-                        </p>
-                    @endif
-                    @if (getEcommerceSetting('enable_tax_in_checkout') == config('settings.general_status.active'))
-                        <div class="form-row mb-20">
-                            <div class="col-sm-4">
-                                <label class="font-14 bold black ">{{ translate('Tax Status') }} </label>
-                            </div>
-                            <div class="col-sm-8">
-                                <select class="form-control select2" name="taxable">
-                                    <option value="{{ config('settings.general_status.active') }}">
-                                        {{ translate('Taxable') }}</option>
-                                    <option value="{{ config('settings.general_status.in_active') }}">
-                                        {{ translate('None') }}</option>
-                                </select>
-                                <p class="mt-1 font-13">
-                                    {{ translate('If tax status is none , tax is not appicable of this product') }}
-                                </p>
-                            </div>
+                    <div class="card-body">
+                        @if (getEcommerceSetting('enable_tax_in_checkout') != config('settings.general_status.active'))
+    <p class="mt-0 font-13">
+                                {{ translate('Product tax is disabled. You can enable tax from') }}
+                                <a href="{{ route('plugin.tlcommercecore.ecommerce.configuration', ['tab' => 'tax']) }}"
+                                    class="btn-link">{{ translate('Tax Settings') }}
+                                </a>
+                            </p>
+    @endif
+                        @if (getEcommerceSetting('enable_tax_in_checkout') == config('settings.general_status.active'))
+    <div class="form-row mb-20">
+                                <div class="col-sm-4">
+                                    <label class="font-14 bold black ">{{ translate('Tax Status') }} </label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <select class="form-control select2" name="taxable">
+                                        <option value="{{ config('settings.general_status.active') }}">
+                                            {{ translate('Taxable') }}</option>
+                                        <option value="{{ config('settings.general_status.in_active') }}">
+                                            {{ translate('None') }}</option>
+                                    </select>
+                                    <p class="mt-1 font-13">
+                                        {{ translate('If tax status is none , tax is not appicable of this product') }}
+                                    </p>
+                                </div>
 
-                        </div>
-                        <div class="form-row mb-20">
-                            <div class="col-sm-4">
-                                <label class="font-14 bold black ">{{ translate('Tax Profile') }} </label>
                             </div>
-                            <div class="col-sm-8">
-                                <select class="form-control select2" name="tax_profile">
-                                    @foreach ($tax_profiles as $profile)
-                                        <option value="{{ $profile->id }}">{{ $profile->title }}</option>
-                                    @endforeach
-                                </select>
+                            <div class="form-row mb-20">
+                                <div class="col-sm-4">
+                                    <label class="font-14 bold black ">{{ translate('Tax Profile') }} </label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <select class="form-control select2" name="tax_profile">
+                                        @foreach ($tax_profiles as $profile)
+    <option value="{{ $profile->id }}">{{ $profile->title }}</option>
+    @endforeach
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <p class="mt-0 font-13">
-                            {{ translate('You can create new tax profile or manage profiles from') }}
-                            <a href="{{ route('plugin.tlcommercecore.ecommerce.settings.taxes.list') }}" target="_blank"
-                                class="btn-link">{{ translate('Tax Module') }}
-                            </a>
-                        </p>
-                    @endif
-                </div>
-            </div> -->
+                            <p class="mt-0 font-13">
+                                {{ translate('You can create new tax profile or manage profiles from') }}
+                                <a href="{{ route('plugin.tlcommercecore.ecommerce.settings.taxes.list') }}" target="_blank"
+                                    class="btn-link">{{ translate('Tax Module') }}
+                                </a>
+                            </p>
+    @endif
+                    </div>
+                </div> -->
             <!--End Vat & Tax-->
             <!--Featured-->
             <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
@@ -808,15 +808,15 @@
                     <div class="form-row mb-20">
                         <div class="col-md-12">
 
-                        <div class="row p-2" style="gap: 5px;">
-                            
-                            <label class="switch glow primary medium">
-                                <input type="checkbox" name="is_featured">
-                                <span class="control"></span>
-                            </label>
-    
-                            <label class="font-14 bold black ">{{ translate('Status') }} </label>
-                        </div>
+                            <div class="row p-2" style="gap: 5px;">
+
+                                <label class="switch glow primary medium">
+                                    <input type="checkbox" name="is_featured">
+                                    <span class="control"></span>
+                                </label>
+
+                                <label class="font-14 bold black ">{{ translate('Status') }} </label>
+                            </div>
 
                         </div>
                     </div>
@@ -837,7 +837,7 @@
 
                                 <div class="row p-2" style="gap: 5px;">
 
-                                     <label class="switch glow primary medium">
+                                    <label class="switch glow primary medium">
                                         <input type="checkbox" name="is_refundable">
                                         <span class="control"></span>
                                     </label>
@@ -866,7 +866,7 @@
                                     <input type="checkbox" name="is_authenthic" checked>
                                     <span class="control"></span>
                                 </label>
-                                    
+
                                 <label class="font-14 bold black ">{{ translate('Status') }} </label>
                             </div>
                         </div>
@@ -876,94 +876,94 @@
             <!--End Authentic-->
             <!--Cash on delivery-->
             <!-- <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
-                <div class="card-header bg-white border-bottom2 py-3">
-                    <div class="d-sm-flex justify-content-between align-items-center">
-                        <h4>{{ translate('Cash On Delivery') }}</h4>
+                    <div class="card-header bg-white border-bottom2 py-3">
+                        <div class="d-sm-flex justify-content-between align-items-center">
+                            <h4>{{ translate('Cash On Delivery') }}</h4>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    @if ($is_active_cod == config('settings.general_status.active'))
-                        <div class="form-row mb-20">
-                            <div class="col-sm-6">
-                                <label class="font-14 bold black ">{{ translate('Status') }} </label>
-                            </div>
-                            <div class="col-sm-6">
-                                <label class="switch glow primary medium">
-                                    <input type="checkbox" name="cash_on_delivery" class="cash-on-delivery" checked
-                                        onchange="cashOnDelivery()">
-                                    <span class="control"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="cash-on-delivery-info">
-                            <div class="form-group mb-4 pt-1">
-                                <div class="d-flex d-sm-inline-flex align-items-center mr-sm-5 mb-3">
-                                    <div class="custom-radio mr-3">
-                                        <input type="radio" id="cod_anywhere"
-                                            value="{{ config('tlecommercecore.cod_location.anywhere') }}"
-                                            name="cod_location" checked onchange="codLocation()">
-                                        <label for="cod_anywhere"></label>
-                                    </div>
-                                    <label for="cod_anywhere">{{ translate('Anywhere') }}</label>
+                    <div class="card-body">
+                        @if ($is_active_cod == config('settings.general_status.active'))
+    <div class="form-row mb-20">
+                                <div class="col-sm-6">
+                                    <label class="font-14 bold black ">{{ translate('Status') }} </label>
                                 </div>
-
-                                <div class="d-flex d-sm-inline-flex align-items-center mr-sm-5 mb-3">
-                                    <div class="custom-radio mr-3">
-                                        <input type="radio" id="cod_in_custom_location"
-                                            value="{{ config('tlecommercecore.cod_location.custom') }}"
-                                            name="cod_location" onchange="codLocation()">
-                                        <label for="cod_in_custom_location"></label>
-                                    </div>
-                                    <label for="cod_in_custom_location">{{ translate('Custom Locations') }}</label>
+                                <div class="col-sm-6">
+                                    <label class="switch glow primary medium">
+                                        <input type="checkbox" name="cash_on_delivery" class="cash-on-delivery" checked
+                                            onchange="cashOnDelivery()">
+                                        <span class="control"></span>
+                                    </label>
                                 </div>
                             </div>
-                            <div class="form-row mb-20 cod-contries_options d-none">
-                                <label class="font-14 bold black col-sm-3">{{ translate('Countries') }} </label>
-                                <div class="col-md-12">
-                                    <select class="form-control cod-countries-select" id="codCountries"
-                                        name="cod_selected_countries[]" multiple onchange="clearCodStateOptions()">
-
-                                    </select>
-                                    @if ($errors->has('cod_selected_countries'))
-                                        <div class="invalid-input">{{ $errors->first('cod_selected_countries') }}
+                            <div class="cash-on-delivery-info">
+                                <div class="form-group mb-4 pt-1">
+                                    <div class="d-flex d-sm-inline-flex align-items-center mr-sm-5 mb-3">
+                                        <div class="custom-radio mr-3">
+                                            <input type="radio" id="cod_anywhere"
+                                                value="{{ config('tlecommercecore.cod_location.anywhere') }}"
+                                                name="cod_location" checked onchange="codLocation()">
+                                            <label for="cod_anywhere"></label>
                                         </div>
-                                    @endif
-                                </div>
-                            </div>
+                                        <label for="cod_anywhere">{{ translate('Anywhere') }}</label>
+                                    </div>
 
-                            <div class="form-row mb-20 cod-states-options d-none">
-                                <label class="font-14 bold black col-sm-3">{{ translate('States') }} </label>
-                                <div class="col-md-12">
-                                    <select class="form-control cod-state-select" id="codStates"
-                                        name='cod_selected_states[]' multiple onchange="clearCodCitiesOptions()">
-                                    </select>
-                                    @if ($errors->has('cod_selected_states'))
-                                        <div class="invalid-input">{{ $errors->first('cod_selected_states') }}</div>
-                                    @endif
+                                    <div class="d-flex d-sm-inline-flex align-items-center mr-sm-5 mb-3">
+                                        <div class="custom-radio mr-3">
+                                            <input type="radio" id="cod_in_custom_location"
+                                                value="{{ config('tlecommercecore.cod_location.custom') }}"
+                                                name="cod_location" onchange="codLocation()">
+                                            <label for="cod_in_custom_location"></label>
+                                        </div>
+                                        <label for="cod_in_custom_location">{{ translate('Custom Locations') }}</label>
+                                    </div>
+                                </div>
+                                <div class="form-row mb-20 cod-contries_options d-none">
+                                    <label class="font-14 bold black col-sm-3">{{ translate('Countries') }} </label>
+                                    <div class="col-md-12">
+                                        <select class="form-control cod-countries-select" id="codCountries"
+                                            name="cod_selected_countries[]" multiple onchange="clearCodStateOptions()">
+
+                                        </select>
+                                        @if ($errors->has('cod_selected_countries'))
+    <div class="invalid-input">{{ $errors->first('cod_selected_countries') }}
+                                            </div>
+    @endif
+                                    </div>
+                                </div>
+
+                                <div class="form-row mb-20 cod-states-options d-none">
+                                    <label class="font-14 bold black col-sm-3">{{ translate('States') }} </label>
+                                    <div class="col-md-12">
+                                        <select class="form-control cod-state-select" id="codStates"
+                                            name='cod_selected_states[]' multiple onchange="clearCodCitiesOptions()">
+                                        </select>
+                                        @if ($errors->has('cod_selected_states'))
+    <div class="invalid-input">{{ $errors->first('cod_selected_states') }}</div>
+    @endif
+                                    </div>
+                                </div>
+                                <div class="form-row mb-20 cod-cities-options d-none">
+                                    <label class="font-14 bold black col-sm-3">{{ translate('Cities') }} </label>
+                                    <div class="col-md-12">
+                                        <select class="form-control cod-city-select" id="codCities"
+                                            name='cod_selected_cities[]' multiple>
+                                        </select>
+                                        @if ($errors->has('cod_selected_cities'))
+    <div class="invalid-input">{{ $errors->first('cod_selected_cities') }}</div>
+    @endif
+                                    </div>
                                 </div>
                             </div>
-                            <div class="form-row mb-20 cod-cities-options d-none">
-                                <label class="font-14 bold black col-sm-3">{{ translate('Cities') }} </label>
-                                <div class="col-md-12">
-                                    <select class="form-control cod-city-select" id="codCities"
-                                        name='cod_selected_cities[]' multiple>
-                                    </select>
-                                    @if ($errors->has('cod_selected_cities'))
-                                        <div class="invalid-input">{{ $errors->first('cod_selected_cities') }}</div>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    @else
-                        <p class="mt-0 font-13">
-                            {{ translate('Cash on Delivery in inactive. You can active Cash on Delivery from') }}
-                            <a href="{{ route('plugin.tlcommercecore.payments.methods') }}"
-                                class="btn-link">{{ translate('Payments Settings') }}
-                            </a>
-                        </p>
-                    @endif
-                </div>
-            </div> -->
+@else
+    <p class="mt-0 font-13">
+                                {{ translate('Cash on Delivery in inactive. You can active Cash on Delivery from') }}
+                                <a href="{{ route('plugin.tlcommercecore.payments.methods') }}"
+                                    class="btn-link">{{ translate('Payments Settings') }}
+                                </a>
+                            </p>
+    @endif
+                    </div>
+                </div> -->
             <!--End Cashon delivery-->
 
             <!--Warranty-->
@@ -976,18 +976,18 @@
                 <div class="card-body">
                     <div class="form-row mb-20">
                         <div class="col-sm-6">
-                             <div class="row p-2" style="gap: 5px;">
+                            <div class="row p-2" style="gap: 5px;">
 
                                 <label class="switch glow primary medium">
-                                <input type="checkbox" name="has_warranty" class="has-warranty"
-                                    onchange="warrantyConfig()" @if (old('has_warranty')) checked @endif>
-                                <span class="control"></span>
-                            </label>
-                                    
-                                 <label class="font-14 bold black ">{{ translate('Status') }} </label>
-                                </div>
+                                    <input type="checkbox" name="has_warranty" class="has-warranty" onchange="warrantyConfig()"
+                                        @if (old('has_warranty')) checked @endif>
+                                    <span class="control"></span>
+                                </label>
+
+                                <label class="font-14 bold black ">{{ translate('Status') }} </label>
+                            </div>
                         </div>
-                       
+
                     </div>
                     <div class="warranty-config {{ old('has_warranty') ? '' : 'd-none' }}">
                         <div class="form-row mb-20">
@@ -996,8 +996,7 @@
                             </div>
                             <div class="col-sm-6">
                                 <label class="switch glow primary medium">
-                                    <input type="checkbox" class="replacement-warranty" name="replacement_warranty"
-                                        @if (old('replacement_warranty')) checked @endif>
+                                    <input type="checkbox" class="replacement-warranty" name="replacement_warranty" @if (old('replacement_warranty')) checked @endif>
                                     <span class="control"></span>
                                 </label>
                             </div>
@@ -1005,8 +1004,7 @@
                         <div class="form-row mb-20">
                             <label class="font-14 bold black  col-12">{{ translate('Warranty Days') }} </label>
                             <div class="input-group addon col-12">
-                                <input type="number" class="form-control style--two" name="warranty_day"
-                                    value="{{ old('warranty_day') }}" placeholder="0">
+                                <input type="number" class="form-control style--two" name="warranty_day" value="{{ old('warranty_day') }}" placeholder="0">
                                 <div class="input-group-append">
                                     <div class="input-group-text px-3  bold">{{ translate('Days') }}</div>
                                 </div>
@@ -1029,8 +1027,7 @@
                 <div class="card-body">
                     <div class="form-row mb-20">
                         <label class="font-14 bold black  col-sm-4">{{ translate('Quantity') }} </label>
-                        <input type="number" class="theme-input-style col-sm-12" name="qty_alert"
-                            value="{{ old('qty_alert') }}" placeholder="0">
+                        <input type="number" class="theme-input-style col-sm-12" name="qty_alert" value="{{ old('qty_alert') }}" placeholder="0">
                         @if ($errors->has('qty_alert'))
                             <div class="invalid-input">{{ $errors->first('qty_alert') }}</div>
                         @endif
@@ -1048,16 +1045,14 @@
                 <div class="card-body">
                     <div class="form-row mb-20">
                         <label class="font-14 bold black  col-md-12">{{ translate('Minimum Quantity') }} </label>
-                        <input type="number" class="theme-input-style col-md-12" name="min_purchase_qty"
-                            value="{{ old('min_purchase_qty') }}" placeholder="0">
+                        <input type="number" class="theme-input-style col-md-12" name="min_purchase_qty" value="{{ old('min_purchase_qty') }}" placeholder="0">
                         @if ($errors->has('min_purchase_qty'))
                             <div class="invalid-input">{{ $errors->first('min_purchase_qty') }}</div>
                         @endif
                     </div>
                     <div class="form-row mb-20">
                         <label class="font-14 bold black  col-md-12">{{ translate('Miximum Quantity') }} </label>
-                        <input type="number" class="theme-input-style col-md-12" value="{{ old('max_purchase_qry') }}"
-                            name="max_purchase_qry" placeholder="0">
+                        <input type="number" class="theme-input-style col-md-12" value="{{ old('max_purchase_qry') }}" name="max_purchase_qry" placeholder="0">
 
                         @if ($errors->has('max_purchase_qry'))
                             <div class="invalid-input">{{ $errors->first('max_purchase_qry') }}</div>
@@ -1077,15 +1072,15 @@
                     @if (getEcommerceSetting('enable_document_in_checkout') == config('settings.general_status.active'))
                         <div class="form-row mb-20">
                             <div class="col-sm-4">
-                                 <div class="row p-2" style="gap: 5px;">
+                                <div class="row p-2" style="gap: 5px;">
 
-                                     <label class="switch glow primary medium">
-                                    <input type="checkbox" name="is_active_attatchment" class="attatchment-required"
-                                        onchange="attatchmentConfig()" @if (old('is_active_attatchment')) checked @endif>
-                                    <span class="control"></span>
-                                </label>
-                                    
-                                     <label class="font-14 bold black ">{{ translate('Status') }} </label>
+                                    <label class="switch glow primary medium">
+                                        <input type="checkbox" name="is_active_attatchment" class="attatchment-required" onchange="attatchmentConfig()"
+                                            @if (old('is_active_attatchment')) checked @endif>
+                                        <span class="control"></span>
+                                    </label>
+
+                                    <label class="font-14 bold black ">{{ translate('Status') }} </label>
                                 </div>
                             </div>
                         </div>
@@ -1093,8 +1088,7 @@
                             <div class="form-row mb-20">
                                 <label class="font-14 bold black  col-sm-4">{{ translate('Attatchment Title') }} </label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="theme-input-style"
-                                        value="{{ old('attatchment_name') }}" name="attatchment_name"
+                                    <input type="text" class="theme-input-style" value="{{ old('attatchment_name') }}" name="attatchment_name"
                                         placeholder="{{ translate('Attatchment Title') }}">
                                 </div>
                                 @if ($errors->has('attatchment_name'))
@@ -1124,51 +1118,48 @@
             <!--End Attatchment-->
             <!--Collections-->
             <!-- <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
-                <div class="card-header bg-white border-bottom2 py-3">
-                    <div class="d-sm-flex justify-content-between align-items-center">
-                        <h4>{{ translate('Product collections') }}</h4>
-                    </div>
-                </div>
-                <div class="card-body">
-                    @if (count($product_collections) > 0)
-                        @foreach ($product_collections as $collection)
-                            <div class="form-row mb-20">
-                                <div class="d-flex align-items-center">
-                                    <label class="custom-checkbox position-relative mr-2">
-                                        <input type="checkbox" id="{{ $collection->id }}" name="product_colletions[]"
-                                            value="{{ $collection->id }}"><span class="checkmark"></span>
-                                    </label>
-                                    <label
-                                        for="{{ $collection->id }}">{{ $collection->translation('name', getLocale()) }}</label>
-                                </div>
-                            </div>
-                        @endforeach
-                    @else
-                        <div>
-                            <p class="alert alert-danger m-2 col-12">{{ translate('No Collection Avaible') }}</p>
-
+                    <div class="card-header bg-white border-bottom2 py-3">
+                        <div class="d-sm-flex justify-content-between align-items-center">
+                            <h4>{{ translate('Product collections') }}</h4>
                         </div>
-                    @endif
-                    <p class="mt-0 font-13">
-                        {{ translate('You can create new cllection or manage existing collections from') }}
-                        <a href="{{ route('plugin.tlcommercecore.product.collection.list') }}"
-                            class="btn-link">{{ translate('Product Collections Module') }}
-                        </a>
-                    </p>
-                </div>
-            </div> -->
+                    </div>
+                    <div class="card-body">
+                        @if (count($product_collections) > 0)
+    @foreach ($product_collections as $collection)
+    <div class="form-row mb-20">
+                                    <div class="d-flex align-items-center">
+                                        <label class="custom-checkbox position-relative mr-2">
+                                            <input type="checkbox" id="{{ $collection->id }}" name="product_colletions[]"
+                                                value="{{ $collection->id }}"><span class="checkmark"></span>
+                                        </label>
+                                        <label
+                                            for="{{ $collection->id }}">{{ $collection->translation('name', getLocale()) }}</label>
+                                    </div>
+                                </div>
+    @endforeach
+@else
+    <div>
+                                <p class="alert alert-danger m-2 col-12">{{ translate('No Collection Avaible') }}</p>
+
+                            </div>
+    @endif
+                        <p class="mt-0 font-13">
+                            {{ translate('You can create new cllection or manage existing collections from') }}
+                            <a href="{{ route('plugin.tlcommercecore.product.collection.list') }}"
+                                class="btn-link">{{ translate('Product Collections Module') }}
+                            </a>
+                        </p>
+                    </div>
+                </div> -->
             <!--End Collection-->
         </div>
         <!--Ed right side-->
         <!--Form submit area-->
-        <div
-            class="bottom-button d-flex align-items-center justify-content-sm-end gap-10 flex-wrap justify-content-center">
-            <button type="submit" name="status" value="{{ config('settings.general_status.in_active') }}"
-                class="btn long btn-white" tabindex="4">
+        <div class="bottom-button d-flex align-items-center justify-content-sm-end gap-10 flex-wrap justify-content-center">
+            <button type="submit" name="status" value="{{ config('settings.general_status.in_active') }}" class="btn long btn-white" tabindex="4">
                 {{ translate('Save & Draft') }}
             </button>
-            <button type="submit" name="status" value="{{ config('settings.general_status.active') }}"
-                class="btn long btn-orange" tabindex="4">
+            <button type="submit" name="status" value="{{ config('settings.general_status.active') }}" class="btn long btn-orange" tabindex="4">
                 {{ translate('Save & Publish') }}
             </button>
         </div>
@@ -1372,6 +1363,329 @@
                 }
             });
         })(jQuery);
+
+        /**
+         * Immediate Product Image Validation
+         *
+         * The media manager stores IDs in thumbnail_image / gallery_images / color_*_image.
+         * We validate those IDs through a read-only controller endpoint immediately after selection,
+         * then show the exact backend-standard error beside the field before product submission.
+         */
+        const PRODUCT_MEDIA_VALIDATION_URL =
+            '{{ route('plugin.tlcommercecore.product.validate.media') }}';
+
+        const PRODUCT_MEDIA_SELECTOR = [
+            '[name="thumbnail_image"]',
+            '[name="gallery_images"]',
+            '[name^="color_"][name$="_image"]'
+        ].join(',');
+
+        const productMediaValidationState = {};
+        const productMediaLastValue = {};
+        const productMediaPendingRequest = {};
+        let productMediaBypassSubmitValidation = false;
+
+        function productMediaInputKey(input) {
+            return input && input.name ? input.name : '';
+        }
+
+        function productMediaValidationType(input) {
+            const name = productMediaInputKey(input);
+
+            if (name === 'thumbnail_image') {
+                return 'thumbnail';
+            }
+
+            if (name === 'gallery_images') {
+                return 'gallery';
+            }
+
+            if (/^color_.+_image$/.test(name)) {
+                return 'variant';
+            }
+
+            return null;
+        }
+
+        function productMediaCurrentValue(input) {
+            if (!input) {
+                return '';
+            }
+
+            return String($(input).val() || '').trim();
+        }
+
+        function productMediaErrorElement(input) {
+            const name = productMediaInputKey(input);
+
+            if (name === 'thumbnail_image') {
+                return document.getElementById('thumbnail-image-live-error');
+            }
+
+            if (name === 'gallery_images') {
+                return document.getElementById('gallery-images-live-error');
+            }
+
+            if (!name) {
+                return null;
+            }
+
+            const errorId = 'product-media-live-error-' + name.replace(/[^a-zA-Z0-9_-]/g, '-');
+            let errorEl = document.getElementById(errorId);
+
+            if (errorEl) {
+                return errorEl;
+            }
+
+            errorEl = document.createElement('div');
+            errorEl.id = errorId;
+            errorEl.className = 'product-media-live-error d-none';
+            errorEl.setAttribute('role', 'alert');
+
+            const host = input.closest('.col-md-12, .col-sm-12, .form-group, .form-row') || input.parentElement;
+            if (host) {
+                host.appendChild(errorEl);
+            }
+
+            return errorEl;
+        }
+
+        function productMediaFieldHost(input) {
+            if (!input) {
+                return null;
+            }
+
+            if (input.name === 'thumbnail_image') {
+                return input.closest('.col-md-12');
+            }
+
+            if (input.name === 'gallery_images') {
+                return input.closest('.col-md-12');
+            }
+
+            return input.closest('.col-md-12, .col-sm-12, .form-group, .form-row');
+        }
+
+        function productMediaRenderErrors(input, errors) {
+            const errorEl = productMediaErrorElement(input);
+            const host = productMediaFieldHost(input);
+            const errorList = Array.isArray(errors) ? errors.filter(Boolean) : [];
+
+            if (host) {
+                host.classList.toggle('product-media-invalid-wrap', errorList.length > 0);
+            }
+
+            if (!errorEl) {
+                return;
+            }
+
+            if (errorList.length < 1) {
+                errorEl.innerHTML = '';
+                errorEl.classList.add('d-none');
+                return;
+            }
+
+            const items = errorList
+                .map(function(message) {
+                    return '<li>' + $('<div>').text(message).html() + '</li>';
+                })
+                .join('');
+
+            errorEl.innerHTML = '<ul>' + items + '</ul>';
+            errorEl.classList.remove('d-none');
+        }
+
+        function productMediaSetValidating(input, validating) {
+            const host = productMediaFieldHost(input);
+            if (!host) {
+                return;
+            }
+
+            let status = host.querySelector('.product-media-validating');
+
+            if (!validating) {
+                if (status) {
+                    status.remove();
+                }
+                return;
+            }
+
+            if (!status) {
+                status = document.createElement('div');
+                status.className = 'product-media-validating';
+                status.textContent = '{{ translate('Checking image requirements...') }}';
+                host.appendChild(status);
+            }
+        }
+
+        function validateSelectedProductMedia(input, options) {
+            options = options || {};
+
+            if (!input) {
+                return Promise.resolve(true);
+            }
+
+            const type = productMediaValidationType(input);
+            const name = productMediaInputKey(input);
+            const value = productMediaCurrentValue(input);
+
+            if (!type || !name) {
+                return Promise.resolve(true);
+            }
+
+            if (!options.force && productMediaLastValue[name] === value) {
+                return Promise.resolve(productMediaValidationState[name] !== false);
+            }
+
+            productMediaLastValue[name] = value;
+
+            if (productMediaPendingRequest[name] && productMediaPendingRequest[name].readyState !== 4) {
+                productMediaPendingRequest[name].abort();
+            }
+
+            productMediaValidationState[name] = null;
+            productMediaSetValidating(input, true);
+
+            return new Promise(function(resolve) {
+                productMediaPendingRequest[name] = $.ajax({
+                    url: PRODUCT_MEDIA_VALIDATION_URL,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        type: type,
+                        field: name,
+                        value: value
+                    },
+                    success: function(response) {
+                        const errors = response && Array.isArray(response.errors) ?
+                            response.errors :
+                            [];
+
+                        const valid = !!(response && response.success === true && errors.length === 0);
+                        productMediaValidationState[name] = valid;
+                        productMediaRenderErrors(input, errors);
+                        resolve(valid);
+                    },
+                    error: function(xhr, textStatus) {
+                        if (textStatus === 'abort') {
+                            resolve(false);
+                            return;
+                        }
+
+                        let errors = [];
+
+                        if (xhr.responseJSON && Array.isArray(xhr.responseJSON.errors)) {
+                            errors = xhr.responseJSON.errors;
+                        } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errors = [xhr.responseJSON.message];
+                        } else {
+                            errors = ['{{ translate('Unable to validate the selected image. Please try again.') }}'];
+                        }
+
+                        productMediaValidationState[name] = false;
+                        productMediaRenderErrors(input, errors);
+                        resolve(false);
+                    },
+                    complete: function() {
+                        productMediaSetValidating(input, false);
+                    }
+                });
+            });
+        }
+
+        function discoverProductMediaInputs(validateChanged) {
+            document.querySelectorAll(PRODUCT_MEDIA_SELECTOR).forEach(function(input) {
+                const name = productMediaInputKey(input);
+                const value = productMediaCurrentValue(input);
+
+                if (!name) {
+                    return;
+                }
+
+                if (!Object.prototype.hasOwnProperty.call(productMediaLastValue, name)) {
+                    // Do not show validation immediately on first page render.
+                    // Start watching from the current selection and validate only after it changes.
+                    productMediaLastValue[name] = value;
+                    return;
+                }
+
+                if (validateChanged && productMediaLastValue[name] !== value) {
+                    validateSelectedProductMedia(input, {
+                        force: true
+                    });
+                }
+            });
+        }
+
+        // Media-manager scripts do not always dispatch a native "change" event when they update hidden IDs,
+        // so use both delegated events and a small value watcher.
+        $(document).on('change input', PRODUCT_MEDIA_SELECTOR, function() {
+            validateSelectedProductMedia(this, {
+                force: true
+            });
+        });
+
+        discoverProductMediaInputs(false);
+        window.setInterval(function() {
+            discoverProductMediaInputs(true);
+        }, 350);
+
+        $('#product-form').on('submit.productMediaValidation', function(event) {
+            if (productMediaBypassSubmitValidation) {
+                return true;
+            }
+
+            event.preventDefault();
+
+            const form = this;
+            const originalEvent = event.originalEvent || {};
+            const submitter = originalEvent.submitter || document.activeElement;
+            const inputs = Array.from(document.querySelectorAll(PRODUCT_MEDIA_SELECTOR));
+
+            Promise.all(
+                inputs.map(function(input) {
+                    return validateSelectedProductMedia(input, {
+                        force: true
+                    });
+                })
+            ).then(function(results) {
+                const allValid = results.every(function(valid) {
+                    return valid === true;
+                });
+
+                if (!allValid) {
+                    const firstError = document.querySelector('.product-media-live-error:not(.d-none)');
+
+                    if (firstError) {
+                        firstError.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    }
+
+                    if (typeof toastr !== 'undefined') {
+                        toastr.error(
+                            '{{ translate('Please fix the product image validation errors before saving.') }}',
+                            '{{ translate('Image validation') }}'
+                        );
+                    }
+
+                    return;
+                }
+
+                productMediaBypassSubmitValidation = true;
+
+                // Re-trigger the original submit button so its name/value (Draft or Publish)
+                // and any existing form handlers remain unchanged.
+                if (submitter && submitter.tagName === 'BUTTON' && submitter.type === 'submit') {
+                    submitter.click();
+                    return;
+                }
+
+                HTMLFormElement.prototype.submit.call(form);
+            });
+        });
 
         // send file function summernote
         function sendFile(image, editor, welEditable, section_id) {
@@ -1578,9 +1892,7 @@
     </script>
 @endsection
 
-
 <style>
-
     button.btn-orange,
     a.btn-orange {
         background: #ff5A1f !important;
@@ -1589,7 +1901,6 @@
         transition: background 0.2s ease;
         border-radius: 6px !important;
         box-shadow: none !important;
-
     }
 
     button.btn-orange:hover,
@@ -1598,7 +1909,6 @@
         border-color: #e07b00 !important;
         color: #fff !important;
         box-shadow: none !important;
-
     }
 
     button.btn-orange:focus,
@@ -1610,8 +1920,7 @@
         outline: none !important;
     }
 
-
-      /* Base State */
+    /* Base State */
     button.btn-white,
     a.btn-white {
         background: #fff !important;
@@ -1622,42 +1931,46 @@
         display: inline-block;
         text-decoration: none;
         cursor: pointer;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
         /* Transition everything for a smooth feel */
         transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    
         height: 40px !important;
     }
 
     /* Proper Hover Effect */
     button.btn-white:hover,
     a.btn-white:hover {
-        background: #000 !important; /* Inverts the look */
-        color: #fff !important;      /* Makes text white on black */
+        background: #000 !important;
+        /* Inverts the look */
+        color: #fff !important;
+        /* Makes text white on black */
         border-color: #000 !important;
-        transform: translateY(-2px); /* Subtle lift effect */
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+        transform: translateY(-2px);
+        /* Subtle lift effect */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
     }
 
     /* Active / Click Effect */
     button.btn-white:active,
     a.btn-white:active {
-        transform: translateY(0);    /* Pushes button back down when clicked */
+        transform: translateY(0);
+        /* Pushes button back down when clicked */
         box-shadow: none !important;
-        background: #222 !important; /* Slightly lighter than black for feedback */
+        background: #222 !important;
+        /* Slightly lighter than black for feedback */
     }
 
     /* Focus State for Accessibility */
     button.btn-white:focus,
     a.btn-white:focus {
-        outline: 2px solid #ff7545 !important; /* High contrast ring */
+        outline: 2px solid #ff7545 !important;
+        /* High contrast ring */
         outline-offset: 2px;
     }
 
-
-
     /* 1. Hide the native browser checkbox */
-    .product-id, .select-all {
+    .product-id,
+    .select-all {
         position: absolute;
         opacity: 0;
         cursor: pointer;
@@ -1671,15 +1984,17 @@
         height: 18px;
         width: 18px;
         background-color: transparent;
-        border: 2px solid #ff8c00; /* Orange border */
+        border: 2px solid #ff8c00;
+        /* Orange border */
         border-radius: 3px;
         position: relative;
         cursor: pointer;
     }
 
     /* 3. Style when the checkbox is checked */
-    input:checked ~ .checkmark {
-        background-color: #ff5A1f; /* Fill with orange */
+    input:checked~.checkmark {
+        background-color: #ff5A1f;
+        /* Fill with orange */
     }
 
     /* 4. The actual check symbol (the white "L" shape) */
@@ -1697,12 +2012,12 @@
     }
 
     /* Show the check symbol when checked */
-    input:checked ~ .checkmark:after {
+    input:checked~.checkmark:after {
         display: block;
     }
 
     /* 1. The background of the switch track when ON */
-    .switch.primary input:checked ~ .control {
+    .switch.primary input:checked~.control {
         background-color: #ff5A1f !important;
         border-color: #ff8c00 !important;
     }
@@ -1713,39 +2028,40 @@
         background-color: #ffffff !important;
         border: 1px solid #e0e0e0;
         box-shadow: none !important;
-
     }
 
     /* 3. If your template uses a shadow on the circle when active */
-    .switch.primary input:checked ~ .control:after {
-        border-color: #ff8c00 !important; 
+    .switch.primary input:checked~.control:after {
+        border-color: #ff8c00 !important;
         box-shadow: none !important;
-
     }
 
     /* 4. The "Glow" effect for the track */
     /* .switch.glow.primary input:checked ~ .control {
         box-shadow: 0 0 10px rgba(255, 140, 0, 0.4) !important;
     } */
-
-        /* 1. Change the Active Page background and border */
-     .pagination .page-item.active .page-link {
+    /* 1. Change the Active Page background and border */
+    .pagination .page-item.active .page-link {
         background-color: #ff5A1f !important;
         border-color: #ff5A1f !important;
-        color: #ffffff !important; /* Ensure text is white on orange */
+        color: #ffffff !important;
+        /* Ensure text is white on orange */
     }
 
     /* 2. Change the Hover state for non-active links */
     .pagination .page-item .page-link:hover {
-        background-color: #ff7545 !important; /* The lighter orange we picked earlier */
+        background-color: #ff7545 !important;
+        /* The lighter orange we picked earlier */
         border-color: #ff7545 !important;
         color: #ffffff !important;
     }
 
     /* 3. Change the default text color for non-active links */
-   .pagination .page-item .page-link {
-        color: #ff5A1f; /* Orange text on white background */
-        border-color: #dee2e6; /* Standard light border */
+    .pagination .page-item .page-link {
+        color: #ff5A1f;
+        /* Orange text on white background */
+        border-color: #dee2e6;
+        /* Standard light border */
     }
 
     select.theme-input-style {
@@ -1754,7 +2070,8 @@
         appearance: none;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
-        background-position: right 12px bottom 10px; /* adjust 12px to move arrow left/right */
+        background-position: right 12px bottom 10px;
+        /* adjust 12px to move arrow left/right */
         padding-right: 2rem;
     }
 
@@ -1769,27 +2086,28 @@
     }
 
     /* 2. The outer circle when SELECTED (keeps the color) */
-    .custom-radio input[type="radio"]:checked + label::before {
+    .custom-radio input[type="radio"]:checked+label::before {
         border-color: #ff5a1f !important;
     }
 
     /* 3. The inner dot when SELECTED */
-    .custom-radio input[type="radio"]:checked + label::after {
+    .custom-radio input[type="radio"]:checked+label::after {
         background-color: #ff5a1f !important;
     }
 
- .theme-input-style {
+    .theme-input-style {
         width: 100%;
         background-color: white !important;
         border: 1px solid black !important;
     }
 
-    .theme-input-style:focus, 
+    .theme-input-style:focus,
     .theme-input-style:active,
     .theme-input-style:hover {
         background-color: white !important;
-        outline: none;                /* Optional: removes default browser glow */
-        border: 1px solid black !important; /* Keeps your border consistent */
+        outline: none;
+        /* Optional: removes default browser glow */
+        border: 1px solid black !important;
+        /* Keeps your border consistent */
     }
-
 </style>

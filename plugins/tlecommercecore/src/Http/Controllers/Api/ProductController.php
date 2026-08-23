@@ -76,14 +76,14 @@ class ProductController extends Controller
         //         'request' => json_encode($request->all()),
         //         // 'category_id' => json_encode($category_id)
         // ]);
-        
+
         // echo "<script>console.log('request:', " . json_encode($request) . ");</script>";
         // \Log::info('Products request', $request->all());
 
         // $categoryId = $request->input('category_id');
 
         // \Log::info('categoryId', $categoryId);
-        
+
 
         // $query = $this->product_repository->filterProducts($request);
 
@@ -92,10 +92,10 @@ class ProductController extends Controller
         // \Log::info('query', $query);
 
         if (!empty($categoryId)) {
-        $query->whereHas('product_categories', function ($q) use ($categoryId) {
-            $q->where('category_id', $categoryId);
-        });
-}
+            $query->whereHas('product_categories', function ($q) use ($categoryId) {
+                $q->where('category_id', $categoryId);
+            });
+        }
 
 
         //sorting by newest items
@@ -122,10 +122,10 @@ class ProductController extends Controller
             return new ProductCollection($products);
         }
 
-        
-        
+
+
         $products = $query->paginate($request->perPage);
-        
+
         // \Log::info('Products data', [
         //         'query' => $query,
         //         'products' => json_encode($products),
@@ -327,6 +327,79 @@ class ProductController extends Controller
         //     return new SingleProductCollection($product);
         // }
     }
+
+    public function modernProductMedia(Request $request)
+    {
+        $product = Product::with(['gallery_images'])
+            ->where('id', $request->product_id)
+            ->first();
+
+        if ($product == null) {
+            return response()->json([
+                'success' => false,
+                'thumbnail' => null,
+                'galleryImages' => [],
+            ]);
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | THUMBNAIL IMAGE
+    |--------------------------------------------------------------------------
+    |
+    | Uses ONLY the product's saved Thumbnail Image.
+    | This does not affect the existing product-details response.
+    |
+    */
+
+        $thumbnail = null;
+
+        if ($product->thumbnail_image) {
+            $thumbnail = getFilePath($product->thumbnail_image);
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | GALLERY IMAGES
+    |--------------------------------------------------------------------------
+    |
+    | Uses ONLY images saved under Gallery Images.
+    | We intentionally do NOT use color_images here.
+    |
+    */
+
+        $galleryImages = [];
+
+        if (
+            $product->gallery_images &&
+            $product->gallery_images->count() > 0
+        ) {
+            foreach ($product->gallery_images as $galleryImage) {
+                if (!$galleryImage->image_id) {
+                    continue;
+                }
+
+                $path = getFilePath($galleryImage->image_id);
+
+                if (!$path) {
+                    continue;
+                }
+
+                $galleryImages[] = [
+                    'regular' => $path,
+                    'zoom' => $path,
+                    'type' => 'image',
+                ];
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'thumbnail' => $thumbnail,
+            'galleryImages' => $galleryImages,
+        ]);
+    }
+
     /**
      * Will return compare items details
      * 

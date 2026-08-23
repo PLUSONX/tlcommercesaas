@@ -63,6 +63,39 @@
         #codCities~span {
             width: 100% !important;
         }
+
+        /* Immediate product media validation */
+        .product-media-live-error {
+            margin-top: 8px;
+            padding: 9px 12px;
+            border: 1px solid #dc3545;
+            border-radius: 6px;
+            background: #fff5f5;
+            color: #dc3545;
+            font-size: 13px;
+            line-height: 1.45;
+            font-weight: 600;
+        }
+
+        .product-media-live-error ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .product-media-live-error li + li {
+            margin-top: 4px;
+        }
+
+        .product-media-validating {
+            margin-top: 8px;
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+        .product-media-invalid-wrap {
+            border-radius: 8px;
+            box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.12);
+        }
     </style>
 @endsection
 @section('main_content')
@@ -634,23 +667,21 @@
                     <div class="form-row mb-20">
                         <div class="col-sm-3">
                             <label class="font-14 bold black mb-0">{{ translate('Thumbnail Image') }} </label>
-                            <p>{{ translate('Recommended: 1000×1000 px (square). Used on homepage and product lists.') }}</p>
+                            <p>{{ translate('Required: square 1:1, 800×800 to 1600×1600 px, max 2 MB. JPG, PNG or WEBP.') }}</p>
                         </div>
                         <div class="col-md-12">
                             @include('core::base.includes.media.media_input', [
                                 'input' => 'thumbnail_image',
                                 'data' => $product_details->thumbnail_image,
                             ])
-                            @if ($errors->has('thumbnail_image'))
-                                <div class="invalid-input">{{ $errors->first('thumbnail_image') }}</div>
-                            @endif
+                            <div id="thumbnail-image-live-error" class="product-media-live-error d-none" role="alert"></div>
                         </div>
                     </div>
                     <div
                         class="form-row mb-20 product-gallery-images {{ count($product_details->color_choices) > 0 ? 'd-none' : '' }}">
                         <div class="col-sm-3">
                             <label class="font-14 bold black mb-0">{{ translate('Gallery Images') }} </label>
-                            <p>{{ translate('Recommended: 1000×1000 px (square), up to 1600px wide.') }}</p>
+                            <p>{{ translate('Required: square 1:1, 1000×1000 to 2400×2400 px, max 3 MB each, maximum 8 images. JPG, PNG or WEBP.') }}</p>
                         </div>
                         <div class="col-md-12">
                             @php
@@ -662,12 +693,13 @@
                                 'input' => 'gallery_images',
                                 'data' => implode(',', $gallary_images),
                                 'indicator' => 1,
-                                'container_id' => '#multi_input_1',
+                                'container_id' => '#multi_input_container_1',
                             ])
                             @if ($errors->has('gallery_images'))
                                 <div class="invalid-input">{{ $errors->first('gallery_images') }}
                                 </div>
                             @endif
+                            <div id="gallery-images-live-error" class="product-media-live-error d-none" role="alert"></div>
                         </div>
                     </div>
                 </div>
@@ -1626,6 +1658,558 @@
                 })
             });
         })(jQuery);
+
+        /**
+         * Immediate Product Image Validation - Edit Product
+         *
+         * IMPORTANT FOR EDIT:
+         * - Existing saved images are NOT validated just because the edit page opened.
+         * - Only newly changed thumbnail/gallery/color images are validated.
+         * - This matches the controller update behavior and avoids blocking old products
+         *   that may contain legacy image sizes.
+         */
+        const PRODUCT_MEDIA_VALIDATION_URL =
+            '{{ route('plugin.tlcommercecore.product.validate.media') }}';
+
+        const PRODUCT_MEDIA_VALIDATION_ENABLED =
+            @json(empty($lang) || $lang == getDefaultLang());
+
+        const PRODUCT_MEDIA_SELECTOR = [
+            '[name="thumbnail_image"]',
+            '[name="gallery_images"]',
+            '[name^="color_"][name$="_image"]'
+        ].join(',');
+
+        const productMediaInitialValue = {};
+        const productMediaLastValue = {};
+        const productMediaValidationState = {};
+        const productMediaPendingRequest = {};
+        let productMediaBypassSubmitValidation = false;
+
+        function productMediaInputKey(input) {
+            return input && input.name ? input.name : '';
+        }
+
+        function productMediaValidationType(input) {
+            const name = productMediaInputKey(input);
+
+            if (name === 'thumbnail_image') {
+                return 'thumbnail';
+            }
+
+            if (name === 'gallery_images') {
+                return 'gallery';
+            }
+
+            if (/^color_.+_image$/.test(name)) {
+                return 'variant';
+            }
+
+            return null;
+        }
+
+        function productMediaCurrentValue(input) {
+            if (!input) {
+                return '';
+            }
+
+            return String($(input).val() || '').trim();
+        }
+
+        function productMediaComparableValue(input, value) {
+            const type = productMediaValidationType(input);
+            const raw = String(value || '').trim();
+
+            if (type === 'thumbnail') {
+                return raw;
+            }
+
+            if (type === 'gallery' || type === 'variant') {
+                return raw
+                    .split(',')
+                    .map(function(item) {
+                        return item.trim();
+                    })
+                    .filter(Boolean)
+                    .filter(function(item, index, items) {
+                        return items.indexOf(item) === index;
+                    })
+                    .sort()
+                    .join(',');
+            }
+
+            return raw;
+        }
+
+        function productMediaIsChanged(input) {
+            const name = productMediaInputKey(input);
+
+            if (!name) {
+                return false;
+            }
+
+            const initial = Object.prototype.hasOwnProperty.call(productMediaInitialValue, name)
+                ? productMediaInitialValue[name]
+                : '';
+
+            return productMediaComparableValue(input, productMediaCurrentValue(input)) !==
+                productMediaComparableValue(input, initial);
+        }
+
+        function productMediaErrorElement(input) {
+            const name = productMediaInputKey(input);
+
+            if (name === 'thumbnail_image') {
+                return document.getElementById('thumbnail-image-live-error');
+            }
+
+            if (name === 'gallery_images') {
+                return document.getElementById('gallery-images-live-error');
+            }
+
+            if (!name) {
+                return null;
+            }
+
+            const errorId =
+                'product-media-live-error-' +
+                name.replace(/[^a-zA-Z0-9_-]/g, '-');
+
+            let errorEl = document.getElementById(errorId);
+
+            if (errorEl) {
+                return errorEl;
+            }
+
+            errorEl = document.createElement('div');
+            errorEl.id = errorId;
+            errorEl.className = 'product-media-live-error d-none';
+            errorEl.setAttribute('role', 'alert');
+
+            const host =
+                input.closest('.col-md-12, .col-sm-12, .form-group, .form-row') ||
+                input.parentElement;
+
+            if (host) {
+                host.appendChild(errorEl);
+            }
+
+            return errorEl;
+        }
+
+        function productMediaFieldHost(input) {
+            if (!input) {
+                return null;
+            }
+
+            return input.closest(
+                '.col-md-12, .col-sm-12, .form-group, .form-row'
+            );
+        }
+
+        function productMediaRenderErrors(input, errors) {
+            const errorEl = productMediaErrorElement(input);
+            const host = productMediaFieldHost(input);
+            const errorList = Array.isArray(errors)
+                ? errors.filter(Boolean)
+                : [];
+
+            if (host) {
+                host.classList.toggle(
+                    'product-media-invalid-wrap',
+                    errorList.length > 0
+                );
+            }
+
+            if (!errorEl) {
+                return;
+            }
+
+            if (errorList.length < 1) {
+                errorEl.innerHTML = '';
+                errorEl.classList.add('d-none');
+                return;
+            }
+
+            const items = errorList
+                .map(function(message) {
+                    return '<li>' +
+                        $('<div>').text(message).html() +
+                        '</li>';
+                })
+                .join('');
+
+            errorEl.innerHTML = '<ul>' + items + '</ul>';
+            errorEl.classList.remove('d-none');
+        }
+
+        function productMediaSetValidating(input, validating) {
+            const host = productMediaFieldHost(input);
+
+            if (!host) {
+                return;
+            }
+
+            let status = host.querySelector(
+                '.product-media-validating'
+            );
+
+            if (!validating) {
+                if (status) {
+                    status.remove();
+                }
+                return;
+            }
+
+            if (!status) {
+                status = document.createElement('div');
+                status.className = 'product-media-validating';
+                status.textContent =
+                    '{{ translate('Checking image requirements...') }}';
+                host.appendChild(status);
+            }
+        }
+
+        function productMediaRememberInitial(input) {
+            if (!input) {
+                return;
+            }
+
+            const name = productMediaInputKey(input);
+
+            if (!name) {
+                return;
+            }
+
+            const value = productMediaCurrentValue(input);
+
+            if (
+                !Object.prototype.hasOwnProperty.call(
+                    productMediaInitialValue,
+                    name
+                )
+            ) {
+                productMediaInitialValue[name] = value;
+            }
+
+            if (
+                !Object.prototype.hasOwnProperty.call(
+                    productMediaLastValue,
+                    name
+                )
+            ) {
+                productMediaLastValue[name] = value;
+            }
+
+            if (
+                !Object.prototype.hasOwnProperty.call(
+                    productMediaValidationState,
+                    name
+                )
+            ) {
+                // Existing saved media is treated as valid until changed.
+                productMediaValidationState[name] = true;
+            }
+        }
+
+        function validateSelectedProductMedia(input, options) {
+            options = options || {};
+
+            if (!PRODUCT_MEDIA_VALIDATION_ENABLED || !input) {
+                return Promise.resolve(true);
+            }
+
+            productMediaRememberInitial(input);
+
+            const type = productMediaValidationType(input);
+            const name = productMediaInputKey(input);
+            const value = productMediaCurrentValue(input);
+
+            if (!type || !name) {
+                return Promise.resolve(true);
+            }
+
+            /*
+             * Edit-page rule:
+             * if the user has not changed this media field, do not validate it.
+             * This prevents old/legacy saved images from blocking an ordinary edit.
+             */
+            if (!productMediaIsChanged(input)) {
+                productMediaValidationState[name] = true;
+                productMediaLastValue[name] = value;
+                productMediaRenderErrors(input, []);
+                productMediaSetValidating(input, false);
+                return Promise.resolve(true);
+            }
+
+            if (
+                !options.force &&
+                productMediaLastValue[name] === value &&
+                productMediaValidationState[name] !== null
+            ) {
+                return Promise.resolve(
+                    productMediaValidationState[name] !== false
+                );
+            }
+
+            productMediaLastValue[name] = value;
+
+            if (
+                productMediaPendingRequest[name] &&
+                productMediaPendingRequest[name].readyState !== 4
+            ) {
+                productMediaPendingRequest[name].abort();
+            }
+
+            productMediaValidationState[name] = null;
+            productMediaSetValidating(input, true);
+
+            return new Promise(function(resolve) {
+                productMediaPendingRequest[name] = $.ajax({
+                    url: PRODUCT_MEDIA_VALIDATION_URL,
+                    type: 'POST',
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRF-TOKEN':
+                            $('meta[name="_token"]').attr('content') ||
+                            '{{ csrf_token() }}'
+                    },
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        type: type,
+                        field: name,
+                        value: value
+                    },
+                    success: function(response) {
+                        const errors =
+                            response &&
+                            Array.isArray(response.errors)
+                                ? response.errors
+                                : [];
+
+                        const valid =
+                            !!(
+                                response &&
+                                response.success === true &&
+                                errors.length === 0
+                            );
+
+                        productMediaValidationState[name] = valid;
+                        productMediaRenderErrors(input, errors);
+                        resolve(valid);
+                    },
+                    error: function(xhr, textStatus) {
+                        if (textStatus === 'abort') {
+                            resolve(false);
+                            return;
+                        }
+
+                        let errors = [];
+
+                        if (
+                            xhr.responseJSON &&
+                            Array.isArray(xhr.responseJSON.errors)
+                        ) {
+                            errors = xhr.responseJSON.errors;
+                        } else if (
+                            xhr.responseJSON &&
+                            xhr.responseJSON.errors &&
+                            typeof xhr.responseJSON.errors === 'object'
+                        ) {
+                            Object.keys(xhr.responseJSON.errors).some(
+                                function(key) {
+                                    const value =
+                                        xhr.responseJSON.errors[key];
+
+                                    if (Array.isArray(value) && value.length) {
+                                        errors = value;
+                                        return true;
+                                    }
+
+                                    if (value) {
+                                        errors = [String(value)];
+                                        return true;
+                                    }
+
+                                    return false;
+                                }
+                            );
+                        } else if (
+                            xhr.responseJSON &&
+                            xhr.responseJSON.message
+                        ) {
+                            errors = [xhr.responseJSON.message];
+                        } else if (xhr.responseText) {
+                            errors = [
+                                '{{ translate('Unable to validate the selected image. Please check the server response.') }}'
+                            ];
+                        } else {
+                            errors = [
+                                '{{ translate('Unable to validate the selected image. Please try again.') }}'
+                            ];
+                        }
+
+                        productMediaValidationState[name] = false;
+                        productMediaRenderErrors(input, errors);
+
+                        console.error(
+                            'Product media validation failed:',
+                            xhr
+                        );
+
+                        resolve(false);
+                    },
+                    complete: function() {
+                        productMediaSetValidating(input, false);
+                    }
+                });
+            });
+        }
+
+        function discoverProductMediaInputs(validateChanged) {
+            if (!PRODUCT_MEDIA_VALIDATION_ENABLED) {
+                return;
+            }
+
+            document.querySelectorAll(
+                PRODUCT_MEDIA_SELECTOR
+            ).forEach(function(input) {
+                const name = productMediaInputKey(input);
+                const value = productMediaCurrentValue(input);
+
+                if (!name) {
+                    return;
+                }
+
+                if (
+                    !Object.prototype.hasOwnProperty.call(
+                        productMediaInitialValue,
+                        name
+                    )
+                ) {
+                    productMediaInitialValue[name] = value;
+                    productMediaLastValue[name] = value;
+                    productMediaValidationState[name] = true;
+                    return;
+                }
+
+                if (
+                    validateChanged &&
+                    productMediaLastValue[name] !== value
+                ) {
+                    validateSelectedProductMedia(input, {
+                        force: true
+                    });
+                }
+            });
+        }
+
+        /*
+         * Media-manager controls sometimes update hidden media-ID fields without
+         * triggering a native change event. Use delegated events + a small watcher.
+         */
+        $(document).on(
+            'change input',
+            PRODUCT_MEDIA_SELECTOR,
+            function() {
+                validateSelectedProductMedia(this, {
+                    force: true
+                });
+            }
+        );
+
+        discoverProductMediaInputs(false);
+
+        window.setInterval(function() {
+            discoverProductMediaInputs(true);
+        }, 350);
+
+        $('#product-form').on(
+            'submit.productMediaValidation',
+            function(event) {
+                if (
+                    !PRODUCT_MEDIA_VALIDATION_ENABLED ||
+                    productMediaBypassSubmitValidation
+                ) {
+                    return true;
+                }
+
+                event.preventDefault();
+
+                const form = this;
+                const originalEvent = event.originalEvent || {};
+                const submitter =
+                    originalEvent.submitter ||
+                    document.activeElement;
+
+                const inputs = Array.from(
+                    document.querySelectorAll(
+                        PRODUCT_MEDIA_SELECTOR
+                    )
+                );
+
+                Promise.all(
+                    inputs.map(function(input) {
+                        /*
+                         * Unchanged existing media returns true immediately.
+                         * Changed media gets validated again before submit.
+                         */
+                        return validateSelectedProductMedia(
+                            input,
+                            { force: true }
+                        );
+                    })
+                ).then(function(results) {
+                    const allValid = results.every(
+                        function(valid) {
+                            return valid === true;
+                        }
+                    );
+
+                    if (!allValid) {
+                        const firstError =
+                            document.querySelector(
+                                '.product-media-live-error:not(.d-none)'
+                            );
+
+                        if (firstError) {
+                            firstError.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'center'
+                            });
+                        }
+
+                        if (
+                            typeof toastr !== 'undefined'
+                        ) {
+                            toastr.error(
+                                '{{ translate('Please fix the product image validation errors before updating.') }}',
+                                '{{ translate('Image validation') }}'
+                            );
+                        }
+
+                        return;
+                    }
+
+                    productMediaBypassSubmitValidation = true;
+
+                    /*
+                     * Re-trigger the original submit button so its status value
+                     * (Update & Draft / Update & Publish) remains unchanged.
+                     */
+                    if (
+                        submitter &&
+                        submitter.tagName === 'BUTTON' &&
+                        submitter.type === 'submit'
+                    ) {
+                        submitter.click();
+                        return;
+                    }
+
+                    HTMLFormElement.prototype.submit.call(form);
+                });
+            }
+        );
 
         // send file function summernote
         function sendFile(image, editor, welEditable, section_id) {
