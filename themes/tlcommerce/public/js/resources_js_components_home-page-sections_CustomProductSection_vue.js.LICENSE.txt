@@ -22,8 +22,6 @@
 
 /*! @/utils/sectionProps */
 
-/*! import() */
-
 /*! swiper */
 
 /*! swiper/vue */
