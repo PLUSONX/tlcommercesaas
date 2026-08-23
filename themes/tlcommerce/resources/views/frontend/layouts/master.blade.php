@@ -352,6 +352,7 @@
             box-sizing: border-box;
             animation: tlc-boot-rotation 1s linear infinite;
         }
+        
         @keyframes tlc-boot-rotation {
             0% {
                 transform: rotate(0deg);
