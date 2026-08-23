@@ -130,6 +130,7 @@ class SingleProductCollection extends JsonResource
                 $image_ids = [$this->thumbnail_image];
             }
         }
+        
 
         // Non-Modern galleries retain the saved thumbnail alongside gallery images.
         $image_ids = collect([$this->thumbnail_image])
