@@ -181,38 +181,32 @@
               <div class="col-lg-9" v-if="showProductDetailsSection">
                 <div class="overview-wrap" ref="productDetails">
                   <CNav variant="tabs" role="tablist" class="product-description-tabs bg-light">
-                    <CNavItem v-if="hasProductOverviewContent">
-                      <CNavLink href="javascript:void(0);" :active="tabPaneActiveKey === 1" @click="
-                        () => {
-                          tabPaneActiveKey = 1;
-                        }
-                      ">
+                    <CNavItem v-if="hasProductOverviewContent" role="presentation">
+                      <a href="javascript:void(0);" class="nav-link" :class="{ active: tabPaneActiveKey === 1 }"
+                        @click.prevent="toggleProductDetailsTab(1)">
                         {{ $t("Product Overview") }}
-                      </CNavLink>
+                      </a>
                     </CNavItem>
-                    <CNavItem v-if="hasProductReviewsTab">
-                      <CNavLink href="javascript:void(0);" :active="tabPaneActiveKey === 2" @click="
-                        () => {
-                          tabPaneActiveKey = 2;
-                        }
-                      ">
+                    <CNavItem v-if="hasProductReviewsTab" role="presentation">
+                      <a href="javascript:void(0);" class="nav-link" :class="{ active: tabPaneActiveKey === 2 }"
+                        @click.prevent="toggleProductDetailsTab(2)">
                         {{ $t("Buyer Review") }}
-                      </CNavLink>
+                      </a>
                     </CNavItem>
                   </CNav>
-                  <CTabContent>
-                    <CTabPane v-if="hasProductOverviewContent" role="tabpanel" aria-labelledby="home-tab"
-                      click="product-overview" :visible="tabPaneActiveKey === 1">
+                  <div class="tab-content" v-show="tabPaneActiveKey !== null">
+                    <div v-if="hasProductOverviewContent" v-show="tabPaneActiveKey === 1" role="tabpanel"
+                      aria-labelledby="home-tab" class="product-overview-pane">
                       <div v-if="hasMeaningfulHtml(product.description)" v-html="product.description"></div>
                       <div v-if="product.pdf_specifications">
                         <a :href="product.pdf_specifications" target="_blank">Download Pdf Specifications</a>
                       </div>
-                    </CTabPane>
-                    <CTabPane v-if="hasProductReviewsTab" role="tabpanel" click="buyer-review "
-                      aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 2">
+                    </div>
+                    <div v-if="hasProductReviewsTab" v-show="tabPaneActiveKey === 2" role="tabpanel"
+                      aria-labelledby="profile-tab" class="product-reviews-pane">
                       <ProductReview :product-id="product.id" :config="site_config" :key="product.id"></ProductReview>
-                    </CTabPane>
-                  </CTabContent>
+                    </div>
+                  </div>
                 </div>
               </div>
               <!--End product details tabs-->
@@ -305,7 +299,7 @@
                     :product-name="product.name" :url="product.url" :summary="product.summary"
                     :networks="product.shareOptions" :key="galleryKey" />
                 </div>
-                <div class="col-lg-7">
+                <div class="col-lg-7 default-product-actions">
                   <details-content :product="product" :quantity-seed="orderQuantity" @goto-section="goSec"
                     @color-variant-images="colorVariantImages" @variant-updating="variantUpdating = $event"
                     @quantity-change="onOrderQuantityChange" />
@@ -378,8 +372,8 @@
             <!--Product widgets-->
             <div class="col-lg-3 d-none d-lg-block">
               <div class="widget_wrap">
-                <single-shop :shop="product.shopInfo" widgetTitle v-if="product.shopInfo != null"></single-shop>
-                <WidgetTopCategory :categories="topCategories" link="true" />
+                <!-- <single-shop :shop="product.shopInfo" widgetTitle v-if="product.shopInfo != null"></single-shop>
+                <WidgetTopCategory :categories="topCategories" link="true" /> -->
                 <WidgetTopSellingProduct :products="topSellingProducts" />
               </div>
             </div>
@@ -390,38 +384,32 @@
             <div class="col-lg-9" v-if="showProductDetailsSection">
               <div class="overview-wrap" ref="productDetails">
                 <CNav variant="tabs" role="tablist" class="product-description-tabs bg-light">
-                  <CNavItem v-if="hasProductOverviewContent">
-                    <CNavLink href="javascript:void(0);" :active="tabPaneActiveKey === 1" @click="
-                      () => {
-                        tabPaneActiveKey = 1;
-                      }
-                    ">
+                  <CNavItem v-if="hasProductOverviewContent" role="presentation">
+                    <a href="javascript:void(0);" class="nav-link" :class="{ active: tabPaneActiveKey === 1 }"
+                      @click.prevent="toggleProductDetailsTab(1)">
                       {{ $t("Product Overview") }}
-                    </CNavLink>
+                    </a>
                   </CNavItem>
-                  <CNavItem v-if="hasProductReviewsTab">
-                    <CNavLink href="javascript:void(0);" :active="tabPaneActiveKey === 2" @click="
-                      () => {
-                        tabPaneActiveKey = 2;
-                      }
-                    ">
+                  <CNavItem v-if="hasProductReviewsTab" role="presentation">
+                    <a href="javascript:void(0);" class="nav-link" :class="{ active: tabPaneActiveKey === 2 }"
+                      @click.prevent="toggleProductDetailsTab(2)">
                       {{ $t("Buyer Review") }}
-                    </CNavLink>
+                    </a>
                   </CNavItem>
                 </CNav>
-                <CTabContent>
-                  <CTabPane v-if="hasProductOverviewContent" role="tabpanel" aria-labelledby="home-tab"
-                    click="product-overview" :visible="tabPaneActiveKey === 1">
+                <div class="tab-content" v-show="tabPaneActiveKey !== null">
+                  <div v-if="hasProductOverviewContent" v-show="tabPaneActiveKey === 1" role="tabpanel"
+                    aria-labelledby="home-tab" class="product-overview-pane">
                     <div v-if="hasMeaningfulHtml(product.description)" v-html="product.description"></div>
                     <div v-if="product.pdf_specifications">
                       <a :href="product.pdf_specifications" target="_blank">Download Pdf Specifications</a>
                     </div>
-                  </CTabPane>
-                  <CTabPane v-if="hasProductReviewsTab" role="tabpanel" click="buyer-review "
-                    aria-labelledby="profile-tab" :visible="tabPaneActiveKey === 2">
+                  </div>
+                  <div v-if="hasProductReviewsTab" v-show="tabPaneActiveKey === 2" role="tabpanel"
+                    aria-labelledby="profile-tab" class="product-reviews-pane">
                     <ProductReview :product-id="product.id" :config="site_config" :key="product.id"></ProductReview>
-                  </CTabPane>
-                </CTabContent>
+                  </div>
+                </div>
               </div>
             </div>
             <!--End product details tabs-->
@@ -509,9 +497,7 @@ const ProductDetailsSkeleton = defineAsyncComponent(() =>
   import("@/components/skeleton/ProductDetailsSkeleton.vue")
 );
 
-const DetailsGallery = defineAsyncComponent(() =>
-  import("@/components/product/DetailsGallery.vue")
-);
+import DetailsGallery from "@/components/product/DetailsGallery.vue";
 
 const SingleShop = defineAsyncComponent(() =>
   import("@/components//shop/SingleShop.vue")
@@ -522,11 +508,8 @@ import { isProductLineInCart, findProductCartLine } from '@/utils/cartLineMatch'
 import { trackSocialPixels } from '@/utils/trackSocialPixels'
 
 import {
-  CTabContent,
-  CTabPane,
   CNav,
   CNavItem,
-  CNavLink,
   CTable,
   CTableBody,
   CTableRow,
@@ -549,11 +532,8 @@ export default {
     Swiper,
     SwiperSlide,
     Pagination,
-    CTabContent,
-    CTabPane,
     CNav,
     CNavItem,
-    CNavLink,
     CTable,
     CTableBody,
     CTableRow,
@@ -716,9 +696,11 @@ export default {
       immediate: true,
     },
     product: {
-      handler() {
+      handler(newVal, oldVal) {
         this.syncOrderQuantityFromProduct();
-        this.syncProductDetailsTab();
+        if (!oldVal || newVal?.id !== oldVal?.id) {
+          this.syncProductDetailsTab();
+        }
       },
     },
     "product.selectedVariant"() {
@@ -1205,6 +1187,14 @@ export default {
       });
     },
 
+    toggleProductDetailsTab(tabKey) {
+      if (this.tabPaneActiveKey === tabKey) {
+        this.tabPaneActiveKey = null;
+      } else {
+        this.tabPaneActiveKey = tabKey;
+      }
+    },
+
     hasMeaningfulHtml(value) {
       if (!value || typeof value !== "string") {
         return false;
@@ -1237,6 +1227,16 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../../assets/sass/00-abstracts/01-variables";
+
+.shadow-card {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.widget_wrap :deep(.widget-style-1) {
+  border-radius: 6px;
+  overflow: hidden;
+}
 
 .force-mobile-layout .row>[class*="col-"] {
   flex: 0 0 100% !important;
@@ -1281,16 +1281,32 @@ export default {
   background-color: #fff;
   box-shadow: 3px 3px 30px rgb(0 0 0 / 3%);
   border: 1px solid #f7f8fa;
+  border-radius: 6px;
+  overflow: hidden;
 
   @media only screen and (max-width: 575px) {
     padding: 0px 15px;
   }
 }
 
+.productDetails:not(.split-screen-product-scroll) {
+  :deep(.default-product-actions .product-details-action-area .button-group .btn_fill),
+  :deep(.default-product-actions .product-details-action-area .button-group .btn_borderd) {
+    border-radius: 6px !important;
+  }
+}
+
+.product-details1 {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
 .overview-wrap {
   background-color: #fff;
   box-shadow: 3px 3px 30px rgb(0 0 0 / 3%);
   border: 1px solid #f7f8fa;
+  border-radius: 6px;
+  overflow: hidden;
 
   ul {
     li {

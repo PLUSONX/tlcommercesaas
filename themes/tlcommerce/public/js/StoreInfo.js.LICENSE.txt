@@ -62,6 +62,8 @@
 
 /*! @/enums/enums */
 
+/*! @/utils/socialIconHelpers.js */
+
 /*! axios */
 
 /*! swiper */
@@ -71,6 +73,10 @@
 /*! vue */
 
 /*! vuex */
+
+/*!*************************************************!*\
+  !*** ./resources/js/utils/socialIconHelpers.js ***!
+  \*************************************************/
 
 /*!*************************************************!*\
   !*** ./resources/js/views/store-info/index.vue ***!

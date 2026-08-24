@@ -69,11 +69,11 @@
                   <span class="material-icons"> close </span>
                 </button>
                 <div class="widget_wrap-inner">
-                  <WidgetTopCategory v-if="!categoryLoading" :categories="categories" :selected-cat="category_filter"
+                  <!-- <WidgetTopCategory v-if="!categoryLoading" :categories="categories" :selected-cat="category_filter"
                     @filter="addCategoryFilter" />
                   <div v-if="categoryLoading" class="widget widget-style-1 widget_top_category mb-4">
                     <skeleton height="300px"></skeleton>
-                  </div>
+                  </div> -->
                   <!-- <WidgetBrand
                     v-if="!brandLoading"
                     :brands="brands"
@@ -83,7 +83,7 @@
                   <div v-if="brandLoading" class="widget widget-style-1 widget_top_category mb-4">
                     <skeleton height="300px"></skeleton>
                   </div>
-                  <WidgetRating :selected-item="rating_filter" @filter="addRatingFilter" />
+                  <!-- <WidgetRating :selected-item="rating_filter" @filter="addRatingFilter" /> -->
                   <WidgetPrice :selected-option="price_filter" @filter="addPriceFilter" />
                 </div>
               </div>
@@ -135,13 +135,13 @@
                         <div class="ant-tag" v-if="brand_filter.id">
                           <span class="ant-tag-text">{{
                             brand_filter.name
-                            }}</span>
+                          }}</span>
                           <span class="material-icons" @click.prevent="removeTag('brand')">close</span>
                         </div>
                         <div class="ant-tag" v-if="category_filter.id">
                           <span class="ant-tag-text">{{
                             category_filter.name
-                            }}</span>
+                          }}</span>
                           <span class="material-icons" @click.prevent="removeTag('category')">close</span>
                         </div>
                         <div class="ant-tag" v-if="rating_filter != null">
@@ -158,7 +158,7 @@
 
                         <span class="clear-all" @click.prevent="removeAllTag">{{
                           $t("CLEAR ALL")
-                          }}</span>
+                        }}</span>
                       </div>
                     </div>
                     <!--End filter items-->
@@ -430,6 +430,18 @@ export default {
 </script>
 
 <style scoped>
+/* Default layout — sidebar filter cards */
+.widget_wrap :deep(.widget-style-1) {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* Default layout — products header / filter bar */
+.shadow-card {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
 .card {
   width: 100% !important;
   margin: 0 !important;
@@ -491,6 +503,7 @@ export default {
 .products-listing-grid>[class*="col-"] {
   display: flex;
   flex-direction: column;
+  padding-bottom: 10px;
 }
 
 .products-listing-grid :deep(.single-product-item.style--eight) {
@@ -499,6 +512,13 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.products-listing-grid :deep(.single-product-item.style--eight > .position-relative) {
+  border-radius: 6px 6px 0 0;
+  overflow: hidden;
 }
 
 .products-listing-grid :deep(.product-summary) {
