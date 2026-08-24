@@ -11,6 +11,28 @@
             white-space: initial;
             display: inline-block;
         }
+
+        /* DataTables pagination — orange brand (override Dashmin purple) */
+        #collectionTable_paginate .pagination .page-item.active .page-link {
+            background-color: #ff5A1f !important;
+            border-color: #ff5A1f !important;
+            color: #ffffff !important;
+        }
+
+        #collectionTable_paginate .pagination .page-item .page-link:hover {
+            background-color: #ff7545 !important;
+            border-color: #ff7545 !important;
+            color: #ffffff !important;
+        }
+
+        #collectionTable_paginate .pagination .page-item .page-link {
+            color: #ff5A1f;
+            border-color: #dee2e6;
+        }
+
+        #collectionTable_paginate .pagination .page-item .page-link:focus {
+            box-shadow: 0 0 0 0.2rem rgba(255, 90, 31, 0.25);
+        }
     </style>
 @endsection
 @section('main_content')
@@ -21,7 +43,7 @@
     </div>
     <div class="row">
         <div class="col-sm-7">
-            <div class="card mb-30">
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <div class="card-body border-bottom2 mb-20">
                     <div class="d-sm-flex justify-content-between align-items-center">
                         <h4 class="font-20 mb-2">{{ translate('Products') }}</h4>
@@ -46,7 +68,7 @@
                                 </th>
                                 <th>{{ translate('Image') }}</th>
                                 <th>{{ translate('Name') }}</th>
-                                <th>{{ translate('Actions') }}</th>
+                                <th class="text-center">{{ translate('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -63,7 +85,7 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <img src="{{ asset(getFilePath($collection->product->thumbnail_image)) }}"
+                                            <img src="{{ asset(preg_replace('#^/public#', '', getFilePath($collection->product->thumbnail_image))) }}"
                                                 class="img-45" alt="{{ $collection->product->name }}">
                                         </td>
                                         <td>
@@ -73,7 +95,7 @@
                                         </td>
                                         <td>
                                             <div class="dropdown-button">
-                                                <a href="#" class="d-flex align-items-center justify-content-end"
+                                                <a href="#" class="d-flex align-items-center justify-content-center"
                                                     data-toggle="dropdown">
                                                     <div class="menu-icon mr-0">
                                                         <span></span>
@@ -101,7 +123,7 @@
 
         </div>
         <div class="col-sm-5">
-            <div class="form-element py-30 mb-30">
+            <div class="form-element py-30 mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                 <h4 class="font-20 mb-30">{{ translate('Add Product') }}</h4>
                 <form action="{{ route('plugin.tlcommercecore.product.collection.products.store') }}" method="POST">
                     @csrf

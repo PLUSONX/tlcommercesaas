@@ -84,9 +84,9 @@
         </template>
 
         <div class="custom-container2" v-if="!loadingProducts">
-          <div class="row mobile-gap-10">
+          <div class="row mobile-gap-10 products-listing-grid">
             <div v-for="product in paginatedItems" :key="product.id" class="col-lg-3 col-md-4 col-6">
-              <single-product :item="product" styleEight />
+              <single-product :item="product" styleEight listing-grid />
             </div>
           </div>
           <div class="row align-items-center mt-10" v-if="!loadingProducts">
@@ -101,7 +101,7 @@
           </div>
         </div>
         <div class="custom-container2" v-if="loadingProducts">
-          <div class="row mobile-gap-10">
+          <div class="row mobile-gap-10 products-listing-grid">
             <div class="col-lg-3 col-md-4 col-6" v-for="(item, index) in productSkeletons" :key="index">
               <skeleton :height="item.height" class="w-100 mb-10"> </skeleton>
             </div>
@@ -315,6 +315,50 @@ export default {
     box-shadow: none !important;
     border-radius: 6px !important;
     margin-bottom: 0 !important;
+  }
+}
+
+/* Default layout product grid (non-split-screen) */
+.products-listing-grid > [class*="col-"] {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 10px;
+}
+
+.products-listing-grid :deep(.single-product-item.style--eight) {
+  width: 100% !important;
+  margin-bottom: 0 !important;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.products-listing-grid :deep(.single-product-item.style--eight > .position-relative) {
+  border-radius: 6px 6px 0 0;
+  overflow: hidden;
+}
+
+.products-listing-grid :deep(.product-summary) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 575px) {
+  .products-listing-grid {
+    margin-right: -5px;
+    margin-left: -5px;
+  }
+
+  .products-listing-grid > [class*="col-"] {
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+
+  .products-listing-grid :deep(.single-product-item.style--eight) {
+    margin-bottom: 10px !important;
   }
 }
 </style>

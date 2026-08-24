@@ -477,6 +477,10 @@
         return str;
     }
 
+    @php
+        $media_empty_preview_src = getFilePath(null, true);
+        $media_empty_preview_src = preg_replace('#/public/#', '/', $media_empty_preview_src, 1);
+    @endphp
     /***** Media Script Start****/
     const media_per_page = 30;
     let media_current_page = 1;
@@ -979,7 +983,7 @@
     function setDataInsertableIds(ids, user_filer) {
         "use strict";
         let current_selected_files_id = ids.split(',');
-        let current_selected_files_id_array = $(current_selected_files_id[1]).val().split(',');
+        let current_selected_files_id_array = $(current_selected_files_id[1]).val().split(',').filter(id => id !== '');
         enable_multiple_file_select = false;
 
         if (!$("#multiselectMediaWrapper").hasClass('d-none')) {
@@ -1179,10 +1183,10 @@
      */
     function removeSelection(ids) {
         "use strict";
-        let rmoveableIds = ids.split(',')
-        $(rmoveableIds[0]).attr('src', '{{ project_asset($placeholder_image) }}')
-        $(rmoveableIds[1]).val('')
-        $(rmoveableIds[2]).hide()
+        let rmoveableIds = ids.split(',');
+        $(rmoveableIds[0]).attr('src', '{{ $media_empty_preview_src }}');
+        $(rmoveableIds[1]).val('');
+        $(rmoveableIds[2]).addClass('d-none').hide();
     }
 
     /**
@@ -1197,7 +1201,7 @@
         if (current_selected_files.length != 0) {
             $(rmoveableIds[3]).hide()
         } else {
-            $(rmoveableIds[0]).attr('src', '{{ project_asset($placeholder_image) }}')
+            $(rmoveableIds[0]).attr('src', '{{ $media_empty_preview_src }}');
         }
         $(rmoveableIds[1]).val(current_selected_files)
         $(rmoveableIds[2]).hide()

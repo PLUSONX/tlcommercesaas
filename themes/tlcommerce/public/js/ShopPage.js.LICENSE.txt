@@ -6,6 +6,8 @@
 
 /*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./shop_page.vue?vue&type=style&index=0&id=16b8453c&lang=scss&scoped=true */
 
+/*! !!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./WidgetPrice.vue?vue&type=style&index=0&id=a9840af6&scoped=true&lang=css */
+
 /*! !../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./BrandCollapseBox.vue?vue&type=script&lang=js */
@@ -48,7 +50,7 @@
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./WidgetBrand.vue?vue&type=template&id=09f5747a */
 
-/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./WidgetPrice.vue?vue&type=template&id=a9840af6 */
+/*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./WidgetPrice.vue?vue&type=template&id=a9840af6&scoped=true */
 
 /*! -!../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!../../../../node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./WidgetRating.vue?vue&type=template&id=da0d61de */
 
@@ -63,6 +65,8 @@
 /*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./SellerReviews.vue?vue&type=style&index=0&id=009bbc2e&lang=scss&scoped=true */
 
 /*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!../../../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./shop_page.vue?vue&type=style&index=0&id=16b8453c&lang=scss&scoped=true */
+
+/*! -!../../../../node_modules/style-loader/dist/cjs.js!../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!../../../../node_modules/vue-loader/dist/stylePostLoader.js!../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!../../../../node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./WidgetPrice.vue?vue&type=style&index=0&id=a9840af6&scoped=true&lang=css */
 
 /*! ../../../../node_modules/css-loader/dist/runtime/api.js */
 
@@ -110,7 +114,9 @@
 
 /*! ./WidgetPrice.vue?vue&type=script&lang=js */
 
-/*! ./WidgetPrice.vue?vue&type=template&id=a9840af6 */
+/*! ./WidgetPrice.vue?vue&type=style&index=0&id=a9840af6&scoped=true&lang=css */
+
+/*! ./WidgetPrice.vue?vue&type=template&id=a9840af6&scoped=true */
 
 /*! ./WidgetRating.vue?vue&type=script&lang=js */
 
@@ -265,10 +271,6 @@
   \**************************************************************************************/
 
 /*!**************************************************************************************!*\
-  !*** ./resources/js/components/widget/WidgetPrice.vue?vue&type=template&id=a9840af6 ***!
-  \**************************************************************************************/
-
-/*!**************************************************************************************!*\
   !*** ./resources/js/components/widget/WidgetTopCategory.vue?vue&type=script&lang=js ***!
   \**************************************************************************************/
 
@@ -312,6 +314,10 @@
   !*** ./resources/js/components/shop/SellerReviews.vue?vue&type=template&id=009bbc2e&scoped=true ***!
   \**************************************************************************************************/
 
+/*!**************************************************************************************************!*\
+  !*** ./resources/js/components/widget/WidgetPrice.vue?vue&type=template&id=a9840af6&scoped=true ***!
+  \**************************************************************************************************/
+
 /*!*****************************************************************************************************!*\
   !*** ./resources/js/components/pageheader/PageHeader.vue?vue&type=template&id=18484774&scoped=true ***!
   \*****************************************************************************************************/
@@ -323,6 +329,10 @@
 /*!*************************************************************************************************************!*\
   !*** ./resources/js/components/ui/RangeSlider.vue?vue&type=style&index=0&id=781016ee&lang=scss&scoped=true ***!
   \*************************************************************************************************************/
+
+/*!****************************************************************************************************************!*\
+  !*** ./resources/js/components/widget/WidgetPrice.vue?vue&type=style&index=0&id=a9840af6&scoped=true&lang=css ***!
+  \****************************************************************************************************************/
 
 /*!*****************************************************************************************************************!*\
   !*** ./resources/js/components/shop/SellerReviews.vue?vue&type=style&index=0&id=009bbc2e&lang=scss&scoped=true ***!
@@ -384,10 +394,6 @@
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/widget/WidgetBrand.vue?vue&type=template&id=09f5747a ***!
   \****************************************************************************************************************************************************************************************************************************************************************************************/
 
-/*!****************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/widget/WidgetPrice.vue?vue&type=template&id=a9840af6 ***!
-  \****************************************************************************************************************************************************************************************************************************************************************************************/
-
 /*!*****************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/ui/ShopMobileSearch.vue?vue&type=template&id=dc769c80 ***!
   \*****************************************************************************************************************************************************************************************************************************************************************************************/
@@ -424,9 +430,21 @@
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/shop/SellerReviews.vue?vue&type=template&id=009bbc2e&scoped=true ***!
   \****************************************************************************************************************************************************************************************************************************************************************************************************/
 
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/widget/WidgetPrice.vue?vue&type=template&id=a9840af6&scoped=true ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************/
+
 /*!*******************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5.use[0]!./node_modules/vue-loader/dist/templateLoader.js??ruleSet[1].rules[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/pageheader/PageHeader.vue?vue&type=template&id=18484774&scoped=true ***!
   \*******************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/widget/WidgetPrice.vue?vue&type=style&index=0&id=a9840af6&scoped=true&lang=css ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9.use[2]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/components/widget/WidgetPrice.vue?vue&type=style&index=0&id=a9840af6&scoped=true&lang=css ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 
 /*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-12.use[1]!./node_modules/vue-loader/dist/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-12.use[2]!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-12.use[3]!./node_modules/vue-loader/dist/index.js??ruleSet[0].use[0]!./resources/js/shop/views/shop_page.vue?vue&type=style&index=0&id=16b8453c&lang=scss&scoped=true ***!
