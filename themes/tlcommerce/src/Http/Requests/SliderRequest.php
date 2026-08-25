@@ -3,45 +3,61 @@
 namespace Theme\TLCommerce\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class SliderRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
     public function authorize()
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, mixed>
-     */
     public function rules()
     {
+        $hasExternalMedia = $this->hasSupportedMediaUrl();
+
         return [
-            'url' => 'required',
-            'title' => 'required',
-            'desktop' => 'required',
-            'mobile' => 'required',
+            'title' => ['required', 'string', 'max:255'],
+            'url' => ['nullable', 'string', 'max:2048'],
+
+            'desktop' => [
+                'nullable',
+                Rule::requiredIf(!$hasExternalMedia),
+            ],
+
+            'mobile' => [
+                'nullable',
+                Rule::requiredIf(!$hasExternalMedia),
+            ],
         ];
     }
-    /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array
-     */
+
+    private function hasSupportedMediaUrl(): bool
+    {
+        $url = trim((string) $this->input('url'));
+
+        if ($url === '' || $url === '/') {
+            return false;
+        }
+
+        return (bool) preg_match(
+            '/(youtube\.com|youtu\.be|vimeo\.com|\.(mp4|webm|ogg|mov|m3u8|jpg|jpeg|png|webp|gif|avif)(\?.*)?$)/i',
+            $url
+        );
+    }
+
     public function messages()
     {
         return [
             'title.required' => translate('Title is required'),
-            'url.required' => translate('Url is required'),
-            'desktop.required' => translate(' Image for desktop is required'),
-            'mobile.required' => translate('Image for mobile is required'),
+
+            'desktop.required' => translate(
+                'Desktop image is required when no media URL is provided'
+            ),
+
+            'mobile.required' => translate(
+                'Mobile image is required when no media URL is provided'
+            ),
         ];
     }
 }
