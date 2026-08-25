@@ -31,6 +31,7 @@ use Plugin\TlcommerceCore\Models\ProductHasChoiceOption;
 use Plugin\TlcommerceCore\Repositories\SettingsRepository;
 use Plugin\TlcommerceCore\Models\ProductColorVariantImages;
 use Plugin\TlcommerceCore\Models\ProductVariationCombination;
+use Plugin\TlcommerceCore\Models\CollectionHasProducts;
 
 use Spatie\Sitemap\Contracts\Sitemapable;
 use Spatie\Sitemap\Tags\Url;
@@ -109,6 +110,11 @@ class Product extends Model implements Sitemapable
     public function tags()
     {
         return $this->hasMany(ProductHasTags::class, 'product_id');
+    }
+
+    public function collection_memberships()
+    {
+        return $this->hasMany(CollectionHasProducts::class, 'product_id');
     }
 
     public function tagItems()

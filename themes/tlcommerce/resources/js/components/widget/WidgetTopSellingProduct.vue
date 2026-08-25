@@ -1,6 +1,9 @@
 <template>
   <!-- Widget -->
-  <div class="widget widget-style-1 widget_top_selling_product">
+  <div
+    class="widget widget-style-1 widget_top_selling_product"
+    :class="{ 'widget_top_selling_product--rtl': isRtl }"
+  >
     <h5>
       <span>{{ $t("Top Selling Products") }}</span>
       <span @click="showTopSellingProductWidget = !showTopSellingProductWidget" class="widget-collapse-toggle"><span
@@ -8,7 +11,13 @@
       </span>
     </h5>
     <div class="top-selling-product light-bg" v-if="showTopSellingProductWidget">
-      <swiper v-if="products.length" :modules="modules" :loop="true" class="product-grid-slider theme-slider-dots"
+      <swiper
+        v-if="products.length"
+        :key="`top-selling-${isRtl ? 'rtl' : 'ltr'}-${products.length}`"
+        :dir="isRtl ? 'rtl' : 'ltr'"
+        :modules="modules"
+        :loop="true"
+        class="product-grid-slider theme-slider-dots"
         :breakpoints="{
           '0': {
             slidesPerView: 2,
@@ -22,7 +31,8 @@
             slidesPerView: 2,
             spaceBetween: 8,
           },
-        }">
+        }"
+      >
         <swiper-slide v-for="(item, index) in products" :key="`slide-${index}`">
           <single-product :item="item" styleEight widgetSlider />
         </swiper-slide>
@@ -36,6 +46,8 @@
 import SingleProduct from "@/components/product/SingleProduct.vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination } from "swiper";
+import { mapGetters } from "vuex";
+
 export default {
   components: {
     SingleProduct,
@@ -53,6 +65,9 @@ export default {
     return {
       showTopSellingProductWidget: true,
     };
+  },
+  computed: {
+    ...mapGetters("layout", ["isRtl"]),
   },
   setup() {
     return {
@@ -91,7 +106,7 @@ export default {
 .widget_top_selling_product :deep(.product-title-price-row) {
   flex-direction: column !important;
   align-items: stretch !important;
-  margin-left: 5px !important;
+  margin-inline-start: 5px !important;
 }
 
 .widget_top_selling_product :deep(.product-title-col),
@@ -126,5 +141,31 @@ export default {
 .widget_top_selling_product :deep(.star-rating) {
   font-size: 14px !important;
   margin-bottom: 2px;
+}
+
+.widget_top_selling_product--rtl {
+  h5 {
+    direction: rtl;
+  }
+}
+
+.widget_top_selling_product--rtl :deep(.product-title) {
+  direction: rtl;
+  text-align: right;
+}
+
+.widget_top_selling_product--rtl :deep(.product-summary) {
+  direction: rtl;
+  text-align: right;
+}
+
+.widget_top_selling_product--rtl :deep(.product-price) {
+  direction: ltr;
+  text-align: right;
+  justify-content: flex-end;
+}
+
+.widget_top_selling_product--rtl :deep(.star-rating) {
+  align-self: flex-end;
 }
 </style>

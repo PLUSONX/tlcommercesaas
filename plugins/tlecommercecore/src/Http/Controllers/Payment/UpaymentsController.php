@@ -608,18 +608,20 @@ class UpaymentsController extends Controller
 
     private function buildCallbackUrl(string $routeName): string
     {
-        $path = parse_url(route($routeName, [], false), PHP_URL_PATH);
-        $path = $path ?: '/';
+        $url = route($routeName);
 
-        if ($this->callbackBaseUrl !== '') {
-            $root = rtrim($this->callbackBaseUrl, '/');
-        } elseif (request()->getHttpHost()) {
-            $root = request()->getSchemeAndHttpHost();
-        } else {
-            $root = rtrim((string) config('app.url'), '/');
+        if (!isCentralDomain()) {
+            $path = parse_url($url, PHP_URL_PATH) ?: '/';
+            if (!str_starts_with($path, '/payment/')) {
+                $root = parse_url($url, PHP_URL_SCHEME) . '://' . parse_url($url, PHP_URL_HOST);
+                $url = rtrim($root, '/') . '/payment' . $path;
+            }
         }
 
-        $url = $root . $path;
+        if ($this->callbackBaseUrl !== '') {
+            $path = parse_url($url, PHP_URL_PATH) ?: '/';
+            $url = rtrim($this->callbackBaseUrl, '/') . $path;
+        }
 
         if (str_starts_with($url, 'http://')) {
             $url = 'https://' . substr($url, 7);
