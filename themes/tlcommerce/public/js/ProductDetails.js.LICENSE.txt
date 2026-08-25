@@ -44,6 +44,8 @@
 
 /*! @/utils/cartLineMatch */
 
+/*! @/utils/safeStorage */
+
 /*! @/utils/trackSocialPixels */
 
 /*! @coreui/vue */
