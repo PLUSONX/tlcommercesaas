@@ -202,7 +202,8 @@ class ProductRepository
             'single_price',
             'variations',
             'product_seo',
-            'shipping_info'
+            'shipping_info',
+            'collection_memberships'
         ]);
 
         if ($seller_id != null) {
@@ -828,9 +829,11 @@ class ProductRepository
                 if ($request->has('gallery_images') && $request['gallery_images'] != null) {
                     $this->storeProductGalleryImages($product->id, $request);
                 }
-                //store product collection
-                CollectionHasProducts::where('product_id', $product->id)->delete();
-                $this->storeCollectionProducts($product->id, $request);
+                //store product collection — only sync when form includes collection fields
+                if ($request->has('product_colletions') || $request->has('product_colletions_sync')) {
+                    CollectionHasProducts::where('product_id', $product->id)->delete();
+                    $this->storeCollectionProducts($product->id, $request);
+                }
 
                 //Set shipping  profile of product
                 if ($request->has('shipping_profile') && $request['shipping_profile'] != null) {

@@ -5,6 +5,7 @@ namespace Core\Providers;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Plugin\TlcommerceCore\Http\Controllers\Payment\UpaymentsController;
 
 
 class RouteServiceProvider extends ServiceProvider
@@ -60,6 +61,12 @@ class RouteServiceProvider extends ServiceProvider
                         Route::middleware(['web', 'tenant'])
                             ->prefix('payment')
                             ->group(base_path('plugins/tlecommercecore/routes/web.php'));
+
+                        // Legacy unprefixed Upayments URLs (must register before theme SPA catch-all)
+                        Route::middleware(['web', 'tenant'])->group(function () {
+                            Route::match(['get', 'post'], '/upayments/callback', [UpaymentsController::class, 'callback']);
+                            Route::post('/upayments/webhook', [UpaymentsController::class, 'webhook']);
+                        });
                     }
 
                     // Route::middleware(['web', 'tenant'])
