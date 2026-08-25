@@ -66,29 +66,29 @@
     </div>
     <!-- End Rating -->
     <!-- Summary -->
-   <div
-  v-if="modernLayout && (product.description || product.summary)"
-  class="product-summary-section modern-description-section"
->
-  <h6 class="modern-description-heading">
-    {{ $t("Description") }}
-  </h6>
+    <div
+      v-if="modernLayout && hasMeaningfulSummary"
+      class="product-summary-section modern-description-section"
+    >
+      <h6 class="modern-description-heading">
+        {{ $t("Description") }}
+      </h6>
 
-  <div
-    class="product-description"
-    v-html="product.description || product.summary"
-  ></div>
-</div>
+      <div
+        class="product-description"
+        v-html="product.summary"
+      ></div>
+    </div>
 
-<div
-  v-else-if="product.summary"
-  class="product-summary-section mt-20"
->
-  <div
-    class="product-description"
-    v-html="product.summary"
-  ></div>
-</div>
+    <div
+      v-else-if="!modernLayout && hasMeaningfulSummary"
+      class="product-summary-section mt-20"
+    >
+      <div
+        class="product-description"
+        v-html="product.summary"
+      ></div>
+    </div>
     <!--End Summary-->
     <hr
   v-if="!modernLayout"
@@ -302,14 +302,14 @@
           </button>
         </div>
         <!-- End Quantity Input -->
-        <!-- <div class="ml-15 fz-12">
+        <div v-if="!modernLayout" class="ml-15 fz-12">
           <p v-if="product.quantity > 0" class="c1">
             {{ product.quantity }}
             {{ product.quantity > 1 ? "items" : "item" }}
             {{ $t("are available") }}
           </p>
           <p v-else class="text-danger">{{ $t("Sold out") }}</p>
-        </div> -->
+        </div>
       </div>
     </div>
     <!-- End Quantity -->
@@ -524,6 +524,9 @@ data() {
       return this.isFeaturePaneLayout || this.isMobile;
     },
 
+    hasMeaningfulSummary() {
+      return this.hasMeaningfulHtml(this.product.summary);
+    },
 
   }),
   watch: {
@@ -562,6 +565,17 @@ data() {
   this.startLoading();
   },
 methods: {
+  hasMeaningfulHtml(value) {
+    if (!value || typeof value !== "string") {
+      return false;
+    }
+    const text = value
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/gi, " ")
+      .trim();
+    return text.length > 0;
+  },
+
   startLoading() {
     const minTime = new Promise((resolve) => setTimeout(resolve, 600));
     const imagesLoaded = new Promise((resolve) => {

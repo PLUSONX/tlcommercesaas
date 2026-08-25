@@ -74,7 +74,7 @@
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" name="remember_me" id="{{ $rememberMeId }}"
                         value="1">
-                    <label class="form-check-label" for="{{ $rememberMeId }}" style="font-size: 0.9rem;">
+                    <label class="form-check-label" for="{{ $rememberMeId }}">
                         {{ translate('Remember Me') }}
                     </label>
                 </div>
