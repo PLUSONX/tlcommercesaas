@@ -296,10 +296,6 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  // Initial navigation: locale loads in parallel at boot (main.js)
-  if (from.name == null) {
-    return next();
-  }
   const lang = safeGetItem("locale") || "en";
   loadLanguageAsync(lang)
     .then(() => next())
