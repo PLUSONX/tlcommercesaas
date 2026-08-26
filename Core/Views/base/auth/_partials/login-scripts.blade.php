@@ -3,6 +3,20 @@
 @endphp
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const logoutOverlay = document.getElementById('logout-overlay');
+        if (logoutOverlay) {
+            logoutOverlay.classList.add('logout-overlay--fade-out');
+
+            const removeOverlay = function() {
+                if (logoutOverlay.parentNode) {
+                    logoutOverlay.remove();
+                }
+            };
+
+            logoutOverlay.addEventListener('transitionend', removeOverlay, { once: true });
+            setTimeout(removeOverlay, 400);
+        }
+
         const idPrefix = @json($idPrefix);
         const tokenInput = document.getElementById(idPrefix + 'token');
         const loginForm = tokenInput ? tokenInput.closest('form') : null;
