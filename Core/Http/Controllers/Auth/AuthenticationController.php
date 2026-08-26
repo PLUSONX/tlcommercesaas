@@ -65,10 +65,10 @@ class AuthenticationController extends Controller
             return redirect()->route('admin.dashboard');
         } else {
             // return view('core.login');
-            $loginView = view('core::base.auth.login');
+            $loginView = view('core::base.auth.login', ['loggedOut' => $loggedOut]);
 
             if ($loggedOut) {
-                return response()->view('core::base.auth.login')
+                return response()->view('core::base.auth.login', ['loggedOut' => $loggedOut])
                     ->withoutCookie('remembered_tenant_url');
             }
 
@@ -102,26 +102,25 @@ class AuthenticationController extends Controller
 
         $path = $request->path();
 
-        // Check if we're in tenant context and authenticate accordingly
+        $preferTenantId = null;
         if (tenancy()->initialized) {
-            // Tenant domain - authenticate against tenant database
-            $user = User::on('tenant')
-                ->where('email', $credentials['email'])
-                ->first();
+            $preferTenantId = tenant('id');
+            tenancy()->end();
 
-            if ($user && \Hash::check($credentials['password'], $user->password)) {
-                $user->setConnection('tenant');
-                Auth::login($user);
-            } else {
-                toastNotification('error', translate("Login Credentials Does not Match"));
-                return redirect()->back()
-                    ->withInput($request->only('email'))
-                    ->withErrors(['password' => translate("Login Credentials Does not Match")]);
+            Log::info('Tenant-domain login: resolving store via tl_store_users', [
+                'prefer_tenant_id' => $preferTenantId,
+                'email' => $credentials['email'],
+            ]);
+
+            $storeLoginResponse = $this->attemptStoreUserLogin($credentials, $rememberMe, $preferTenantId);
+            if ($storeLoginResponse !== null) {
+                return $storeLoginResponse;
             }
-        } else {
-            // Central domain - check BOTH central DB and tenant DBs
+        }
 
-            // First, try to find user in central database
+        // Central domain - check BOTH central DB and tenant DBs
+
+        // First, try to find user in central database
             $centralUser = User::where('email', $credentials['email'])->first();
 
             if ($centralUser && \Hash::check($credentials['password'], $centralUser->password)) {
@@ -220,86 +219,13 @@ class AuthenticationController extends Controller
 
                 Log::info('user != centralUser');
 
+                // User not in central DB — might be a tenant-only user (tl_store_users)
+                $storeLoginResponse = $this->attemptStoreUserLogin($credentials, $rememberMe, $preferTenantId);
+                if ($storeLoginResponse !== null) {
+                    return $storeLoginResponse;
+                }
 
-                // User not in central DB — might be a tenant-only user
-
-                $tl_store_user = \DB::connection('mysql')->table('tl_store_users')
-                    ->where('email', $credentials['email'])
-                    ->select('tl_store_users.*')
-                    ->first();
-
-                \Log::info('tl_store_user: ' . json_encode($tl_store_user));
-
-
-                if (!empty($tl_store_user)) {
-
-                    Log::info('tl_store_user != empty');
-
-                    // Known tenant-only user — go straight to their tenant
-                    $tenant = \App\Models\Tenant::where('id', $tl_store_user->tenant_id)
-                        ->first();
-
-                    if ($tenant) {
-                        tenancy()->initialize($tenant);
-
-                        $tenantUser = User::on('tenant')
-                            ->where('email', $credentials['email'])
-                            ->first();
-
-                        if ($tenantUser && \Hash::check($credentials['password'], $tenantUser->password)) {
-
-                            // Create a one-time login token for secure redirect
-                            $loginToken = \Str::random(64);
-
-                            tenancy()->end();
-
-                            // Store token in central database with tenant and user info
-                            \DB::connection('mysql')->table('tenant_login_tokens')->insert([
-                                'token' => hash('sha256', $loginToken),
-                                'tenant_id' => $tenant->id,
-                                'email' => $credentials['email'],
-                                'remember_me' => $rememberMe ? 1 : 0,
-                                'created_at' => now(),
-                                'expires_at' => now()->addMinutes(5), // 5 minute expiry
-                            ]);
-
-
-                            // $tenantUser->setConnection('tenant');
-                            // Auth::login($tenantUser);
-
-                            if (!empty($credentials['token'])) {
-                                Log::info('token != null');
-                                $deviceTokenResponse = app(DeviceTokenController::class)
-                                    ->associateWithUser($credentials['token'], $tenantUser->id, $tl_store_user->tenant_id);
-                            }
-
-                            // $tenantUrl = $this->buildTenantLoginUrl($tenant);
-
-                            $tenantUrl = $this->buildTenantLoginUrl($tenant) . '?login_token=' . $loginToken;
-
-                            \Log::info('tenantUrl: ' . $tenantUrl);
-
-                            $response = redirect()->away($tenantUrl);
-
-                            if ($rememberMe) {
-                                $tenantDashboardUrl = $this->buildTenantDashboardUrl($tenant);
-
-                                \Log::info('Setting remembered_tenant_url cookie', ['url' => $tenantDashboardUrl]);
-
-                                $response = $response->withCookie(
-                                    \Cookie::make('remembered_tenant_url', base64_encode($tenantDashboardUrl), 60 * 24 * 365)
-                                );
-                            }
-
-                            toastNotification('success', translate("Welcome back!"));
-                            return $response;
-                            // return redirect()->away($tenantUrl);  // was missing
-                        }
-
-                        tenancy()->end();
-                    }
-                } else {
-                    // Not in tl_store_users either — try saas accounts (central DB users)
+                // Not in tl_store_users either — try saas accounts (central DB users)
                     $saasAccounts = \DB::connection('mysql')->table('tl_saas_accounts')
                         ->join('tl_users', 'tl_saas_accounts.user_id', '=', 'tl_users.id')
                         ->where('tl_users.email', $credentials['email'])
@@ -335,7 +261,6 @@ class AuthenticationController extends Controller
                             tenancy()->end();
                         }
                     }
-                }
 
                 // Not found anywhere
                 return $this->invalidLoginResponse($request);
@@ -442,7 +367,6 @@ class AuthenticationController extends Controller
             //     toastNotification('error', translate("Login Credentials Does not Match"));
             //     return redirect()->back()->withInput($request->only('email'));
             // }
-        }
 
         $user = Auth::user();
 
@@ -493,6 +417,99 @@ class AuthenticationController extends Controller
             ->withoutCookie('remembered_tenant_url');
     }
 
+    /**
+     * Resolve store staff login via central tl_store_users and redirect with token-login.
+     *
+     * @return \Illuminate\Http\RedirectResponse|null
+     */
+    private function attemptStoreUserLogin(array $credentials, bool $rememberMe, ?string $preferTenantId = null)
+    {
+        $storeUsers = DB::connection('mysql')->table('tl_store_users')
+            ->where('email', $credentials['email'])
+            ->get();
+
+        if ($storeUsers->isEmpty()) {
+            return null;
+        }
+
+        $matched = $storeUsers->filter(function ($row) use ($credentials) {
+            return Hash::check($credentials['password'], $row->password);
+        });
+
+        if ($matched->isEmpty()) {
+            return null;
+        }
+
+        $storeUser = $preferTenantId
+            ? $matched->firstWhere('tenant_id', $preferTenantId)
+            : null;
+
+        if (!$storeUser) {
+            $storeUser = $matched->first();
+        }
+
+        $tenant = \App\Models\Tenant::where('id', $storeUser->tenant_id)->first();
+
+        if (!$tenant) {
+            return null;
+        }
+
+        tenancy()->initialize($tenant);
+
+        $tenantUser = User::on('tenant')
+            ->where('email', $credentials['email'])
+            ->first();
+
+        if (!$tenantUser || !Hash::check($credentials['password'], $tenantUser->password)) {
+            tenancy()->end();
+            return null;
+        }
+
+        $loginToken = Str::random(64);
+
+        tenancy()->end();
+
+        DB::connection('mysql')->table('tenant_login_tokens')->insert([
+            'token' => hash('sha256', $loginToken),
+            'tenant_id' => $tenant->id,
+            'email' => $credentials['email'],
+            'remember_me' => $rememberMe ? 1 : 0,
+            'created_at' => now(),
+            'expires_at' => now()->addMinutes(5),
+        ]);
+
+        if (!empty($credentials['token'])) {
+            Log::info('token != null');
+            app(DeviceTokenController::class)->associateWithUser(
+                $credentials['token'],
+                $tenantUser->id,
+                $storeUser->tenant_id
+            );
+        }
+
+        $tenantUrl = $this->buildTenantLoginUrl($tenant) . '?login_token=' . $loginToken;
+
+        Log::info('Store user login redirect', [
+            'tenant_id' => $tenant->id,
+            'tenant_url' => $tenantUrl,
+        ]);
+
+        $response = redirect()->away($tenantUrl);
+
+        if ($rememberMe) {
+            $tenantDashboardUrl = $this->buildTenantDashboardUrl($tenant);
+
+            Log::info('Setting remembered_tenant_url cookie', ['url' => $tenantDashboardUrl]);
+
+            $response = $response->withCookie(
+                Cookie::make('remembered_tenant_url', base64_encode($tenantDashboardUrl), 60 * 24 * 365)
+            );
+        }
+
+        toastNotification('success', translate("Welcome back!"));
+
+        return $response;
+    }
 
     /**
      * Build the tenant dashboard URL for redirect

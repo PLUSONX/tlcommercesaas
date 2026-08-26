@@ -79,6 +79,9 @@ $isCentralDomain = in_array($host, $centralDomains);
 @include('core::base.auth._partials.login-styles')
 @endsection
 @section('main_content')
+@if (!empty($loggedOut))
+    @include('core::base.auth._partials.logout-spinner-overlay')
+@endif
 <div class="container-fluid login-page-layout position-relative">
     <div class="align-items-center h-100 justify-content-end row py-5">
         <div class="col-auto">
