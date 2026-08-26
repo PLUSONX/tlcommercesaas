@@ -50,6 +50,11 @@ class DeviceToken extends Model
         return $query->where('tenant_id', $tenantId);
     }
 
+    public function scopeForUserAndTenant($query, $userId, $tenantId)
+    {
+        return $query->forUser($userId)->forTenant($tenantId);
+    }
+
     public function markAsUsed(): void
     {
         $this->update([
