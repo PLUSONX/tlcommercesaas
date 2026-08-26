@@ -447,11 +447,20 @@ class TenantRepository
                 }
             }
 
-            // Track quote state, respecting escaped quotes
-            if ($char === "'" && $prevChar !== '\\' && !$inDoubleQuote) {
-                $inSingleQuote = !$inSingleQuote;
-            } elseif ($char === '"' && $prevChar !== '\\' && !$inSingleQuote) {
-                $inDoubleQuote = !$inDoubleQuote;
+            // Track quote state; only treat quote as delimiter when not escaped by odd backslashes
+            if (($char === "'" && !$inDoubleQuote) || ($char === '"' && !$inSingleQuote)) {
+                $backslashes = 0;
+                for ($j = $i - 1; $j >= 0 && $sql[$j] === '\\'; $j--) {
+                    $backslashes++;
+                }
+
+                if ($backslashes % 2 === 0) {
+                    if ($char === "'") {
+                        $inSingleQuote = !$inSingleQuote;
+                    } else {
+                        $inDoubleQuote = !$inDoubleQuote;
+                    }
+                }
             }
 
             $current .= $char;

@@ -4149,7 +4149,7 @@ CREATE TABLE `tl_store_layouts` (
 INSERT INTO `tl_store_layouts` (`name`, `is_active`, `settings`) VALUES
 ('standard', 1, '{"container_width": "full", "sidebar": "none"}'),
 ('split_screen', 0, '{"left_section": "content", "right_section": "wallpaper", "split_ratio": "50-50"}'),
-('modern', 0, NULL');
+('modern', 0, NULL);
 
 -- --------------------------------------------------------
 
