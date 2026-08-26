@@ -10654,11 +10654,7 @@ CREATE TABLE `tl_com_order_delivery_schedules` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_order_id` (`order_id`),
-  KEY `idx_slot_id` (`slot_id`),
-  CONSTRAINT `fk_order_delivery_schedule_order`
-    FOREIGN KEY (`order_id`) REFERENCES `tl_com_orders` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_order_delivery_schedule_slot`
-    FOREIGN KEY (`slot_id`) REFERENCES `tl_com_delivery_schedule_slots` (`id`) ON DELETE SET NULL
+  KEY `idx_slot_id` (`slot_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -13561,6 +13557,15 @@ ALTER TABLE `tl_com_orders`
   ADD CONSTRAINT `FK_tl_com_orders_tl_com_customers` FOREIGN KEY (`customer_id`) REFERENCES `tl_com_customers` (`id`) ON UPDATE NO ACTION,
   ADD CONSTRAINT `FK_tl_com_orders_tl_com_payment_methods` FOREIGN KEY (`payment_method`) REFERENCES `tl_com_payment_methods` (`id`),
   ADD CONSTRAINT `FK_tl_com_orders_tl_pick_up_points` FOREIGN KEY (`pickup_point_id`) REFERENCES `tl_pick_up_points` (`id`);
+
+
+
+--
+-- Constraints for table `tl_com_order_delivery_schedules`
+--
+ALTER TABLE `tl_com_order_delivery_schedules`
+  ADD CONSTRAINT `fk_order_delivery_schedule_order` FOREIGN KEY (`order_id`) REFERENCES `tl_com_orders` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_order_delivery_schedule_slot` FOREIGN KEY (`slot_id`) REFERENCES `tl_com_delivery_schedule_slots` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `tl_com_order_package_trackings`
