@@ -357,7 +357,7 @@ class MyFatoorahController extends Controller {
 
         if (!$orderId || !$payableAmount) {
             Log::error('MyFatoorah payment missing required session data');
-            return redirect()->route('checkout')->with('error', 'Payment session expired');
+            return redirect('/checkout')->with('error', 'Payment session expired');
         }
 
         try {

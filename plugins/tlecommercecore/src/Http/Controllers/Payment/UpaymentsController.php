@@ -24,7 +24,7 @@ class UpaymentsController extends Controller
     protected $integrationMode = 'non_whitelabel';
     protected $callbackBaseUrl = '';
 
-    protected const ALLOWED_RESULTS = ['CAPTURED', 'FAILED', 'CANCELLED', 'PENDING'];
+    protected const ALLOWED_RESULTS = ['CAPTURED', 'FAILED', 'CANCELLED', 'PENDING', 'NOT CAPTURED'];
 
     /**
      * Load tenant credentials from payment method settings.
@@ -80,6 +80,11 @@ class UpaymentsController extends Controller
      */
     public function pay(Request $request)
     {
+        if ($request->query('success') === 'failed') {
+            return view('plugin/tlecommercecore::payments.errors.payment_failed')
+                ->with(['gateway' => 'upayments']);
+        }
+
         Log::info('Upayments pay method called');
 
         $this->setcredentials();
@@ -102,7 +107,7 @@ class UpaymentsController extends Controller
 
         if (!$orderId || !$payableAmount) {
             Log::error('Upayments payment missing required session data');
-            return redirect()->route('checkout')->with('error', 'Payment session expired');
+            return redirect('/checkout')->with('error', 'Payment session expired');
         }
 
         try {
@@ -219,7 +224,7 @@ class UpaymentsController extends Controller
 
                 Log::error('Upayments callback: payment not captured', [
                     'requested_order_id' => $requestedOrderId,
-                    'result' => $verified['result'] ?? null,
+                    'result' => $verified['result'] ?? ($paymentInfo['result'] ?? null),
                 ]);
 
                 return (new PaymentController)->payment_failed();
@@ -391,6 +396,10 @@ class UpaymentsController extends Controller
                 return $details['payment'];
             }
 
+            if (isset($details['transaction']) && is_array($details['transaction'])) {
+                return $details['transaction'];
+            }
+
             return is_array($details) ? $details : null;
         } catch (\Exception $e) {
             Log::error('Upayments verification API exception', [
@@ -516,7 +525,7 @@ class UpaymentsController extends Controller
             return 2;
         }
 
-        if (in_array($result, ['FAILED', 'CANCELLED'], true)) {
+        if (in_array($result, ['FAILED', 'CANCELLED', 'NOT CAPTURED'], true)) {
             return 3;
         }
 
