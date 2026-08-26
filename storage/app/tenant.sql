@@ -1662,7 +1662,7 @@ CREATE TABLE `tl_com_feedback` (
     PRIMARY KEY (id),
 
     CHECK (satisfaction_rating BETWEEN 1 AND 5)
-)
+);
 
 --
 -- Dumping data for table `tl_com_feedback`
