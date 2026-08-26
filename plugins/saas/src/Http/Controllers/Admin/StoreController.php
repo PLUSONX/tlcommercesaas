@@ -66,10 +66,11 @@ class StoreController extends Controller
 
             $tenant = $this->tenantRepository->createNewTenant($request);
             $saas_account = $this->sub_repo->storeSaasAccountDetails($package_details, $user, $tenant, default_language: $request['default_language'], default_currency: $request['default_currency']);
-            DB::commit();
 
-            //Handle Database
+            //Handle Database (before commit so central records roll back if import fails)
             $this->tenantRepository->createOrUpdateSingleTenantDatabase($tenant->id, $package->id, $saas_account->id, 0);
+
+            DB::commit();
 
             //Handle notification
             $notification_service = new SaasNotification();
