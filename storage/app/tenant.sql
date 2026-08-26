@@ -482,7 +482,7 @@ INSERT INTO `permission_module` (`id`, `parent_module`, `module_name`, `module_t
 (91, 'Sellers', 'Seller Settings', 'plugin', 'multivendor', 22, '2023-06-05 09:41:44', '2023-06-05 10:33:16'),
 (92, 'Tlcommerce Page Builder', 'Tlcommerce Page Builder', 'plugin', 'tlcommerce-pagebuilder', 4, '2023-06-05 09:41:44', '2023-06-05 10:33:16'),
 (93, 'Theme Options', 'Layout Settings', 'theme', 'tlcommerce', 17, '2026-01-27 16:12:00', NULL),
-(94, 'Theme Options', 'Quiz', 'theme', 'tlcommerce', 17);
+(94, 'Theme Options', 'Quiz', 'theme', 'tlcommerce', 17, '2026-01-27 16:12:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -611,7 +611,9 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 (101, 4),
 (102, 4),
 (103, 4),
-(104, 4);
+(104, 4),
+(114, 4),
+(115, 4);
 
 -- --------------------------------------------------------
 
