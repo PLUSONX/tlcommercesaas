@@ -19,5 +19,6 @@ class VerifyCsrfToken extends Middleware
         'payment/payzah/*',
         'payment/myfatoorah/*',
         'payment/upayments/*',
+        'upayments/*',
     ];
 }

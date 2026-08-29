@@ -1421,6 +1421,49 @@
                 </div>
             </div>
             <!--End Attatchment-->
+            <!--Collections-->
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
+                <div class="card-header bg-white border-bottom2 py-3">
+                    <div class="d-sm-flex justify-content-between align-items-center">
+                        <h4>{{ translate('Product collections') }}</h4>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <input type="hidden" name="product_colletions_sync" value="1">
+                    @php
+                        $product_collection_ids = $product_details->collection_memberships
+                            ->pluck('collection_id')
+                            ->toArray();
+                    @endphp
+                    @if (count($product_collections) > 0)
+                        @foreach ($product_collections as $collection)
+                            <div class="form-row mb-20">
+                                <div class="d-flex align-items-center">
+                                    <label class="custom-checkbox position-relative mr-2">
+                                        <input type="checkbox" id="collection_{{ $collection->id }}"
+                                            name="product_colletions[]" value="{{ $collection->id }}"
+                                            @if (in_array($collection->id, $product_collection_ids)) checked @endif><span
+                                            class="checkmark"></span>
+                                    </label>
+                                    <label
+                                        for="collection_{{ $collection->id }}">{{ $collection->translation('name', getLocale()) }}</label>
+                                </div>
+                            </div>
+                        @endforeach
+                    @else
+                        <div>
+                            <p class="alert alert-danger m-2 col-12">{{ translate('No Collection Avaible') }}</p>
+                        </div>
+                    @endif
+                    <p class="mt-0 font-13">
+                        {{ translate('You can create new cllection or manage existing collections from') }}
+                        <a href="{{ route('plugin.tlcommercecore.product.collection.list') }}"
+                            class="btn-link">{{ translate('Product Collections Module') }}
+                        </a>
+                    </p>
+                </div>
+            </div>
+            <!--End Collection-->
         </div>
         <!--Ed right side-->
         <!--Form submit area-->

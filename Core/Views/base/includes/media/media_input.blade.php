@@ -9,7 +9,7 @@
     @if (isset($disable) && $disable === true) disabled @endif>
 <div class="image-box">
     <div class="d-flex flex-wrap gap-10 mb-3">
-        @if (isset($data))
+        @if (!empty($data))
             <div class="preview-image-wrapper">
                 <img src="{{ $image_src }}" alt="{{ $input }}" width="150" class="preview_image"
                     id="{{ $input }}_preview" />

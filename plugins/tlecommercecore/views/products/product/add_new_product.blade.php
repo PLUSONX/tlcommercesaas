@@ -1117,7 +1117,7 @@
             </div>
             <!--End Attatchment-->
             <!--Collections-->
-            <!-- <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
+            <div class="card mb-30" style="border-radius: 12px !important; overflow: hidden !important;">
                     <div class="card-header bg-white border-bottom2 py-3">
                         <div class="d-sm-flex justify-content-between align-items-center">
                             <h4>{{ translate('Product collections') }}</h4>
@@ -1150,7 +1150,7 @@
                             </a>
                         </p>
                     </div>
-                </div> -->
+                </div>
             <!--End Collection-->
         </div>
         <!--Ed right side-->

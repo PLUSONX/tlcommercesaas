@@ -97,6 +97,58 @@ class ProductController extends Controller
             });
         }
 
+        $minPrice = $request->input('min_price');
+        $maxPrice = $request->input('max_price');
+        $hasMinPrice = $minPrice !== null && $minPrice !== '' && is_numeric($minPrice);
+        $hasMaxPrice = $maxPrice !== null && $maxPrice !== '' && is_numeric($maxPrice);
+        $hasInvalidPriceFilter =
+            ($minPrice !== null && $minPrice !== '' && !$hasMinPrice) ||
+            ($maxPrice !== null && $maxPrice !== '' && !$hasMaxPrice) ||
+            ($hasMinPrice && (float) $minPrice < 0) ||
+            ($hasMaxPrice && (float) $maxPrice < 0);
+
+        if ($hasInvalidPriceFilter) {
+            $query->whereRaw('1 = 0');
+        } elseif ($hasMinPrice || $hasMaxPrice) {
+            $minPrice = $hasMinPrice ? (float) $minPrice : null;
+            $maxPrice = $hasMaxPrice ? (float) $maxPrice : null;
+
+            if ($minPrice !== null && $maxPrice !== null && $minPrice > $maxPrice) {
+                $query->whereRaw('1 = 0');
+            } else {
+                $applyPriceBounds = function ($priceQuery) use ($minPrice, $maxPrice) {
+                    if ($minPrice !== null) {
+                        $priceQuery->where('unit_price', '>=', $minPrice);
+                    }
+
+                    if ($maxPrice !== null) {
+                        $priceQuery->where('unit_price', '<=', $maxPrice);
+                    }
+                };
+
+                $query->where(function ($priceQuery) use ($applyPriceBounds) {
+                    $priceQuery
+                        ->where(function ($singleProductQuery) use ($applyPriceBounds) {
+                            $singleProductQuery
+                                ->where(
+                                    'has_variant',
+                                    config('tlecommercecore.product_variant.single')
+                                )
+                                ->whereHas('single_price', $applyPriceBounds);
+                        })
+                        ->orWhere(function ($variableProductQuery) use ($applyPriceBounds) {
+                            $variableProductQuery
+                                ->where(
+                                    'has_variant',
+                                    '!=',
+                                    config('tlecommercecore.product_variant.single')
+                                )
+                                ->whereHas('variations', $applyPriceBounds);
+                        });
+                });
+            }
+        }
+
 
         //sorting by newest items
         if ($request->has('sorting') && $request['sorting'] == 'newest') {

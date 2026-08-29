@@ -285,6 +285,9 @@ class ProductController extends Controller
             'product_details' => $this->product_repository->editProduct($id),
             'lang' => $request->lang ?? getDefaultLang(),
             'shipping_profiles' => ShippingProfile::all(),
+            'product_collections' => $this->collection_repository->collections([
+                config('settings.general_status.active')
+            ]),
             'isModernLayoutActive' => $isModernLayoutActive,
         ]);
     }

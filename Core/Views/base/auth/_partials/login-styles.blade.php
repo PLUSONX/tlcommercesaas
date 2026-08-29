@@ -237,7 +237,10 @@
         padding-left: 0;
     }
 
-    .login-form-card .form-check-input {
+    .login-form-card .form-check-input,
+    .login-form-card .form-check .form-check-input {
+        position: static;
+        float: none;
         margin: 0;
         flex-shrink: 0;
     }
@@ -245,6 +248,7 @@
     .login-form-card .form-check-label {
         margin: 0;
         line-height: 1.4;
+        font-size: 0.9rem;
     }
 
     .login-form-card label.mb-2 {
