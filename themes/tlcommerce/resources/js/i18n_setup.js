@@ -5,9 +5,14 @@ import { safeGetItem } from "./utils/safeStorage";
 import store from "./store";
 
 const LOCALE_TIMEOUT_MS = 8000;
+const bootLocale = safeGetItem("locale") || "en";
+
+// Set immediately so API calls on first paint use the stored locale
+// (loadLanguageAsync may still be fetching translation messages).
+axios.defaults.headers.common["Accept-Language"] = bootLocale;
 
 const i18n = createI18n({
-    locale: safeGetItem("locale") || "en",
+    locale: bootLocale,
     fallbackLocale: "en",
     missingWarn: false, // This hides the "Not found" warnings
     fallbackWarn: false, // This hides warnings when it falls back to another language

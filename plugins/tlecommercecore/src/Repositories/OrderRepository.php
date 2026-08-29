@@ -3802,7 +3802,7 @@ class OrderRepository
                     session()->put('payable_amount', $payable_amount);
                     session()->put('payment_method', $payment_method->name);
                     session()->put('payment_method_id', $payment_method->id);
-                    session()->put('redirect_url', $url);
+                    session()->put('redirect_url', $base_url . '/checkout');
                     if ($customer_type == 'guest') {
                         session()->put('guest_customer', $customer_id);
                     } else {

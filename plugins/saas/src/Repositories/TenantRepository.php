@@ -447,11 +447,20 @@ class TenantRepository
                 }
             }
 
-            // Track quote state, respecting escaped quotes
-            if ($char === "'" && $prevChar !== '\\' && !$inDoubleQuote) {
-                $inSingleQuote = !$inSingleQuote;
-            } elseif ($char === '"' && $prevChar !== '\\' && !$inSingleQuote) {
-                $inDoubleQuote = !$inDoubleQuote;
+            // Track quote state; only treat quote as delimiter when not escaped by odd backslashes
+            if (($char === "'" && !$inDoubleQuote) || ($char === '"' && !$inSingleQuote)) {
+                $backslashes = 0;
+                for ($j = $i - 1; $j >= 0 && $sql[$j] === '\\'; $j--) {
+                    $backslashes++;
+                }
+
+                if ($backslashes % 2 === 0) {
+                    if ($char === "'") {
+                        $inSingleQuote = !$inSingleQuote;
+                    } else {
+                        $inDoubleQuote = !$inDoubleQuote;
+                    }
+                }
             }
 
             $current .= $char;
@@ -482,13 +491,23 @@ class TenantRepository
                 $connection->unprepared($statement);
             } catch (\Throwable $e) {
                 $logPath = storage_path('app/tenant-sql-error.log');
-                file_put_contents(
-                    $logPath,
-                    "Statement #$i failed\n\n" .
-                        "ERROR:\n" . $e->getMessage() . "\n\n" .
-                        "FULL STATEMENT:\n" . $statement . "\n"
+                $logMessage = "Statement #$i failed\n\n" .
+                    "ERROR:\n" . $e->getMessage() . "\n\n" .
+                    "FULL STATEMENT:\n" . $statement . "\n";
+
+                file_put_contents($logPath, $logMessage);
+
+                Log::channel('tenant_database')->error('Tenant SQL import failed', [
+                    'statement_index' => $i,
+                    'error' => $e->getMessage(),
+                    'log_path' => $logPath,
+                ]);
+
+                throw new \RuntimeException(
+                    "Failed at statement #$i — see storage/app/tenant-sql-error.log for full details",
+                    0,
+                    $e
                 );
-                dd("Failed at statement #$i — see storage/app/tenant-sql-error.log for full details");
             }
         }
     }
@@ -572,6 +591,40 @@ class TenantRepository
 //     return "INSERT INTO `tl_users` (`id`, `uid`, `name`, `email`, `image`, `password`, `remember_token`, `email_verified_at`, `is_logged_in`, `status`, `user_type`, `created_at`, `updated_at`) VALUES
 //     (1, '{$uid}', " . DB::connection()->getPdo()->quote($name) . ", '{$email}', NULL, '{$password}', NULL, NULL, NULL, 1, 1, '{$createdAt}', '{$createdAt}');";
 // }
+
+    /**
+     * Import tenant.sql into a named database (for validation / manual reprovision).
+     */
+    public function importTenantSqlToDatabase(string $database): int
+    {
+        $tenantConfig = config('database.connections.tenant');
+        $tenantConfig['database'] = $database;
+        $tenantConfig['log'] = true;
+        $tenantConnectionName = 'tenant_' . $database;
+        config(["database.connections.$tenantConnectionName" => $tenantConfig]);
+
+        if (systemHasPermissionToCreateDatabase()) {
+            DB::unprepared('CREATE DATABASE IF NOT EXISTS ' . $database . ';');
+        }
+
+        $query = DB::connection($tenantConnectionName);
+        $this->refreshTenantDatabase($query, $database);
+
+        $sqlFilePath = storage_path('app/tenant.sql');
+        $sqlContent = file_get_contents($sqlFilePath);
+
+        $placeholderUserInsert = "INSERT INTO `tl_users` (`id`, `uid`, `name`, `email`, `image`, `password`, `remember_token`, `email_verified_at`, `is_logged_in`, `status`, `user_type`, `created_at`, `updated_at`) VALUES (1, 'Subscriber-ADMIN-validate', 'Validate User', 'validate@example.com', NULL, 'placeholder', NULL, NULL, NULL, 1, 1, NOW(), NOW());";
+        $sqlContent = str_replace('{{DYNAMIC_USER_INSERT}}', $placeholderUserInsert, $sqlContent);
+
+        $this->runSqlFile($sqlContent, $query);
+
+        $result = $query->select(
+            'SELECT COUNT(*) AS cnt FROM information_schema.tables WHERE table_schema = ?',
+            [$database]
+        );
+
+        return (int) ($result[0]->cnt ?? 0);
+    }
 
     /**
      * Drop table if exists

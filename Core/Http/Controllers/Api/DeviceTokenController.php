@@ -27,8 +27,10 @@ class DeviceTokenController extends Controller
                 $this->handleOldToken($validated['old_token']);
             }
 
-            // Check if new token already exists
-            $existingToken = DeviceToken::where('token', $validated['new_token'])->first();
+            // Pre-login registration: only touch the anonymous row for this token
+            $existingToken = DeviceToken::where('token', $validated['new_token'])
+                ->whereNull('tenant_id')
+                ->first();
 
             if ($existingToken) {
                 // Reactivate if exists
@@ -92,11 +94,13 @@ class DeviceTokenController extends Controller
             'tenantId' => $tenantId,
         ]);
 
-        $deviceToken = DeviceToken::firstOrNew(['token' => $token]);
+        $deviceToken = DeviceToken::firstOrNew([
+            'token' => $token,
+            'tenant_id' => $tenantId,
+        ]);
         $wasCreated = !$deviceToken->exists;
 
         $deviceToken->user_id = $userId;
-        $deviceToken->tenant_id = $tenantId;
         $deviceToken->is_active = true;
         $deviceToken->last_used_at = now();
 
@@ -105,6 +109,13 @@ class DeviceTokenController extends Controller
         }
 
         $deviceToken->save();
+
+        // Drop orphaned pre-login row now that this token is tenant-bound
+        DeviceToken::where('token', $token)
+            ->whereNull('tenant_id')
+            ->whereNull('user_id')
+            ->where('id', '!=', $deviceToken->id)
+            ->delete();
 
         Log::info('associateWithUser completed', [
             'wasRecentlyCreated' => $wasCreated,

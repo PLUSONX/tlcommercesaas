@@ -506,6 +506,7 @@ const SingleShop = defineAsyncComponent(() =>
 import CustomFooter from '@/components/ui/CustomFooter.vue'
 import { isProductLineInCart, findProductCartLine } from '@/utils/cartLineMatch'
 import { trackSocialPixels } from '@/utils/trackSocialPixels'
+import { safeGetItem } from '@/utils/safeStorage'
 
 import {
   CNav,
@@ -1027,7 +1028,12 @@ export default {
                 ? this.$route.query.preview
                 : null,
           },
-          { cancelToken: this.getCancelToken() }
+          {
+            cancelToken: this.getCancelToken(),
+            headers: {
+              "Accept-Language": safeGetItem("locale") || "en",
+            },
+          }
         )
         .then((response) => {
           if (this._isUnmounted || this.$route.name !== "product") {

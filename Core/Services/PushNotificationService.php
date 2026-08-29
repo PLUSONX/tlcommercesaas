@@ -14,14 +14,20 @@ class PushNotificationService
     /**
      * Send push notification to a specific user.
      */
-    public function sendToUser(int $userId, string $title, string $body, array $data = []): void
+    public function sendToUser(int $userId, string $title, string $body, array $data = [], ?string $tenantId = null): void
     {
         \Log::info('sendToUser method called !!!!');
         // dd($userId);
-        // Get all active device tokens for this user
-        $deviceTokens = DeviceToken::forUser($userId)
-         ->active()
-            ->get();
+        // Get active device tokens for this user within the current tenant context
+        $query = DeviceToken::forUser($userId)->active();
+
+        $tenantId = $tenantId ?? (tenancy()->initialized ? tenant('id') : null);
+
+        if ($tenantId) {
+            $query->forTenant($tenantId);
+        }
+
+        $deviceTokens = $query->get();
 
         \Log::info('Device Token data', [
                 'deviceTokens' => json_encode($deviceTokens),

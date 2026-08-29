@@ -59,8 +59,6 @@ Route::get('/payzah/test', [PayzahController::class, 'test'])->name('payzah.test
 /**
  * Upayments payment
  */
-Route::get('/upayments/pay', [UpaymentsController::class, 'pay'])->name('upayments.pay');
-Route::get('/upayments-apple-pay/pay', [UpaymentsController::class, 'pay'])->name('upayments.apple-pay.pay');
 Route::match(['get', 'post'], '/upayments/callback', [UpaymentsController::class, 'callback'])->name('upayments.callback');
 Route::post('/upayments/webhook', [UpaymentsController::class, 'webhook'])->name('upayments.webhook');
 
