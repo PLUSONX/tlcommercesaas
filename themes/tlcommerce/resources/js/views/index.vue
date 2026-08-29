@@ -55,7 +55,8 @@
             <section
                 class="product-banner product-banner-overflow-auto"
                 :class="{ 'product-banner--modern-hero': isModernLayout }"
-                v-if="dataAvailable && showHomeBanners"
+                v-if="showHomeBanners && hasHeroContent"
+                @timeupdate.capture="limitHeroVideoToThreeSeconds"
             >
 
 
@@ -75,25 +76,50 @@
                     </div>
                 </div>
                 <div class="slider-container" v-else>
-                    <swiper v-if="banners && banners.length > 0"
-                        :key="`home-banner-${isRtl ? 'rtl' : 'ltr'}-${banners.length}`"
+                    <swiper v-if="hasHeroContent"
+                        :key="`home-banner-${isRtl ? 'rtl' : 'ltr'}-${heroSlideCount}`"
                         :dir="isRtl ? 'rtl' : 'ltr'"
                         :slidesPerView="isModernLayout ? 1 : 'auto'"
-                        :loop="true"
+                        :loop="heroSlideCount > 1"
                         :spaceBetween="isModernLayout ? 0 : 20"
                         :centeredSlides="!isModernLayout"
                         :modules="modules"
-                        :autoplay="{
-                            delay: 4000,
+                        :autoplay="heroSlideCount > 1 ? {
+                            delay: 3000,
                             disableOnInteraction: false,
                             pauseOnMouseEnter: true,
-                        }"
-                        :pagination="{
-                            clickable: true,
-                        }"
+                        } : false"
+                        :pagination="heroSlideCount > 1 ? { clickable: true } : false"
                         class="mySwiper theme-slider-dots dots-bottom-30"
                         :class="{ 'mySwiper--modern-hero': isModernLayout }"
                     >
+                        <!-- Static fallback: shown only when the backend has no active banners. -->
+                        <swiper-slide
+                            v-if="hasStaticVideoFallback"
+                            key="static-video-banner"
+                            :class="{ 'hero-video-slide--only': heroSlideCount === 1 }"
+                        >
+                            <a
+                                class="hero-video-banner"
+                                :href="staticVideoBanner.link || undefined"
+                                @click="handleVideoBannerClick"
+                            >
+                                <video
+                                    ref="heroVideo"
+                                    class="hero-video-banner__media"
+                                    :src="staticVideoBanner.video_url"
+                                    :poster="staticVideoBanner.poster || undefined"
+                                    autoplay
+                                    muted
+                                    loop
+                                    playsinline
+                                    preload="metadata"
+                                    @mouseenter="pauseHeroVideo"
+                                    @mouseleave="playHeroVideo"
+                                ></video>
+                            </a>
+                        </swiper-slide>
+
                         <swiper-slide v-for="(slide, index) in banners" :key="`slide-${index}`">
                             <product-banner :content="slide" :priority="index === 0" />
                         </swiper-slide>
@@ -307,6 +333,14 @@ export default {
 
             productListViewEnabled: readBootstrapProductListViewEnabled(),
             featurePaneProductsReady: false,
+
+            // Temporary frontend-only video banner.
+            // Use a direct MP4/WebM file URL here (not a YouTube page URL).
+            staticVideoBanner: {
+                video_url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+                poster: "",
+                link: "",
+            },
         };
     },
     computed: {
@@ -353,6 +387,18 @@ export default {
             return this.isFeaturePaneLayout && !this.active_pagebuilder;
         },
 
+        hasHeroContent() {
+            return this.banners.length > 0 || this.hasStaticVideoFallback;
+        },
+
+        hasStaticVideoFallback() {
+            return this.banners.length === 0 && Boolean(this.staticVideoBanner.video_url);
+        },
+
+        heroSlideCount() {
+            return this.banners.length + (this.hasStaticVideoFallback ? 1 : 0);
+        },
+
     },
     watch: {
         pageLoading() {
@@ -394,6 +440,44 @@ export default {
     },
 
     methods: {
+
+        /**
+         * Restrict every direct HTML5 hero video to its first 3 seconds.
+         * This also catches videos rendered inside ProductBanner.vue.
+         */
+        limitHeroVideoToThreeSeconds(event) {
+            const video = event.target;
+
+            if (!(video instanceof HTMLVideoElement)) {
+                return;
+            }
+
+            if (video.currentTime >= 3) {
+                video.currentTime = 0;
+
+                const playPromise = video.play();
+                if (playPromise && typeof playPromise.catch === "function") {
+                    playPromise.catch(() => {});
+                }
+            }
+        },
+
+        pauseHeroVideo(event) {
+            event.currentTarget.pause();
+        },
+
+        playHeroVideo(event) {
+            const playPromise = event.currentTarget.play();
+            if (playPromise && typeof playPromise.catch === "function") {
+                playPromise.catch(() => {});
+            }
+        },
+
+        handleVideoBannerClick(event) {
+            if (!this.staticVideoBanner.link) {
+                event.preventDefault();
+            }
+        },
 
         cleanImage(img) {
             if (!img) return '';
@@ -554,6 +638,33 @@ export default {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
+.home__two .product-banner-overflow-auto .hero-video-slide--only {
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+.hero-video-banner {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #000;
+}
+
+.hero-video-banner__media {
+    display: block;
+    width: 100%;
+    height: 450px;
+    object-fit: cover;
+}
+
+@media (max-width: 767px) {
+    .hero-video-banner__media {
+        height: 120px;
+    }
+}
+
 /* Modern layout: edge-flush compact hero under overlay header */
 .home__two--modern .product-banner--modern-hero {
     margin: 0 0 16px;
@@ -597,9 +708,17 @@ export default {
 
 .home__two--modern .product-banner--modern-hero .product-banner-item,
 .home__two--modern .product-banner--modern-hero .slide-img,
+.home__two--modern .product-banner--modern-hero .hero-video-banner,
+.home__two--modern .product-banner--modern-hero .hero-video-banner__media,
 .home__two--modern .product-banner--modern-hero img {
     width: 100%;
     border-radius: 0;
+}
+
+.home__two--modern .product-banner--modern-hero .hero-video-banner__media {
+    height: 300px;
+    max-height: 320px;
+    object-fit: cover;
 }
 
 .home__two--modern .product-banner--modern-hero .product-banner-item .slide-img img {
