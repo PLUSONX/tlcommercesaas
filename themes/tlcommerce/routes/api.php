@@ -12,6 +12,7 @@ use Theme\TLCommerce\Http\Controllers\Frontend\ThemeOptionController;
 use Theme\TLCommerce\Http\Controllers\Backend\ThemeOptionController As ThemeController;
 use Theme\TLCommerce\Http\Controllers\Api\QuizController;
 use Theme\TLCommerce\Http\Controllers\Api\ProductListViewController;
+use Theme\TLCommerce\Http\Controllers\Backend\ScrollHeroController;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,4 +80,7 @@ Route::group(['prefix' => 'theme/tlcommerce/v1'], function () {
     Route::get('/quiz/{slug}', [QuizController::class, 'show']);
     Route::post('/quiz/{slug}/submit', [QuizController::class, 'submit']);
     Route::get('/quiz/submission/{id}/results', [QuizController::class, 'results']);
+
+    Route::get('/scroll-hero', [ScrollHeroController::class, 'manifest']);
 });
+

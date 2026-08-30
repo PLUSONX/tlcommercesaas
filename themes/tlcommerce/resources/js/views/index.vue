@@ -12,7 +12,8 @@
 
     <template v-else-if="active_pagebuilder && page.page_type == 'builder'">
         <!-- From Page Builder -->
-        <builder-section :page="page" :sections="page_section" :widgets="page_builder_widgets" @section-loaded="loaded" />
+        <builder-section :page="page" :sections="page_section" :widgets="page_builder_widgets"
+            @section-loaded="loaded" />
     </template>
 
     <div v-else-if="active_pagebuilder && page.page_type == 'default'" class="pt-30 pt-lg-60 pb-60 light-bg">
@@ -52,12 +53,18 @@
         <!-- <section class="product-banner product-banner-overflow-auto mt-30 mb-30" v-if="dataAvailable"> -->
         <!-- <div class="mt-50"> -->
         <div :class="mtClass">
-            <section
-                class="product-banner product-banner-overflow-auto"
+            <!-- Check the optional Scroll Hero before showing the normal slider. -->
+            <div v-if="scrollHeroLoading" class="scroll-hero-checking">
+                <skeleton :height="isMobile ? '300px' : '450px'" class="w-100"></skeleton>
+            </div>
+
+            <!-- Scroll Hero and the normal slider are mutually exclusive. -->
+            <ScrollHero v-else-if="showHomeBanners && hasScrollHero" :config="scrollHero"
+                @ready="onScrollHeroReady" @failed="disableScrollHero" />
+
+            <section v-else-if="showHomeBanners && hasHeroContent" class="product-banner product-banner-overflow-auto"
                 :class="{ 'product-banner--modern-hero': isModernLayout }"
-                v-if="showHomeBanners && hasHeroContent"
-                @timeupdate.capture="limitHeroVideoToThreeSeconds"
-            >
+                @timeupdate.capture="limitHeroVideoToThreeSeconds">
 
 
                 <div v-if="sliderLoading">
@@ -76,47 +83,25 @@
                     </div>
                 </div>
                 <div class="slider-container" v-else>
-                    <swiper v-if="hasHeroContent"
-                        :key="`home-banner-${isRtl ? 'rtl' : 'ltr'}-${heroSlideCount}`"
-                        :dir="isRtl ? 'rtl' : 'ltr'"
-                        :slidesPerView="isModernLayout ? 1 : 'auto'"
-                        :loop="heroSlideCount > 1"
-                        :spaceBetween="isModernLayout ? 0 : 20"
-                        :centeredSlides="!isModernLayout"
-                        :modules="modules"
-                        :autoplay="heroSlideCount > 1 ? {
+                    <swiper v-if="hasHeroContent" :key="`home-banner-${isRtl ? 'rtl' : 'ltr'}-${heroSlideCount}`"
+                        :dir="isRtl ? 'rtl' : 'ltr'" :slidesPerView="isModernLayout ? 1 : 'auto'"
+                        :loop="heroSlideCount > 1" :spaceBetween="isModernLayout ? 0 : 20"
+                        :centeredSlides="!isModernLayout" :modules="modules" :autoplay="heroSlideCount > 1 ? {
                             delay: 3000,
                             disableOnInteraction: false,
                             pauseOnMouseEnter: true,
-                        } : false"
-                        :pagination="heroSlideCount > 1 ? { clickable: true } : false"
+                        } : false" :pagination="heroSlideCount > 1 ? { clickable: true } : false"
                         class="mySwiper theme-slider-dots dots-bottom-30"
-                        :class="{ 'mySwiper--modern-hero': isModernLayout }"
-                    >
+                        :class="{ 'mySwiper--modern-hero': isModernLayout }">
                         <!-- Static fallback: shown only when the backend has no active banners. -->
-                        <swiper-slide
-                            v-if="hasStaticVideoFallback"
-                            key="static-video-banner"
-                            :class="{ 'hero-video-slide--only': heroSlideCount === 1 }"
-                        >
-                            <a
-                                class="hero-video-banner"
-                                :href="staticVideoBanner.link || undefined"
-                                @click="handleVideoBannerClick"
-                            >
-                                <video
-                                    ref="heroVideo"
-                                    class="hero-video-banner__media"
-                                    :src="staticVideoBanner.video_url"
-                                    :poster="staticVideoBanner.poster || undefined"
-                                    autoplay
-                                    muted
-                                    loop
-                                    playsinline
-                                    preload="metadata"
-                                    @mouseenter="pauseHeroVideo"
-                                    @mouseleave="playHeroVideo"
-                                ></video>
+                        <swiper-slide v-if="hasStaticVideoFallback" key="static-video-banner"
+                            :class="{ 'hero-video-slide--only': heroSlideCount === 1 }">
+                            <a class="hero-video-banner" :href="staticVideoBanner.link || undefined"
+                                @click="handleVideoBannerClick">
+                                <video ref="heroVideo" class="hero-video-banner__media"
+                                    :src="staticVideoBanner.video_url" :poster="staticVideoBanner.poster || undefined"
+                                    autoplay muted loop playsinline preload="metadata" @mouseenter="pauseHeroVideo"
+                                    @mouseleave="playHeroVideo"></video>
                             </a>
                         </swiper-slide>
 
@@ -183,12 +168,9 @@
         <!-- <HomePageDeliveryShipping v-if="showContactInfo && isSplitScreen" :enums="enums" :config="configuration"
             :customer-address="customerAddress" :is-customer-login="isCustomerLogin" :pickup-points="pickupPoints" /> -->
 
-        <SplitScreenProductList
-            v-if="isFeaturePaneLayout && homeContentReady && productListViewEnabled"
-            :disable-margin="true"
-            @ready="onFeaturePaneProductsReady" />
-        <ProductPage v-else-if="isFeaturePaneLayout && homeContentReady"
-            :disable-margin="true"
+        <SplitScreenProductList v-if="isFeaturePaneLayout && homeContentReady && productListViewEnabled"
+            :disable-margin="true" @ready="onFeaturePaneProductsReady" />
+        <ProductPage v-else-if="isFeaturePaneLayout && homeContentReady" :disable-margin="true"
             @ready="onFeaturePaneProductsReady" />
 
     </div>
@@ -211,6 +193,10 @@ const BuilderSection = defineAsyncComponent(() =>
 
 const ProductBanner = defineAsyncComponent(() =>
     import("@/components/ui/ProductBanner.vue")
+);
+
+const ScrollHero = defineAsyncComponent(() =>
+    import("@/components/ui/ScrollHero.vue")
 );
 
 const DealSection = defineAsyncComponent(() =>
@@ -288,6 +274,7 @@ export default {
         Swiper,
         SwiperSlide,
         ProductBanner,
+        ScrollHero,
         DealSection,
         collectionSection,
         CategorySection,
@@ -318,6 +305,14 @@ export default {
             dataAvailable: false,
             homeContentReady: false,
             sliderLoading: true,
+            scrollHeroLoading: true,
+            scrollHeroReady: false,
+            scrollHero: {
+                enabled: false,
+                desktop: [],
+                mobile: [],
+                scroll_height: 300,
+            },
             page: {},
             page_section: {},
             active_pagebuilder: false,
@@ -333,11 +328,12 @@ export default {
 
             productListViewEnabled: readBootstrapProductListViewEnabled(),
             featurePaneProductsReady: false,
+            bootSplashFallbackTimer: null,
 
             // Temporary frontend-only video banner.
             // Use a direct MP4/WebM file URL here (not a YouTube page URL).
             staticVideoBanner: {
-                video_url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+                video_url: "",
                 poster: "",
                 link: "",
             },
@@ -387,6 +383,14 @@ export default {
             return this.isFeaturePaneLayout && !this.active_pagebuilder;
         },
 
+        hasScrollHero() {
+            return Boolean(
+                this.scrollHero?.enabled === true &&
+                Array.isArray(this.scrollHero?.desktop) &&
+                this.scrollHero.desktop.length > 0
+            );
+        },
+
         hasHeroContent() {
             return this.banners.length > 0 || this.hasStaticVideoFallback;
         },
@@ -427,19 +431,90 @@ export default {
             currency: 'KWD',
         });
 
+        // Never keep the global loader over an already-rendered page.
+        this.bootSplashFallbackTimer = window.setTimeout(() => {
+            hideBootSplash();
+        }, 3000);
+
         // console.log('🟡 index.vue mounted!');
 
     },
 
     beforeUnmount() {
         removePageContentStyles(this.contentStyleId);
+
+        if (this.bootSplashFallbackTimer) {
+            window.clearTimeout(this.bootSplashFallbackTimer);
+            this.bootSplashFallbackTimer = null;
+        }
     },
 
     created() {
+        this.fetchScrollHero();
         this.initSliders();
     },
 
     methods: {
+
+        async fetchScrollHero() {
+            this.scrollHeroLoading = true;
+            this.scrollHeroReady = false;
+
+            try {
+                const response = await axios.get(
+                    "/api/theme/tlcommerce/v1/scroll-hero"
+                );
+
+                const heroData = response?.data?.data;
+
+                if (
+                    response?.data?.success &&
+                    heroData?.enabled &&
+                    Array.isArray(heroData.desktop) &&
+                    heroData.desktop.length > 0
+                ) {
+                    this.scrollHero = {
+                        enabled: true,
+                        desktop: heroData.desktop,
+                        mobile: Array.isArray(heroData.mobile)
+                            ? heroData.mobile
+                            : [],
+                        scroll_height: Number(heroData.scroll_height || 300),
+                    };
+                } else {
+                    this.scrollHero = null;
+                    this.scrollHeroReady = true;
+                }
+            } catch (error) {
+                console.error("Unable to load Scroll Hero:", error);
+                this.scrollHero = null;
+                this.scrollHeroReady = true;
+            } finally {
+                this.scrollHeroLoading = false;
+                this.tryHideBootSplash();
+            }
+        },
+
+        disableScrollHero() {
+            this.scrollHero = {
+                enabled: false,
+                desktop: [],
+                mobile: [],
+                scroll_height: 300,
+            };
+            this.scrollHeroReady = true;
+            this.tryHideBootSplash();
+        },
+
+        onScrollHeroReady() {
+            this.scrollHeroReady = true;
+            hideBootSplash();
+
+            if (this.bootSplashFallbackTimer) {
+                window.clearTimeout(this.bootSplashFallbackTimer);
+                this.bootSplashFallbackTimer = null;
+            }
+        },
 
         /**
          * Restrict every direct HTML5 hero video to its first 3 seconds.
@@ -457,7 +532,7 @@ export default {
 
                 const playPromise = video.play();
                 if (playPromise && typeof playPromise.catch === "function") {
-                    playPromise.catch(() => {});
+                    playPromise.catch(() => { });
                 }
             }
         },
@@ -469,7 +544,7 @@ export default {
         playHeroVideo(event) {
             const playPromise = event.currentTarget.play();
             if (playPromise && typeof playPromise.catch === "function") {
-                playPromise.catch(() => {});
+                playPromise.catch(() => { });
             }
         },
 
@@ -587,10 +662,22 @@ export default {
             if (this.pageLoading) {
                 return;
             }
-            if (this.needsFeaturePaneProducts && !this.featurePaneProductsReady) {
+
+            if (this.scrollHeroLoading) {
                 return;
             }
+
+            if (this.hasScrollHero && !this.scrollHeroReady) {
+                return;
+            }
+
+            // Product lists and remaining hero frames continue in background.
             hideBootSplash();
+
+            if (this.bootSplashFallbackTimer) {
+                window.clearTimeout(this.bootSplashFallbackTimer);
+                this.bootSplashFallbackTimer = null;
+            }
         },
 
         //-------- HomePageDeliveryShipping --------
@@ -691,7 +778,8 @@ export default {
 }
 
 .home__two--modern .product-banner--modern-hero .swiper {
-    overflow: hidden !important; /* beat .home__two .product-banner-overflow-auto .swiper { overflow: initial } */
+    overflow: hidden !important;
+    /* beat .home__two .product-banner-overflow-auto .swiper { overflow: initial } */
     width: 100%;
 }
 
