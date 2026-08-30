@@ -12,6 +12,7 @@ use Theme\TLCommerce\Http\Controllers\Backend\HomePageController;
 use Theme\TLCommerce\Http\Controllers\Frontend\ProductController;
 use Theme\TLCommerce\Http\Controllers\Backend\ThemeOptionController;
 use Theme\TLCommerce\Http\Controllers\Backend\QuizController;
+use Theme\TLCommerce\Http\Controllers\Backend\ScrollHeroController;
 
 // Route::get('/test-route-works', function() {
 //     return 'Core.php routes are loading!';
@@ -124,6 +125,32 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
         Route::post('delete-bulk-slider', [SliderController::class, 'deleteBulkSlider'])->name('theme.tlcommerce.sliders.delete.bulk');
         Route::get('edit-slider/{id}', [SliderController::class, 'editSlider'])->name('theme.tlcommerce.sliders.edit');
         Route::post('update-slider', [SliderController::class, 'updateSlider'])->name('theme.tlcommerce.sliders.update');
+    });
+
+    Route::prefix('scroll-hero')
+    ->name('theme.tlcommerce.scroll-hero.')
+    ->group(function () {
+        Route::get('/', [
+            ScrollHeroController::class,
+            'index',
+        ])->name('index');
+
+        Route::post('/store', [
+            ScrollHeroController::class,
+            'store',
+        ])->name('store');
+
+        Route::post('/status', [
+            ScrollHeroController::class,
+            'updateStatus',
+        ])->name('status');
+
+        Route::post('/delete', [
+            ScrollHeroController::class,
+            'destroy',
+        ])->name('delete');
+
+     
     });
 
     Route::middleware(['can:Manage Home Page Builder'])->group(function () {
