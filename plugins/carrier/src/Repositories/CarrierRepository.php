@@ -10,19 +10,23 @@ use Plugin\TlcommerceCore\Models\ShippingCourierProperties;
 use Plugin\TlcommerceCore\Models\ShippingCourierOrders;
 use Plugin\TlcommerceCore\Models\Orders;
 use Plugin\Carrier\Services\ArmadaService;
+use Plugin\Carrier\Services\KarrixService;
 use Illuminate\Http\Request;
 use Core\Models\User;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Crypt;
 use Plugin\TlcommerceCore\Notifications\CourierOrderUpdateNotification;
 
 
 class CarrierRepository
 {
     protected $armadaService;
+    protected $karrixService;
 
-    public function __construct(ArmadaService $armadaService)
+    public function __construct(ArmadaService $armadaService, KarrixService $karrixService)
     {
         $this->armadaService = $armadaService;
+        $this->karrixService = $karrixService;
     }
     /**
      * Will store new courier service
@@ -170,20 +174,31 @@ class CarrierRepository
 
         $courier = ShippingCourier::where('id', $id)->with('properties')->first();
 
-        if (!$courier || !$courier->properties) {
+        if (!$courier) {
             Log::warning("Courier or properties not found for ID: " . $id);
             return [
-                'shipping_courier_id' => $id
+                'shipping_courier_id' => $id,
+                'provider' => 'unknown',
             ];
-            // return null; 
+        }
+
+        $provider = $this->courierProvider($courier);
+
+        if (!$courier->properties) {
+            return [
+                'shipping_courier_id' => $id,
+                'provider' => $provider,
+            ];
         }
 
         $properties = $courier->properties;
 
         return [
             'shipping_courier_id' => $id,
-            'api_key' => $properties->api_key,
-            'api_secret' => $properties->api_secret,
+            'provider' => $provider,
+            // Never send Karrix secrets back into the HTML response.
+            'api_key' => $provider === 'karrix' ? '' : $properties->api_key,
+            'api_secret' => '',
             'branch_id' => $properties->branch_id,
         ];
     }
@@ -201,16 +216,47 @@ class CarrierRepository
 
             Log::info("submitCourierProperties method called!");
         
-            Log::info("Courier Properties data:", ['request' => $request->all()]);
+            $courier = ShippingCourier::findOrFail($request->shipping_courier_id);
+            $provider = $this->courierProvider($courier);
 
-            $propertiesData = [
-                'api_key'   => trim((string) $request->api_key),
-                'branch_id' => trim((string) $request->branch_id),
-            ];
+            $request->validate([
+                'shipping_courier_id' => 'required|integer',
+                'api_key' => 'nullable|string|max:500',
+                'api_secret' => 'nullable|string|max:500',
+                'branch_id' => 'required|string|max:255',
+            ]);
+
+            Log::info('Courier properties submission', [
+                'shipping_courier_id' => $request->shipping_courier_id,
+                'provider' => $provider,
+                'has_api_key' => trim((string) $request->api_key) !== '',
+                'has_secret' => trim((string) $request->api_secret) !== '',
+            ]);
+
+            $propertiesData = ['branch_id' => trim((string) $request->branch_id)];
+
+            $apiKey = trim((string) $request->api_key);
+            if ($apiKey !== '') {
+                $propertiesData['api_key'] = $provider === 'karrix'
+                    ? Crypt::encryptString($apiKey)
+                    : $apiKey;
+            } elseif (!$courier->properties || trim((string) $courier->properties->api_key) === '') {
+                DB::rollBack();
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'api_key' => [translate($provider === 'karrix' ? 'Karrix API token is required.' : 'API key is required.')],
+                ]);
+            }
 
             $apiSecret = trim((string) $request->api_secret);
             if ($apiSecret !== '') {
                 $propertiesData['api_secret'] = $apiSecret; // auto-encrypted by model mutator
+            } elseif (!$courier->properties || trim((string) ($courier->properties->api_secret ?? '')) === '') {
+                DB::rollBack();
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'api_secret' => [translate($provider === 'karrix'
+                        ? 'Karrix webhook signing secret is required.'
+                        : 'API secret is required.')],
+                ]);
             }
 
             ShippingCourierProperties::updateOrCreate(
@@ -219,6 +265,9 @@ class CarrierRepository
             );
             DB::commit();
             return true;
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
+            throw $e;
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("properties submission failure: " . $e->getMessage());
@@ -240,14 +289,15 @@ class CarrierRepository
 
             Log::info("submitCourierRequest 2 method called!");
         
-            Log::info("Courier Properties data:", ['request' => $request->all()]);
+            Log::info('Courier request received', [
+                'order_id' => $request->order_id,
+                'shipping_courier_id' => $request->available_couriers,
+            ]);
 
             $order_id = $request->order_id;
             $shipping_courier_id = $request->available_couriers;
 
             $courier = ShippingCourier::where('id', $shipping_courier_id)->with('properties')->first();
-
-            Log::info("Courier data:", ['courier' => json_encode($courier)]);
 
             if (!$courier || !$courier->properties) {
                 Log::warning("Courier or properties not found for ID: " . $shipping_courier_id);
@@ -267,8 +317,6 @@ class CarrierRepository
                 ];
             }
 
-            Log::info("order data:", ['order' => json_encode($order)]);
-
             $address = $order->shipping_details;
 
             if (!$address) {
@@ -282,15 +330,33 @@ class CarrierRepository
                 ];
             }
 
-            Log::info("address data with relations:", ['address' => $address->toArray()]);
+            $provider = $this->courierProvider($courier);
 
-            $armadaResponse = $this->armadaService->createDelivery($courier, $order, $address);
+            // Prevent repeated clicks from creating the same external delivery twice.
+            $existingCourierOrder = ShippingCourierOrders::where('order_id', $order->id)
+                ->where('shipping_courier_id', $courier->id)
+                ->first();
+            if ($existingCourierOrder) {
+                return [
+                    'success' => true,
+                    'message' => translate('A delivery request already exists for this order and courier.'),
+                ];
+            }
+
+            if ($provider === 'karrix') {
+                $carrierResponse = $this->karrixService->createDelivery($courier, $order, $address);
+            } else {
+                // Armada remains the default for existing/legacy carrier records.
+                $carrierResponse = $this->armadaService->createDelivery($courier, $order, $address);
+            }
            
-            if ($armadaResponse['success']) {
-                $data = $armadaResponse['data'];
+            if ($carrierResponse['success']) {
+                $data = $carrierResponse['data'];
 
                 try {
-                    $normalized = $this->normalizeArmadaWebhookPayload(is_array($data) ? $data : []);
+                    $normalized = $provider === 'karrix'
+                        ? $this->normalizeKarrixPayload(is_array($data) ? $data : [])
+                        : $this->normalizeArmadaWebhookPayload(is_array($data) ? $data : []);
 
                     ShippingCourierOrders::create([
                         'order_id'             => $order->id,
@@ -312,7 +378,7 @@ class CarrierRepository
 
                     return [
                         'success' => true,
-                        'message' => $armadaResponse['message'] ?? translate('Delivery request submitted successfully.'),
+                        'message' => $carrierResponse['message'] ?? translate('Delivery request submitted successfully.'),
                     ];
 
                 }
@@ -326,10 +392,10 @@ class CarrierRepository
 
             }
             else {
-                Log::warning("Courier Error", ['error' => $armadaResponse['message'] ?? null]);
+                Log::warning("Courier Error", ['provider' => $provider, 'error' => $carrierResponse['message'] ?? null]);
                 return [
                     'success' => false,
-                    'message' => $armadaResponse['message'] ?? translate('Could not submit courier request.'),
+                    'message' => $carrierResponse['message'] ?? translate('Could not submit courier request.'),
                 ];
             }
         } catch (\Exception $e) {
@@ -339,6 +405,128 @@ class CarrierRepository
                 'success' => false,
                 'message' => translate('Courier request failed: ') . $e->getMessage(),
             ];
+        }
+    }
+
+    /**
+     * Process a signed Karrix webhook independently from the Armada webhook.
+     */
+    public function updateKarrixCourierOrder(Request $request): array
+    {
+        try {
+            $rawBody = $request->getContent();
+            $signature = trim((string) $request->header('X-Karrix-Signature', ''));
+            $payload = $request->json()->all();
+
+            $tracking = $payload['tracking_number'] ?? data_get($payload, 'order.tracking_number');
+            $shippingCourierOrder = $tracking
+                ? ShippingCourierOrders::where('code', $tracking)->first()
+                : null;
+
+            if (!$shippingCourierOrder) {
+                Log::warning('Karrix webhook: courier order not found', ['tracking_number' => $tracking]);
+                return ['success' => true, 'status' => 200];
+            }
+
+            $courier = ShippingCourier::with('properties')->find($shippingCourierOrder->shipping_courier_id);
+            if (!$courier || $this->courierProvider($courier) !== 'karrix') {
+                return ['success' => false, 'status' => 404];
+            }
+
+            $secret = trim((string) ($courier->properties->api_secret ?? ''));
+            if ($secret !== '') {
+                $expected = hash_hmac('sha256', $rawBody, $secret);
+                if ($signature === '' || !hash_equals($expected, $signature)) {
+                    Log::warning('Karrix webhook signature verification failed', [
+                        'shipping_courier_id' => $courier->id,
+                    ]);
+                    return ['success' => false, 'status' => 401];
+                }
+            }
+
+            $normalized = $this->normalizeKarrixPayload($payload);
+            $updateData = array_filter([
+                'status' => $normalized['status'],
+                'amount' => $normalized['amount'],
+                'delivery_fee' => $normalized['delivery_fee'],
+                'currency' => $normalized['currency'],
+                'driver_name' => $normalized['driver_name'],
+                'driver_phone' => $normalized['driver_phone'],
+                'tracking_url' => $normalized['tracking_url'],
+            ], static function ($value) {
+                return $value !== null;
+            });
+
+            if (!empty($updateData)) {
+                $shippingCourierOrder->update($updateData);
+            }
+
+            $this->notifyAdminsOfCourierUpdate($shippingCourierOrder);
+
+            return ['success' => true, 'status' => 200];
+        } catch (\Throwable $e) {
+            Log::error('Karrix webhook processing failure', ['message' => $e->getMessage()]);
+            return ['success' => false, 'status' => 500];
+        }
+    }
+
+    private function normalizeKarrixPayload(array $payload): array
+    {
+        $data = is_array($payload['data'] ?? null) ? $payload['data'] : $payload;
+        $order = is_array($data['order'] ?? null) ? $data['order'] : $data;
+        $dc = is_array($order['dc'] ?? null) ? $order['dc'] : [];
+        $driver = is_array($order['driver'] ?? null) ? $order['driver'] : [];
+        $tracking = $data['tracking_number'] ?? $order['tracking_number'] ?? null;
+
+        return [
+            'id' => $order['id'] ?? null,
+            'code' => $tracking ?? $order['reference'] ?? null,
+            'reference' => $order['client_reference'] ?? $order['reference'] ?? null,
+            'status' => $order['state'] ?? $order['status'] ?? null,
+            'amount' => $order['order_total'] ?? $order['price'] ?? null,
+            'delivery_fee' => $order['price'] ?? $order['delivery_fee'] ?? null,
+            'currency' => $order['currency'] ?? 'KWD',
+            'estimated_distance' => $order['distance_km'] ?? $order['actual_distance_km'] ?? null,
+            'estimated_duration' => $order['estimated_duration'] ?? null,
+            'tracking_url' => $data['tracking_url']
+                ?? $order['tracking_url']
+                ?? ($tracking ? 'https://karrix.sh/track/' . rawurlencode($tracking) : null),
+            'pickup_qr_url' => null,
+            'driver_name' => $driver['name'] ?? $dc['driver_name'] ?? null,
+            'driver_phone' => $driver['phone'] ?? $dc['driver_phone'] ?? null,
+            'driver_latitude' => $driver['latitude'] ?? null,
+            'driver_longitude' => $driver['longitude'] ?? null,
+        ];
+    }
+
+    private function courierProvider($courier): string
+    {
+        $name = mb_strtolower(trim((string) ($courier->name ?? '')));
+        $trackingUrl = mb_strtolower(trim((string) ($courier->tracking_url ?? '')));
+
+        return str_contains($name, 'karrix') || str_contains($trackingUrl, 'karrix.sh')
+            ? 'karrix'
+            : 'armada';
+    }
+
+    private function notifyAdminsOfCourierUpdate($shippingCourierOrder): void
+    {
+        $order = Orders::find($shippingCourierOrder->order_id);
+        if (!$order) {
+            return;
+        }
+
+        $data = [
+            'message' => 'Update received from courier, Order code ' . $order->order_code,
+            'link' => '/orders/order-details/' . $shippingCourierOrder->order_id,
+        ];
+
+        $admins = User::where('user_type', config('tlecommercecore.user_type.admin'))
+            ->where('status', config('settings.general_status.active'))
+            ->get();
+
+        if ($admins->isNotEmpty()) {
+            Notification::send($admins, new CourierOrderUpdateNotification($data));
         }
     }
 
@@ -537,4 +725,3 @@ class CarrierRepository
         ];
     }
 }
-

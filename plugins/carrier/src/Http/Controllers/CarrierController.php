@@ -147,13 +147,25 @@ class CarrierController extends Controller
     public function submitCourierProperties(Request $request)
     {
         Log::info("submitCourierProperties method called!");
-        Log::info("Courier 1 Properties data:", ['request' => $request->all()]);
         $res = $this->carrier_repository->submitCourierProperties($request);
         if ($res == true) {
             toastNotification('success', translate('Courier properties updated successfully'), 'Success');
         } else {
             toastNotification('error',translate('Action failed'), 'Failed');
         }
+    }
+
+    /**
+     * Receive signed Karrix status callbacks.
+     */
+    public function karrixWebhook(Request $request)
+    {
+        $result = $this->carrier_repository->updateKarrixCourierOrder($request);
+        $status = (int) ($result['status'] ?? 500);
+
+        return response()->json([
+            'success' => (bool) ($result['success'] ?? false),
+        ], $status);
     }
 
     /**
