@@ -25,18 +25,18 @@ use Plugin\Saas\Http\Controllers\Payment\PowertranzpayController;
 
 Route::group(['prefix' => getSaasPrefix(), 'middleware' => ['handle.expired.account']], function () {
 
-    Route::get('/test-tenant', function() {
-    
+    Route::get('/test-tenant', function () {
+
         // $tenant = tenant();
         // $user = User::find($tenant->user_id);
-    return [
-        // 'tenant_initialized' => tenancy()->initialized,
-        // 'tenant_id' => tenant('id'),
-        'tenant_data' => tenant(),
-        // 'user' => $user,
-        // 'domain' => request()->getHost(),
-        // 'full_url' => request()->url(),
-    ];
+        return [
+            // 'tenant_initialized' => tenancy()->initialized,
+            // 'tenant_id' => tenant('id'),
+            'tenant_data' => tenant(),
+            // 'user' => $user,
+            // 'domain' => request()->getHost(),
+            // 'full_url' => request()->url(),
+        ];
     });
 
     Route::get('/registration', [UserController::class, 'register'])->name('plugin.saas.user.registration');
@@ -136,11 +136,29 @@ Route::group(['prefix' => getSaasPrefix(), 'middleware' => ['handle.expired.acco
         Route::get('/payment-webhook', [MollieController::class, 'paymentWebhook'])->name('payment.webhook');
 
         //Google pay
-        Route::post('/googlepay-payment-submit', [GpayController::class, 'googlepayPaymentSubmit'])->name('googlepay.payment.submit');
+        // Google Pay
+        if (class_exists(GpayController::class)) {
+            Route::post(
+                '/googlepay-payment-submit',
+                [GpayController::class, 'googlepayPaymentSubmit']
+            )->name('googlepay.payment.submit');
+        }
 
-        Route::get('/wipay-payment-submit', [WipayController::class, 'completePayment'])->name('wipay.payment.submit');
+        // Wipay
+        if (class_exists(WipayController::class)) {
+            Route::get(
+                '/wipay-payment-submit',
+                [WipayController::class, 'completePayment']
+            )->name('wipay.payment.submit');
+        }
 
-        Route::post('/powertranzpay-payment-submit', [PowertranzpayController::class, 'submit'])->name('powertranzpay.payment.submit');
+        // PowerTranz Pay
+        if (class_exists(PowertranzpayController::class)) {
+            Route::post(
+                '/powertranzpay-payment-submit',
+                [PowertranzpayController::class, 'submit']
+            )->name('powertranzpay.payment.submit');
+        }
     });
 
     /**
@@ -149,9 +167,9 @@ Route::group(['prefix' => getSaasPrefix(), 'middleware' => ['handle.expired.acco
     Route::any('/ssl-commerce/success', [SSLCommerzController::class, 'success'])->name('plugin.saas.sslcommerz.success.payment');
     Route::any('/ssl-commerce/cancel', [SSLCommerzController::class, 'cancel'])->name('plugin.saas.sslcommerz.cancel.payment');
     Route::any('/ssl-commerce/fail', [SSLCommerzController::class, 'fail'])->name('plugin.saas.sslcommerz.fail.payment');
-
+  if (class_exists(PowertranzpayController::class)) {
     Route::post('/powertranzpay-payment-finalize', [PowertranzpayController::class, 'finalize'])->name('powertranzpay.payment.finalize');
-
+  }
     //Paymob 
     Route::get('/paymob/callback', [PaymobController::class, 'callback'])->name('plugin.saas.paymob.callback');
 
