@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 use ZipArchive;
 
 class ScrollHeroController extends Controller
@@ -66,13 +67,16 @@ class ScrollHeroController extends Controller
                 300
             );
 
-            Storage::disk('public')->put(
-                $this->manifestPath(),
-                json_encode(
-                    $manifest,
-                    JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-                )
+            $json = json_encode(
+                $manifest,
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
             );
+
+            if (!Storage::disk('public')->put($this->manifestPath(), $json)) {
+                throw new \RuntimeException(
+                    'Failed to write scroll hero manifest: ' . $this->manifestPath()
+                );
+            }
 
             cache()->forget(
                 tenantCacheKey('scroll-hero-manifest')
@@ -85,11 +89,30 @@ class ScrollHeroController extends Controller
 
             return redirect()->back();
         } catch (\Throwable $e) {
-            report($e);
+            $errorId = (string) Str::uuid();
+
+            Log::error('Scroll hero upload failed', [
+                'error_id' => $errorId,
+                'exception_class' => get_class($e),
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'host' => $request->getHost(),
+                'php_version' => PHP_VERSION,
+                'zip_extension_loaded' => extension_loaded('zip'),
+                'zip_archive_available' => class_exists(ZipArchive::class),
+                'upload_max_filesize' => ini_get('upload_max_filesize'),
+                'post_max_size' => ini_get('post_max_size'),
+                'memory_limit' => ini_get('memory_limit'),
+                'max_execution_time' => ini_get('max_execution_time'),
+                'desktop_zip_bytes' => $request->file('desktop_frames')?->getSize(),
+                'mobile_zip_bytes' => $request->file('mobile_frames')?->getSize(),
+                'exception' => $e,
+            ]);
 
             toastNotification(
                 'error',
-                'Scroll hero upload failed'
+                'Scroll hero upload failed. Error ID: ' . $errorId
             );
 
             return redirect()->back();
@@ -205,10 +228,11 @@ class ScrollHeroController extends Controller
 
             $storagePath = $devicePath . '/' . $filename;
 
-            Storage::disk('public')->put(
-                $storagePath,
-                $contents
-            );
+            if (!Storage::disk('public')->put($storagePath, $contents)) {
+                throw new \RuntimeException(
+                    'Failed to write scroll hero frame: ' . $storagePath
+                );
+            }
 
             $frames[] = Storage::disk('public')->url(
                 $storagePath
