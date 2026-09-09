@@ -1,40 +1,68 @@
 <form id="courier-properties-form">
 
     @php
-        $isKarrix = ($courier_properties['provider'] ?? 'armada') === 'karrix';
+        $provider = $courier_properties['provider'] ?? 'armada';
+        $isKarrix = $provider === 'karrix';
+        $isSmooth = $provider === 'smooth';
     @endphp
 
     <input type="hidden" name="shipping_courier_id" id="shipping_courier_id"  value="{{ $courier_properties['shipping_courier_id'] ?? 0 }}">
 
-    <div class="form-row mb-20">
-        <label class="font-14 bold black">{{ translate($isKarrix ? 'Karrix API Token' : 'Api Key') }} </label>
-        <input type="{{ $isKarrix ? 'password' : 'text' }}" name="api_key" autocomplete="off"
-            placeholder="{{ translate($isKarrix ? 'Leave blank to keep the saved Karrix token' : 'Paste Api Key here') }}"
-            value="{{ $courier_properties['api_key'] ?? '' }}" class="theme-input-style">
-
-    </div>
-
-    <div class="form-row mb-20">
-        <label class="font-14 bold black">{{ translate($isKarrix ? 'Webhook Signing Secret' : 'Api Secret') }} </label>
-        <input type="password" name="api_secret" autocomplete="new-password"
-            placeholder="{{ translate($isKarrix ? 'Leave blank to keep the saved webhook secret' : 'Leave blank to keep the saved API secret') }}"
-            value="" class="theme-input-style">
-
-    </div>
-
-    <div class="form-row mb-20">
-        <label class="font-14 bold black">{{ translate($isKarrix ? 'Pickup Location ID' : 'Branch Id') }} </label>
-        <input type="text" name="branch_id"
-            placeholder="{{ translate($isKarrix ? 'Paste the saved Karrix pickup location ID' : 'Paste Branch Id here') }}"
-            value="{{ $courier_properties['branch_id'] ?? '' }}" class="theme-input-style">
-
-    </div>
-
-    @if ($isKarrix)
-        <div class="alert alert-info mb-20">
-            {{ translate('Webhook URL:') }}
-            <strong>{{ url('/api/carrier/karrix/webhook') }}</strong>
+    @if ($isSmooth)
+        <div class="form-row mb-20">
+            <label class="font-14 bold black">{{ translate('Smooth API Key') }} </label>
+            <input type="password" name="api_key" autocomplete="new-password"
+                placeholder="{{ translate('Leave blank to keep the saved Smooth API key') }}"
+                value="" class="theme-input-style">
         </div>
+
+        <div class="form-row mb-20">
+            <label class="font-14 bold black">{{ translate('Smooth Store Slug') }} </label>
+            <input type="text" name="branch_id"
+                placeholder="{{ translate('Paste the pre-shared Smooth Store Slug') }}"
+                value="{{ $courier_properties['branch_id'] ?? '' }}" class="theme-input-style">
+        </div>
+
+        <div class="alert alert-info mb-20">
+            <div><strong>{{ translate('Authentication:') }}</strong> {{ translate('api-key header') }}</div>
+            <div><strong>{{ translate('Status Callback:') }}</strong>
+                {{ url('/api/smooth/orders/status-update/{owner_slug}/{order_id}') }}
+            </div>
+            <div class="mt-1">
+                {{ translate('Smooth becomes usable automatically after both API Key and Store Slug are saved. No API Secret is required by the supplied Smooth API schema.') }}
+            </div>
+        </div>
+    @else
+        <div class="form-row mb-20">
+            <label class="font-14 bold black">{{ translate($isKarrix ? 'Karrix API Token' : 'Api Key') }} </label>
+            <input type="{{ $isKarrix ? 'password' : 'text' }}" name="api_key" autocomplete="off"
+                placeholder="{{ translate($isKarrix ? 'Leave blank to keep the saved Karrix token' : 'Paste Api Key here') }}"
+                value="{{ $courier_properties['api_key'] ?? '' }}" class="theme-input-style">
+
+        </div>
+
+        <div class="form-row mb-20">
+            <label class="font-14 bold black">{{ translate($isKarrix ? 'Webhook Signing Secret' : 'Api Secret') }} </label>
+            <input type="password" name="api_secret" autocomplete="new-password"
+                placeholder="{{ translate($isKarrix ? 'Leave blank to keep the saved webhook secret' : 'Leave blank to keep the saved API secret') }}"
+                value="" class="theme-input-style">
+
+        </div>
+
+        <div class="form-row mb-20">
+            <label class="font-14 bold black">{{ translate($isKarrix ? 'Pickup Location ID' : 'Branch Id') }} </label>
+            <input type="text" name="branch_id"
+                placeholder="{{ translate($isKarrix ? 'Paste the saved Karrix pickup location ID' : 'Paste Branch Id here') }}"
+                value="{{ $courier_properties['branch_id'] ?? '' }}" class="theme-input-style">
+
+        </div>
+
+        @if ($isKarrix)
+            <div class="alert alert-info mb-20">
+                {{ translate('Webhook URL:') }}
+                <strong>{{ url('/api/carrier/karrix/webhook') }}</strong>
+            </div>
+        @endif
     @endif
     
     <div class="form-row">

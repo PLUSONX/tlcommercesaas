@@ -169,6 +169,55 @@ class CarrierController extends Controller
     }
 
     /**
+     * Receive Smooth Logistics order status updates.
+     *
+     * Smooth documents this callback as:
+     * PUT /smooth/orders/status-update/{owner_slug}/{order_id}
+     */
+    public function smoothOrderStatusUpdate(Request $request, $owner_slug, $order_id)
+    {
+        $result = $this->carrier_repository->updateSmoothCourierOrder(
+            $request,
+            (string) $owner_slug,
+            (string) $order_id
+        );
+
+        $status = (int) ($result['status'] ?? 500);
+
+        return response()->json([
+            'success' => (bool) ($result['success'] ?? false),
+        ], $status);
+    }
+
+    /**
+     * Smooth warehouse pick confirmation is not required by the existing courier-order
+     * table. Acknowledge the documented callback without changing existing order flows.
+     */
+    public function smoothOrderPickConfirmation(Request $request, $owner_slug, $order_id)
+    {
+        Log::info('Smooth OrderPickConfirmation received.', [
+            'owner_slug' => (string) $owner_slug,
+            'order_id' => (string) $order_id,
+        ]);
+
+        return response()->json(['success' => true], 200);
+    }
+
+    /**
+     * Smooth partial-pick/TU confirmation is warehouse information not currently stored
+     * by this courier module. Acknowledge it safely so Smooth never receives a 404.
+     */
+    public function smoothOrderTuPickedConfirmation(Request $request, $owner_slug, $order_id)
+    {
+        Log::info('Smooth OrderTUPickedConfirmation received.', [
+            'owner_slug' => (string) $owner_slug,
+            'order_id' => (string) $order_id,
+        ]);
+
+        return response()->json(['success' => true], 200);
+    }
+
+    /**
      * Will return carrier list
      * 
      * @return collections
