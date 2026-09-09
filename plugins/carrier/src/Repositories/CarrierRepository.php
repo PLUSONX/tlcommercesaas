@@ -11,6 +11,7 @@ use Plugin\TlcommerceCore\Models\ShippingCourierOrders;
 use Plugin\TlcommerceCore\Models\Orders;
 use Plugin\Carrier\Services\ArmadaService;
 use Plugin\Carrier\Services\KarrixService;
+use Plugin\Carrier\Services\SmoothService;
 use Illuminate\Http\Request;
 use Core\Models\User;
 use Illuminate\Support\Facades\Notification;
@@ -22,11 +23,13 @@ class CarrierRepository
 {
     protected $armadaService;
     protected $karrixService;
+    protected $smoothService;
 
-    public function __construct(ArmadaService $armadaService, KarrixService $karrixService)
+    public function __construct(ArmadaService $armadaService, KarrixService $karrixService, SmoothService $smoothService)
     {
         $this->armadaService = $armadaService;
         $this->karrixService = $karrixService;
+        $this->smoothService = $smoothService;
     }
     /**
      * Will store new courier service
@@ -196,10 +199,11 @@ class CarrierRepository
         return [
             'shipping_courier_id' => $id,
             'provider' => $provider,
-            // Never send Karrix secrets back into the HTML response.
-            'api_key' => $provider === 'karrix' ? '' : $properties->api_key,
+            // Never send Karrix/Smooth secrets back into the HTML response.
+            'api_key' => in_array($provider, ['karrix', 'smooth'], true) ? '' : $properties->api_key,
             'api_secret' => '',
             'branch_id' => $properties->branch_id,
+            'is_configured' => $provider === 'smooth' ? $this->smoothService->isConfigured($courier) : null,
         ];
     }
 
@@ -218,6 +222,40 @@ class CarrierRepository
         
             $courier = ShippingCourier::findOrFail($request->shipping_courier_id);
             $provider = $this->courierProvider($courier);
+
+            // Smooth uses only an API key + pre-shared Store Slug in the supplied API schema.
+            // Keep both nullable while credentials are still pending. Missing values do not
+            // affect Armada/Karrix and make no outbound Smooth request.
+            if ($provider === 'smooth') {
+                $request->validate([
+                    'shipping_courier_id' => 'required|integer',
+                    'api_key' => 'nullable|string|max:500',
+                    'branch_id' => 'nullable|string|max:255',
+                ]);
+
+                $propertiesData = [];
+                $apiKey = trim((string) $request->api_key);
+                $storeSlug = trim((string) $request->branch_id);
+
+                if ($apiKey !== '') {
+                    $propertiesData['api_key'] = Crypt::encryptString($apiKey);
+                }
+
+                // Store Slug is not secret and can be edited/cleared normally.
+                if ($request->has('branch_id')) {
+                    $propertiesData['branch_id'] = $storeSlug;
+                }
+
+                if (!empty($propertiesData)) {
+                    ShippingCourierProperties::updateOrCreate(
+                        ['shipping_courier_id' => $request->shipping_courier_id],
+                        $propertiesData
+                    );
+                }
+
+                DB::commit();
+                return true;
+            }
 
             $request->validate([
                 'shipping_courier_id' => 'required|integer',
@@ -345,6 +383,8 @@ class CarrierRepository
 
             if ($provider === 'karrix') {
                 $carrierResponse = $this->karrixService->createDelivery($courier, $order, $address);
+            } elseif ($provider === 'smooth') {
+                $carrierResponse = $this->smoothService->createDelivery($courier, $order, $address);
             } else {
                 // Armada remains the default for existing/legacy carrier records.
                 $carrierResponse = $this->armadaService->createDelivery($courier, $order, $address);
@@ -354,9 +394,14 @@ class CarrierRepository
                 $data = $carrierResponse['data'];
 
                 try {
-                    $normalized = $provider === 'karrix'
-                        ? $this->normalizeKarrixPayload(is_array($data) ? $data : [])
-                        : $this->normalizeArmadaWebhookPayload(is_array($data) ? $data : []);
+                    if ($provider === 'karrix') {
+                        $normalized = $this->normalizeKarrixPayload(is_array($data) ? $data : []);
+                    } elseif ($provider === 'smooth') {
+                        // SmoothService already returns the common ShippingCourierOrders shape.
+                        $normalized = is_array($data) ? $data : [];
+                    } else {
+                        $normalized = $this->normalizeArmadaWebhookPayload(is_array($data) ? $data : []);
+                    }
 
                     ShippingCourierOrders::create([
                         'order_id'             => $order->id,
@@ -499,10 +544,124 @@ class CarrierRepository
         ];
     }
 
+
+    /**
+     * Process Smooth's documented OrderStatusUpdate callback.
+     * No Armada or Karrix webhook code is shared or modified here.
+     */
+    public function updateSmoothCourierOrder(Request $request, string $ownerSlug, string $orderId): array
+    {
+        try {
+            $payload = $request->json()->all();
+            if (empty($payload)) {
+                $payload = $request->all();
+            }
+
+            $normalized = $this->smoothService->normalizeStatusCallback(
+                is_array($payload) ? $payload : [],
+                $orderId
+            );
+
+            if (!$this->smoothService->isAllowedStatus((string) ($normalized['status'] ?? ''))) {
+                Log::warning('Smooth status callback rejected: unknown status.', [
+                    'owner_slug' => $ownerSlug,
+                    'order_id' => $orderId,
+                    'status' => $normalized['status'] ?? null,
+                ]);
+
+                return ['success' => false, 'status' => 422];
+            }
+
+            $shippingCourierOrder = null;
+            $trackingId = trim((string) ($normalized['code'] ?? ''));
+
+            // Smooth sends tracking_id in the documented callback when available.
+            if ($trackingId !== '') {
+                $candidate = ShippingCourierOrders::where('code', $trackingId)->first();
+                if ($candidate) {
+                    $candidateCourier = ShippingCourier::with('properties')->find($candidate->shipping_courier_id);
+                    if ($candidateCourier && $this->courierProvider($candidateCourier) === 'smooth') {
+                        $shippingCourierOrder = $candidate;
+                    }
+                }
+            }
+
+            // The callback path also carries order_id. Match it to the store reference_id
+            // (our existing order_code) and select only the Smooth courier row.
+            if (!$shippingCourierOrder && $orderId !== '') {
+                $order = Orders::where('order_code', $orderId)->first();
+                if ($order) {
+                    $candidates = ShippingCourierOrders::where('order_id', $order->id)->get();
+                    foreach ($candidates as $candidate) {
+                        $candidateCourier = ShippingCourier::with('properties')->find($candidate->shipping_courier_id);
+                        if ($candidateCourier && $this->courierProvider($candidateCourier) === 'smooth') {
+                            $shippingCourierOrder = $candidate;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!$shippingCourierOrder) {
+                Log::warning('Smooth status callback: courier order not found.', [
+                    'owner_slug' => $ownerSlug,
+                    'order_id' => $orderId,
+                    'tracking_id' => $trackingId ?: null,
+                ]);
+
+                // Acknowledge unknown/stale callbacks so Smooth does not keep retrying.
+                return ['success' => true, 'status' => 200];
+            }
+
+            $courier = ShippingCourier::with('properties')->find($shippingCourierOrder->shipping_courier_id);
+            if (!$courier || $this->courierProvider($courier) !== 'smooth') {
+                return ['success' => true, 'status' => 200];
+            }
+
+            // Smooth's callback URL includes owner_slug. Ensure it matches this courier's
+            // configured pre-shared Store Slug before any local row is changed.
+            $configuredStoreSlug = trim((string) ($courier->properties->branch_id ?? ''));
+            if ($configuredStoreSlug !== '' && !hash_equals($configuredStoreSlug, trim($ownerSlug))) {
+                Log::warning('Smooth status callback: Store Slug mismatch.', [
+                    'shipping_courier_id' => $courier->id,
+                ]);
+                return ['success' => false, 'status' => 403];
+            }
+
+            $updateData = [
+                'status' => $normalized['status'],
+            ];
+
+            if (!empty($normalized['tracking_url'])) {
+                $updateData['tracking_url'] = $normalized['tracking_url'];
+            }
+
+            // If Smooth did not return a tracking ID during create but supplies it later,
+            // store it without changing an existing identifier.
+            if ($trackingId !== '' && trim((string) ($shippingCourierOrder->code ?? '')) === '') {
+                $updateData['code'] = $trackingId;
+            }
+
+            $shippingCourierOrder->update($updateData);
+            $this->notifyAdminsOfCourierUpdate($shippingCourierOrder);
+
+            return ['success' => true, 'status' => 200];
+        } catch (\Throwable $e) {
+            Log::error('Smooth status callback failure', ['message' => $e->getMessage()]);
+            return ['success' => false, 'status' => 500];
+        }
+    }
+
     private function courierProvider($courier): string
     {
         $name = mb_strtolower(trim((string) ($courier->name ?? '')));
         $trackingUrl = mb_strtolower(trim((string) ($courier->tracking_url ?? '')));
+
+        if (str_contains($name, 'smooth logistics')
+            || str_contains($name, 'smooth')
+            || str_contains($trackingUrl, 'smoothlogistics')) {
+            return 'smooth';
+        }
 
         return str_contains($name, 'karrix') || str_contains($trackingUrl, 'karrix.sh')
             ? 'karrix'
