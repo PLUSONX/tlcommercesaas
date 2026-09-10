@@ -104,7 +104,29 @@
             <td class="text-center" style="width: 20px;">{{ $order->total_product }}</td>
             <td class="text-center" style="width: 20px;">{!! currencyExchange($order->total_payable_amount) !!}</td>
 
-            <td class="text-center">
+           <td class="text-center">
+                @php
+                    $paidStatus = config('tlecommercecore.order_payment_status.paid');
+                    $isPaid = (int) $order->payment_status === (int) $paidStatus;
+                @endphp
+
+                <div>
+                    <span class="badge-payment {{ $isPaid ? 'badge-paid' : 'badge-unpaid' }}"
+                        style="cursor: default; pointer-events: none;">
+
+                        @if ($isPaid)
+                            <i class="fa fa-check-circle mr-1"></i>
+                            {{ translate('Paid') }}
+                        @else
+                            <i class="fa fa-exclamation-circle mr-1"></i>
+                            {{ translate('Unpaid') }}
+                        @endif
+
+                    </span>
+                </div>
+            </td>
+
+                  {{-- <td class="text-center">
                 @php
                     $paidStatus = config('tlecommercecore.order_payment_status.paid');
                     $unpaidStatus = config('tlecommercecore.order_payment_status.unpaid');
@@ -127,7 +149,7 @@
                     </select>
                     <span class="payment-status-spinner ajax-inline-spinner" style="display:none;"></span>
                 </div>
-            </td>
+            </td> --}}
 
             <td class="text-center">
                 <div class="delivery-status-inline"
