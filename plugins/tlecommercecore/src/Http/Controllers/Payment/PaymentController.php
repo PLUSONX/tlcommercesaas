@@ -213,11 +213,112 @@ class PaymentController extends Controller
      * Payment unsuccessful
      */
     public function payment_failed()
-    {
-        $redirect_url = session()->get('redirect_url') . '?success=failed';
-        $this->clear_payment_session();
-        return redirect($redirect_url);
-    }
+{
+    $this->clear_payment_session();
+
+    $homeUrl = url('/');
+
+    return response("
+        <!DOCTYPE html>
+        <html lang='en'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+
+            <title>Payment Failed</title>
+
+            <style>
+                body {
+                    margin: 0;
+                    font-family: Arial, sans-serif;
+                    background: #f5f5f5;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 100vh;
+                }
+
+                .payment-box {
+                    background: #ffffff;
+                    width: 90%;
+                    max-width: 420px;
+                    padding: 40px 30px;
+                    border-radius: 12px;
+                    text-align: center;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.10);
+                }
+
+                .icon {
+                    width: 65px;
+                    height: 65px;
+                    margin: 0 auto 20px;
+                    border-radius: 50%;
+                    background: #fee2e2;
+                    color: #dc2626;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 32px;
+                    font-weight: bold;
+                }
+
+                h2 {
+                    margin: 0 0 10px;
+                    color: #222;
+                }
+
+                p {
+                    color: #666;
+                    line-height: 1.6;
+                    margin-bottom: 25px;
+                }
+
+                a {
+                    display: inline-block;
+                    padding: 12px 25px;
+                    background: #222;
+                    color: #fff;
+                    text-decoration: none;
+                    border-radius: 6px;
+                }
+            </style>
+        </head>
+
+        <body>
+
+            <div class='payment-box'>
+                <div class='icon'>×</div>
+
+                <h2>Payment Failed</h2>
+
+                <p>
+                    Your payment could not be completed.<br>
+                    Please try again or use another payment method.
+                </p>
+
+                <a href='{$homeUrl}'>Back to Home</a>
+
+                <p style='font-size:13px; margin-top:20px; margin-bottom:0;'>
+                    Redirecting you to the home page...
+                </p>
+            </div>
+
+            <script>
+                setTimeout(function () {
+                    window.location.href = '{$homeUrl}';
+                }, 4000);
+            </script>
+
+        </body>
+        </html>
+    ");
+}
+    // public function payment_failed()
+    // {
+    //     $redirect_url = session()->get('redirect_url') . '?success=failed';
+    //     $this->clear_payment_session();
+    //     return redirect($redirect_url);
+    // }
 
     /**
      * Payment cancel
