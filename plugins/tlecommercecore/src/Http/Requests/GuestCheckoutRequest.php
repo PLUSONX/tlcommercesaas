@@ -30,7 +30,8 @@ class GuestCheckoutRequest extends FormRequest
 
         if (getEcommerceSetting('enable_personal_info_guest_checkout') == 1) {
             $rules['name'] = 'required|max:250';
-            $rules['email'] = 'required|email|unique:Plugin\TlcommerceCore\Models\Customers,email,' . $request->id;
+            // $rules['email'] = 'required|email|unique:Plugin\TlcommerceCore\Models\Customers,email,' . $request->id;
+            $rules['email'] = 'nullable|email|unique:Plugin\TlcommerceCore\Models\Customers,email,' . $request->id;
         }
 
         if (getEcommerceSetting('create_account_in_guest_checkout') == 1 && getEcommerceSetting('enable_personal_info_guest_checkout') == 1) {
