@@ -30,7 +30,7 @@
     }
 @endphp
 
-<!--Orders Module-->
+{{-- <!--Orders Module-->
 @if (auth()->user()->can('Manage Inhouse Orders') || auth()->user()->can('Manage Pickup Point Order'))
     <li class="{{ Request::routeIs($order_pickup_point_active_link_file_links, $order_seller_active_link_file_links, ['plugin.tlcommercecore.orders.details', 'plugin.tlcommercecore.orders.inhouse']) ? 'active sub-menu-opened' : '' }}"
         style="padding-left: 0 !important;">
@@ -46,6 +46,21 @@
                 </li>
             @endif
         </ul>
+    </li>
+@endif --}}
+<!--Orders Module-->
+@if (auth()->user()->can('Manage Inhouse Orders') || auth()->user()->can('Manage Pickup Point Order'))
+    <li class="{{ Request::routeIs([
+            'plugin.tlcommercecore.orders.inhouse',
+            'plugin.tlcommercecore.orders.details'
+        ]) ? 'active' : '' }}"
+        style="padding-left: 0 !important;">
+
+        <a href="{{ route('plugin.tlcommercecore.orders.inhouse') }}">
+            <x-lucide-shopping-cart style="width: 20px; height: 20px; margin-left: 8px;" />
+            <span class="link-title ml-2">{{ translate('Orders') }}</span>
+        </a>
+
     </li>
 @endif
 <!--End Orders Module-->
