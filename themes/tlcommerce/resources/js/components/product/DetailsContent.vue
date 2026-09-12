@@ -302,14 +302,14 @@
           </button>
         </div>
         <!-- End Quantity Input -->
-        <div v-if="!modernLayout" class="ml-15 fz-12">
+        <!-- <div v-if="!modernLayout" class="ml-15 fz-12">
           <p v-if="product.quantity > 0" class="c1">
             {{ product.quantity }}
             {{ product.quantity > 1 ? "items" : "item" }}
             {{ $t("are available") }}
           </p>
           <p v-else class="text-danger">{{ $t("Sold out") }}</p>
-        </div>
+        </div> -->
       </div>
     </div>
     <!-- End Quantity -->
