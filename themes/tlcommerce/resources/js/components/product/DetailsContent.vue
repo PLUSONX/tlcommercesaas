@@ -94,6 +94,33 @@
   v-if="!modernLayout"
   class="divider bg-secondary"
 />
+<!-- Product Discount Badge -->
+<div
+  v-if="Number(product.oldPrice) > Number(product.price)"
+  class="product-discount-badge"
+>
+  <span class="material-icons">local_offer</span>
+
+  <!-- Percentage -->
+  <template v-if="isPercentageDiscount()">
+    <strong>
+      {{ discountPercentValue() }}% OFF
+    </strong>
+  </template>
+
+  <!-- Flat -->
+  <template v-else>
+    <strong>
+      <the-currency
+        :amount="discountSavedAmount()"
+        tag="span"
+      ></the-currency>
+      OFF
+    </strong>
+  </template>
+</div>
+<!-- End Product Discount Badge -->
+
     <!--Price Range-->
     <div class="product-price price-range" v-if="
       product.price_range_min &&
@@ -397,6 +424,8 @@ const axios = require("axios").default;
 import Countdown from "../ui/Countdown.vue";
 import { mapState, mapGetters } from "vuex";
 import enums from "../../enums/enums";
+import appConfig from "../../config.js";
+
 import {
   addOptionSelection,
   applySingleOptionSelection,
@@ -434,6 +463,7 @@ export default {
 data() {
   return {
     enums: enums,
+    amountTypes: appConfig.amount_type,
     errors: [],
     attachment: null,
     variantUpdating: false,
@@ -565,6 +595,206 @@ data() {
   this.startLoading();
   },
 methods: {
+  hasActiveDiscount() {
+    const price = Number(this.product.price || 0);
+    const oldPrice = Number(this.product.oldPrice || 0);
+
+    if (oldPrice > price && price >= 0) {
+      return true;
+    }
+
+    const minPrice = Number(this.product.price_range_min || 0);
+    const minOld = Number(this.product.price_range_min_old || 0);
+    const maxPrice = Number(this.product.price_range_max || 0);
+    const maxOld = Number(this.product.price_range_max_old || 0);
+
+    return (
+      (minOld > minPrice && minPrice > 0) ||
+      (maxOld > maxPrice && maxPrice > 0)
+    );
+  },
+
+  /**
+   * Detect whether the discount is Percentage or Flat.
+   *
+   * Priority:
+   * 1. Use discount_type from the product when the API provides it.
+   * 2. For variant products, infer the type safely from the min/max
+   *    original and discounted price ranges.
+   * 3. If discount_amount exists but discount_type does not, compare
+   *    the configured amount against the selected variant calculation.
+   */
+  discountMode() {
+    const configuredDiscount = Number(this.product.discount_amount || 0);
+    const rawType =
+      this.product.discount_type !== undefined &&
+      this.product.discount_type !== null
+        ? String(this.product.discount_type).toLowerCase()
+        : "";
+
+    const percentType =
+      this.amountTypes?.percent !== undefined &&
+      this.amountTypes?.percent !== null
+        ? String(this.amountTypes.percent).toLowerCase()
+        : "";
+
+    const flatType =
+      this.amountTypes?.flat !== undefined &&
+      this.amountTypes?.flat !== null
+        ? String(this.amountTypes.flat).toLowerCase()
+        : "";
+
+    // Exact type from API/admin data when available.
+    if (
+      rawType &&
+      (
+        (percentType && rawType === percentType) ||
+        rawType === "percent" ||
+        rawType === "percentage"
+      )
+    ) {
+      return "percent";
+    }
+
+    if (
+      rawType &&
+      (
+        (flatType && rawType === flatType) ||
+        rawType === "flat"
+      )
+    ) {
+      return "flat";
+    }
+
+    // Variant fallback:
+    // Percentage => percentage saving is the same on min and max prices.
+    // Flat       => absolute saving is the same on min and max prices.
+    const minOld = Number(this.product.price_range_min_old || 0);
+    const minPrice = Number(this.product.price_range_min || 0);
+    const maxOld = Number(this.product.price_range_max_old || 0);
+    const maxPrice = Number(this.product.price_range_max || 0);
+
+    if (
+      minOld > minPrice &&
+      maxOld > maxPrice &&
+      minOld > 0 &&
+      maxOld > 0
+    ) {
+      const minSaving = minOld - minPrice;
+      const maxSaving = maxOld - maxPrice;
+
+      const minPercent = (minSaving / minOld) * 100;
+      const maxPercent = (maxSaving / maxOld) * 100;
+
+      const samePercentage = Math.abs(minPercent - maxPercent) < 0.01;
+      const sameFlatAmount = Math.abs(minSaving - maxSaving) < 0.001;
+
+      if (samePercentage && !sameFlatAmount) {
+        return "percent";
+      }
+
+      if (sameFlatAmount && !samePercentage) {
+        return "flat";
+      }
+    }
+
+    // Single selected variant fallback when configured amount exists.
+    const oldPrice = Number(this.product.oldPrice || 0);
+    const price = Number(this.product.price || 0);
+
+    if (
+      configuredDiscount > 0 &&
+      oldPrice > price &&
+      oldPrice > 0
+    ) {
+      const actualSaving = oldPrice - price;
+
+      const expectedPercentSaving =
+        oldPrice * (configuredDiscount / 100);
+
+      if (
+        Math.abs(actualSaving - expectedPercentSaving) <
+        Math.abs(actualSaving - configuredDiscount)
+      ) {
+        return "percent";
+      }
+
+      return "flat";
+    }
+
+    // Final fallback. This only applies when the API gives no discount
+    // metadata and there is not enough range information to distinguish.
+    return "flat";
+  },
+
+  isPercentageDiscount() {
+    return this.discountMode() === "percent";
+  },
+
+  discountPercentValue() {
+    const configuredDiscount = Number(this.product.discount_amount || 0);
+
+    // If API supplied the exact configured percentage, use it.
+    if (configuredDiscount > 0 && this.isPercentageDiscount()) {
+      return configuredDiscount;
+    }
+
+    // For variants, derive the percentage from the already-calculated
+    // discounted/original price. This does NOT change the product price.
+    const oldPrice = Number(this.product.oldPrice || 0);
+    const price = Number(this.product.price || 0);
+
+    if (oldPrice > price && oldPrice > 0) {
+      const percent = ((oldPrice - price) / oldPrice) * 100;
+
+      return Number(
+        Number.isInteger(Number(percent.toFixed(6)))
+          ? percent.toFixed(0)
+          : percent.toFixed(2)
+      );
+    }
+
+    const maxOld = Number(this.product.price_range_max_old || 0);
+    const maxPrice = Number(this.product.price_range_max || 0);
+
+    if (maxOld > maxPrice && maxOld > 0) {
+      const percent = ((maxOld - maxPrice) / maxOld) * 100;
+
+      return Number(
+        Number.isInteger(Number(percent.toFixed(6)))
+          ? percent.toFixed(0)
+          : percent.toFixed(2)
+      );
+    }
+
+    return 0;
+  },
+
+  discountSavedAmount() {
+    const configuredDiscount = Number(this.product.discount_amount || 0);
+
+    // If API supplied the exact configured flat amount, use it.
+    if (configuredDiscount > 0 && !this.isPercentageDiscount()) {
+      return configuredDiscount;
+    }
+
+    const oldPrice = Number(this.product.oldPrice || 0);
+    const price = Number(this.product.price || 0);
+
+    if (oldPrice > price) {
+      return Number((oldPrice - price).toFixed(3));
+    }
+
+    const maxOld = Number(this.product.price_range_max_old || 0);
+    const maxPrice = Number(this.product.price_range_max || 0);
+
+    if (maxOld > maxPrice) {
+      return Number((maxOld - maxPrice).toFixed(3));
+    }
+
+    return 0;
+  },
+
   hasMeaningfulHtml(value) {
     if (!value || typeof value !== "string") {
       return false;
@@ -1276,6 +1506,28 @@ methods: {
   margin-top: 25px;
 }
 
+.product-discount-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  margin: 8px 0 16px;
+  border: 1px solid var(--mainC);
+  border-radius: 20px;
+  color: var(--mainC);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.product-discount-badge .material-icons {
+  font-size: 17px;
+}
+
+.product-discount-badge strong {
+  font-weight: 700;
+}
+
 /* RTL — explicit swap (split-screen content column is direction: ltr) */
 .product-details-content--rtl {
 
@@ -1305,6 +1557,8 @@ methods: {
       text-align: right;
     }
   }
+
+
 
   .product-price .price {
     direction: ltr;

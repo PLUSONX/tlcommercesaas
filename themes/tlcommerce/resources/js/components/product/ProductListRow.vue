@@ -16,10 +16,38 @@
       </p>
 
       <div class="product-list-row__footer">
-        <span class="product-list-row__price c1">
+        <router-link
+  :to="`/products/${item.slug}`"
+  class="product-list-row__price-link"
+>
+  <!-- Original price -->
+  <del
+    v-if="Number(item.base_price) > Number(item.price)"
+    class="product-list-row__old-price"
+  >
+    <the-currency
+      :amount="item.base_price"
+      tag="span"
+    ></the-currency>
+  </del>
+
+  <!-- Discounted price -->
+  <span class="product-list-row__price c1">
+    <the-currency
+      :amount="
+        Number(item.base_price) > Number(item.price)
+          ? item.price
+          : item.base_price
+      "
+      tag="span"
+    ></the-currency>
+  </span>
+</router-link>
+
+        <!-- <span class="product-list-row__price c1">
           <the-currency :amount="item.price" tag="span" v-if="item.base_price > item.price"></the-currency>
           <the-currency :amount="item.base_price" tag="span" v-else></the-currency>
-        </span>
+        </span> -->
 
         <button v-if="!cartLine" type="button" class="product-list-row__add-btn" :disabled="item.quantity < 1"
           @click.prevent.stop="handleAddClick">
@@ -688,6 +716,24 @@ export default {
 
   font-size: 15px;
 
+}
+
+.product-list-row__price-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none !important;
+}
+
+.product-list-row__old-price {
+  color: #8a8a8a;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.product-list-row__price {
+  font-weight: 700;
+  font-size: 15px;
 }
 
 
