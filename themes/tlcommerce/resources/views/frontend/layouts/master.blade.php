@@ -339,29 +339,51 @@
             pointer-events: none;
         }
         #tlc-boot-loader .loader {
-            --color-1: #fff;
-            --color-2: var(--mainC, #e62d04);
+            --color-1: #ffffff;
+            --color-2: var(--mainC, #ff3d00);
             --size: 1px;
 
-            width: calc(48 * var(--size));
-            height: calc(48 * var(--size));
-            border: calc(5 * var(--size)) solid var(--color-1);
-            border-bottom-color: var(--color-2);
-            border-radius: 50%;
-            display: inline-block;
+            display: block;
+            position: relative;
+            height: calc(12 * var(--size));
+            width: 80%;
+            max-width: 420px;
+            border: calc(1 * var(--size)) solid var(--color-1);
+            border-radius: calc(10 * var(--size));
+            overflow: hidden;
             box-sizing: border-box;
-            animation: tlc-boot-rotation 1s linear infinite;
+        }
+
+        #tlc-boot-loader .loader::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            background: var(--color-2);
+            animation: prog 6s ease-in infinite;
+        }
+
+        @keyframes prog {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 100%;
+            }
         }
         
         
-        @keyframes tlc-boot-rotation {
+        /* @keyframes tlc-boot-rotation {
             0% {
                 transform: rotate(0deg);
             }
             100% {
                 transform: rotate(360deg);
             }
-        }
+        } */
     </style>
 
     <link rel="stylesheet" type="text/css" href="{{ asset(tenantCssRelativePath('tenant-bundle.css')) }}?v={{ $assetVersion }}">
