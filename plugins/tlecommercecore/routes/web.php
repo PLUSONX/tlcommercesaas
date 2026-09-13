@@ -254,6 +254,7 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
             //Shipping time
             Route::post('/store-new-shipping-time', [ShippingController::class, 'storeShippingTime'])->name('plugin.tlcommercecore.shipping.time.store');
             Route::post('/delete-shipping-time', [ShippingController::class, 'deleteShippingTime'])->name('plugin.tlcommercecore.shipping.time.delete')->middleware('demo');
+            Route::post('/update-order-now-display',[ShippingController::class, 'updateOrderNowDisplay'])->name('plugin.tlcommercecore.shipping.order.now.display.update');
 
             // Delivery scheduling (time slots)
             Route::post('/delivery-schedule/settings', [DeliveryScheduleController::class, 'updateSettings'])->name('plugin.tlcommercecore.delivery.schedule.settings.update');

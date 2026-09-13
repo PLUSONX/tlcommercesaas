@@ -403,6 +403,116 @@
             </div>
         </div>
         <!--End Shipping Profiles-->
+        @php
+            $orderNowDisplay = \Plugin\TlcommerceCore\Support\OrderNowDisplayConfig::get();
+        @endphp
+
+    <div class="col-12">
+        <div class="card mb-30">
+            <div class="card-header bg-white py-3">
+                <h4 class="font-18 mb-0">
+                    {{ translate('Order Now Display') }}
+                </h4>
+            </div>
+
+            <div class="card-body">
+                <form
+                    action="{{ route('plugin.tlcommercecore.shipping.order.now.display.update') }}"
+                    method="POST"
+                >
+                    @csrf
+
+                    <div class="form-row mb-20">
+                        <label class="font-14 bold black d-block mb-2">
+                            {{ translate('Show Order Now Row') }}
+                        </label>
+
+                        <label class="order-now-switch">
+                            <input
+                                type="checkbox"
+                                name="order_now_enabled"
+                                value="1"
+                                {{ $orderNowDisplay['enabled'] ? 'checked' : '' }}
+                            >
+
+                            <span class="order-now-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="form-row mb-20">
+                        <label class="font-14 bold black">
+                            {{ translate('Order Now Text') }}
+                        </label>
+
+                        <input
+                            type="text"
+                            name="order_now_text"
+                            class="theme-input-style"
+                            value="{{ $orderNowDisplay['text'] }}"
+                            placeholder="{{ translate('Example: Next Day') }}"
+                            maxlength="100"
+                        >
+
+                        <small class="text-muted mt-2 d-block">
+                            {{ translate('Leave empty to use the automatically calculated shipping time.') }}
+                        </small>
+                    </div>
+
+                    <div class="text-right">
+                        <button type="submit" class="btn long">
+                            {{ translate('Save') }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+      
+
+        <style>
+            .order-now-switch {
+                position: relative;
+                display: inline-block;
+                width: 48px;
+                height: 26px;
+                margin: 0;
+            }
+
+            .order-now-switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .order-now-slider {
+                position: absolute;
+                cursor: pointer;
+                inset: 0;
+                background: #ccc;
+                border-radius: 30px;
+                transition: .2s;
+            }
+
+            .order-now-slider:before {
+                content: "";
+                position: absolute;
+                width: 20px;
+                height: 20px;
+                left: 3px;
+                top: 3px;
+                background: #fff;
+                border-radius: 50%;
+                transition: .2s;
+            }
+
+            .order-now-switch input:checked + .order-now-slider {
+                background: #ff5a00;
+            }
+
+            .order-now-switch input:checked + .order-now-slider:before {
+                transform: translateX(22px);
+            }
+        </style>
         <!--Shipping Processing Time-->
         <div class="col-12" id="ShippingTimes">
             <div class="card mb-30">

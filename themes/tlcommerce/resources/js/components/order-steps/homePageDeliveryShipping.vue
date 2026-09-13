@@ -29,28 +29,28 @@
                 </div>
 
                 <hr class="delivery-card__divider">
-
-                <div class="delivery-arrival">
+                <div
+                    v-if="orderNowEnabled"
+                    class="delivery-arrival"
+                >
                     <div class="d-flex align-items-center">
-                        <span class="material-icons mr-2">schedule</span>
-                        <span class="text-muted small">{{ earliestArrivalLabel }}</span>
-                    </div>
-                    <div v-if="earliestArrival" class="arrival-time">
-                        <strong>{{ earliestArrival }}</strong>
-                    </div>
-                    <!-- <div v-if="selectedCity" class="arrival-time">
-                        <div v-if="['raneem', 'raneemjewelers', 'RANEEM JEWELERS'].includes(tenant)">
-                            <strong>12-24 {{ $t('Hours') }}</strong>
-                        </div>
+                        <span class="material-icons mr-2">
+                            schedule
+                        </span>
 
-                        <div v-if="['kfc', 'tryguardi', 'TryGuardi', 'Guardi', 'TRYGUARDI'].includes(tenant)">
-                            <strong>3-6 {{ $t('Hours') }}</strong>
-                        </div>
+                        <span class="text-muted small">
+                            {{ earliestArrivalLabel }}
+                        </span>
+                    </div>
 
-                        <div v-if="['Tasty', 'tasty'].includes(tenant)">
-                            <strong>12-24 {{ $t('Hours') }}</strong>
-                        </div>
-                    </div> -->
+                    <div
+                        v-if="orderNowDisplayValue"
+                        class="arrival-time"
+                    >
+                        <strong>
+                            {{ orderNowDisplayValue }}
+                        </strong>
+                    </div>
                 </div>
 
                 <hr class="delivery-card__divider">
@@ -190,6 +190,8 @@ export default {
         return {
             earliestArrival: null,
             loadingEarliestArrival: false,
+            orderNowEnabled: true,
+            orderNowText: "",
         };
     },
 
@@ -198,6 +200,13 @@ export default {
         selectedCity() {
             return this.$store.state.shippingDetails?.city || null;
         },
+        orderNowDisplayValue() {
+    if (this.orderNowText) {
+        return this.orderNowText;
+    }
+
+    return this.earliestArrival;
+},
         selectedState() {
             return this.$store.state.shippingDetails?.state || null;
         },
@@ -315,6 +324,10 @@ export default {
                     state_id: this.selectedState?.id || null,
                 })
                 .then((response) => {
+                    this.orderNowEnabled =
+                    response.data?.order_now_enabled !== false;
+                    this.orderNowText = response.data?.order_now_text || "";
+                    
                     if (response.data?.success && response.data?.shipping_time) {
                         this.earliestArrival = response.data.shipping_time;
                     } else {
