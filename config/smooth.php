@@ -17,7 +17,7 @@
 */
 
 return [
-    'base_url' => env('SMOOTH_BASE_URL', 'https://qa-link.smoothlogistics.co'),
+    'base_url' => env('SMOOTH_BASE_URL', 'https://link.smoothlogistics.co'),
     'api_key_header' => 'api-key',
     'timeout' => (int) env('SMOOTH_TIMEOUT', 20),
 
