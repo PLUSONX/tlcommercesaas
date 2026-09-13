@@ -49,11 +49,37 @@ class GuestCheckoutRequest extends FormRequest
         return $rules;
     }
 
-    protected function prepareForValidation()
-    {
-        $this->mergeDecodedAddress('shipping_address', 'shipping_address_data');
-        $this->mergeDecodedAddress('billing_address', 'billing_address_data');
+   protected function prepareForValidation()
+{
+    // Make empty email truly nullable
+    $email = $this->input('email');
+
+    if (is_string($email)) {
+        $email = trim($email);
+
+        if (
+            $email === '' ||
+            strtolower($email) === 'null' ||
+            strtolower($email) === 'undefined'
+        ) {
+            $email = null;
+        }
     }
+
+    $this->merge([
+        'email' => $email,
+    ]);
+
+    $this->mergeDecodedAddress(
+        'shipping_address',
+        'shipping_address_data'
+    );
+
+    $this->mergeDecodedAddress(
+        'billing_address',
+        'billing_address_data'
+    );
+}
 
     private function mergeDecodedAddress(string $sourceKey, string $targetKey): void
     {
@@ -84,7 +110,7 @@ class GuestCheckoutRequest extends FormRequest
         return [
             'name.required' => translate('Name is required', Session::get('api_locale')),
             'password.confirmed' => translate('Password does not match', Session::get('api_locale')),
-            'email.required' => translate('Email is required', Session::get('api_locale')),
+            // 'email.required' => translate('Email is required', Session::get('api_locale')),
             'email.email' => translate('Incorrect email', Session::get('api_locale')),
             'email.unique' => translate('Email is already used', Session::get('api_locale')),
             'shipping_address_data.phone.required' => translate('Phone is required', Session::get('api_locale')),
