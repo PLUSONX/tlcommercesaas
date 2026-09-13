@@ -33,6 +33,7 @@ use Plugin\TlcommerceCore\Http\Resources\PaymentMethodCollection;
 use Plugin\TlcommerceCore\Http\Resources\RefundRequestCollection;
 use Plugin\TlcommerceCore\Models\CustomerAddress;
 use Plugin\TlcommerceCore\Support\KuwaitPhone;
+use Plugin\TlcommerceCore\Support\OrderNowDisplayConfig;
 
 class OrderController extends Controller
 {
@@ -294,25 +295,46 @@ class OrderController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function earliestArrival(Request $request)
-    {
-        try {
-            return response()->json(
-                $this->shipping_repository->earliestArrival(
-                    $request->input('city_id'),
-                    $request->input('state_id')
-                )
-            );
-        } catch (\Exception $e) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'shipping_time' => null,
-                    'source' => null,
-                ]
-            );
+  public function earliestArrival(Request $request)
+{
+    try {
+        // Existing shipping calculation - DO NOT CHANGE
+        $data = $this->shipping_repository->earliestArrival(
+            $request->input('city_id'),
+            $request->input('state_id')
+        );
+
+        // Only append our display settings when existing response is an array
+        if (is_array($data)) {
+            $orderNowDisplay = OrderNowDisplayConfig::get();
+
+            $data['order_now_enabled'] =
+                (bool) $orderNowDisplay['enabled'];
+
+            $data['order_now_text'] =
+                (string) $orderNowDisplay['text'];
         }
+
+        // Existing shipping response remains unchanged
+        return response()->json($data);
+
+    } catch (\Throwable $e) {
+
+        Log::error('Earliest arrival failed', [
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'shipping_time' => null,
+            'source' => null,
+            'order_now_enabled' => true,
+            'order_now_text' => '',
+        ]);
     }
+}
     /**
      * Will calculate Delivery Cost
      *

@@ -19,6 +19,8 @@ use Plugin\TlcommerceCore\Http\Requests\ShippingTimeRequest;
 use Plugin\TlcommerceCore\Http\Requests\ShippingZoneRequest;
 use Plugin\TlcommerceCore\Http\Requests\ShippingProfileRequest;
 use Plugin\TlcommerceCore\Models\LocationWiseShippingRate;
+use Plugin\TlcommerceCore\Support\OrderNowDisplayConfig;
+use Illuminate\Support\Facades\Log;
 
 class ShippingController extends Controller
 {
@@ -656,6 +658,43 @@ class ShippingController extends Controller
         } else {
             toastNotification('error', translate('Unable to delete this shipping profile'), 'Failed');
             return redirect()->back();
+        }
+    }
+
+    public function updateOrderNowDisplay(Request $request)
+    {
+        try {
+            $request->validate([
+                'order_now_text' => 'nullable|string|max:100',
+            ]);
+
+            OrderNowDisplayConfig::save([
+                'enabled' => $request->has('order_now_enabled'),
+                'text' => $request->input('order_now_text', ''),
+            ]);
+
+            return redirect()
+                ->route('plugin.tlcommercecore.shipping.configuration')
+                ->with(
+                    'success',
+                    translate('Order Now display settings updated successfully')
+                );
+
+        } catch (\Throwable $e) {
+
+            Log::error('Order Now display settings save failed', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return redirect()
+                ->route('plugin.tlcommercecore.shipping.configuration')
+                ->with(
+                    'error',
+                    'Order Now settings could not be saved: ' .
+                    $e->getMessage()
+                );
         }
     }
 }

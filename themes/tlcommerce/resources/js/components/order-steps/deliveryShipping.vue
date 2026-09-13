@@ -209,21 +209,23 @@
             </div>
           </div>
           <div class="form-group mb-20 col-lg-6">
-            <label class="font-weight-bold fz-12 mb-2">
-              {{ $t("Email") }}
-              <span class="text-danger" v-if="
-                isActivePickupPoint ||
-                config?.enable_personal_info_guest_checkout == enums.status.ACTIVE
-              ">*</span>
-            </label>
-            <input type="email" v-bind:placeholder="$t('Email')" v-model="guestCustomerInfo.email"
-              class="theme-input-style" />
-            <div v-for="error in errors" :key="error.customer_email">
-              <p class="text-danger validation-error" v-if="error.customer_email">
-                {{ error.customer_email }}
-              </p>
-            </div>
-          </div>
+  <label class="font-weight-bold fz-12 mb-2">
+    {{ $t("Email") }}
+  </label>
+
+  <input
+    type="email"
+    v-bind:placeholder="$t('Email')"
+    v-model="guestCustomerInfo.email"
+    class="theme-input-style"
+  />
+
+  <div v-for="error in errors" :key="error.customer_email">
+    <p class="text-danger validation-error" v-if="error.customer_email">
+      {{ error.customer_email }}
+    </p>
+  </div>
+</div>
           <div class="form-group mb-20 col-lg-6" v-if="
             config?.create_account_in_guest_checkout == enums.status.ACTIVE
           ">
@@ -275,19 +277,23 @@
               </p>
             </div>
           </div>
-          <div class="form-group mb-20 col-lg-6" v-if="config?.enable_email_in_checkout == enums.status.ACTIVE">
-            <label class="font-weight-bold fz-12 mb-2">
-              {{ $t("Email Address") }}
-              <span class="text-danger" v-if="config?.email_required_in_checkout == enums.status.ACTIVE">*</span>
-            </label>
-            <input type="email" v-bind:placeholder="$t('Email Address')" v-model="guestShippingInfo.email"
-              class="theme-input-style" />
+          <!-- <div class="form-group mb-20 col-lg-6">
+      <label class="font-weight-bold fz-12 mb-2">
+        {{ $t("Email") }}
+      </label>
+
+  <input
+        type="email"
+        v-bind:placeholder="$t('Email')"
+        v-model="guestCustomerInfo.email"
+        class="theme-input-style"
+      />
             <div v-for="error in errors" :key="error.shipping_email">
               <p class="text-danger validation-error" v-if="error.shipping_email">
                 {{ error.shipping_email }}
               </p>
             </div>
-          </div>
+          </div> -->
           <!-- <div
             class="form-group mb-20 col-lg-6"
             v-if="config?.enable_phone_in_checkout == enums.status.ACTIVE"
@@ -1473,9 +1479,9 @@ export default {
           if (!this.guestCustomerInfo.name) {
             this.errors.push({ customer_name: this.$t("Name is required") });
           }
-          if (!this.guestCustomerInfo.email) {
-            this.errors.push({ customer_email: this.$t("Email is required") });
-          }
+          // if (!this.guestCustomerInfo.email) {
+          //   this.errors.push({ customer_email: this.$t("Email is required") });
+          // }
           //Password validation
           // if (this.isActiveCreateNewAccount) {
           //   if (!this.guestCustomerInfo.password) {
@@ -1550,13 +1556,13 @@ export default {
           ) {
             this.errors.push({ customer_name: this.$t("Name is required") });
           }
-          if (
-            !this.guestCustomerInfo.email &&
-            this.config?.enable_personal_info_guest_checkout ==
-            this.enums.status.ACTIVE
-          ) {
-            this.errors.push({ customer_email: this.$t("Email is required") });
-          }
+          // if (
+          //   !this.guestCustomerInfo.email &&
+          //   this.config?.enable_personal_info_guest_checkout ==
+          //   this.enums.status.ACTIVE
+          // ) {
+          //   this.errors.push({ customer_email: this.$t("Email is required") });
+          // }
           //Password validation
           // if (this.isActiveCreateNewAccount) {
           //   if (!this.guestCustomerInfo.password) {
@@ -1646,13 +1652,13 @@ export default {
           }
 
           //email validation
-          if (
-            !this.guestShippingInfo.email &&
-            this.config?.enable_email_in_checkout == this.enums.status.ACTIVE &&
-            this.config?.email_required_in_checkout == this.enums.status.ACTIVE
-          ) {
-            this.errors.push({ shipping_email: this.$t("Email is required") });
-          }
+          // if (
+          //   !this.guestShippingInfo.email &&
+          //   this.config?.enable_email_in_checkout == this.enums.status.ACTIVE &&
+          //   this.config?.email_required_in_checkout == this.enums.status.ACTIVE
+          // ) {
+          //   this.errors.push({ shipping_email: this.$t("Email is required") });
+          // }
 
           //Phone validation
           if (!this.guestShippingInfo.phone) {
