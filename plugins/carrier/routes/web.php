@@ -21,6 +21,7 @@ Route::group(['prefix' => getAdminPrefix() . '/shipping'], function () {
         Route::post('/submit-courier-request', [CarrierController::class, 'submitCourierRequest'])->name('plugin.carrier.shipping.submit.courier.request');
         // Get Courier Order Updates
         Route::get('/get-shipping-courier-order-updates', [CarrierController::class, 'getCarriersOrderUpdates'])->name('plugin.carrier.order.updates');
+        Route::get('/get-smooth-order-updates', [CarrierController::class, 'getSmoothOrderUpdates'])->name('plugin.carrier.smooth.order.updates');
 
     });
 });

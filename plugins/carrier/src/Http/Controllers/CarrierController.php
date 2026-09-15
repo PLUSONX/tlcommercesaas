@@ -276,6 +276,25 @@ class CarrierController extends Controller
     }
 
     /**
+     * Smooth-only live tracking endpoint for the admin order modal.
+     * Other courier providers continue using the existing generic endpoint.
+     */
+    public function getSmoothOrderUpdates(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|integer|min:1',
+        ]);
+
+        Log::info('getSmoothOrderUpdates method called!', [
+            'order_id' => $request->order_id,
+        ]);
+
+        return response()->json([
+            'order_details' => $this->carrier_repository->getSmoothOrderUpdates((int) $request->order_id),
+        ]);
+    }
+
+    /**
      * Will return courier order updates
      * 
      * @return collections

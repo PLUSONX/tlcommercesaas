@@ -141,7 +141,7 @@ class SmoothService
     public function normalizeOrderPayload(array $payload): array
     {
         $shipment = is_array($payload['shipment'] ?? null) ? $payload['shipment'] : [];
-        $trackingId = $payload['tracking_id'] ?? null;
+        $trackingId = $payload['tracking_id'] ?? $shipment['tracking_id'] ?? null;
         $reference = $payload['reference_id'] ?? null;
         $shipmentReference = $shipment['reference_id'] ?? null;
 
@@ -153,14 +153,18 @@ class SmoothService
             'amount' => $payload['amount'] ?? null,
             'delivery_fee' => $payload['delivery_fee'] ?? null,
             'currency' => (string) config('smooth.currency', 'KWD'),
-            'driver_name' => null,
-            'driver_phone' => null,
-            'driver_latitude' => null,
-            'driver_longitude' => null,
+            'driver_name' => $payload['driver_name'] ?? $shipment['driver_name'] ?? null,
+            'driver_phone' => $payload['driver_number']
+                ?? $payload['driver_phone']
+                ?? $shipment['driver_number']
+                ?? $shipment['driver_phone']
+                ?? null,
+            'driver_latitude' => $shipment['lat'] ?? null,
+            'driver_longitude' => $shipment['long'] ?? null,
             'estimated_distance' => null,
             'estimated_duration' => null,
-            'tracking_url' => $payload['tracking_url'] ?? null,
-            'pickup_qr_url' => null,
+            'tracking_url' => $payload['tracking_url'] ?? $shipment['tracking_url'] ?? null,
+            'pickup_qr_url' => $payload['pickup_tracking_url'] ?? null,
         ];
     }
 

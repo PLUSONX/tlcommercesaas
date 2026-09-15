@@ -29,7 +29,15 @@
 @if ($orders->count() > 0)
     @foreach ($orders as $key => $order)
         @php
-            $shippingCourierOrder = \Plugin\TlcommerceCore\Models\ShippingCourierOrders::where('order_id', $order->id)->first();
+            $shippingCourierOrder = \Plugin\TlcommerceCore\Models\ShippingCourierOrders::with('courier')
+                ->where('order_id', $order->id)
+                ->first();
+            $shippingCourierName = mb_strtolower(trim((string) ($shippingCourierOrder?->courier?->name ?? '')));
+            $shippingCourierTrackingUrl = mb_strtolower(trim((string) ($shippingCourierOrder?->courier?->tracking_url ?? '')));
+            $isSmoothCourierOrder = $shippingCourierOrder != null && (
+                str_contains($shippingCourierName, 'smooth')
+                || str_contains($shippingCourierTrackingUrl, 'smoothlogistics')
+            );
             $deliveryStatuses = config('tlecommercecore.order_delivery_status');
             $currentDelivery = (int) $order->delivery_status;
             $deliveryBadgeMap = [
@@ -175,6 +183,11 @@
                         {{ $delivery_status_timestamp_displays[$order->id] }}
                     </div>
                 @endif
+                @if ($isSmoothCourierOrder && !empty($shippingCourierOrder->status))
+                    <div class="font-11 text-muted mt-1" style="white-space: normal; line-height: 1.3;">
+                        Smooth: {{ strtoupper(str_replace('_', ' ', $shippingCourierOrder->status)) }}
+                    </div>
+                @endif
             </td>
 
 
@@ -200,11 +213,19 @@
                 )
                     <div class="text-center">
 
-                    <button class="btn-orange status-details-btn w-100" title="Update order status"
+                    <button class="btn-orange status-details-btn {{ $isSmoothCourierOrder && $shippingCourierOrder ? 'w-50' : 'w-100' }}" title="Update order status"
                         data-order="{{ $order->id }}"
                         style="border-radius: 6px; height: 30px;">
                         <i class="icofont-ui-edit"></i>
                     </button>
+
+                    @if ($isSmoothCourierOrder && $shippingCourierOrder)
+                    <button class="btn-orange smooth-track-order-button w-50" title="Smooth Live Tracking"
+                        data-order="{{ $order->id }}"
+                        style="border-radius: 6px; height: 30px;">
+                        <x-lucide-locate width="20" height="30" />
+                    </button>
+                    @endif
 
                     <!-- <button class="btn-info status-details-btn w-75" title="Update order status"
                         data-order="{{ $order->id }}">
@@ -238,7 +259,8 @@
 
                 @if ($shippingCourierOrder != null)
 
-                <button class="btn-orange track-order-button w-50" title="Track Order"
+                <button class="btn-orange {{ $isSmoothCourierOrder ? 'smooth-track-order-button' : 'track-order-button' }} w-50"
+                        title="{{ $isSmoothCourierOrder ? 'Smooth Live Tracking' : 'Track Order' }}"
                         data-order="{{ $order->id }}"
                         style="border-radius: 6px; height: 30px;">
                         <x-lucide-locate width="20" height="30" />
