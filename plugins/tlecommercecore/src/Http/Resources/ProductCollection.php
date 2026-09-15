@@ -27,7 +27,10 @@ class ProductCollection extends ResourceCollection
                     'total_reviews' => $this->rating($data),
                     'avg_rating' => $this->avgRating($data),
                     'seller' => $data->supplier,
-                    'shop' => isActivePluging('multivendor') && $data->seller != null ? $data->seller->shop : null
+                    'shop' => isActivePluging('multivendor') && $data->seller != null ? $data->seller->shop : null,
+                    'low_stock_quantity_alert' => (int) ($data->low_stock_quantity_alert ?? 0),
+                    'is_low_stock' => $this->isLowStock($data),
+                    'is_out_of_stock' => $this->isOutOfStock($data),
                 ];
             })
         ];
@@ -78,4 +81,102 @@ class ProductCollection extends ResourceCollection
             'status' => 200
         ];
     }
+
+    public function isLowStock($data)
+{
+    $threshold = (int) (
+        $data->low_stock_quantity_alert ?? 0
+    );
+
+    if ($threshold <= 0) {
+        return false;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Simple product
+    |--------------------------------------------------------------------------
+    */
+    if (
+        (int) $data->has_variant ===
+        (int) config(
+            'tlecommercecore.product_variant.single'
+        )
+    ) {
+        $quantity = $data->single_price != null
+            ? (int) $data->single_price->quantity
+            : 0;
+
+        return (
+            $quantity > 0 &&
+            $quantity <= $threshold
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Variant product
+    |--------------------------------------------------------------------------
+    |
+    | Product is Low Stock if AT LEAST ONE variant is low.
+    |
+    */
+    if (
+        $data->variations == null ||
+        $data->variations->isEmpty()
+    ) {
+        return false;
+    }
+
+    return $data->variations->contains(
+        function ($variation) use ($threshold) {
+
+            $quantity = (int) $variation->quantity;
+
+            return (
+                $quantity > 0 &&
+                $quantity <= $threshold
+            );
+        }
+    );
+}
+
+public function isOutOfStock($data)
+{
+    /*
+    |--------------------------------------------------------------------------
+    | Simple product
+    |--------------------------------------------------------------------------
+    */
+    if (
+        (int) $data->has_variant ===
+        (int) config(
+            'tlecommercecore.product_variant.single'
+        )
+    ) {
+        return (
+            $data->single_price == null ||
+            (int) $data->single_price->quantity <= 0
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Variant product
+    |--------------------------------------------------------------------------
+    | Out of stock only when ALL variants are out.
+    */
+    if (
+        $data->variations == null ||
+        $data->variations->isEmpty()
+    ) {
+        return true;
+    }
+
+    return $data->variations->every(
+        function ($variation) {
+            return (int) $variation->quantity <= 0;
+        }
+    );
+}
 }

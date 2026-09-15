@@ -148,18 +148,26 @@
     <!-- Total Price -->
     <div class="product-price unit-price mt-25">
       <h6 v-if="!modernLayout" class="mb-1">
-  {{ $t("Price") }}
-</h6>
+        {{ $t("Price") }}
+      </h6>
       <div class="price d-flex align-items-center">
         <span
-  class="price-current-wrap"
-  :class="{ 'price-flash': priceFlash }"
-  :style="priceFlashColor ? { '--price-flash-color': priceFlashColor } : {}"
->
-          <the-currency :amount="product.price" tag="h3" class="mb-0"></the-currency>
+            class="price-current-wrap"
+            :class="{ 'price-flash': priceFlash }"
+            :style="priceFlashColor ? { '--price-flash-color': priceFlashColor } : {}"
+          >
+                    <the-currency :amount="product.price" tag="h3" class="mb-0"></the-currency>
         </span> 
         <the-currency v-if="product.oldPrice > product.price" :amount="product.oldPrice" tag="del"
           class="ml-20"></the-currency>
+      </div>
+      <div
+        v-if="isLowStock"
+        class="mt-10"
+      >
+        <span class="frontend-low-stock-badge">
+          {{ $t("Low Stock") }}
+        </span>
       </div>
     </div>
     <!-- End Total Price -->
@@ -481,6 +489,24 @@ data() {
   };
 },
   computed: mapState({
+    isLowStock() {
+  const threshold = Number(
+    this.product?.low_stock_quantity_alert ?? 0
+  );
+
+  const quantity = Number(
+    this.product?.quantity
+  );
+
+  if (threshold <= 0) {
+    return false;
+  }
+
+  return (
+    Number.isFinite(quantity) &&
+    quantity <= threshold
+  );
+},
     customerToken: (state) => state.customerToken,
     isCustomerLogin: (state) => state.isCustomerLogin,
     config: (state) => state.siteSettings,
@@ -1259,6 +1285,20 @@ methods: {
 .option-list-cards {
   gap: 8px;
   margin-top: 8px;
+}
+
+.frontend-low-stock-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #ffc107;
+  color: #222;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .option-list-card {

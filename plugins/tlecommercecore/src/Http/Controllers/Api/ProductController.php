@@ -87,8 +87,15 @@ class ProductController extends Controller
 
         // $query = $this->product_repository->filterProducts($request);
 
-        $query = Product::query()
-            ->where('status', 1);
+        $query = Product::with([
+                    'unit_info.unit_translations',
+                    'single_price',
+                    'variations',
+                    'product_translations',
+                    'reviews',
+                    'seller',
+                ])
+                ->where('status', 1);
         // \Log::info('query', $query);
 
         if (!empty($categoryId)) {
@@ -509,7 +516,7 @@ class ProductController extends Controller
                 );
             }
 
-            $product_info = Product::where('id', $request->id)->select('id', 'discount_amount', 'discount_type')->first();
+            $product_info = Product::where('id', $request->id)->select('id', 'discount_amount', 'discount_type',  'low_stock_quantity_alert')->first();
             $applicable_discount = $product_info->applicableDiscount();
 
             if ($applicable_discount['discount_amount'] > 0) {
@@ -525,6 +532,15 @@ class ProductController extends Controller
             $oldPrice = $variant_info->unit_price;
             $quantity = $variant_info->quantity;
 
+            $lowStockAlert = (int) (
+    $product_info->low_stock_quantity_alert ?? 0
+);
+
+$isLowStock =
+    $lowStockAlert > 0 &&
+    (int) $quantity > 0 &&
+    (int) $quantity <= $lowStockAlert;
+
             return response()->json(
                 [
                     'success' => true,
@@ -532,7 +548,12 @@ class ProductController extends Controller
                     'new_variant' => $new_variant,
                     'base_price' => $base_price,
                     'oldPrice' => $oldPrice,
-                    'quantity' => $quantity
+                    'quantity' => $quantity,
+                       'low_stock_quantity_alert' =>
+        $lowStockAlert,
+
+    'is_low_stock' =>
+        $isLowStock,
                 ]
             );
         } catch (\Exception $e) {
