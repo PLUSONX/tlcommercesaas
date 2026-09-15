@@ -28,13 +28,13 @@ class ScrollHeroController extends Controller
                 'required_without:mobile_frames',
                 'file',
                 'mimes:zip',
-                'max:102400',
+                'max:1048576',
             ],
             'mobile_frames' => [
                 'nullable',
                 'file',
                 'mimes:zip',
-                'max:102400',
+                'max:1048576',
             ],
             'scroll_height' => [
                 'nullable',
