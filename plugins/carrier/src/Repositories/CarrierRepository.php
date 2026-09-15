@@ -12,6 +12,7 @@ use Plugin\TlcommerceCore\Models\Orders;
 use Plugin\Carrier\Services\ArmadaService;
 use Plugin\Carrier\Services\KarrixService;
 use Plugin\Carrier\Services\SmoothService;
+use Plugin\Carrier\Services\SmoothTrackingService;
 use Illuminate\Http\Request;
 use Core\Models\User;
 use Illuminate\Support\Facades\Notification;
@@ -562,6 +563,13 @@ class CarrierRepository
                 $orderId
             );
 
+            Log::info('Smooth status callback received.', [
+                'owner_slug' => mb_strtolower(trim($ownerSlug)),
+                'order_id' => $orderId,
+                'status' => $normalized['status'] ?? null,
+                'tracking_id' => $normalized['code'] ?? null,
+            ]);
+
             if (!$this->smoothService->isAllowedStatus((string) ($normalized['status'] ?? ''))) {
                 Log::warning('Smooth status callback rejected: unknown status.', [
                     'owner_slug' => $ownerSlug,
@@ -620,10 +628,12 @@ class CarrierRepository
 
             // Smooth's callback URL includes owner_slug. Ensure it matches this courier's
             // configured pre-shared Store Slug before any local row is changed.
-            $configuredStoreSlug = trim((string) ($courier->properties->branch_id ?? ''));
-            if ($configuredStoreSlug !== '' && !hash_equals($configuredStoreSlug, trim($ownerSlug))) {
+            $configuredStoreSlug = mb_strtolower(trim((string) ($courier->properties->branch_id ?? '')));
+            $incomingStoreSlug = mb_strtolower(trim($ownerSlug));
+            if ($configuredStoreSlug !== '' && !hash_equals($configuredStoreSlug, $incomingStoreSlug)) {
                 Log::warning('Smooth status callback: Store Slug mismatch.', [
                     'shipping_courier_id' => $courier->id,
+                    'owner_slug' => $incomingStoreSlug,
                 ]);
                 return ['success' => false, 'status' => 403];
             }
@@ -643,12 +653,180 @@ class CarrierRepository
             }
 
             $shippingCourierOrder->update($updateData);
+
+            // Smooth-only local status synchronization. Armada/Karrix flows never enter
+            // this method. Ready To Ship remains controlled by the existing TLCommerce
+            // workflow; Smooth only advances to Shipped/Delivered or cancels/rejects.
+            $this->syncSmoothLocalDeliveryStatus(
+                $shippingCourierOrder,
+                (string) ($normalized['status'] ?? '')
+            );
+
             $this->notifyAdminsOfCourierUpdate($shippingCourierOrder);
 
             return ['success' => true, 'status' => 200];
         } catch (\Throwable $e) {
             Log::error('Smooth status callback failure', ['message' => $e->getMessage()]);
             return ['success' => false, 'status' => 500];
+        }
+    }
+
+    /**
+     * Advance the existing TLCommerce delivery stage from a Smooth status.
+     *
+     * This is intentionally provider-isolated and monotonic. It never changes
+     * Armada/Karrix orders and it never moves a delivered/cancelled order backwards.
+     */
+    private function syncSmoothLocalDeliveryStatus(ShippingCourierOrders $shippingCourierOrder, string $smoothStatus): bool
+    {
+        try {
+            /** @var SmoothTrackingService $tracking */
+            $tracking = app(SmoothTrackingService::class);
+            $targetStatus = $tracking->localDeliveryStatusFor($smoothStatus);
+
+            if ($targetStatus === null) {
+                return false;
+            }
+
+            $order = Orders::find($shippingCourierOrder->order_id);
+            if (!$order) {
+                Log::warning('Smooth local status sync skipped: local order not found.', [
+                    'shipping_courier_order_id' => $shippingCourierOrder->id,
+                    'smooth_status' => $smoothStatus,
+                ]);
+                return false;
+            }
+
+            $currentStatus = (int) $order->delivery_status;
+            if (!$tracking->shouldApplyLocalStatus($currentStatus, (int) $targetStatus)) {
+                return false;
+            }
+
+            $updated = app(\Plugin\TlcommerceCore\Repositories\OrderRepository::class)
+                ->updateOrderDeliveryStatus($order->id, (int) $targetStatus);
+
+            Log::info('Smooth status synced to local order.', [
+                'order_id' => $order->id,
+                'order_code' => $order->order_code,
+                'smooth_status' => strtoupper(trim($smoothStatus)),
+                'previous_local_status' => $currentStatus,
+                'new_local_status' => (int) $targetStatus,
+                'updated' => (bool) $updated,
+            ]);
+
+            return (bool) $updated;
+        } catch (\Throwable $e) {
+            // Never make a successful Smooth webhook fail because a local status/email
+            // side effect failed. The courier status is already persisted above.
+            Log::error('Smooth local status sync failed.', [
+                'shipping_courier_order_id' => $shippingCourierOrder->id,
+                'smooth_status' => $smoothStatus,
+                'message' => $e->getMessage(),
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Fetch a live Smooth snapshot for one local order.
+     *
+     * No DB migration is required. Live-only fields (route, processing status,
+     * order lines, address, shipment details, etc.) are returned directly from
+     * Smooth. Existing ShippingCourierOrders columns are refreshed where possible.
+     */
+    public function getSmoothOrderUpdates($id): ?array
+    {
+        $shippingCourierOrder = ShippingCourierOrders::with('courier.properties')
+            ->where('order_id', $id)
+            ->latest('id')
+            ->get()
+            ->first(function ($row) {
+                return $row->courier && $this->courierProvider($row->courier) === 'smooth';
+            });
+
+        if (!$shippingCourierOrder || !$shippingCourierOrder->courier) {
+            return null;
+        }
+
+        $courier = $shippingCourierOrder->courier;
+
+        $order = Orders::find($id);
+        if (!$order) {
+            return null;
+        }
+
+        /** @var SmoothTrackingService $tracking */
+        $tracking = app(SmoothTrackingService::class);
+
+        if (!$this->smoothService->isConfigured($courier)) {
+            return $tracking->buildCachedAdminPayload(
+                $shippingCourierOrder,
+                $order,
+                'Smooth is not fully configured for this store. Showing the last received update.'
+            );
+        }
+
+        try {
+            $livePayload = $this->smoothService->retrieveOrder($courier, (string) $order->order_code);
+
+            if (!is_array($livePayload) || empty($livePayload)) {
+                return $tracking->buildCachedAdminPayload(
+                    $shippingCourierOrder,
+                    $order,
+                    'Smooth did not return live order data. Showing the last received update.'
+                );
+            }
+
+            $normalized = $this->smoothService->normalizeOrderPayload($livePayload);
+            $updateData = array_filter([
+                'status' => $normalized['status'] ?? null,
+                'code' => $normalized['code'] ?? null,
+                'amount' => $normalized['amount'] ?? null,
+                'delivery_fee' => $normalized['delivery_fee'] ?? null,
+                'currency' => $normalized['currency'] ?? null,
+                'driver_name' => $normalized['driver_name'] ?? null,
+                'driver_phone' => $normalized['driver_phone'] ?? null,
+                'driver_latitude' => $normalized['driver_latitude'] ?? null,
+                'driver_longitude' => $normalized['driver_longitude'] ?? null,
+                'estimated_distance' => $normalized['estimated_distance'] ?? null,
+                'estimated_duration' => $normalized['estimated_duration'] ?? null,
+                'tracking_url' => $normalized['tracking_url'] ?? null,
+                'pickup_qr_url' => $normalized['pickup_qr_url'] ?? null,
+            ], static function ($value) {
+                return $value !== null && $value !== '';
+            });
+
+            if (!empty($updateData)) {
+                $shippingCourierOrder->update($updateData);
+                $shippingCourierOrder->refresh();
+            }
+
+            // This is also a safe fallback if a webhook was delayed/missed: opening
+            // live Smooth tracking can advance the local Shipped/Delivered state.
+            $this->syncSmoothLocalDeliveryStatus(
+                $shippingCourierOrder,
+                (string) ($normalized['status'] ?? '')
+            );
+
+            $order->refresh();
+
+            return $tracking->buildLiveAdminPayload(
+                $livePayload,
+                $shippingCourierOrder,
+                $order
+            );
+        } catch (\Throwable $e) {
+            Log::warning('Smooth live tracking fetch failed.', [
+                'order_id' => $order->id,
+                'order_code' => $order->order_code,
+                'message' => $e->getMessage(),
+            ]);
+
+            return $tracking->buildCachedAdminPayload(
+                $shippingCourierOrder,
+                $order,
+                'Smooth live tracking is temporarily unavailable. Showing the last received update.'
+            );
         }
     }
 

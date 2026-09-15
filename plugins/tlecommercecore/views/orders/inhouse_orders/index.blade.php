@@ -718,12 +718,212 @@
             });
 
             /**
+             * Smooth-only live tracking.
+             * This uses a dedicated endpoint and does not alter Armada/Karrix tracking.
+             */
+            let smoothTrackingTimer = null;
+            let smoothTrackingOrderId = null;
+
+            function smoothEscape(value) {
+                return $('<div>').text(value === null || value === undefined || value === '' ? '—' : String(value)).html();
+            }
+
+            function smoothSafeUrl(value) {
+                if (!value) return '';
+                try {
+                    const parsed = new URL(value, window.location.origin);
+                    return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : '';
+                } catch (e) {
+                    return '';
+                }
+            }
+
+            function smoothFormatDate(value) {
+                if (!value) return '—';
+                const parsed = new Date(value);
+                return isNaN(parsed.getTime()) ? smoothEscape(value) : smoothEscape(parsed.toLocaleString());
+            }
+
+            function smoothRenderTracking(details) {
+                const liveLabel = details.live ? 'LIVE FROM SMOOTH' : 'CACHED UPDATE';
+                const trackingUrl = smoothSafeUrl(details.tracking_url);
+                const pickupUrl = smoothSafeUrl(details.pickup_tracking_url);
+                const address = details.address || {};
+                const items = Array.isArray(details.items) ? details.items : [];
+                const events = Array.isArray(details.events) ? details.events : [];
+
+                const addressParts = [
+                    address.street_address_1,
+                    address.street_address_2,
+                    address.city,
+                    address.state,
+                    address.country,
+                    address.postal_code
+                ].filter(Boolean).map(smoothEscape);
+
+                let itemHtml = '';
+                if (items.length) {
+                    itemHtml = items.map(function(item) {
+                        const title = item.name || item.sku || 'Item';
+                        return `
+                            <tr>
+                                <td>${smoothEscape(title)}</td>
+                                <td>${smoothEscape(item.sku)}</td>
+                                <td>${smoothEscape(item.quantity)}</td>
+                                <td>${smoothEscape(item.unit_of_measure)}</td>
+                            </tr>`;
+                    }).join('');
+                } else {
+                    itemHtml = '<tr><td colspan="4" class="text-muted">No line details returned by Smooth.</td></tr>';
+                }
+
+                let eventHtml = '';
+                if (events.length) {
+                    eventHtml = events.slice().reverse().map(function(event) {
+                        return `
+                            <div class="d-flex justify-content-between border-bottom py-2">
+                                <span>${smoothEscape(event.label || event.status)}</span>
+                                <span class="text-muted font-12">${smoothFormatDate(event.created)}</span>
+                            </div>`;
+                    }).join('');
+                } else {
+                    eventHtml = `
+                        <div class="d-flex justify-content-between border-bottom py-2">
+                            <span>${smoothEscape(details.status_label || details.status)}</span>
+                            <span class="text-muted font-12">${smoothFormatDate(details.last_local_update)}</span>
+                        </div>`;
+                }
+
+                const trackingLink = trackingUrl
+                    ? `<a href="${smoothEscape(trackingUrl)}" target="_blank" rel="noopener noreferrer">Open tracking</a>`
+                    : '—';
+                const pickupLink = pickupUrl
+                    ? `<a href="${smoothEscape(pickupUrl)}" target="_blank" rel="noopener noreferrer">Open pickup tracking</a>`
+                    : '—';
+
+                return `
+                    <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap">
+                        <div>
+                            <div class="bold">Smooth Logistics</div>
+                            <div class="font-12 text-muted">${smoothEscape(details.order_code)}</div>
+                        </div>
+                        <span class="badge p-2" style="background:#ff5A1f;color:#fff !important;">${liveLabel}</span>
+                    </div>
+
+                    ${details.message ? `<div class="alert alert-warning py-2">${smoothEscape(details.message)}</div>` : ''}
+
+                    <div class="row">
+                        <div class="col-md-6 mb-2"><div class="border rounded p-3 h-100"><span class="text-muted font-12 d-block">Smooth Status</span><span class="bold">${smoothEscape(details.status_label || details.status)}</span></div></div>
+                        <div class="col-md-6 mb-2"><div class="border rounded p-3 h-100"><span class="text-muted font-12 d-block">Local Order Stage</span><span class="bold">${smoothEscape(details.local_delivery_status_label)}</span></div></div>
+                        <div class="col-md-6 mb-2"><div class="border rounded p-3 h-100"><span class="text-muted font-12 d-block">Processing Status</span><span>${smoothEscape(details.processing_status)}</span></div></div>
+                        <div class="col-md-6 mb-2"><div class="border rounded p-3 h-100"><span class="text-muted font-12 d-block">Tracking ID</span><span>${smoothEscape(details.tracking_id)}</span></div></div>
+                    </div>
+
+                    <div class="list-group list-group-flush border rounded mb-3">
+                        <div class="list-group-item d-flex justify-content-between"><span class="bold">Tracking</span><span>${trackingLink}</span></div>
+                        <div class="list-group-item d-flex justify-content-between"><span class="bold">Pickup Tracking</span><span>${pickupLink}</span></div>
+                        <div class="list-group-item d-flex justify-content-between"><span class="bold">Route ID</span><span>${smoothEscape(details.route_id)}</span></div>
+                        <div class="list-group-item"><span class="bold d-block">Driver</span><span>${smoothEscape(details.driver_name)}</span>${details.driver_phone ? `<br><span class="text-muted">${smoothEscape(details.driver_phone)}</span>` : ''}</div>
+                        <div class="list-group-item d-flex justify-content-between"><span class="bold">Order Type / Mode</span><span>${smoothEscape(details.order_type)} / ${smoothEscape(details.delivery_mode)}</span></div>
+                        <div class="list-group-item d-flex justify-content-between"><span class="bold">Dispatch Time</span><span>${smoothFormatDate(details.dispatch_time)}</span></div>
+                        <div class="list-group-item d-flex justify-content-between"><span class="bold">Expected Delivery</span><span>${smoothFormatDate(details.delivery_time)}</span></div>
+                        <div class="list-group-item d-flex justify-content-between"><span class="bold">Payment</span><span>${smoothEscape(details.payment_status)}${details.payment_method ? ' · ' + smoothEscape(details.payment_method) : ''}</span></div>
+                        <div class="list-group-item d-flex justify-content-between"><span class="bold">Amount</span><span>${smoothEscape(details.amount)} ${smoothEscape(details.currency)}</span></div>
+                        <div class="list-group-item d-flex justify-content-between"><span class="bold">Delivery Fee</span><span>${smoothEscape(details.delivery_fee)} ${smoothEscape(details.currency)}</span></div>
+                        <div class="list-group-item d-flex justify-content-between"><span class="bold">Shipment Reference</span><span>${smoothEscape(details.shipment_reference)}</span></div>
+                    </div>
+
+                    <div class="border rounded p-3 mb-3">
+                        <div class="bold mb-2">Delivery Address</div>
+                        <div>${smoothEscape(address.name)}</div>
+                        ${address.phone ? `<div class="text-muted">${smoothEscape(address.phone)}</div>` : ''}
+                        ${address.email ? `<div class="text-muted">${smoothEscape(address.email)}</div>` : ''}
+                        <div class="text-muted mt-1">${addressParts.length ? addressParts.join(', ') : '—'}</div>
+                    </div>
+
+                    <div class="border rounded p-3 mb-3">
+                        <div class="bold mb-2">Order Items</div>
+                        <div class="table-responsive">
+                            <table class="table table-sm mb-0">
+                                <thead><tr><th>Item</th><th>SKU</th><th>Qty</th><th>UOM</th></tr></thead>
+                                <tbody>${itemHtml}</tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="border rounded p-3">
+                        <div class="bold mb-2">Smooth Progress</div>
+                        ${eventHtml}
+                    </div>
+                `;
+            }
+
+            function loadSmoothTracking(orderId, silent = false) {
+                const displayContainer = $('#order-status-display');
+                if (!silent) {
+                    if (typeof setAjaxContainerLoading === 'function') {
+                        setAjaxContainerLoading(displayContainer, true);
+                    } else {
+                        displayContainer.html('<div class="text-center py-4 text-muted">Loading Smooth live tracking...</div>');
+                    }
+                }
+
+                $.ajax({
+                    url: '{{ route("plugin.carrier.smooth.order.updates") }}',
+                    type: 'GET',
+                    data: { order_id: orderId },
+                    success: function(response) {
+                        if (response.order_details) {
+                            displayContainer.html(smoothRenderTracking(response.order_details));
+                        } else if (!silent) {
+                            displayContainer.html('<div class="alert alert-warning">This order is not attached to Smooth Logistics.</div>');
+                        }
+                    },
+                    error: function() {
+                        if (!silent) {
+                            displayContainer.html('<div class="alert alert-danger">Unable to fetch Smooth live tracking.</div>');
+                            toastr.error('Failed to fetch Smooth live tracking details.');
+                        }
+                    }
+                });
+            }
+
+            $(document).on('click', '.smooth-track-order-button', function(e) {
+                e.preventDefault();
+                smoothTrackingOrderId = $(this).data('order');
+                const displayContainer = $('#order-status-display');
+                $('#track-order-modal .modal-dialog').addClass('modal-lg');
+                displayContainer.empty();
+                $('#track-order-modal').modal('show');
+
+                loadSmoothTracking(smoothTrackingOrderId, false);
+
+                if (smoothTrackingTimer) {
+                    clearInterval(smoothTrackingTimer);
+                }
+                smoothTrackingTimer = setInterval(function() {
+                    if ($('#track-order-modal').hasClass('show') && smoothTrackingOrderId) {
+                        loadSmoothTracking(smoothTrackingOrderId, true);
+                    }
+                }, 30000);
+            });
+
+            $('#track-order-modal').on('hidden.bs.modal', function() {
+                if (smoothTrackingTimer) {
+                    clearInterval(smoothTrackingTimer);
+                    smoothTrackingTimer = null;
+                }
+                smoothTrackingOrderId = null;
+                $('#track-order-modal .modal-dialog').removeClass('modal-lg');
+            });
+
+            /**
              * Open shipping modal
              **/
             $('.track-order-button').on('click', function(e) {
                 e.preventDefault();
                 // let orderId = $(this).data('order');
-                let orderId = $(this).data('id');
+                let orderId = $(this).data('order');
                 let displayContainer = $('#order-status-display');
                 setAjaxContainerLoading(displayContainer, true);
                 $("#track-order-modal").modal('show');
