@@ -8,12 +8,24 @@
 
     <div class="product-list-row__body">
       <h4 class="product-list-row__title" :title="item.name">
-        <router-link :to="`/products/${item.slug}`">{{ item.name }}</router-link>
-      </h4>
+  <router-link :to="`/products/${item.slug}`">
+    {{ item.name }}
+  </router-link>
+</h4>
 
-      <p v-if="item.summary" class="product-list-row__summary">
-        {{ item.summary }}
-      </p>
+<span
+  v-if="isLowStock"
+  class="frontend-low-stock-badge"
+>
+  {{ $t("Low Stock") }}
+</span>
+
+<p
+  v-if="item.summary"
+  class="product-list-row__summary"
+>
+  {{ item.summary }}
+</p>
 
       <div class="product-list-row__footer">
         <router-link
@@ -228,6 +240,9 @@ export default {
   },
 
   computed: {
+ isLowStock() {
+      return this.item?.is_low_stock === true;
+    },
 
     ...mapState({
 
@@ -670,7 +685,20 @@ export default {
 
 }
 
-
+.frontend-low-stock-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-top: 5px;
+  padding: 3px 7px;
+  border-radius: 4px;
+  background: #ffc107;
+  color: #222;
+  font-size: 10px;
+  line-height: 1.2;
+  font-weight: 700;
+  white-space: nowrap;
+}
 
 .product-list-row__summary {
 

@@ -47,6 +47,7 @@ use Plugin\Coupon\Models\CouponProducts;
 use Plugin\Coupon\Models\CouponExcludeProducts;
 use Plugin\Coupon\Models\CouponUsage;
 use Plugin\TlcommerceCore\Models\ProductHasCategories;
+use Plugin\TlcommerceCore\Services\OrderStockService;
 
 
 class OrderRepository
@@ -2143,12 +2144,52 @@ class OrderRepository
             $order_product = new OrderHasProducts;
             $order_product->order_id = $order_id;
             $order_product->product_id = $product['product_id'];
-            if (!empty($product['variant'])) {
 
-                $order_product->variant_id = $product['variant'];
+             /*
+            |--------------------------------------------------------------------------
+            | Variant snapshot
+            |--------------------------------------------------------------------------
+            |
+            | variant_id:
+            | Human-readable existing value.
+            | Example: "Type:red sauce"
+            |
+            | variant_code:
+            | Actual internal inventory combination.
+            | Example:
+            | 1:4
+            | 1:4/2:1
+            | color:3/1:4
+            |
+            */
+            $order_product->variant_id =
+                !empty($product['variant'])
+                    ? $product['variant']
+                    : null;
+
+            $order_product->variant_code =
+                !empty($product['variant_code'])
+                    ? trim((string) $product['variant_code'], '/')
+                    : null;
+
+            $order_product->quantity = (int) $product['quantity'];
+
+            $order_product->unit_price = $product['unitPrice'];
+
+            if (!empty($product['variant_code'])) {
+                $order_product->purchase_price =
+                    self::getProductPurchasePrice(
+                        $product['product_id'],
+                        $product['variant_code']
+                    );
             }
-            // $order_product->variant_id = $product['variant'];
-            $order_product->quantity = $product['quantity'];
+
+            // if (!empty($product['variant'])) {
+
+            //     $order_product->variant_id = $product['variant'];
+            // }
+            // // $order_product->variant_id = $product['variant'];
+            // $order_product->quantity = $product['quantity'];
             $order_product->unit_price = $product['unitPrice'];
             if (!empty($product['variant_code'])) {
 
@@ -2170,10 +2211,10 @@ class OrderRepository
             $order_product->save();
 
             //Update Inventory
-            if (!empty($product['variant_code'])) {
+            // if (!empty($product['variant_code'])) {
 
-                $this->updateProductInventory($product['product_id'], $product['quantity'], $product['variant_code']);
-            }
+            //     $this->updateProductInventory($product['product_id'], $product['quantity'], $product['variant_code']);
+            // }
             // $this->updateProductInventory($product['product_id'], $product['quantity'], $product['variant_code']);
 
             //Store order tracking data
@@ -2250,27 +2291,27 @@ class OrderRepository
      * @param Int $quantity
      * @return void
      */
-    public function updateProductInventory($product_id, $quantity, $variant = null)
-    {
-        //Update single product inventory
-        if ($variant != null) {
-            $variant_price = ProductAttribute::resolveVariantPrice($product_id, $variant);
-            if ($variant_price != null) {
-                $updated_qty = $variant_price->quantity - $quantity;
-                $variant_price->quantity = $updated_qty;
-                $variant_price->save();
-            }
-        }
-        //Update single product inventory
-        if ($variant == null) {
-            $single_price = SingleProductPrice::where('product_id', $product_id)->first();
-            if ($single_price != null) {
-                $updated_qty = $single_price->quantity - $quantity;
-                $single_price->quantity = $updated_qty;
-                $single_price->save();
-            }
-        }
-    }
+    // public function updateProductInventory($product_id, $quantity, $variant = null)
+    // {
+    //     //Update single product inventory
+    //     if ($variant != null) {
+    //         $variant_price = ProductAttribute::resolveVariantPrice($product_id, $variant);
+    //         if ($variant_price != null) {
+    //             $updated_qty = $variant_price->quantity - $quantity;
+    //             $variant_price->quantity = $updated_qty;
+    //             $variant_price->save();
+    //         }
+    //     }
+    //     //Update single product inventory
+    //     if ($variant == null) {
+    //         $single_price = SingleProductPrice::where('product_id', $product_id)->first();
+    //         if ($single_price != null) {
+    //             $updated_qty = $single_price->quantity - $quantity;
+    //             $single_price->quantity = $updated_qty;
+    //             $single_price->save();
+    //         }
+    //     }
+    // }
     /**
      * Will store order tracking data
      *
@@ -2824,6 +2865,14 @@ class OrderRepository
             $order->payment_status = $unpaidLineCount === 0 ? $paidStatus : $unpaidStatus;
             $order->save();
 
+            /*
+            |--------------------------------------------------------------------------
+            | Deduct stock when order is PAID + DELIVERED
+            |--------------------------------------------------------------------------
+            */
+            app(OrderStockService::class)
+                ->deductIfPaidAndDelivered((int) $order->id);
+
             $this->logOrderDeliveryStatusChange(
                 (int) $request['order_id'],
                 $newOrderDeliveryStatus,
@@ -2837,10 +2886,18 @@ class OrderRepository
             // }
             DB::commit();
             return true;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return false;
-        }
+       } catch (\Exception $e) {
+    DB::rollBack();
+    \Log::error('Order processing failed', [
+        'message' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+    ]);
+    return [
+        'success' => false,
+        'message' => $e->getMessage(),
+    ];
+}
     }
     /**
      * Change  delivery status of an item of order
@@ -3052,6 +3109,12 @@ class OrderRepository
                     ]);
                     return false;
                 }
+                /*
+                |--------------------------------------------------------------------------
+                | Deduct stock when order is PAID + DELIVERED
+                |--------------------------------------------------------------------------
+                */
+                app(OrderStockService::class)->deductIfPaidAndDelivered((int) $order_id);
 
                 return true;
             });
@@ -3259,6 +3322,14 @@ class OrderRepository
                     ]);
                     return false;
                 }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Deduct stock when order is PAID + DELIVERED
+                |--------------------------------------------------------------------------
+                */
+                app(OrderStockService::class)
+                    ->deductIfPaidAndDelivered((int) $order_id);
 
                 return true;
             });

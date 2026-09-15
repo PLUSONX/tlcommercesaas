@@ -39,6 +39,14 @@ class SingleProductCollection extends JsonResource
             'price_range_min_old' => $this->has_variant == config('tlecommercecore.product_variant.variable') ?  $this->priceRangeMinValue('old') : null,
             'price_range_max_old' => $this->has_variant == config('tlecommercecore.product_variant.variable') ?  $this->priceRangeMaxValue('old') : null,
             'quantity' => (int) $this->stock(),
+            'low_stock_quantity_alert' =>
+                (int) ($this->low_stock_quantity_alert ?? 0),
+
+            'is_low_stock' =>
+                $this->isLowStock(),
+
+            'is_out_of_stock' =>
+                (int) $this->stock() <= 0,
             'total_reviews' => $this->totalReviews(),
             'rating' => $this->avgRating(),
             'galleryImages' => $this->galleryImages(),
@@ -93,6 +101,21 @@ class SingleProductCollection extends JsonResource
         } else {
             return 'Not available';
         }
+    }
+
+    public function isLowStock()
+    {
+        $threshold = (int) (
+            $this->low_stock_quantity_alert ?? 0
+        );
+
+        $quantity = (int) $this->stock();
+
+        return (
+            $threshold > 0 &&
+            $quantity > 0 &&
+            $quantity <= $threshold
+        );
     }
 
     public function couponList()

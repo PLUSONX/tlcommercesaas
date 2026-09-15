@@ -1213,6 +1213,7 @@ class ProductRepository
             'discount_amount',
             'max_item_on_purchase',
             'min_item_on_purchase',
+            'low_stock_quantity_alert',
         ];
 
         $query = Product::with(['unit_info' => function ($q) {
