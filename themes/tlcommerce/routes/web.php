@@ -64,14 +64,193 @@ Route::get('/auth/token-login', function () {
         ->where('token', hash('sha256', $token))
         ->delete();
 
-    \Auth::login($user, $remember_me);
-// session()->put('password_hash_' . \Auth::getDefaultDriver(), $user->password); // ← add this
-// session()->save(); // force session save
+\Auth::login($user, $remember_me);
 
     // Redirect to dashboard
     return redirect('/admin/dashboard');
 
 })->name('auth.token-login');
+
+/*
+|--------------------------------------------------------------------------
+| Saved Account Reader
+|--------------------------------------------------------------------------
+*/
+
+$getSavedLoginUser = function () {
+
+    $savedCookie = request()->cookie('tl_saved_login');
+
+    if (empty($savedCookie)) {
+        return null;
+    }
+
+    try {
+
+        // Laravel EncryptCookies already decrypts request cookies before
+        // request()->cookie() returns them. New-format saved login is JSON here.
+        $data = json_decode($savedCookie, true);
+
+        // Backward-compatible fallback for the previous double-encrypted patch.
+        if (!is_array($data)) {
+            try {
+                $data = json_decode(
+                    Crypt::decryptString($savedCookie),
+                    true
+                );
+            } catch (\Throwable $e) {
+                $data = null;
+            }
+        }
+
+        if (!is_array($data)) {
+            return null;
+        }
+
+        if (
+            empty($data['user_id']) ||
+            empty($data['email']) ||
+            empty($data['tenant_id']) ||
+            empty($data['password_signature']) ||
+            empty($data['expires_at'])
+        ) {
+            return null;
+        }
+
+        /*
+        | Must belong to current tenant
+        */
+        if (
+            (string) $data['tenant_id'] !==
+            (string) tenant('id')
+        ) {
+            return null;
+        }
+
+        /*
+        | Check expiration
+        */
+        if ((int) $data['expires_at'] < time()) {
+            return null;
+        }
+
+        /*
+        | Find tenant user
+        */
+        $user = \App\Models\User::find(
+            (int) $data['user_id']
+        );
+
+        if (!$user) {
+            return null;
+        }
+
+        /*
+        | Email must still match
+        */
+        if (
+            strtolower((string) $user->email) !==
+            strtolower((string) $data['email'])
+        ) {
+            return null;
+        }
+
+        /*
+        | If password was changed after Remember Me was created,
+        | automatically reject the saved login.
+        */
+        $currentPasswordSignature = hash_hmac(
+            'sha256',
+            (string) $user->getAuthPassword(),
+            (string) config('app.key')
+        );
+
+        if (
+            !hash_equals(
+                $currentPasswordSignature,
+                (string) $data['password_signature']
+            )
+        ) {
+            return null;
+        }
+
+        return $user;
+
+    } catch (\Throwable $e) {
+
+        return null;
+    }
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| Return Remembered Account Information
+|--------------------------------------------------------------------------
+|
+| Only email is returned.
+| Password is NEVER returned.
+|
+*/
+
+Route::get('/auth/saved-login-info', function () use ($getSavedLoginUser) {
+
+    $user = $getSavedLoginUser();
+
+    if (!$user) {
+        return response()->json([
+            'remembered' => false,
+        ]);
+    }
+
+    return response()->json([
+        'remembered' => true,
+        'email' => $user->email,
+    ]);
+
+})->middleware('throttle:60,1')
+  ->name('auth.saved-login-info');
+
+
+/*
+|--------------------------------------------------------------------------
+| One-Click Login From Saved Account
+|--------------------------------------------------------------------------
+*/
+
+Route::post('/auth/saved-login', function () use ($getSavedLoginUser) {
+
+    $user = $getSavedLoginUser();
+
+    if (!$user) {
+
+        return response()
+            ->json([
+                'success' => false,
+                'message' => 'Saved login expired. Please enter your password.',
+            ], 401)
+            ->withCookie(
+                cookie()->forget('tl_saved_login', '/')
+            );
+    }
+
+    /*
+    | Login using the validated saved-account token.
+    */
+    \Auth::login($user, true);
+
+    /*
+    | Prevent session fixation.
+    */
+    request()->session()->regenerate();
+
+    return response()->json([
+        'success' => true,
+        'redirect' => url('/admin/dashboard'),
+    ]);
+
+})->middleware('throttle:10,1')
+  ->name('auth.saved-login');
 
 $prefix = Request::segment(1);
 

@@ -7,6 +7,10 @@
     $tokenId = $idPrefix . 'token';
     $demoLoginBtnId = $idPrefix . 'demoLoginBtn';
     $submitBtnId = $idPrefix . 'submitBtn';
+    $savedLoginId = $idPrefix . 'saved_login';
+    $hasSavedLogin = $hasSavedLogin ?? false;
+    $rememberedLoginEmail = $rememberedLoginEmail ?? '';
+    $savedPasswordMask = $savedPasswordMask ?? '••••••••••••';
     $host = request()->getHost();
     $centralDomains = config('tenancy.central_domains', ['localhost']);
     $isCentralDomain = in_array($host, $centralDomains);
@@ -28,8 +32,8 @@
 
                 <div class="input-with-icon">
                     <x-lucide-mail class="input-icon" />
-                    <input type="email" id="{{ $emailId }}" name="email" class="theme-input-style"
-                        placeholder="{{ translate('Email Address') }}" value="{{ old('email') }}">
+                    <input type="email" id="{{ $emailId }}" name="email" class="theme-input-style" placeholder="{{ translate('Email Address') }}"
+                        value="{{ old('email', $rememberedLoginEmail) }}">
                 </div>
 
                 @if ($errors->has('email'))
@@ -43,20 +47,17 @@
                 <div class="input-with-icon">
                     <x-lucide-lock class="input-icon" />
 
-                    <input type="password" id="{{ $passwordId }}" name="password" class="theme-input-style"
-                        placeholder="{{ translate('Password') }}">
+                    <input type="password" id="{{ $passwordId }}" name="password" class="theme-input-style" placeholder="{{ translate('Password') }}"
+                        value="{{ $hasSavedLogin ? $savedPasswordMask : '' }}" {{ $hasSavedLogin ? 'readonly' : '' }}>
 
-                    <button type="button" id="{{ $togglePasswordId }}" class="password-toggle-btn" tabindex="-1"
-                        aria-label="Toggle password visibility">
-                        <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                    <button type="button" id="{{ $togglePasswordId }}" class="password-toggle-btn" tabindex="-1" aria-label="Toggle password visibility">
+                        <svg class="eye-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7Z" />
                             <circle cx="12" cy="12" r="3" />
                         </svg>
-                        <svg class="eye-off-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                        <svg class="eye-off-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
                             <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
                             <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
                             <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
@@ -72,18 +73,17 @@
 
             <div class="d-flex justify-content-between align-items-center mb-20">
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="remember_me" id="{{ $rememberMeId }}"
-                        value="1">
+                    <input class="form-check-input" type="checkbox" name="remember_me" id="{{ $rememberMeId }}" value="1" {{ $hasSavedLogin ? 'checked' : '' }}>
                     <label class="form-check-label" for="{{ $rememberMeId }}">
                         {{ translate('Remember Me') }}
                     </label>
                 </div>
 
-                <a href="{{ route('core.password.reset.link') }}"
-                    style="color: #FF5A1F; font-size: 0.9rem;">{{ translate('Forgot Password?') }}</a>
+                <a href="{{ route('core.password.reset.link') }}" style="color: #FF5A1F; font-size: 0.9rem;">{{ translate('Forgot Password?') }}</a>
             </div>
 
             <input type="hidden" name="token" id="{{ $tokenId }}">
+            <input type="hidden" name="saved_login" id="{{ $savedLoginId }}" value="{{ $hasSavedLogin ? 1 : 0 }}">
 
             <div class="d-flex align-items-center" style="margin-bottom: 0px !important;">
                 <button type="submit" id="{{ $submitBtnId }}" class="btn btn-block btn-orange login-submit-btn">
@@ -93,13 +93,13 @@
             </div>
 
             <!-- @if ($isCentralDomain)
-            <div class="d-flex align-items-center mt-3">
+<div class="d-flex align-items-center mt-3">
                 <button type="button" id="{{ $demoLoginBtnId }}" class="btn btn-block btn-demo-outline"
                     data-email="support.platepilot@gmail.com" data-password="demo123">
                     {{ translate('Try demo dashboard') }}
                 </button>
             </div>
-            @endif -->
+@endif -->
 
             <div class="text-center" style="margin-top: 20px;">
                 <h5 class="mt-3">{{ translate('If you are having trouble, please contact') }}</h5>
@@ -109,3 +109,41 @@
         </form>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const emailInput = document.getElementById(@json($emailId));
+    const passwordInput = document.getElementById(@json($passwordId));
+    const savedLoginInput = document.getElementById(@json($savedLoginId));
+    const rememberedEmail = @json($rememberedLoginEmail);
+
+    if (!emailInput || !passwordInput || !savedLoginInput) {
+        return;
+    }
+
+    function switchToNormalPasswordLogin() {
+        if (savedLoginInput.value !== '1') {
+            return;
+        }
+
+        savedLoginInput.value = '0';
+        passwordInput.readOnly = false;
+        passwordInput.value = '';
+    }
+
+    emailInput.addEventListener('input', function () {
+        if (
+            savedLoginInput.value === '1' &&
+            emailInput.value.trim().toLowerCase() !== rememberedEmail.trim().toLowerCase()
+        ) {
+            switchToNormalPasswordLogin();
+        }
+    });
+
+    passwordInput.addEventListener('click', function () {
+        if (savedLoginInput.value === '1') {
+            switchToNormalPasswordLogin();
+            passwordInput.focus();
+        }
+    });
+});
+</script>

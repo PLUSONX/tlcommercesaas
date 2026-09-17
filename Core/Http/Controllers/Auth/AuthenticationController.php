@@ -21,9 +21,13 @@ use Illuminate\Support\Facades\Session;
 use Core\Http\Controllers\Api\DeviceTokenController;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Crypt;
 
 class AuthenticationController extends Controller
 {
+    private const SAVED_LOGIN_COOKIE = 'tl_saved_login';
+    private const SAVED_LOGIN_MASK = '••••••••••••';
+
     public function setGeneralSettings()
     {
         getGeneralSettingNameAsArray('general_settings_name');
@@ -41,14 +45,10 @@ class AuthenticationController extends Controller
      */
     public function login()
     {
-        // dd("LOGIN CONTROLLER WORKS");
-        // return 'LOGIN CONTROLLER WORKS';
-
         $rawCookie = Cookie::get('remembered_tenant_url');
         $decoded = $rawCookie ? base64_decode($rawCookie) : null;
         $loggedOut = request()->boolean('logged_out');
 
-        // Extract the URL part - find 'http' and take everything from there
         $rememberedTenantUrl = null;
         if ($decoded && str_contains($decoded, 'http')) {
             $rememberedTenantUrl = substr($decoded, strpos($decoded, 'http'));
@@ -60,20 +60,33 @@ class AuthenticationController extends Controller
             return redirect()->away($rememberedTenantUrl);
         }
 
+        $savedLogin = $this->getValidSavedLogin();
+
+        Log::info('SAVED LOGIN PAGE CHECK', [
+            'host' => request()->getHost(),
+            'cookie_present' => request()->hasCookie(self::SAVED_LOGIN_COOKIE),
+            'saved_login_valid' => $savedLogin !== null,
+            'saved_email' => $savedLogin['email'] ?? null,
+        ]);
+
+        $viewData = [
+            'loggedOut' => $loggedOut,
+            'hasSavedLogin' => $savedLogin !== null,
+            'rememberedLoginEmail' => $savedLogin['email'] ?? '',
+            'savedPasswordMask' => self::SAVED_LOGIN_MASK,
+        ];
+
         $this->setGeneralSettings();
         if (Auth::user()) {
             return redirect()->route('admin.dashboard');
-        } else {
-            // return view('core.login');
-            $loginView = view('core::base.auth.login', ['loggedOut' => $loggedOut]);
-
-            if ($loggedOut) {
-                return response()->view('core::base.auth.login', ['loggedOut' => $loggedOut])
-                    ->withoutCookie('remembered_tenant_url');
-            }
-
-            return $loginView;
         }
+
+        if ($loggedOut) {
+            return response()->view('core::base.auth.login', $viewData)
+                ->withoutCookie('remembered_tenant_url');
+        }
+
+        return view('core::base.auth.login', $viewData);
     }
 
 
@@ -85,6 +98,22 @@ class AuthenticationController extends Controller
      */
     public function attemptLogin(LoginRequest $request)
     {
+        if (
+            $request->boolean('saved_login') &&
+            (string) $request->input('password') === self::SAVED_LOGIN_MASK
+        ) {
+            $savedLoginResponse = $this->attemptSavedLogin($request);
+
+            if ($savedLoginResponse !== null) {
+                return $savedLoginResponse;
+            }
+
+            return redirect()->route('core.login')
+                ->withInput($request->only('email'))
+                ->withErrors(['password' => translate('Saved login expired. Please enter your password.')])
+                ->withoutCookie(self::SAVED_LOGIN_COOKIE);
+        }
+
         $credentials = $request->only(
             'email',
             'password',
@@ -92,8 +121,10 @@ class AuthenticationController extends Controller
             'remember_me'
         );
 
-        Log::info('Credentials Check 1', [
-            'credentials 1' => json_encode($credentials),
+        Log::info('Login request received', [
+            'email' => $credentials['email'] ?? null,
+            'remember_me' => $request->boolean('remember_me'),
+            'has_device_token' => !empty($credentials['token']),
         ]);
 
         $rememberMe = $request->boolean('remember_me');
@@ -121,252 +152,256 @@ class AuthenticationController extends Controller
         // Central domain - check BOTH central DB and tenant DBs
 
         // First, try to find user in central database
-            $centralUser = User::where('email', $credentials['email'])->first();
+        $centralUser = User::where('email', $credentials['email'])->first();
 
-            if ($centralUser && \Hash::check($credentials['password'], $centralUser->password)) {
-                // User exists in central DB and password is correct
+        if ($centralUser && \Hash::check($credentials['password'], $centralUser->password)) {
+            // User exists in central DB and password is correct
 
-                // dd($centralUser);
+            // dd($centralUser);
 
-                if ($centralUser->user_type == 1) {
-                    // Superadmin - login normally in central context
-                    Auth::login($centralUser);
-                } else {
-                    \Log::info('centralUser: ' . json_encode($centralUser));
-                    // Not superadmin - check if they own a tenant
-                    $saasAccount = DB::connection('mysql')->table('tl_saas_accounts')
-                        ->where('user_id', $centralUser->id)
+            if ($centralUser->user_type == 1) {
+                // Superadmin - login normally in central context
+                Auth::login($centralUser, $rememberMe);
+            } else {
+                \Log::info('centralUser: ' . json_encode($centralUser));
+                // Not superadmin - check if they own a tenant
+                $saasAccount = DB::connection('mysql')->table('tl_saas_accounts')
+                    ->where('user_id', $centralUser->id)
+                    ->first();
+
+                if ($saasAccount) {
+                    $tenant = \App\Models\Tenant::where('id', $saasAccount->tenant_id)
                         ->first();
 
-                    if ($saasAccount) {
-                        $tenant = \App\Models\Tenant::where('id', $saasAccount->tenant_id)
+                    if ($tenant) {
+                        // User owns a tenant - initialize and redirect
+                        tenancy()->initialize($tenant);
+
+                        // Authenticate in tenant context
+                        $tenantUser = User::on('tenant')
+                            ->where('email', $centralUser->email)
                             ->first();
 
-                        if ($tenant) {
-                            // User owns a tenant - initialize and redirect
-                            tenancy()->initialize($tenant);
+                        if ($tenantUser && \Hash::check($credentials['password'], $tenantUser->password)) {
+                            // Found the correct tenant!
+                            // Create a one-time login token for secure redirect
+                            $loginToken = \Str::random(64);
 
-                            // Authenticate in tenant context
-                            $tenantUser = User::on('tenant')
-                                ->where('email', $centralUser->email)
-                                ->first();
-
-                            if ($tenantUser && \Hash::check($credentials['password'], $tenantUser->password)) {
-                                // Found the correct tenant!
-                                // Create a one-time login token for secure redirect
-                                $loginToken = \Str::random(64);
-
-                                // Store token in central database with tenant and user info
-                                \DB::connection('mysql')->table('tenant_login_tokens')->insert([
-                                    'token' => hash('sha256', $loginToken),
-                                    'tenant_id' => $tenant->id,
-                                    'email' => $credentials['email'],
-                                    'remember_me' => $rememberMe ? 1 : 0,
-                                    'created_at' => now(),
-                                    'expires_at' => now()->addMinutes(5), // 5 minute expiry
-                                ]);
-
-                                tenancy()->end();
-
-                                \Log::info('Before attempting DeviceTokenController!!!');
-
-                                Log::info('Credentials Check 2', [
-                                    'credentials 2' => json_encode($credentials),
-                                ]);
-
-                                if (!empty($credentials['token'])) {
-
-                                    Log::info('Inside of the If condition');
-
-                                    $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $tenantUser->id, $tenant->id);
-                                }
-
-                                \Log::info('After attempting DeviceTokenController!!!');
-
-
-                                // Build URL with token
-                                // $tenantUrl = $this->buildTenantDashboardUrl($tenant) . '?login_token=' . $loginToken;
-                                $tenantUrl = $this->buildTenantLoginUrl($tenant) . '?login_token=' . $loginToken;
-
-                                $response = redirect()->away($tenantUrl);
-
-                                if ($rememberMe) {
-                                    $tenantDashboardUrl = $this->buildTenantDashboardUrl($tenant);
-
-                                    \Log::info('Setting remembered_tenant_url cookie', ['url' => $tenantDashboardUrl]);
-
-                                    $response = $response->withCookie(
-                                        \Cookie::make('remembered_tenant_url', base64_encode($tenantDashboardUrl), 60 * 24 * 365)
-                                    );
-                                }
-
-                                toastNotification('success', translate("Welcome back!"));
-                                return $response;
-                                //  return redirect()->away($tenantUrl);
-                            }
+                            // Store token in central database with tenant and user info
+                            \DB::connection('mysql')->table('tenant_login_tokens')->insert([
+                                'token' => hash('sha256', $loginToken),
+                                'tenant_id' => $tenant->id,
+                                'email' => $credentials['email'],
+                                'remember_me' => $rememberMe ? 1 : 0,
+                                'created_at' => now(),
+                                'expires_at' => now()->addMinutes(5), // 5 minute expiry
+                            ]);
 
                             tenancy()->end();
-                        }
-                    }
 
-                    // A non-superadmin central account without a valid tenant
-                    // must not be authenticated into the central dashboard.
-                    // This also handles deprecated accounts whose tenant was
-                    // removed or deactivated.
-                    return $this->invalidLoginResponse($request);
-                }
-            } else {
+                            \Log::info('Before attempting DeviceTokenController!!!');
 
-                Log::info('user != centralUser');
+                            Log::info('Tenant login token created', [
+                                'tenant_id' => $tenant->id,
+                                'email' => $credentials['email'] ?? null,
+                                'remember_me' => $rememberMe,
+                            ]);
 
-                // User not in central DB — might be a tenant-only user (tl_store_users)
-                $storeLoginResponse = $this->attemptStoreUserLogin($credentials, $rememberMe, $preferTenantId);
-                if ($storeLoginResponse !== null) {
-                    return $storeLoginResponse;
-                }
+                            if (!empty($credentials['token'])) {
 
-                // Not in tl_store_users either — try saas accounts (central DB users)
-                    $saasAccounts = \DB::connection('mysql')->table('tl_saas_accounts')
-                        ->join('tl_users', 'tl_saas_accounts.user_id', '=', 'tl_users.id')
-                        ->where('tl_users.email', $credentials['email'])
-                        ->select('tl_saas_accounts.*')
-                        ->get();
+                                Log::info('Inside of the If condition');
 
-                    foreach ($saasAccounts as $saasAccount) {
-                        $tenant = \App\Models\Tenant::where('id', $saasAccount->tenant_id)
-                            ->first();
-
-                        if ($tenant) {
-                            tenancy()->initialize($tenant);
-
-                            $tenantUser = User::on('tenant')
-                                ->where('email', $credentials['email'])
-                                ->first();
-
-                            if ($tenantUser && \Hash::check($credentials['password'], $tenantUser->password)) {
-                                $tenantUser->setConnection('tenant');
-                                Auth::login($tenantUser);
-
-                                if (!empty($credentials['token'])) {
-                                    Log::info('token != null');
-                                    $deviceTokenResponse = app(DeviceTokenController::class)
-                                        ->associateWithUser($credentials['token'], $tenantUser->id, $saasAccount->tenant_id);
-                                }
-
-                                $tenantUrl = $this->buildTenantDashboardUrl($tenant);
-                                toastNotification('success', translate("Welcome back!"));
-                                return redirect()->away($tenantUrl);
+                                $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $tenantUser->id, $tenant->id);
                             }
 
-                            tenancy()->end();
-                        }
-                    }
+                            \Log::info('After attempting DeviceTokenController!!!');
 
-                // Not found anywhere
+
+                            // Build URL with token
+                            // $tenantUrl = $this->buildTenantDashboardUrl($tenant) . '?login_token=' . $loginToken;
+                            $tenantUrl = $this->buildTenantLoginUrl($tenant) . '?login_token=' . $loginToken;
+
+                            $response = redirect()->away($tenantUrl);
+
+                            if ($rememberMe) {
+                                $tenantDashboardUrl = $this->buildTenantDashboardUrl($tenant);
+
+                                \Log::info('Setting remembered_tenant_url cookie', ['url' => $tenantDashboardUrl]);
+
+                                $response = $response
+                                    ->withCookie(\Cookie::make('remembered_tenant_url', base64_encode($tenantDashboardUrl), 60 * 24 * 365))
+                                    ->withCookie($this->makeSavedLoginCookie($tenant, $tenantUser));
+                            } else {
+                                $response = $response->withoutCookie(self::SAVED_LOGIN_COOKIE);
+                            }
+
+                            toastNotification('success', translate("Welcome back!"));
+                            return $response;
+                            //  return redirect()->away($tenantUrl);
+                        }
+
+                        tenancy()->end();
+                    }
+                }
+
+                // A non-superadmin central account without a valid tenant
+                // must not be authenticated into the central dashboard.
+                // This also handles deprecated accounts whose tenant was
+                // removed or deactivated.
                 return $this->invalidLoginResponse($request);
             }
+        } else {
 
-            // else {
-            //     // User not in central DB or wrong password - might be a tenant-only user
-            //     // Check if this email exists in any tenant's database through tl_saas_accounts
-            //     $saasAccounts = \DB::connection('mysql')->table('tl_saas_accounts')
-            //         ->join('tl_users', 'tl_saas_accounts.user_id', '=', 'tl_users.id')
-            //         ->where('tl_users.email', $credentials['email'])
-            //         ->select('tl_saas_accounts.*')
-            //         ->get();
+            Log::info('user != centralUser');
 
-            //     if(!empty($saasAccounts)) {
+            // User not in central DB — might be a tenant-only user (tl_store_users)
+            $storeLoginResponse = $this->attemptStoreUserLogin($credentials, $rememberMe, $preferTenantId);
+            if ($storeLoginResponse !== null) {
+                return $storeLoginResponse;
+            }
 
-            //         $tl_store_user = \DB::connection('mysql')->table('tl_store_users')
-            //         ->where('tl_store_users.email', $credentials['email'])
-            //         ->select('tl_store_users.*')
-            //         ->first();
+            // Not in tl_store_users either — try saas accounts (central DB users)
+            $saasAccounts = \DB::connection('mysql')->table('tl_saas_accounts')
+                ->join('tl_users', 'tl_saas_accounts.user_id', '=', 'tl_users.id')
+                ->where('tl_users.email', $credentials['email'])
+                ->select('tl_saas_accounts.*')
+                ->get();
 
-            //         if(!empty($tl_store_user)) {
+            foreach ($saasAccounts as $saasAccount) {
+                $tenant = \App\Models\Tenant::where('id', $saasAccount->tenant_id)
+                    ->first();
 
-            //             $tenant = \App\Models\Tenant::where('id', $tl_store_user->tenant_id)
-            //                 ->where('status', 'active')
-            //                 ->first();
+                if ($tenant) {
+                    tenancy()->initialize($tenant);
 
-            //             if ($tenant) {
-            //                 tenancy()->initialize($tenant);
+                    $tenantUser = User::on('tenant')
+                        ->where('email', $credentials['email'])
+                        ->first();
 
-            //                 $tenantUser = User::on('tenant')
-            //                     ->where('email', $credentials['email'])
-            //                     ->first();
+                    if ($tenantUser && \Hash::check($credentials['password'], $tenantUser->password)) {
+                        $tenantUser->setConnection('tenant');
+                        Auth::login($tenantUser);
 
-            //                 if ($tenantUser && \Hash::check($credentials['password'], $tenantUser->password)) {
-            //                     // Found the correct tenant!
-            //                     $tenantUser->setConnection('tenant');
-            //                     Auth::login($tenantUser);
+                        if (!empty($credentials['token'])) {
+                            Log::info('token != null');
+                            $deviceTokenResponse = app(DeviceTokenController::class)
+                                ->associateWithUser($credentials['token'], $tenantUser->id, $saasAccount->tenant_id);
+                        }
 
-            //                     if (!empty($credentials['token'])) {
+                        $tenantUrl = $this->buildTenantDashboardUrl($tenant);
+                        toastNotification('success', translate("Welcome back!"));
+                        return redirect()->away($tenantUrl);
+                    }
 
-            //                         Log::info('token != null');
+                    tenancy()->end();
+                }
+            }
 
-            //                         $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $user->id, tenant('id'));
+            // Not found anywhere
+            return $this->invalidLoginResponse($request);
+        }
 
-            //                     }
+        // else {
+        //     // User not in central DB or wrong password - might be a tenant-only user
+        //     // Check if this email exists in any tenant's database through tl_saas_accounts
+        //     $saasAccounts = \DB::connection('mysql')->table('tl_saas_accounts')
+        //         ->join('tl_users', 'tl_saas_accounts.user_id', '=', 'tl_users.id')
+        //         ->where('tl_users.email', $credentials['email'])
+        //         ->select('tl_saas_accounts.*')
+        //         ->get();
 
-            //                     $tenantUrl = $this->buildTenantDashboardUrl($tenant);
-            //                     toastNotification('success', translate("Welcome back!"));
-            //                     // return redirect()->away($tenantUrl);
-            //                 }
+        //     if(!empty($saasAccounts)) {
 
-            //                 tenancy()->end();
-            //             }
-            //         }
-            //         else {
+        //         $tl_store_user = \DB::connection('mysql')->table('tl_store_users')
+        //         ->where('tl_store_users.email', $credentials['email'])
+        //         ->select('tl_store_users.*')
+        //         ->first();
 
-            //         }
+        //         if(!empty($tl_store_user)) {
 
+        //             $tenant = \App\Models\Tenant::where('id', $tl_store_user->tenant_id)
+        //                 ->where('status', 'active')
+        //                 ->first();
 
+        //             if ($tenant) {
+        //                 tenancy()->initialize($tenant);
 
-            //     }
-            //     else {
+        //                 $tenantUser = User::on('tenant')
+        //                     ->where('email', $credentials['email'])
+        //                     ->first();
 
-            //         $foundTenant = null;
-            //         foreach ($saasAccounts as $saasAccount) {
-            //             $tenant = \App\Models\Tenant::where('id', $saasAccount->tenant_id)
-            //                 ->where('status', 'active')
-            //                 ->first();
+        //                 if ($tenantUser && \Hash::check($credentials['password'], $tenantUser->password)) {
+        //                     // Found the correct tenant!
+        //                     $tenantUser->setConnection('tenant');
+        //                     Auth::login($tenantUser);
 
-            //             if ($tenant) {
-            //                 tenancy()->initialize($tenant);
+        //                     if (!empty($credentials['token'])) {
 
-            //                 $tenantUser = User::on('tenant')
-            //                     ->where('email', $credentials['email'])
-            //                     ->first();
+        //                         Log::info('token != null');
 
-            //                 if ($tenantUser && \Hash::check($credentials['password'], $tenantUser->password)) {
-            //                     // Found the correct tenant!
-            //                     $tenantUser->setConnection('tenant');
-            //                     Auth::login($tenantUser);
+        //                         $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $user->id, tenant('id'));
 
-            //                     if (!empty($credentials['token'])) {
+        //                     }
 
-            //                         Log::info('token != null');
+        //                     $tenantUrl = $this->buildTenantDashboardUrl($tenant);
+        //                     toastNotification('success', translate("Welcome back!"));
+        //                     // return redirect()->away($tenantUrl);
+        //                 }
 
-            //                         $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $user->id, tenant('id'));
+        //                 tenancy()->end();
+        //             }
+        //         }
+        //         else {
 
-            //                     }
-
-            //                     $tenantUrl = $this->buildTenantDashboardUrl($tenant);
-            //                     toastNotification('success', translate("Welcome back!"));
-            //                     return redirect()->away($tenantUrl);
-            //                 }
-
-            //                 tenancy()->end();
-            //             }
-            //         }
-            //     }
-
+        //         }
 
 
-            //     // Not found anywhere
-            //     toastNotification('error', translate("Login Credentials Does not Match"));
-            //     return redirect()->back()->withInput($request->only('email'));
-            // }
+
+        //     }
+        //     else {
+
+        //         $foundTenant = null;
+        //         foreach ($saasAccounts as $saasAccount) {
+        //             $tenant = \App\Models\Tenant::where('id', $saasAccount->tenant_id)
+        //                 ->where('status', 'active')
+        //                 ->first();
+
+        //             if ($tenant) {
+        //                 tenancy()->initialize($tenant);
+
+        //                 $tenantUser = User::on('tenant')
+        //                     ->where('email', $credentials['email'])
+        //                     ->first();
+
+        //                 if ($tenantUser && \Hash::check($credentials['password'], $tenantUser->password)) {
+        //                     // Found the correct tenant!
+        //                     $tenantUser->setConnection('tenant');
+        //                     Auth::login($tenantUser);
+
+        //                     if (!empty($credentials['token'])) {
+
+        //                         Log::info('token != null');
+
+        //                         $deviceTokenResponse = app(DeviceTokenController::class)->associateWithUser($credentials['token'], $user->id, tenant('id'));
+
+        //                     }
+
+        //                     $tenantUrl = $this->buildTenantDashboardUrl($tenant);
+        //                     toastNotification('success', translate("Welcome back!"));
+        //                     return redirect()->away($tenantUrl);
+        //                 }
+
+        //                 tenancy()->end();
+        //             }
+        //         }
+        //     }
+
+
+
+        //     // Not found anywhere
+        //     toastNotification('error', translate("Login Credentials Does not Match"));
+        //     return redirect()->back()->withInput($request->only('email'));
+        // }
 
         $user = Auth::user();
 
@@ -501,9 +536,11 @@ class AuthenticationController extends Controller
 
             Log::info('Setting remembered_tenant_url cookie', ['url' => $tenantDashboardUrl]);
 
-            $response = $response->withCookie(
-                Cookie::make('remembered_tenant_url', base64_encode($tenantDashboardUrl), 60 * 24 * 365)
-            );
+            $response = $response
+                ->withCookie(Cookie::make('remembered_tenant_url', base64_encode($tenantDashboardUrl), 60 * 24 * 365))
+                ->withCookie($this->makeSavedLoginCookie($tenant, $tenantUser));
+        } else {
+            $response = $response->withoutCookie(self::SAVED_LOGIN_COOKIE);
         }
 
         toastNotification('success', translate("Welcome back!"));
@@ -681,6 +718,423 @@ class AuthenticationController extends Controller
         // }
     }
 ///  Hassaan created
+
+    /**
+     * Create the central-domain saved-login cookie.
+     * The real password is never stored.
+     */
+private function makeSavedLoginCookie($tenant, User $tenantUser)
+{
+    /*
+    |--------------------------------------------------------------------------
+    | Cookie-only saved login
+    |--------------------------------------------------------------------------
+    |
+    | IMPORTANT:
+    | Laravel's EncryptCookies middleware encrypts response cookies for us and
+    | decrypts them before request()->cookie() returns them.
+    |
+    | Therefore DO NOT call Crypt::encryptString() here for the new format.
+    | The browser still receives an encrypted/tamper-protected cookie.
+    |
+    | The real password is NEVER stored.
+    |
+    */
+
+    $passwordSignature = hash_hmac(
+        'sha256',
+        (string) $tenantUser->getAuthPassword(),
+        (string) config('app.key')
+    );
+
+    $payload = [
+        'v' => 2,
+        'user_id' => (int) $tenantUser->id,
+        'email' => (string) $tenantUser->email,
+        'tenant_id' => (string) $tenant->id,
+        'password_signature' => $passwordSignature,
+        'expires_at' => now()->addDays(30)->timestamp,
+    ];
+
+    // Plain JSON at application level. EncryptCookies encrypts it on response.
+    $cookieValue = json_encode($payload, JSON_UNESCAPED_SLASHES);
+
+    $host = request()->getHost();
+
+    $isLocal =
+        $host === 'localhost'
+        || $host === '127.0.0.1'
+        || str_ends_with($host, '.localhost');
+
+    $secure = $isLocal
+        ? false
+        : request()->isSecure();
+
+    Log::info('[saved-login] cookie created', [
+        'host' => $host,
+        'tenant_id' => (string) $tenant->id,
+        'user_id' => (int) $tenantUser->id,
+        'email' => (string) $tenantUser->email,
+        'secure' => $secure,
+        'format' => 'framework-encrypted-v2',
+    ]);
+
+    return Cookie::make(
+        self::SAVED_LOGIN_COOKIE,
+        $cookieValue,
+        60 * 24 * 30,
+        '/',
+        null,
+        $secure,
+        true,
+        false,
+        'lax'
+    );
+}
+
+    /**
+     * Decode a saved-login cookie safely.
+     *
+     * New format:
+     *   request()->cookie() already contains decrypted JSON because Laravel's
+     *   EncryptCookies middleware decrypted the transport cookie.
+     *
+     * Transitional legacy format:
+     *   The previous patch manually encrypted the JSON before EncryptCookies
+     *   encrypted it again. After middleware removes the outer encryption,
+     *   request()->cookie() still contains one encrypted payload. We support
+     *   that format temporarily so currently logged-in users are not impacted.
+     */
+private function decodeSavedLoginCookie(string $cookieValue): ?array
+{
+    /*
+    |--------------------------------------------------------------------------
+    | IMPORTANT FOR THIS PROJECT
+    |--------------------------------------------------------------------------
+    |
+    | In this Laravel installation request()->cookie('tl_saved_login') is
+    | returning the already-decrypted cookie WITH Laravel's CookieValuePrefix:
+    |
+    |     40-character-HMAC|{JSON}
+    |
+    | For your current payload:
+    |     40 prefix chars + 1 "|" + ~216 JSON chars = 257 chars
+    |
+    | That exactly matches the 257 length shown in your log.
+    |
+    | Therefore the prefix must be removed BEFORE json_decode().
+    |
+    */
+
+    $candidates = array_values(array_unique([
+        $cookieValue,
+        rawurldecode($cookieValue),
+    ]));
+
+    /*
+    |--------------------------------------------------------------------------
+    | 1. Current project format
+    |--------------------------------------------------------------------------
+    |
+    | Laravel has already decrypted the transport cookie, but the framework
+    | prefix is still present.
+    |
+    */
+    foreach ($candidates as $candidate) {
+        $value = $candidate;
+        $hadPrefix = false;
+
+        if (preg_match('/^[a-f0-9]{40}\|/i', $value) === 1) {
+            $value = substr($value, 41);
+            $hadPrefix = true;
+        }
+
+        $data = json_decode($value, true);
+
+        if (is_array($data)) {
+            Log::info('[saved-login] cookie decoded', [
+                'format' => $hadPrefix
+                    ? 'laravel-prefix-json'
+                    : 'json',
+            ]);
+
+            return $data;
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | 2. Legacy compatibility
+    |--------------------------------------------------------------------------
+    |
+    | Keep support for cookies created by the earlier manually-encrypted
+    | implementation. This avoids disrupting users who may still have one.
+    |
+    */
+    foreach ($candidates as $candidate) {
+        try {
+            $decrypted = Crypt::decryptString($candidate);
+        } catch (\Throwable $e) {
+            continue;
+        }
+
+        $decryptedCandidates = array_values(array_unique([
+            $decrypted,
+            rawurldecode($decrypted),
+        ]));
+
+        foreach ($decryptedCandidates as $decryptedCandidate) {
+            $value = $decryptedCandidate;
+
+            if (preg_match('/^[a-f0-9]{40}\|/i', $value) === 1) {
+                $value = substr($value, 41);
+            }
+
+            $data = json_decode($value, true);
+
+            if (is_array($data)) {
+                Log::info('[saved-login] cookie decoded', [
+                    'format' => 'legacy-encrypted',
+                ]);
+
+                return $data;
+            }
+        }
+    }
+
+    /*
+     * Do not log the cookie itself because it is an authentication credential.
+     */
+    Log::warning('[saved-login] unable to decode cookie', [
+        'length' => strlen($cookieValue),
+        'has_laravel_prefix' => preg_match(
+            '/^[a-f0-9]{40}\|/i',
+            $cookieValue
+        ) === 1,
+    ]);
+
+    return null;
+}
+
+    /**
+     * Validate the saved-login cookie against the current tenant user/password hash.
+     */
+private function getValidSavedLogin(): ?array
+{
+    Log::info('[saved-login] checking', [
+        'host' => request()->getHost(),
+        'cookie_present' => request()->hasCookie(
+            self::SAVED_LOGIN_COOKIE
+        ),
+        'tenancy_initialized' => tenancy()->initialized,
+    ]);
+
+    if (tenancy()->initialized) {
+        Log::warning(
+            '[saved-login] rejected: tenancy already initialized'
+        );
+
+        return null;
+    }
+
+    $cookieValue = request()->cookie(
+        self::SAVED_LOGIN_COOKIE
+    );
+
+    if (empty($cookieValue)) {
+        Log::info(
+            '[saved-login] no remembered account cookie'
+        );
+
+        return null;
+    }
+
+    try {
+        $data = $this->decodeSavedLoginCookie((string) $cookieValue);
+
+        if (!is_array($data)) {
+            Log::warning(
+                '[saved-login] rejected: invalid cookie payload'
+            );
+
+            return null;
+        }
+
+        if (
+            empty($data['user_id']) ||
+            empty($data['email']) ||
+            empty($data['tenant_id']) ||
+            empty($data['password_signature']) ||
+            empty($data['expires_at'])
+        ) {
+            Log::warning(
+                '[saved-login] rejected: incomplete payload'
+            );
+
+            return null;
+        }
+
+        if ((int) $data['expires_at'] < time()) {
+            Log::warning(
+                '[saved-login] rejected: cookie expired'
+            );
+
+            return null;
+        }
+
+        $tenant = \App\Models\Tenant::where(
+            'id',
+            $data['tenant_id']
+        )->first();
+
+        if (!$tenant) {
+            Log::warning(
+                '[saved-login] rejected: tenant missing',
+                [
+                    'tenant_id' => $data['tenant_id'],
+                ]
+            );
+
+            return null;
+        }
+
+        tenancy()->initialize($tenant);
+
+        try {
+            $tenantUser = User::on('tenant')
+                ->where('id', (int) $data['user_id'])
+                ->where('email', $data['email'])
+                ->first();
+
+            if (!$tenantUser) {
+                Log::warning(
+                    '[saved-login] rejected: tenant user missing',
+                    [
+                        'tenant_id' => $data['tenant_id'],
+                        'user_id' => $data['user_id'],
+                        'email' => $data['email'],
+                    ]
+                );
+
+                return null;
+            }
+
+            $currentPasswordSignature = hash_hmac(
+                'sha256',
+                (string) $tenantUser->getAuthPassword(),
+                (string) config('app.key')
+            );
+
+            if (
+                !hash_equals(
+                    $currentPasswordSignature,
+                    (string) $data['password_signature']
+                )
+            ) {
+                Log::warning(
+                    '[saved-login] rejected: password changed'
+                );
+
+                return null;
+            }
+
+            Log::info('[saved-login] VALID', [
+                'tenant_id' => (string) $tenant->id,
+                'user_id' => (int) $tenantUser->id,
+                'email' => (string) $tenantUser->email,
+            ]);
+
+            return [
+                'tenant' => $tenant,
+                'user_id' => (int) $tenantUser->id,
+                'email' => (string) $tenantUser->email,
+            ];
+
+        } finally {
+            tenancy()->end();
+        }
+
+    } catch (\Throwable $e) {
+        if (tenancy()->initialized) {
+            tenancy()->end();
+        }
+
+        Log::warning('[saved-login] validation exception', [
+            'class' => get_class($e),
+            'message' => $e->getMessage(),
+        ]);
+
+        return null;
+    }
+}
+
+    /**
+     * One-click login after explicit logout when Remember Me was previously selected.
+     */
+    private function attemptSavedLogin(LoginRequest $request)
+    {
+        $savedLogin = $this->getValidSavedLogin();
+
+        if (!$savedLogin) {
+            Log::warning(
+                '[saved-login] automatic login rejected'
+            );
+
+            return null;
+        }
+
+        if (
+            strcasecmp(
+                trim((string) $request->input('email')),
+                trim((string) $savedLogin['email'])
+            ) !== 0
+        ) {
+            Log::warning(
+                '[saved-login] rejected: email does not match'
+            );
+
+            return null;
+        }
+
+        $tenant = $savedLogin['tenant'];
+        $rememberMe = $request->boolean('remember_me');
+        $loginToken = Str::random(64);
+
+        /*
+         * Keep the project's EXISTING short-lived tenant handoff exactly as-is.
+         * This is not the persistent Remember Me storage.
+         */
+        DB::connection('mysql')->table('tenant_login_tokens')->insert([
+            'token' => hash('sha256', $loginToken),
+            'tenant_id' => $tenant->id,
+            'email' => $savedLogin['email'],
+            'remember_me' => $rememberMe ? 1 : 0,
+            'created_at' => now(),
+            'expires_at' => now()->addMinutes(5),
+        ]);
+
+        $tenantUrl = $this->buildTenantLoginUrl($tenant) . '?login_token=' . $loginToken;
+        $response = redirect()->away($tenantUrl);
+
+        /*
+         * If the user intentionally unchecks Remember Me on the saved-login form,
+         * allow this login once and remove only the persistent browser cookie.
+         */
+        if (!$rememberMe) {
+            Log::info(
+                '[saved-login] remember me unchecked - removing cookie'
+            );
+
+            $response = $response->withoutCookie(
+                self::SAVED_LOGIN_COOKIE
+            );
+        }
+
+        toastNotification('success', translate('Welcome back!'));
+
+        return $response;
+    }
+
     /**
      * Build the central-domain login URL.
      *
@@ -706,7 +1160,7 @@ class AuthenticationController extends Controller
                 $centralDomain = $centralDomains[0] ?? 'localhost';
             }
         } else {
-            $centralDomain = config('tenancy.local_central_domain', '127.0.0.1');
+            $centralDomain = config('tenancy.local_central_domain', 'localhost');
         }
 
         $portSuffix = ($port !== null && (($scheme === 'http' && $port != 80) || ($scheme === 'https' && $port != 443)))
