@@ -22,7 +22,7 @@ return [
         static fn (string $domain): string => trim($domain),
         explode(',', env('CENTRAL_DOMAIN', 'localhost,127.0.0.1,platepilots.com'))
     )))),
-    'local_central_domain' => env('LOCAL_CENTRAL_DOMAIN', '127.0.0.1'),
+    'local_central_domain' => env('LOCAL_CENTRAL_DOMAIN', 'localhost'),
 
     /**
      * Tenancy bootstrappers are executed when tenancy is initialized.
