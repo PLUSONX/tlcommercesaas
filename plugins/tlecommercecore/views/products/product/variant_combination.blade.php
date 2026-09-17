@@ -9,6 +9,7 @@
                       <th>{{ translate('Unit Price') }}</th>
                       <th>{{ translate('SKU') }}</th>
                       <th>{{ translate('Quantity') }}</th>
+                      <th>{{ translate('Image') }}</th>
                   </tr>
               </thead>
               <tbody>
@@ -58,6 +59,12 @@
                           <td>
                               <input type="number" class="theme-input-style"
                                   name="variations[{{ $key }}][quantity]" value="0">
+                          </td>
+                          <td style="min-width: 180px;">
+                              @include('core::base.includes.media.media_input', [
+                                  'input' => 'variant_image_' . $key,
+                                  'data' => null,
+                              ])
                           </td>
                       </tr>
                   @endforeach

@@ -532,6 +532,12 @@ class ProductController extends Controller
             $oldPrice = $variant_info->unit_price;
             $quantity = $variant_info->quantity;
 
+            // Optional image saved against this exact variant.
+            // Existing variants without an image continue to return null.
+            $variant_image = !empty($variant_info->image)
+                ? getFilePath($variant_info->image)
+                : null;
+
             $lowStockAlert = (int) (
     $product_info->low_stock_quantity_alert ?? 0
 );
@@ -549,6 +555,7 @@ $isLowStock =
                     'base_price' => $base_price,
                     'oldPrice' => $oldPrice,
                     'quantity' => $quantity,
+                    'variant_image' => $variant_image,
                        'low_stock_quantity_alert' =>
         $lowStockAlert,
 

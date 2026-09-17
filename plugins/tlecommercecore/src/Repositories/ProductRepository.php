@@ -1024,12 +1024,17 @@ class ProductRepository
         $product->choice_options()->delete();
         $product->color_choices()->delete();
 
-        foreach ($request->variations as $variations) {
+        foreach ($request->variations as $key => $variations) {
             $v_price = VariantProductPrice::firstOrCreate(['product_id' => $product_id, 'variant' => trim($variations['code'], '/')]);
             $v_price->purchase_price = $variations['purchase_price'];
             $v_price->unit_price = $variations['unit_price'];
             $v_price->sku = $variations['sku'];
             $v_price->quantity = $variations['quantity'];
+
+            // Optional image for this exact variant.
+            $variant_image = $request->input('variant_image_' . $key);
+            $v_price->image = !empty($variant_image) ? $variant_image : null;
+
             $v_price->save();
 
             foreach (array_filter(explode("/", $variations['code'])) as $combination) {
