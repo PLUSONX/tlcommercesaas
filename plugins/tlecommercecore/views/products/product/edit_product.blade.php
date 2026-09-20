@@ -1724,6 +1724,11 @@
         const PRODUCT_MEDIA_VALIDATION_ENABLED =
             @json(empty($lang) || $lang == getDefaultLang());
 
+        // EDIT PRODUCT ONLY: thumbnail + gallery live image validation is disabled.
+        // Uncomment the next line whenever you want to enable it again.
+        let VALIDATE_EDIT_PRODUCT_THUMBNAIL_AND_GALLERY = false;
+        // VALIDATE_EDIT_PRODUCT_THUMBNAIL_AND_GALLERY = true;
+
         const PRODUCT_MEDIA_SELECTOR = [
             '[name="thumbnail_image"]',
             '[name="gallery_images"]',
@@ -1976,6 +1981,18 @@
             const value = productMediaCurrentValue(input);
 
             if (!type || !name) {
+                return Promise.resolve(true);
+            }
+
+            // Keep color/variant validation active, but bypass thumbnail/gallery on Edit Product.
+            if (
+                !VALIDATE_EDIT_PRODUCT_THUMBNAIL_AND_GALLERY &&
+                (type === 'thumbnail' || type === 'gallery')
+            ) {
+                productMediaValidationState[name] = true;
+                productMediaLastValue[name] = value;
+                productMediaRenderErrors(input, []);
+                productMediaSetValidating(input, false);
                 return Promise.resolve(true);
             }
 
