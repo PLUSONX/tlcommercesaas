@@ -30,6 +30,7 @@ class SingleProductCollection extends JsonResource
             'voucher_list' => $this->couponList(),
             'attribute' => $this->has_variant == config('tlecommercecore.product_variant.variable') ?  $this->productAttributes() : null,
             'selectedVariant' => $this->has_variant == config('tlecommercecore.product_variant.variable') ?  $this->selectedVariant() : null,
+            'selectedVariantImage' => $this->has_variant == config('tlecommercecore.product_variant.variable') ? $this->selectedVariantImage() : null,
             'permalink' => $this->permalink,
             'oldPrice' => $this->base_price(),
             'price' => $this->current_price(),
@@ -277,6 +278,22 @@ class SingleProductCollection extends JsonResource
     {
         return  rtrim($this->variations->first()->variant, "/");
     }
+
+    /**
+     * Optional image saved against the initially selected exact variant.
+     * Returns null for all existing variants that do not have an image.
+     */
+    public function selectedVariantImage()
+    {
+        $variant = $this->variations->first();
+
+        if ($variant == null || empty($variant->image)) {
+            return null;
+        }
+
+        return getFilePath($variant->image);
+    }
+
     public function productAttributes()
     {
         $productAttributes = [];

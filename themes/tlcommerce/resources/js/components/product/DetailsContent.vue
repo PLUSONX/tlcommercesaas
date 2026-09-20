@@ -121,6 +121,16 @@
 </div>
 <!-- End Product Discount Badge -->
 
+    <!-- Exact Variant Image: shown directly above this variant's price -->
+    <div v-if="selectedVariantImage" class="variant-price-image-wrap">
+      <img
+        :src="cleanImage(selectedVariantImage)"
+        :alt="product.name"
+        class="variant-price-image"
+      />
+    </div>
+    <!-- End Exact Variant Image -->
+
     <!--Price Range-->
     <div class="product-price price-range" v-if="
       product.price_range_min &&
@@ -148,26 +158,18 @@
     <!-- Total Price -->
     <div class="product-price unit-price mt-25">
       <h6 v-if="!modernLayout" class="mb-1">
-        {{ $t("Price") }}
-      </h6>
+  {{ $t("Price") }}
+</h6>
       <div class="price d-flex align-items-center">
         <span
-            class="price-current-wrap"
-            :class="{ 'price-flash': priceFlash }"
-            :style="priceFlashColor ? { '--price-flash-color': priceFlashColor } : {}"
-          >
-                    <the-currency :amount="product.price" tag="h3" class="mb-0"></the-currency>
+  class="price-current-wrap"
+  :class="{ 'price-flash': priceFlash }"
+  :style="priceFlashColor ? { '--price-flash-color': priceFlashColor } : {}"
+>
+          <the-currency :amount="product.price" tag="h3" class="mb-0"></the-currency>
         </span> 
         <the-currency v-if="product.oldPrice > product.price" :amount="product.oldPrice" tag="del"
           class="ml-20"></the-currency>
-      </div>
-      <div
-        v-if="isLowStock"
-        class="mt-10"
-      >
-        <span class="frontend-low-stock-badge">
-          {{ $t("Low Stock") }}
-        </span>
       </div>
     </div>
     <!-- End Total Price -->
@@ -446,7 +448,7 @@ import {
   stripMultiSelectSegments,
 } from "@/utils/variantSelection";
 export default {
-  emits: ["goto-section", "color-variant-images", "variant-updating", "quantity-change", "ready"],
+  emits: ["goto-section", "color-variant-images", "variant-image", "variant-updating", "quantity-change", "ready"],
   components: {
     Countdown,
   },
@@ -481,6 +483,7 @@ data() {
     priceFlashTimeout: null,
     flashColors: ["#ff5a1f", "#0d6efd", "#198754", "#d63384", "#6f42c1", "#fd7e14"],
     flashColorIndex: 0,
+    selectedVariantImage: this.product.selectedVariantImage || null,
     quantityValue:
   this.product.min_item_on_purchase != null &&
     this.product.min_item_on_purchase > 0
@@ -489,24 +492,6 @@ data() {
   };
 },
   computed: mapState({
-    isLowStock() {
-  const threshold = Number(
-    this.product?.low_stock_quantity_alert ?? 0
-  );
-
-  const quantity = Number(
-    this.product?.quantity
-  );
-
-  if (threshold <= 0) {
-    return false;
-  }
-
-  return (
-    Number.isFinite(quantity) &&
-    quantity <= threshold
-  );
-},
     customerToken: (state) => state.customerToken,
     isCustomerLogin: (state) => state.isCustomerLogin,
     config: (state) => state.siteSettings,
@@ -981,6 +966,13 @@ methods: {
             this.product.quantity = response.data.quantity;
             this.product.oldPrice = response.data.oldPrice;
 
+            // Keep the exact selected variant image in this component so it can
+            // display directly above the price, and also notify the parent gallery.
+            const variantImage = response.data.variant_image || null;
+            this.selectedVariantImage = variantImage;
+            this.product.selectedVariantImage = variantImage;
+            this.$emit("variant-image", variantImage);
+
             if (this.priceFlashTimeout) {
   clearTimeout(this.priceFlashTimeout);
               }
@@ -1285,20 +1277,6 @@ methods: {
 .option-list-cards {
   gap: 8px;
   margin-top: 8px;
-}
-
-.frontend-low-stock-badge {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  padding: 4px 8px;
-  border-radius: 4px;
-  background: #ffc107;
-  color: #222;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1.2;
-  white-space: nowrap;
 }
 
 .option-list-card {
@@ -1829,6 +1807,35 @@ methods: {
       min-width: 42px;
       background: transparent;
     }
+  }
+}
+
+.variant-price-image-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 18px 0 14px;
+  min-height: 140px;
+}
+
+.variant-price-image {
+  display: block;
+  width: 180px;
+  height: 180px;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+@media (max-width: 767px) {
+  .variant-price-image-wrap {
+    min-height: 120px;
+    margin: 14px 0 12px;
+  }
+
+  .variant-price-image {
+    width: 150px;
+    height: 150px;
   }
 }
 </style>

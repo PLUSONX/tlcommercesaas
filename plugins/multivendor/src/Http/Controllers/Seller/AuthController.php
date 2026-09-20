@@ -40,41 +40,48 @@ class AuthController extends Controller
      * @param SellerLoginRequest $request
      */
     public function loginAttempt(SellerLoginRequest $request)
-    {
-        $seller_info = User::where('email', $request['email'])
-            ->where('user_type', config('tlecommercecore.user_type.seller'))
-            ->first();
+{
+    $seller_info = User::where('email', $request['email'])
+        ->where('user_type', config('tlecommercecore.user_type.seller'))
+        ->first();
 
-        if ($seller_info == null) {
-            throw ValidationException::withMessages(
-                [
-                    'login_error' => [translate('No Account found associate this email')]
-                ]
-            );
-        }
-
-        if ($seller_info != null && $seller_info->status != config('settings.general_status.active')) {
-            throw ValidationException::withMessages(
-                [
-                    'login_error' => [translate('Your account is not active. Please contact with administration')]
-                ]
-            );
-        }
-
-
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
-            toastNotification('success', translate('Login successful'));
-            return redirect()->route('plugin.multivendor.seller.dashboard');
-        }
-
-        throw ValidationException::withMessages(
-            [
-                'login_error' => [translate('Login Credentials Does not Match')]
+    if ($seller_info == null) {
+        throw ValidationException::withMessages([
+            'login_error' => [
+                translate('No Account found associate this email')
             ]
-        );
+        ]);
     }
+
+    if ($seller_info->status != config('settings.general_status.active')) {
+        throw ValidationException::withMessages([
+            'login_error' => [
+                translate('Your account is not active. Please contact with administration')
+            ]
+        ]);
+    }
+
+    $credentials = $request->only('email', 'password');
+
+    // Keep user remembered for 30 days
+    Auth::guard()->setRememberDuration(43200);
+
+    if (Auth::attempt($credentials, true)) {
+
+        // Generate a fresh authenticated session
+        $request->session()->regenerate();
+
+        toastNotification('success', translate('Login successful'));
+
+        return redirect()->route('plugin.multivendor.seller.dashboard');
+    }
+
+    throw ValidationException::withMessages([
+        'login_error' => [
+            translate('Login Credentials Does not Match')
+        ]
+    ]);
+}
     /**
      * Seller logout
      */

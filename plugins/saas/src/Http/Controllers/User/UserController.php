@@ -116,38 +116,69 @@ class UserController extends Controller
      * @param  mixed $request
      * @return mixed
      */
-    public function attemptLogin(LoginRequest $request)
-    {
-        $credentials = $request->only('email', 'password');
+   public function attemptLogin(LoginRequest $request)
+{
+    $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
-            $this->setupLoginLogoutActivity(true);
-            if (Auth::user()->status == config('settings.user_status.in_active')) {
-                $this->logout();
-                toastNotification('error', translate("Your status is currently inactive"));
-                return redirect()->back();
-            } elseif (Auth::user()->user_type == config('saas.user_type.subscriber')) {
-                toastNotification('success', translate('Login successful'));
-                //return redirect()->route('plugin.saas.user.dashboard');
-                $default_path = route('plugin.saas.user.dashboard');
-                return Redirect::intended($default_path);
-            } 
-            elseif (Auth::user()->user_type == config('saas.user_type.super_admin')) {
-                // Admin login success
-                toastNotification('success', translate('Login successful'));
-                $default_path = route('admin.dashboard');
-                return Redirect::intended($default_path);
-            }  
-            else {
-                $this->logout();
-                toastNotification('error', translate("Login Credentials Does not Match"));
-                return redirect()->back();
-            }
-            
+    Auth::guard()->setRememberDuration(43200);
+
+    if (Auth::attempt($credentials, true)) {
+
+        $request->session()->regenerate();
+
+        $this->setupLoginLogoutActivity(true);
+
+        if (Auth::user()->status == config('settings.user_status.in_active')) {
+            $this->logout();
+
+            toastNotification(
+                'error',
+                translate("Your status is currently inactive")
+            );
+
+            return redirect()->back();
+
+        } elseif (
+            Auth::user()->user_type ==
+            config('saas.user_type.subscriber')
+        ) {
+
+            toastNotification('success', translate('Login successful'));
+
+            $default_path = route('plugin.saas.user.dashboard');
+
+            return Redirect::intended($default_path);
+
+        } elseif (
+            Auth::user()->user_type ==
+            config('saas.user_type.super_admin')
+        ) {
+
+            toastNotification('success', translate('Login successful'));
+
+            $default_path = route('admin.dashboard');
+
+            return Redirect::intended($default_path);
+        } else {
+
+            $this->logout();
+
+            toastNotification(
+                'error',
+                translate("Login Credentials Does not Match")
+            );
+
+            return redirect()->back();
         }
-        toastNotification('error', translate("Login Credentials Does not Match"));
-        return redirect()->back();
     }
+
+    toastNotification(
+        'error',
+        translate("Login Credentials Does not Match")
+    );
+
+    return redirect()->back();
+}
 
     /**
      * Will redirect to profile page
