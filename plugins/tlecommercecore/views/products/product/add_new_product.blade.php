@@ -1364,7 +1364,333 @@
             });
         })(jQuery);
 
-        // Product images are optional on Add Product; no product-level image validation is applied.
+        /**
+         * Immediate Product Image Validation
+         *
+         * The media manager stores IDs in thumbnail_image / gallery_images / color_*_image.
+         * We validate those IDs through a read-only controller endpoint immediately after selection,
+         * then show the exact backend-standard error beside the field before product submission.
+         */
+        const PRODUCT_MEDIA_VALIDATION_URL =
+            '{{ route('plugin.tlcommercecore.product.validate.media') }}';
+
+        // ADD PRODUCT ONLY: thumbnail + gallery live validation is disabled.
+        // Uncomment the next line whenever you want to enable it again.
+        let VALIDATE_ADD_PRODUCT_THUMBNAIL_AND_GALLERY = false;
+        // VALIDATE_ADD_PRODUCT_THUMBNAIL_AND_GALLERY = true;
+
+        const PRODUCT_MEDIA_SELECTOR = [
+            '[name="thumbnail_image"]',
+            '[name="gallery_images"]',
+            '[name^="color_"][name$="_image"]'
+        ].join(',');
+
+        const productMediaValidationState = {};
+        const productMediaLastValue = {};
+        const productMediaPendingRequest = {};
+        let productMediaBypassSubmitValidation = false;
+
+        function productMediaInputKey(input) {
+            return input && input.name ? input.name : '';
+        }
+
+        function productMediaValidationType(input) {
+            const name = productMediaInputKey(input);
+
+            if (name === 'thumbnail_image') {
+                return VALIDATE_ADD_PRODUCT_THUMBNAIL_AND_GALLERY ? 'thumbnail' : null;
+            }
+
+            if (name === 'gallery_images') {
+                return VALIDATE_ADD_PRODUCT_THUMBNAIL_AND_GALLERY ? 'gallery' : null;
+            }
+
+            if (/^color_.+_image$/.test(name)) {
+                return 'variant';
+            }
+
+            return null;
+        }
+
+        function productMediaCurrentValue(input) {
+            if (!input) {
+                return '';
+            }
+
+            return String($(input).val() || '').trim();
+        }
+
+        function productMediaErrorElement(input) {
+            const name = productMediaInputKey(input);
+
+            if (name === 'thumbnail_image') {
+                return document.getElementById('thumbnail-image-live-error');
+            }
+
+            if (name === 'gallery_images') {
+                return document.getElementById('gallery-images-live-error');
+            }
+
+            if (!name) {
+                return null;
+            }
+
+            const errorId = 'product-media-live-error-' + name.replace(/[^a-zA-Z0-9_-]/g, '-');
+            let errorEl = document.getElementById(errorId);
+
+            if (errorEl) {
+                return errorEl;
+            }
+
+            errorEl = document.createElement('div');
+            errorEl.id = errorId;
+            errorEl.className = 'product-media-live-error d-none';
+            errorEl.setAttribute('role', 'alert');
+
+            const host = input.closest('.col-md-12, .col-sm-12, .form-group, .form-row') || input.parentElement;
+            if (host) {
+                host.appendChild(errorEl);
+            }
+
+            return errorEl;
+        }
+
+        function productMediaFieldHost(input) {
+            if (!input) {
+                return null;
+            }
+
+            if (input.name === 'thumbnail_image') {
+                return input.closest('.col-md-12');
+            }
+
+            if (input.name === 'gallery_images') {
+                return input.closest('.col-md-12');
+            }
+
+            return input.closest('.col-md-12, .col-sm-12, .form-group, .form-row');
+        }
+
+        function productMediaRenderErrors(input, errors) {
+            const errorEl = productMediaErrorElement(input);
+            const host = productMediaFieldHost(input);
+            const errorList = Array.isArray(errors) ? errors.filter(Boolean) : [];
+
+            if (host) {
+                host.classList.toggle('product-media-invalid-wrap', errorList.length > 0);
+            }
+
+            if (!errorEl) {
+                return;
+            }
+
+            if (errorList.length < 1) {
+                errorEl.innerHTML = '';
+                errorEl.classList.add('d-none');
+                return;
+            }
+
+            const items = errorList
+                .map(function(message) {
+                    return '<li>' + $('<div>').text(message).html() + '</li>';
+                })
+                .join('');
+
+            errorEl.innerHTML = '<ul>' + items + '</ul>';
+            errorEl.classList.remove('d-none');
+        }
+
+        function productMediaSetValidating(input, validating) {
+            const host = productMediaFieldHost(input);
+            if (!host) {
+                return;
+            }
+
+            let status = host.querySelector('.product-media-validating');
+
+            if (!validating) {
+                if (status) {
+                    status.remove();
+                }
+                return;
+            }
+
+            if (!status) {
+                status = document.createElement('div');
+                status.className = 'product-media-validating';
+                status.textContent = '{{ translate('Checking image requirements...') }}';
+                host.appendChild(status);
+            }
+        }
+
+        function validateSelectedProductMedia(input, options) {
+            options = options || {};
+
+            if (!input) {
+                return Promise.resolve(true);
+            }
+
+            const type = productMediaValidationType(input);
+            const name = productMediaInputKey(input);
+            const value = productMediaCurrentValue(input);
+
+            if (!type || !name) {
+                return Promise.resolve(true);
+            }
+
+            if (!options.force && productMediaLastValue[name] === value) {
+                return Promise.resolve(productMediaValidationState[name] !== false);
+            }
+
+            productMediaLastValue[name] = value;
+
+            if (productMediaPendingRequest[name] && productMediaPendingRequest[name].readyState !== 4) {
+                productMediaPendingRequest[name].abort();
+            }
+
+            productMediaValidationState[name] = null;
+            productMediaSetValidating(input, true);
+
+            return new Promise(function(resolve) {
+                productMediaPendingRequest[name] = $.ajax({
+                    url: PRODUCT_MEDIA_VALIDATION_URL,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        type: type,
+                        field: name,
+                        value: value
+                    },
+                    success: function(response) {
+                        const errors = response && Array.isArray(response.errors) ?
+                            response.errors :
+                            [];
+
+                        const valid = !!(response && response.success === true && errors.length === 0);
+                        productMediaValidationState[name] = valid;
+                        productMediaRenderErrors(input, errors);
+                        resolve(valid);
+                    },
+                    error: function(xhr, textStatus) {
+                        if (textStatus === 'abort') {
+                            resolve(false);
+                            return;
+                        }
+
+                        let errors = [];
+
+                        if (xhr.responseJSON && Array.isArray(xhr.responseJSON.errors)) {
+                            errors = xhr.responseJSON.errors;
+                        } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errors = [xhr.responseJSON.message];
+                        } else {
+                            errors = ['{{ translate('Unable to validate the selected image. Please try again.') }}'];
+                        }
+
+                        productMediaValidationState[name] = false;
+                        productMediaRenderErrors(input, errors);
+                        resolve(false);
+                    },
+                    complete: function() {
+                        productMediaSetValidating(input, false);
+                    }
+                });
+            });
+        }
+
+        function discoverProductMediaInputs(validateChanged) {
+            document.querySelectorAll(PRODUCT_MEDIA_SELECTOR).forEach(function(input) {
+                const name = productMediaInputKey(input);
+                const value = productMediaCurrentValue(input);
+
+                if (!name) {
+                    return;
+                }
+
+                if (!Object.prototype.hasOwnProperty.call(productMediaLastValue, name)) {
+                    // Do not show validation immediately on first page render.
+                    // Start watching from the current selection and validate only after it changes.
+                    productMediaLastValue[name] = value;
+                    return;
+                }
+
+                if (validateChanged && productMediaLastValue[name] !== value) {
+                    validateSelectedProductMedia(input, {
+                        force: true
+                    });
+                }
+            });
+        }
+
+        // Media-manager scripts do not always dispatch a native "change" event when they update hidden IDs,
+        // so use both delegated events and a small value watcher.
+        $(document).on('change input', PRODUCT_MEDIA_SELECTOR, function() {
+            validateSelectedProductMedia(this, {
+                force: true
+            });
+        });
+
+        discoverProductMediaInputs(false);
+        window.setInterval(function() {
+            discoverProductMediaInputs(true);
+        }, 350);
+
+        $('#product-form').on('submit.productMediaValidation', function(event) {
+            if (productMediaBypassSubmitValidation) {
+                return true;
+            }
+
+            event.preventDefault();
+
+            const form = this;
+            const originalEvent = event.originalEvent || {};
+            const submitter = originalEvent.submitter || document.activeElement;
+            const inputs = Array.from(document.querySelectorAll(PRODUCT_MEDIA_SELECTOR));
+
+            Promise.all(
+                inputs.map(function(input) {
+                    return validateSelectedProductMedia(input, {
+                        force: true
+                    });
+                })
+            ).then(function(results) {
+                const allValid = results.every(function(valid) {
+                    return valid === true;
+                });
+
+                if (!allValid) {
+                    const firstError = document.querySelector('.product-media-live-error:not(.d-none)');
+
+                    if (firstError) {
+                        firstError.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    }
+
+                    if (typeof toastr !== 'undefined') {
+                        toastr.error(
+                            '{{ translate('Please fix the product image validation errors before saving.') }}',
+                            '{{ translate('Image validation') }}'
+                        );
+                    }
+
+                    return;
+                }
+
+                productMediaBypassSubmitValidation = true;
+
+                // Re-trigger the original submit button so its name/value (Draft or Publish)
+                // and any existing form handlers remain unchanged.
+                if (submitter && submitter.tagName === 'BUTTON' && submitter.type === 'submit') {
+                    submitter.click();
+                    return;
+                }
+
+                HTMLFormElement.prototype.submit.call(form);
+            });
+        });
 
         // send file function summernote
         function sendFile(image, editor, welEditable, section_id) {

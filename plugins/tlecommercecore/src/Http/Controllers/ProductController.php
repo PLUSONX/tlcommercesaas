@@ -254,8 +254,13 @@ class ProductController extends Controller
      */
     public function storeNewProduct(ProductRequest $request)
     {
-        // Product images are optional on create.
-        // No product-level image validation is applied here.
+        // ADD PRODUCT ONLY: thumbnail + gallery size/type/dimension validation is disabled.
+        // Uncomment the next line whenever you want to enable it again.
+        $validateAddProductThumbnailAndGallery = false;
+        // $validateAddProductThumbnailAndGallery = true;
+
+        // Color-variant validation remains active. Edit Product validation is unchanged.
+        $this->validateProductMedia($request, null, $validateAddProductThumbnailAndGallery);
 
         if ($request['product_type'] == config('tlecommercecore.product_variant.variable') && !$request->has('variations')) {
             toastNotification('error', 'Invalid Product Variations');
@@ -1032,7 +1037,7 @@ class ProductController extends Controller
      *   then validates MIME, file size, dimensions and aspect ratio before ProductRepository stores IDs.
      * - On update, unchanged existing images are intentionally skipped so old products are not broken.
      */
-    private function validateProductMedia(ProductRequest $request, ?Product $existingProduct = null): void
+    private function validateProductMedia(ProductRequest $request, ?Product $existingProduct = null, bool $validateThumbnailAndGallery = true): void
     {
         $errors = [];
 
@@ -1052,13 +1057,13 @@ class ProductController extends Controller
             ? $this->normalizeMediaId($existingProduct->thumbnail_image)
             : null;
 
-        if ($existingProduct === null && $thumbnailId === null) {
+        if ($validateThumbnailAndGallery && $existingProduct === null && $thumbnailId === null) {
             $errors['thumbnail_image'][] = 'Thumbnail image is required.';
         }
 
-        $thumbnailChanged = $existingProduct === null
+        $thumbnailChanged = $validateThumbnailAndGallery && ($existingProduct === null
             ? $thumbnailId !== null
-            : $thumbnailId !== null && $thumbnailId !== $existingThumbnailId;
+            : $thumbnailId !== null && $thumbnailId !== $existingThumbnailId);
 
         if ($thumbnailChanged) {
             $error = $this->validateMediaImage(
@@ -1108,9 +1113,9 @@ class ProductController extends Controller
                 ->all();
         }
 
-        $galleryChanged = $existingProduct === null
+        $galleryChanged = $validateThumbnailAndGallery && ($existingProduct === null
             ? !empty($galleryIds)
-            : $this->mediaIdSetsDiffer($galleryIds, $existingGalleryIds);
+            : $this->mediaIdSetsDiffer($galleryIds, $existingGalleryIds));
 
         if ($galleryChanged && count($galleryIds) <= self::GALLERY_MAX_COUNT) {
             foreach ($galleryIds as $index => $imageId) {
