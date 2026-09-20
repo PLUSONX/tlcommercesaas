@@ -303,7 +303,14 @@ class ProductController extends Controller
         // so do not block them because of legacy media dimensions.
         if ($request->input('lang') == null || $request->input('lang') == getDefaultLang()) {
             $existingProduct = Product::with(['gallery_images', 'color_images'])->find($request->id);
-            $this->validateProductMedia($request, $existingProduct);
+
+            // EDIT PRODUCT ONLY: thumbnail + gallery image validation is disabled.
+            // Uncomment the next line whenever you want to enable it again.
+            $validateEditProductThumbnailAndGallery = false;
+            // $validateEditProductThumbnailAndGallery = true;
+
+            // Color-variant image validation remains active.
+            $this->validateProductMedia($request, $existingProduct, $validateEditProductThumbnailAndGallery);
         }
 
         if ($request['product_type'] == config('tlecommercecore.product_variant.variable') && !$request->has('variations')) {
@@ -1098,7 +1105,7 @@ class ProductController extends Controller
         */
         $galleryIds = $this->parseMediaIds($request->input('gallery_images'));
 
-        if (count($galleryIds) > self::GALLERY_MAX_COUNT) {
+        if ($validateThumbnailAndGallery && count($galleryIds) > self::GALLERY_MAX_COUNT) {
             $errors['gallery_images'][] = 'Gallery can contain a maximum of ' . self::GALLERY_MAX_COUNT . ' images.';
         }
 
