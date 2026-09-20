@@ -615,7 +615,7 @@ class ProductRepository
 
             //Images & Video
             $product->pdf_specifications = $request['pdf_specification'];
-            $product->thumbnail_image = $request['thumbnail_image'];
+            $product->thumbnail_image = $request->filled('thumbnail_image') ? $request->input('thumbnail_image') : null;
             $product->video_link = $request['video'];
 
             //Quantity

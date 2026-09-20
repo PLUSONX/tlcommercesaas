@@ -254,8 +254,8 @@ class ProductController extends Controller
      */
     public function storeNewProduct(ProductRequest $request)
     {
-        // Validate newly selected product media before anything is stored.
-        $this->validateProductMedia($request);
+        // Product images are optional on create.
+        // No product-level image validation is applied here.
 
         if ($request['product_type'] == config('tlecommercecore.product_variant.variable') && !$request->has('variations')) {
             toastNotification('error', 'Invalid Product Variations');
