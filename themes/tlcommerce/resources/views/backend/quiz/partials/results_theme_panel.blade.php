@@ -20,7 +20,7 @@
 <h5 class="mb-3">{{ translate('Results page') }}</h5>
 <p class="text-muted small mb-3">{{ translate('Customize the quiz results step: featured result card, optional product grid, and action buttons.') }}</p>
 
-<div @if (!$isDefaultLang) class="area-disabled" @endif>
+<div @if (!$isDefaultLang) class="" @endif>
 <div class="form-row mb-20">
     <div class="col-sm-4"><label class="font-14 bold black">{{ translate('Layout mode') }}</label></div>
     <div class="col-md-12">
@@ -38,7 +38,7 @@
     'isDefaultLang' => $isDefaultLang ?? true,
 ])
 
-<div @if (!$isDefaultLang) class="area-disabled" @endif>
+<div @if (!$isDefaultLang) class="" @endif>
 
 <div id="results-product-text-style-section" class="results-theme-section mb-3 {{ $showProductTextStyle ? '' : 'd-none' }}">
     <div class="intro-panel-label">{{ translate('Product text styling') }}</div>
