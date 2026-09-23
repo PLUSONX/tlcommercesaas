@@ -188,14 +188,34 @@ class SingleProductCollection extends JsonResource
         return $this->base_price();
     }
 
-    public function base_price()
-    {
-        if ($this->has_variant == config('tlecommercecore.product_variant.single')) {
-            return $this->single_price != null ? $this->single_price->unit_price : 0;
-        } else {
-            return $this->variations != null ? $this->variations[0]->unit_price : 0;
-        }
+    // public function base_price()
+    // {
+    //     if ($this->has_variant == config('tlecommercecore.product_variant.single')) {
+    //         return $this->single_price != null ? $this->single_price->unit_price : 0;
+    //     } else {
+    //         return $this->variations != null ? $this->variations[0]->unit_price : 0;
+    //     }
+    // }
+
+public function base_price()
+{
+    // Prefer the product's own single_price row when it exists — this is the
+    // real configured base price. Fall back to the old variation-based logic
+    // only for products that were never given a single_price row, so nothing
+    // that already works today changes.
+    if ($this->single_price != null) {
+        return $this->single_price->unit_price;
     }
+
+    if ($this->has_variant == config('tlecommercecore.product_variant.single')) {
+        return 0;
+    }
+
+    return $this->variations != null && count($this->variations) > 0
+        ? $this->variations[0]->unit_price
+        : 0;
+}
+
     public function total_discount()
     {
         $applicable_discount = $this->applicableDiscount();
@@ -307,7 +327,17 @@ class SingleProductCollection extends JsonResource
             $singleproductAttribute['multi_select_limit'] = $productAttr->multi_select
                 ? (int) $productAttr->multi_select_limit
                 : null;
-            $singleproductAttribute['options'] = AttributeValues::whereIn('id', ProductHasChoiceOption::where('product_id', $this->id)->where('choice_id', $productAttr->id)->pluck('option_id'))->select('id', 'attribute_id as parent', 'name as title',)->get();
+            $singleproductAttribute['options'] = AttributeValues::whereIn('id', ProductHasChoiceOption::where('product_id', $this->id)->where('choice_id', $productAttr->id)->pluck('option_id'))
+                ->select('id', 'attribute_id as parent', 'name as title')
+                ->get()
+                ->map(function ($option) use ($productAttr) {
+                    $variant = ProductAttribute::resolveVariantPrice(
+                        $this->id,
+                        $productAttr->id . ':' . $option->id
+                    );
+                    $option->price = $variant ? (float) $variant->unit_price : null;
+                    return $option;
+                });
             array_push($productAttributes, $singleproductAttribute);
         }
         if (count($this->color_choices) > 0) {
