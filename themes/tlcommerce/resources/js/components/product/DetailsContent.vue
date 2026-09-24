@@ -130,7 +130,34 @@
       />
     </div>
     <!-- End Exact Variant Image -->
-
+       <!-- Total Price -->
+    <div class="product-price unit-price mt-25">
+      <h6 v-if="!modernLayout" class="mb-1">
+  {{ $t("Price") }}
+</h6>
+      <div class="price d-flex align-items-center">
+        <span
+  class="price-current-wrap"
+  :class="{ 'price-flash': priceFlash }"
+  :style="priceFlashColor ? { '--price-flash-color': priceFlashColor } : {}"
+>
+          <the-currency :amount="displayProductPrice" tag="h2" class="mb-0"></the-currency>
+        </span> 
+        <the-currency v-if="product.oldPrice > product.price" :amount="product.oldPrice" tag="del"
+          class="ml-20"></the-currency>
+      </div>
+    </div>
+    <!-- End Total Price -->
+<!-- Variant Price Addition Info -->
+<p
+  v-if="hasVariantPriceAddition"
+  class="variant-price-info fz-12 mb-4"
+>
+  {{ $t("Includes") }}
+  <the-currency :amount="selectedVariantPrice" tag="span"></the-currency>
+  {{ $t("for") }} {{ selectedVariantLabel }}
+</p>
+<!-- End Variant Price Addition Info -->
     <!--Price Range-->
     <div class="product-price price-range" v-if="
       product.price_range_min &&
@@ -155,24 +182,7 @@
       </div>
     </div>
     <!-- End  Price Range-->
-    <!-- Total Price -->
-    <div class="product-price unit-price mt-25">
-      <h6 v-if="!modernLayout" class="mb-1">
-  {{ $t("Price") }}
-</h6>
-      <div class="price d-flex align-items-center">
-        <span
-  class="price-current-wrap"
-  :class="{ 'price-flash': priceFlash }"
-  :style="priceFlashColor ? { '--price-flash-color': priceFlashColor } : {}"
->
-          <the-currency :amount="product.price" tag="h3" class="mb-0"></the-currency>
-        </span> 
-        <the-currency v-if="product.oldPrice > product.price" :amount="product.oldPrice" tag="del"
-          class="ml-20"></the-currency>
-      </div>
-    </div>
-    <!-- End Total Price -->
+  
     <!-- Option Choice Form -->
     <div class="option-choice-form mt-4" v-if="product.attribute">
       <!--Variant options-->
@@ -199,25 +209,32 @@
                   : isOptionSelected(attr, option)"
                 @click.prevent="!attr.multi_select && updateSelectedVariant(attr, option)">
                 <template v-if="attr.title == 'color'">
-                  <span class="option-list-card__swatch" :style="{ backgroundColor: option.value }">
-                    <img v-if="option.image" :src="cleanImage(option.image)" :alt="`${option.name}`" />
-                  </span>
-                  <span class="option-list-card__label text-capitalize">{{
-                    option.name
-                  }}</span>
-                </template>
+  <span class="option-list-card__swatch" :style="{ backgroundColor: option.value }">
+    <img v-if="option.image" :src="cleanImage(option.image)" :alt="`${option.name}`" />
+  </span>
+  <span class="option-list-card__label text-capitalize">{{ option.name }}</span>
+  <span class="option-list-card__price" v-if="option.price != null">
+    +<the-currency :amount="option.price" tag="span"></the-currency>
+  </span>
+</template>
 
                 <template v-else-if="attr.title == 'size'">
-                  <span class="option-list-card__label text-uppercase">
-                    <strong>{{ option.title }}</strong>
-                  </span>
-                </template>
+  <span class="option-list-card__label text-uppercase">
+    <strong>{{ option.title }}</strong>
+  </span>
+  <span class="option-list-card__price" v-if="option.price != null">
+    +<the-currency :amount="option.price" tag="span"></the-currency>
+  </span>
+</template>
 
-                <template v-else>
-                  <span class="option-list-card__label text-capitalize">
-                    <strong>{{ option.title }}</strong>
-                  </span>
-                </template>
+               <template v-else>
+  <span class="option-list-card__label text-capitalize">
+    <strong>{{ option.title }}</strong>
+  </span>
+  <span class="option-list-card__price" v-if="option.price != null">
+    +<the-currency :amount="option.price" tag="span"></the-currency>
+  </span>
+</template>
 
                 <div v-if="attr.multi_select" class="multi-select-option-qty" @click.stop>
                   <button type="button" class="multi-select-option-qty__btn"
@@ -302,16 +319,22 @@
                   </template>
 
                   <template v-else-if="attr.title == 'size'">
-                    <span class="checkmark">
-                      <strong class="text-uppercase">{{ option.title }}</strong>
-                    </span>
-                  </template>
+  <span class="checkmark">
+    <strong class="text-uppercase">{{ option.title }}</strong>
+  </span>
+  <span class="option-price" v-if="option.price != null">
+    +<the-currency :amount="option.price" tag="span"></the-currency>
+  </span>
+</template>
 
                   <template v-else>
-                    <span class="checkmark text-capitalize">
-                      <strong>{{ option.title }}</strong>
-                    </span>
-                  </template>
+  <span class="checkmark text-capitalize">
+    <strong>{{ option.title }}</strong>
+  </span>
+  <span class="option-price" v-if="option.price != null">
+    +<the-currency :amount="option.price" tag="span"></the-currency>
+  </span>
+</template>
                 </label>
               </div>
             </div>
@@ -484,6 +507,11 @@ data() {
     flashColors: ["#ff5a1f", "#0d6efd", "#198754", "#d63384", "#6f42c1", "#fd7e14"],
     flashColorIndex: 0,
     selectedVariantImage: this.product.selectedVariantImage || null,
+    // Keep original product price separately and add variant price on top.
+    mainProductPrice: Number(this.product.price || 0),
+    selectedVariantPrice: 0,
+    hasExplicitSelection: false,
+    selectedVariantLabel: null,
     quantityValue:
   this.product.min_item_on_purchase != null &&
     this.product.min_item_on_purchase > 0
@@ -495,6 +523,22 @@ data() {
     customerToken: (state) => state.customerToken,
     isCustomerLogin: (state) => state.isCustomerLogin,
     config: (state) => state.siteSettings,
+
+    displayProductPrice() {
+      const basePrice = Number(this.mainProductPrice || 0);
+      const variantPrice = Number(this.selectedVariantPrice || 0);
+
+      return Number((basePrice + variantPrice).toFixed(3));
+    },
+
+    hasVariantPriceAddition() {
+  return (
+    this.hasExplicitSelection &&
+    Number(this.selectedVariantPrice) > 0 &&
+    !!this.selectedVariantLabel
+  );
+},
+
     product_variant() {
       if (this.product.has_variant == 1) {
         const output = [];
@@ -572,6 +616,11 @@ data() {
   }),
   watch: {
      "product.id"() {
+    this.mainProductPrice = Number(this.product.price || 0);
+    this.selectedVariantPrice = 0;
+    this.product.selectedVariant = "";
+  this.hasExplicitSelection = false;
+  this.selectedVariantLabel = null;
     this.startLoading();
   },
     quantitySeed: {
@@ -601,6 +650,9 @@ data() {
     },
   },
   mounted() {
+    this.product.selectedVariant = "";
+  this.hasExplicitSelection = false;
+  this.selectedVariantLabel = null;
      this.initializeMultiSelectAttributes();
   this.$emit("quantity-change", this.quantityValue);
   this.startLoading();
@@ -944,11 +996,32 @@ methods: {
         return;
       }
 
+        // Only treat it as "explicitly selected" if selectedVariant is non-empty —
+  // this excludes the cosmetic first-option fallback in isOptionSelected().
+  const wasExplicitlySelected =
+    !!this.product.selectedVariant && this.isOptionSelected(attr, option);
+
+  if (wasExplicitlySelected) {
+    this.product.selectedVariant = "";
+    this.hasExplicitSelection = false;
+    this.selectedVariantLabel = null;
+    this.selectedVariantPrice = 0;
+    this.product.price = this.displayProductPrice;
+    this.selectedVariantImage = null;
+    this.product.selectedVariantImage = null;
+    this.$emit("variant-image", null);
+    return;
+  }
+
       this.product.selectedVariant = applySingleOptionSelection(
         attr,
         option,
         this.product.selectedVariant
       );
+
+this.hasExplicitSelection = true;
+this.selectedVariantLabel =
+  attr.title == "color" ? option.name : option.title;
 
       this.variantUpdating = true;
       this.$emit("variant-updating", true);
@@ -961,7 +1034,9 @@ methods: {
         })
         .then((response) => {
           if (response.data.success) {
-            this.product.price = response.data.base_price;
+            // Keep the product base price and apply the selected variant price as an addition.
+            this.selectedVariantPrice = Number(response.data.base_price || 0);
+            this.product.price = this.displayProductPrice;
             this.product.selectedVariant = response.data.new_variant;
             this.product.quantity = response.data.quantity;
             this.product.oldPrice = response.data.oldPrice;
@@ -1001,24 +1076,21 @@ methods: {
     /**
      * Whether this option is part of the current selectedVariant
      */
-    isOptionSelected(attr, option) {
-      if (!this.product.selectedVariant) {
-        if (attr.multi_select) {
-          return false;
-        }
-        return attr.options[0] && attr.options[0].id == option.id;
-      }
-      const parts = this.product.selectedVariant.split("/");
-      const key = String(attr.id);
-      const match = parts.find((p) => p.split(":")[0] == key);
-      if (!match) return false;
-      if (attr.multi_select) {
-        return (match.split(":")[1] || "")
-          .split(",")
-          .includes(String(option.id));
-      }
-      return match.split(":")[1] == String(option.id);
-    },
+   isOptionSelected(attr, option) {
+  if (!this.product.selectedVariant) {
+    return false;
+  }
+  const parts = this.product.selectedVariant.split("/");
+  const key = String(attr.id);
+  const match = parts.find((p) => p.split(":")[0] == key);
+  if (!match) return false;
+  if (attr.multi_select) {
+    return (match.split(":")[1] || "")
+      .split(",")
+      .includes(String(option.id));
+  }
+  return match.split(":")[1] == String(option.id);
+},
     /**
      * Place order
      */
@@ -1043,7 +1115,8 @@ methods: {
         image: image,
         variant: this.product_variant,
         variant_code: this.product.selectedVariant,
-        unitPrice: this.product.price,
+        unitPrice: this.displayProductPrice ?? this.product.price,
+        // unitPrice: this.product.price,
         oldPrice: this.product.oldPrice,
         quantity: this.quantityValue,
         attachment: this.attachment,
@@ -1085,7 +1158,7 @@ methods: {
         image: image,
         variant: this.product_variant,
         variant_code: this.product.selectedVariant,
-        unitPrice: this.product.price,
+        unitPrice: this.displayProductPrice ?? this.product.price,
         oldPrice: this.product.oldPrice,
         quantity: this.quantityValue,
         attachment: this.attachment,
@@ -1218,6 +1291,7 @@ methods: {
 
 /* Price range sizing — applies everywhere, LTR and RTL */
 .product-price.price-range {
+  margin-top: 6px;
   max-width: 240px;
 
   h6 {
@@ -1721,6 +1795,7 @@ methods: {
 
   .unit-price {
     margin-top: 4px !important;
+    margin-bottom: 6px;
 
     .price {
       align-items: center;
@@ -1837,5 +1912,25 @@ methods: {
     width: 150px;
     height: 150px;
   }
+}
+
+.option-list-card__price {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: $c1;
+  margin-left: 8px;
+}
+
+.option-price {
+  font-size: 11px;
+  font-weight: 600;
+  color: $c1;
+  margin-left: 6px;
+}
+
+.variant-price-info {
+  color: #6b6b6b;
+  margin-bottom: 14px;
 }
 </style>
