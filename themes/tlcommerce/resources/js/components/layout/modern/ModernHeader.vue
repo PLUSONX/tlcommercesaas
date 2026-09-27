@@ -1,18 +1,32 @@
 <template>
+
   <header class="modern-header" :class="[
-    isHomePage ? 'modern-header--home' : 'modern-header--page',
-    { 'modern-header--rtl': isRtl },  //remove
-    // {
-    //   'modern-header--rtl': isRtl,
-    //   'modern-header--product': isProductPage,
-    // },
-  ]">
-    <div v-if="!isHomePage" class="modern-header__media" :style="pageHeaderStyle" aria-hidden="true">
+  isHomePage ? 'modern-header--home' : 'modern-header--page',
+  {
+    // 'modern-header--rtl': isRtl,
+    // 'modern-header--product': isProductPage,
+    'modern-header--quiz': $route.name === 'Quiz',
+  },
+]">
+
+  <div
+  v-if="!isHomePage && $route.name !== 'Quiz'"
+  class="modern-header__media"
+  :style="pageHeaderStyle"
+  aria-hidden="true"
+>
+  <div class="modern-header__overlay"></div>
+</div>
+    <!-- <div v-if="!isHomePage" class="modern-header__media" :style="pageHeaderStyle" aria-hidden="true">
       <div class="modern-header__overlay"></div>
-    </div>
+    </div> -->
 
     <!-- Shared: offcanvas | search+suggestions | lang | info | cart (RTL via direction) -->
-    <div class="modern-header__toolbar" :class="{ 'modern-header__toolbar--home': isHomePage }">
+    <div
+  v-if="$route.name !== 'Quiz'"
+  class="modern-header__toolbar"
+  :class="{ 'modern-header__toolbar--home': isHomePage }"
+>
       <the-offcanvas :user-info="customerInfo" :menu-items="offcanvas.menuItems" :header-menu-style="headerMenuStyle"
         :header-style="headerStyle" class="modern-header__offcanvas" />
 
@@ -86,7 +100,7 @@
     </div>
 
     <!-- Other pages only: back + title -->
-    <div v-if="!isHomePage" class="modern-header__nav">
+    <div v-if="!isHomePage && $route.name !== 'Quiz'" class="modern-header__nav">
       <button type="button" class="modern-header__back" :aria-label="$t('Back')" @click="goBack">
         <span class="material-icons">{{ isRtl ? "arrow_forward" : "arrow_back" }}</span>
       </button>
@@ -834,6 +848,17 @@ export default {
 
 .modern-header--page:not([style*="background-image"]) {
   background-image: linear-gradient(135deg, #5a4030 0%, #2c1c14 100%);
+}
+
+.modern-header--quiz {
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.modern-header--quiz::before,
+.modern-header--quiz::after {
+  display: none;
 }
 
 // @media (max-width: 768px) {
