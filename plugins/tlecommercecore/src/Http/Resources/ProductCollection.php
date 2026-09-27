@@ -54,14 +54,34 @@ class ProductCollection extends ResourceCollection
         $avg = $data->reviews->avg('rating');
         return $avg != null ? $avg : 0;
     }
+    // public function base_price($data)
+    // {
+    //     if ($data->has_variant == config('tlecommercecore.product_variant.single')) {
+    //         return $data->single_price != null ? $data->single_price->unit_price : 0;
+    //     } else {
+    //         return $data->variations != null ? $data->variations[0]->unit_price : 0;
+    //     }
+    // }
+
     public function base_price($data)
-    {
-        if ($data->has_variant == config('tlecommercecore.product_variant.single')) {
-            return $data->single_price != null ? $data->single_price->unit_price : 0;
-        } else {
-            return $data->variations != null ? $data->variations[0]->unit_price : 0;
-        }
+{
+    // Prefer the product's own single_price row when it exists — this is the
+    // real configured base price. Fall back to the old variation-based logic
+    // only for products that were never given a single_price row, so nothing
+    // that already works today changes.
+    if ($data->single_price != null) {
+        return $data->single_price->unit_price;
     }
+
+    if ($data->has_variant == config('tlecommercecore.product_variant.single')) {
+        return 0;
+    }
+
+    return $data->variations != null && count($data->variations) > 0
+        ? $data->variations[0]->unit_price
+        : 0;
+}
+
     public function stock($data)
     {
         if ($data->has_variant == config('tlecommercecore.product_variant.single')) {

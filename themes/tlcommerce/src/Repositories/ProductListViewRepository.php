@@ -181,16 +181,35 @@ class ProductListViewRepository
         ];
     }
 
-    private function productBasePrice(Product $product): float
-    {
-        if ($product->has_variant == config('tlecommercecore.product_variant.single')) {
-            return $product->single_price != null ? (float) $product->single_price->unit_price : 0;
-        }
+    // private function productBasePrice(Product $product): float
+    // {
+    //     if ($product->has_variant == config('tlecommercecore.product_variant.single')) {
+    //         return $product->single_price != null ? (float) $product->single_price->unit_price : 0;
+    //     }
 
-        return $product->variations != null && $product->variations->isNotEmpty()
-            ? (float) $product->variations[0]->unit_price
-            : 0;
+    //     return $product->variations != null && $product->variations->isNotEmpty()
+    //         ? (float) $product->variations[0]->unit_price
+    //         : 0;
+    // }
+
+    private function productBasePrice(Product $product): float
+{
+    // Prefer the product's own single_price row when it exists — this is the
+    // real configured base price. Fall back to the old variation-based logic
+    // only for products that were never given a single_price row, so nothing
+    // that already works today changes.
+    if ($product->single_price != null) {
+        return (float) $product->single_price->unit_price;
     }
+
+    if ($product->has_variant == config('tlecommercecore.product_variant.single')) {
+        return 0;
+    }
+
+    return $product->variations != null && $product->variations->isNotEmpty()
+        ? (float) $product->variations[0]->unit_price
+        : 0;
+}
 
     private function productStock(Product $product): float
     {
