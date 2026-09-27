@@ -242,28 +242,52 @@ class Product extends Model implements Sitemapable
         return $this->belongsTo(User::class, 'supplier');
     }
 
-    public function getUnitPriceAttribute()
-    {
-        $applicable_discount = $this->applicableDiscount();
+    // public function getUnitPriceAttribute()
+    // {
+    //     $applicable_discount = $this->applicableDiscount();
+    //     $base_price = 0;
+    //     $discount = 0;
+    //     //Base price
+    //     if ($this->has_variant == config('tlecommercecore.product_variant.single')) {
+    //         $base_price = $this->single_price != null ? $this->single_price->unit_price : 0;
+    //     } else {
+    //         $base_price = $this->variations != null ? $this->variations[0]->unit_price : 0;
+    //     }
+    //     //Calculate discount
+    //     if ($applicable_discount != null && $applicable_discount['discount_amount'] > 0) {
+    //         if ($applicable_discount['discountType'] == config('tlecommercecore.amount_type.flat')) {
+    //             $discount = $applicable_discount['discount_amount'];
+    //         } else {
+    //             $discount = ($base_price * $applicable_discount['discount_amount']) / 100;
+    //         }
+    //     }
+    //     return $base_price - $discount;
+    // }
+
+public function getUnitPriceAttribute()
+{
+    $applicable_discount = $this->applicableDiscount();
+
+    if ($this->single_price != null) {
+        $base_price = $this->single_price->unit_price;
+    } elseif ($this->has_variant == config('tlecommercecore.product_variant.single')) {
         $base_price = 0;
-        $discount = 0;
-        //Base price
-        if ($this->has_variant == config('tlecommercecore.product_variant.single')) {
-            $base_price = $this->single_price != null ? $this->single_price->unit_price : 0;
-        } else {
-            $base_price = $this->variations != null ? $this->variations[0]->unit_price : 0;
-        }
-        //Calculate discount
-        if ($applicable_discount != null && $applicable_discount['discount_amount'] > 0) {
-            if ($applicable_discount['discountType'] == config('tlecommercecore.amount_type.flat')) {
-                $discount = $applicable_discount['discount_amount'];
-            } else {
-                $discount = ($base_price * $applicable_discount['discount_amount']) / 100;
-            }
-        }
-        return $base_price - $discount;
+    } else {
+        $base_price = $this->variations != null && count($this->variations) > 0
+            ? $this->variations[0]->unit_price
+            : 0;
     }
 
+    $discount = 0;
+    if ($applicable_discount != null && $applicable_discount['discount_amount'] > 0) {
+        if ($applicable_discount['discountType'] == config('tlecommercecore.amount_type.flat')) {
+            $discount = $applicable_discount['discount_amount'];
+        } else {
+            $discount = ($base_price * $applicable_discount['discount_amount']) / 100;
+        }
+    }
+    return $base_price - $discount;
+}
 
     public function toSitemapTag(): Url | string | array
     {
