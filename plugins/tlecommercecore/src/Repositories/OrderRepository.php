@@ -1248,53 +1248,98 @@ class OrderRepository
      * @param string|null $variantCode
      * @return array{unitPrice: float|int, oldPrice: float|int}|null
      */
-    protected function resolveCheckoutLinePrices($productId, $variantCode = null)
-    {
-        $product = Product::with(['single_price', 'variations'])->find($productId);
-        if ($product == null) {
-            return null;
-        }
+   protected function resolveCheckoutLinePrices($productId, $variantCode = null)
+{
+    $product = Product::with(['single_price', 'variations'])->find($productId);
+    if ($product == null) {
+        return null;
+    }
 
-        $oldPrice = 0;
-        $unitPrice = 0;
+    if (!ProductAttribute::validateMultiSelectVariantCode($productId, $variantCode ?? '')) {
+        return null;
+    }
 
-        if (!ProductAttribute::validateMultiSelectVariantCode($productId, $variantCode ?? '')) {
-            return null;
-        }
+    /*
+     * Products WITH a single_price row: main price + variation add-ons
+     * (same rule the product page uses: main + selected variant + multi-select options).
+     */
+    if ($product->single_price != null) {
+        $extra = 0;
 
-        if (!empty($variantCode)) {
-            $variant_price = ProductAttribute::resolveVariantPrice($productId, $variantCode);
-            if ($variant_price == null) {
+        // 1) Single-select (SKU-driving) variant add-on
+        $skuCode = ProductAttribute::skuVariantCode($productId, $variantCode);
+        if ($skuCode !== '') {
+            $variant = ProductAttribute::resolveVariantPrice($productId, $variantCode);
+            if ($variant == null) {
                 return null;
             }
-            $oldPrice = $variant_price->unit_price;
-            $applicable_discount = $product->applicableDiscount();
-            if ($applicable_discount != null && ($applicable_discount['discount_amount'] ?? 0) > 0) {
-                if ($applicable_discount['discountType'] == config('tlecommercecore.amount_type.flat')) {
-                    $discount = $applicable_discount['discount_amount'];
-                } else {
-                    $discount = ($oldPrice * $applicable_discount['discount_amount']) / 100;
-                }
-                $unitPrice = $oldPrice - $discount;
-            } else {
-                $unitPrice = $oldPrice;
-            }
-        } else {
-            if ($product->has_variant == config('tlecommercecore.product_variant.single')) {
-                $oldPrice = $product->single_price != null ? $product->single_price->unit_price : 0;
-            } else {
-                $oldPrice = ($product->variations != null && count($product->variations) > 0)
-                    ? $product->variations[0]->unit_price
-                    : 0;
-            }
-            $unitPrice = $product->unit_price;
+            $extra += (float) $variant->unit_price;
         }
 
+        // 2) Multi-select option add-ons (each selected id, duplicates count)
+        $multiIds = ProductAttribute::where('multi_select', true)->pluck('id')
+            ->map(fn ($id) => (string) $id)->all();
+
+        foreach (array_filter(explode('/', (string) $variantCode)) as $segment) {
+            $parts = explode(':', $segment, 2);
+            $choiceId = (string) $parts[0];
+            if (!in_array($choiceId, $multiIds, true)) {
+                continue;
+            }
+            foreach (array_filter(explode(',', $parts[1] ?? '')) as $optionId) {
+                $optionVariant = ProductAttribute::resolveVariantPrice(
+                    $productId,
+                    $choiceId . ':' . $optionId
+                );
+                if ($optionVariant != null) {
+                    $extra += (float) $optionVariant->unit_price;
+                }
+            }
+        }
+
+        // unit_price accessor = main price minus discount (discount applies to main only)
         return [
-            'unitPrice' => $unitPrice,
-            'oldPrice' => $oldPrice,
+            'unitPrice' => (float) $product->unit_price + $extra,
+            'oldPrice'  => (float) $product->single_price->unit_price + $extra,
         ];
     }
+
+    /*
+     * LEGACY: no single_price row -> keep the exact old behaviour so other stores don't change.
+     */
+    $oldPrice = 0;
+    $unitPrice = 0;
+
+    if (!empty($variantCode)) {
+        $variant_price = ProductAttribute::resolveVariantPrice($productId, $variantCode);
+        if ($variant_price == null) {
+            return null;
+        }
+        $oldPrice = $variant_price->unit_price;
+        $applicable_discount = $product->applicableDiscount();
+        if ($applicable_discount != null && ($applicable_discount['discount_amount'] ?? 0) > 0) {
+            if ($applicable_discount['discountType'] == config('tlecommercecore.amount_type.flat')) {
+                $discount = $applicable_discount['discount_amount'];
+            } else {
+                $discount = ($oldPrice * $applicable_discount['discount_amount']) / 100;
+            }
+            $unitPrice = $oldPrice - $discount;
+        } else {
+            $unitPrice = $oldPrice;
+        }
+    } else {
+        if ($product->has_variant == config('tlecommercecore.product_variant.single')) {
+            $oldPrice = $product->single_price != null ? $product->single_price->unit_price : 0;
+        } else {
+            $oldPrice = ($product->variations != null && count($product->variations) > 0)
+                ? $product->variations[0]->unit_price
+                : 0;
+        }
+        $unitPrice = $product->unit_price;
+    }
+
+    return ['unitPrice' => $unitPrice, 'oldPrice' => $oldPrice];
+}
 
     /**
      * Resolve city / postcode / zone for shipping rating from the checkout request.

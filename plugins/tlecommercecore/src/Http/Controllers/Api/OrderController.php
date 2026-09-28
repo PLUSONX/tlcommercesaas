@@ -556,26 +556,41 @@ class OrderController extends Controller
         // }
 
         //check  variant product available stock
-        if ($product_details->has_variant == config('tlecommercecore.product_variant.variable')) {
-            $variantCode = $item['variant_code'] ?? '';
+       if ($product_details->has_variant == config('tlecommercecore.product_variant.variable')) {
+    $variantCode = $item['variant_code'] ?? '';
 
-            if (!ProductAttribute::validateMultiSelectVariantCode($item['id'], $variantCode)) {
-                return config('settings.general_status.in_active');
-            }
+    if (!ProductAttribute::validateMultiSelectVariantCode($item['id'], $variantCode)) {
+        return config('settings.general_status.in_active');
+    }
 
-            if ($variantCode === '') {
-                return config('settings.general_status.in_active');
-            }
+    if (ProductAttribute::skuVariantCode($item['id'], $variantCode) === '') {
+        // No SKU variant chosen: main-product-only purchase.
+        $single_price = SingleProductPrice::where('product_id', $item['id'])->first();
 
-            $variant_price = ProductAttribute::resolveVariantPrice($item['id'], $variantCode);
-
-            if ($variant_price == null) {
-                return config('settings.general_status.in_active');
-            }
-            if ($variant_price->quantity < $item['quantity']) {
-                return config('settings.general_status.in_active');
-            }
+        if ($single_price == null) {
+            // No main price row: keep the old rule (a variant is required).
+            return config('settings.general_status.in_active');
         }
+
+        // Use the main product's own stock if it is set, otherwise the variations' total.
+        $available = $single_price->quantity !== null
+            ? (int) $single_price->quantity
+            : (int) \Plugin\TlcommerceCore\Models\VariantProductPrice::where('product_id', $item['id'])->sum('quantity');
+
+        if ($available < $item['quantity']) {
+            return config('settings.general_status.in_active');
+        }
+    } else {
+        $variant_price = ProductAttribute::resolveVariantPrice($item['id'], $variantCode);
+
+        if ($variant_price == null) {
+            return config('settings.general_status.in_active');
+        }
+        if ($variant_price->quantity < $item['quantity']) {
+            return config('settings.general_status.in_active');
+        }
+    }
+}
 
         //check  seller's product approval status when multivendor active
         // if (isActivePluging('multivendor') && $product_details->is_approved != config('settings.general_status.active')) {

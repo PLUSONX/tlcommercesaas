@@ -168,13 +168,36 @@ class OrderStockService
                     | If a product is variable but variant code is missing,
                     | fail the entire operation safely.
                     */
-                    if ($variantCode === '') {
-                        throw new \RuntimeException(
-                            'Variant code missing for order item #' .
-                            $item->id .
-                            '. Inventory was not deducted.'
-                        );
-                    }
+                    if (ProductAttribute::skuVariantCode($productId, $variantCode) === '') {
+    $singleStock = SingleProductPrice::where('product_id', $productId)->first();
+
+    if ($singleStock == null) {
+        throw new \RuntimeException(
+            'Variant code missing for order item #' .
+            $item->id .
+            '. Inventory was not deducted.'
+        );
+    }
+
+    // Main product stock is not tracked (NULL): nothing to deduct.
+    if ($singleStock->quantity === null) {
+        continue;
+    }
+
+    $key = 'single:' . $productId;
+
+    if (!isset($deductions[$key])) {
+        $deductions[$key] = [
+            'type' => 'single',
+            'product_id' => $productId,
+            'quantity' => 0,
+        ];
+    }
+
+    $deductions[$key]['quantity'] += $orderedQuantity;
+
+    continue;
+}
 
                     /*
                     | Resolve using the same TLCommerce mechanism already
