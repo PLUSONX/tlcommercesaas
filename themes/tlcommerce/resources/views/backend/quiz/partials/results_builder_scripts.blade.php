@@ -259,7 +259,10 @@
             tagline: (profile && profile.tagline) ? profile.tagline : MOCK_PRODUCT.tagline,
             color: (profile && profile.color) ? profile.color : MOCK_PRODUCT.color,
             description: (profile && profile.description) ? profile.description : MOCK_PRODUCT.description,
-            quote: (profile && profile.quote) ? profile.quote : MOCK_PRODUCT.quote
+            quote: (profile && profile.quote) ? profile.quote : MOCK_PRODUCT.quote,
+            collection: (profile && profile.collection)
+    ? profile.collection
+    : 'Silver BEE'
         };
     }
 
@@ -366,16 +369,18 @@
         }
     }
 
-    function buildProfileRowHtml(productId, productName, color, tagline, description, quote) {
+    function buildProfileRowHtml(productId, productName, color, tagline, description, quote, collection) {
         color = color || '#c9a84c';
         var colorId = 'results-profile-color-' + productId;
         var taglineId = 'results-profile-tagline-' + productId;
         var descriptionId = 'results-profile-description-' + productId;
         var quoteId = 'results-profile-quote-' + productId;
+var collectionId = 'results-profile-collection-' + productId;
         var safeName = $('<div>').text(productName || '').html();
         var safeTagline = $('<div>').text(tagline || '').html();
         var safeDescription = $('<div>').text(description || '').html();
         var safeQuote = $('<div>').text(quote || '').html();
+var safeCollection = $('<div>').text(collection || '').html();
         return '<tr data-product-id="' + productId + '" data-product-name="' + safeName + '">' +
             '<td class="results-profile-name">' + safeName + '</td>' +
             '<td><div class="input-group addon">' +
@@ -386,6 +391,7 @@
             '<td><input type="text" id="' + taglineId + '" class="theme-input-style w-100 results-profile-tagline-input" value="' + safeTagline + '" placeholder="{{ translate('THE GOLDEN OPTIMIST') }}"></td>' +
             '<td><textarea id="' + descriptionId + '" class="theme-input-style w-100 results-profile-description-input" rows="2" maxlength="2000" placeholder="{{ translate('Short description shown on the result card') }}">' + safeDescription + '</textarea></td>' +
             '<td><input type="text" id="' + quoteId + '" class="theme-input-style w-100 results-profile-quote-input" value="' + safeQuote + '" maxlength="255" placeholder="{{ translate('Quoted tagline below description') }}"></td>' +
+'<td><input type="text" id="' + collectionId + '" class="theme-input-style w-100 results-profile-collection-input" value="' + safeCollection + '" maxlength="100" placeholder="{{ translate('Collection') }}"></td>' +
             '<td><button type="button" class="btn long btn-sm btn-danger results-profile-remove">{{ translate('Remove') }}</button></td>' +
             '</tr>';
     }
@@ -399,14 +405,15 @@
             if (!productId) return;
             var color = ($row.find('.results-profile-color-input').first().val() || '#c9a84c').trim();
             profiles.push({
-                product_id: productId,
-                product_name: String($row.data('product-name') || $row.find('.results-profile-name').text().trim()),
-                color: color,
-                tagline: ($row.find('.results-profile-tagline-input').val() || '').trim(),
-                description: ($row.find('.results-profile-description-input').val() || '').trim(),
-                quote: ($row.find('.results-profile-quote-input').val() || '').trim(),
-                enabled: true
-            });
+    product_id: productId,
+    product_name: String($row.data('product-name') || $row.find('.results-profile-name').text().trim()),
+    color: color,
+    tagline: ($row.find('.results-profile-tagline-input').val() || '').trim(),
+    description: ($row.find('.results-profile-description-input').val() || '').trim(),
+    quote: ($row.find('.results-profile-quote-input').val() || '').trim(),
+    collection: ($row.find('.results-profile-collection-input').val() || '').trim(),
+    enabled: true
+});
         });
         setProfiles(profiles);
         $('#results-product-profiles-empty').toggleClass('d-none', profiles.length > 0);
@@ -422,6 +429,7 @@
             .replace(/\{\{product\.summary\}\}/g, summary)
             .replace(/\{\{product\.price\}\}/g, p.price)
             .replace(/\{\{product\.tagline\}\}/g, p.tagline || '')
+            .replace(/\{\{product\.collection\}\}/g, p.collection || '')
             .replace(/\{\{product\.description\}\}/g, formatSummaryToken(p.description || ''))
             .replace(/\{\{product\.quote\}\}/g, p.quote || '')
             .replace(/\{\{product\.color\}\}/g, p.color || '')
@@ -1351,7 +1359,7 @@
             if (!selected || !selected.id) return;
             var productId = parseInt(selected.id, 10);
             if ($('#results-product-profiles-body tr[data-product-id="' + productId + '"]').length) return;
-            $('#results-product-profiles-body').append(buildProfileRowHtml(productId, selected.text, '#c9a84c', '', ''));
+            $('#results-product-profiles-body').append(buildProfileRowHtml(productId, selected.text, '#c9a84c', '', '', '', 'Silver BEE'));
             $('#results-product-search').val(null).trigger('change');
             syncResultsBuilder();
         });
@@ -1361,7 +1369,7 @@
             syncResultsBuilder();
         });
 
-        $(document).on('change input', '.results-profile-color-input, .results-profile-tagline-input, .results-profile-description-input, .results-profile-quote-input', function() {
+        $(document).on('change input', '.results-profile-color-input, .results-profile-tagline-input, .results-profile-description-input, .results-profile-quote-input, .results-profile-collection-input', function() {
             syncResultsBuilder();
         });
 
