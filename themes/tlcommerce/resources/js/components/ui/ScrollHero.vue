@@ -4,8 +4,8 @@
     ref="hero"
     class="scroll-hero"
     :style="{
-      '--scroll-hero-height': `${scrollHeight}vh`,
-    }"
+  '--scroll-hero-height': scrollHeight + 'vh',
+}"
   >
     <div class="scroll-hero__sticky">
       <canvas
@@ -49,6 +49,9 @@ export default {
       resizeObserver: null,
       destroyed: false,
       isMobileScreen: false,
+      scrollScheduled: false,
+      activeLoads: 0,
+      loadQueueIndex: 0,
     };
   },
 
@@ -58,9 +61,10 @@ export default {
       ? this.config.desktop
       : [];
 
-    return frames
-      .map((frame) => this.cleanFrameUrl(frame))
-      .filter(Boolean);
+    return this.sortAndDedupeFrames(
+      frames.map((frame) => this.cleanFrameUrl(frame)).filter(Boolean),
+      "desktop"
+    );
   },
 
   mobileFrames() {
@@ -68,9 +72,10 @@ export default {
       ? this.config.mobile
       : [];
 
-    return frames
-      .map((frame) => this.cleanFrameUrl(frame))
-      .filter(Boolean);
+    return this.sortAndDedupeFrames(
+      frames.map((frame) => this.cleanFrameUrl(frame)).filter(Boolean),
+      "mobile"
+    );
   },
 
   activeFrames() {
@@ -175,6 +180,97 @@ export default {
       .replace("/storage/tlcommerce/", "/tlcommerce/");
   },
 
+  // FIX: frames must play in numeric order (1, 2, 3 ... 124), but a zip
+  // upload / directory listing on the backend often returns filenames in
+  // lexicographic order instead: 1, 10, 100, 101, 11, 110 ... 2, 20 ...
+  // That out-of-order array is what made the animation look like it was
+  // randomly flipping between stills instead of playing smoothly — no
+  // amount of loading/animation tuning on the frontend can fix frames
+  // that are simply in the wrong sequence. This extracts the number from
+  // each filename (e.g. ".../42.png" -> 42) and sorts on that, so the
+  // component always plays frames in the correct order regardless of
+  // what order the server/API returned them in.
+  extractFrameNumber(url) {
+    const matches = String(url).match(/(\d+)(?!.*\d)/);
+    return matches ? parseInt(matches[1], 10) : NaN;
+  },
+
+  compareFrameUrls(a, b) {
+    const numA = this.extractFrameNumber(a);
+    const numB = this.extractFrameNumber(b);
+
+    if (Number.isNaN(numA) || Number.isNaN(numB)) {
+      // No usable number in one of the filenames — fall back to a plain
+      // string compare rather than crashing the sort.
+      return String(a).localeCompare(String(b));
+    }
+
+    return numA - numB;
+  },
+
+  // FIX: on top of the ordering fix, the source list itself can contain
+  // the same frame number twice (e.g. frame 45 listed twice) while
+  // another number is missing entirely (e.g. no 46 at all) — usually
+  // from however the zip was unpacked/listed on the backend. Visually
+  // this is exactly "frames repeating" (you sit on the same image for
+  // two scroll steps) immediately followed by "cutting" (the next number
+  // is simply absent, so the sequence jumps). Deduping by frame number
+  // here (keeping the first occurrence, after sorting) guarantees each
+  // position in the played sequence is a distinct, correctly-ordered
+  // frame — it can't fix a genuinely missing frame file, but it removes
+  // the duplicate-driven stutter and makes any real gaps visible in the
+  // console instead of silently doubling up.
+  sortAndDedupeFrames(frames, label) {
+    const sorted = [...frames].sort(this.compareFrameUrls);
+
+    const seen = new Set();
+    const deduped = [];
+    const duplicates = [];
+
+    sorted.forEach((url) => {
+      const num = this.extractFrameNumber(url);
+      const key = Number.isNaN(num) ? url : num;
+
+      if (seen.has(key)) {
+        duplicates.push(url);
+        return;
+      }
+
+      seen.add(key);
+      deduped.push(url);
+    });
+
+    if (duplicates.length && typeof console !== "undefined") {
+      console.warn(
+    `[ScrollHero] Dropped ${duplicates.length} duplicate frame(s) in "${label}" — check how frames are extracted/listed on the backend:`,
+    duplicates
+);
+    }
+
+    // Also flag gaps in the numbering (e.g. ...44, 46... with 45 missing)
+    // so a genuinely missing frame is easy to spot instead of just
+    // showing up as an unexplained skip.
+    const numbers = deduped
+      .map((url) => this.extractFrameNumber(url))
+      .filter((n) => !Number.isNaN(n));
+
+    const gaps = [];
+    for (let i = 1; i < numbers.length; i++) {
+      if (numbers[i] - numbers[i - 1] > 1) {
+        gaps.push(`${numbers[i - 1]} -> ${numbers[i]}`);
+      }
+    }
+
+    if (gaps.length && typeof console !== "undefined") {
+     console.warn(
+    `[ScrollHero] Missing frame number(s) in "${label}" sequence:`,
+    gaps
+);
+    }
+
+    return deduped;
+  },
+
   updateScreenSize() {
     this.isMobileScreen = window.innerWidth <= 767;
   },
@@ -207,17 +303,25 @@ export default {
       this.currentFrame = 0;
       this.targetFrame = 0;
       this.loading = true;
+      this.activeLoads = 0;
+      this.loadQueueIndex = 1;
 
       // Load only frame 1 first. Other frames must not compete with it.
       this.loadFrame(0, true);
     },
 
-    loadFrame(index, priority = false) {
+    loadFrame(index, priority = false, onSettled = null) {
       if (
         this.destroyed ||
-        !this.frames[index] ||
-        this.images[index]
+        !this.frames[index]
       ) {
+        if (onSettled) onSettled();
+        return;
+      }
+
+      if (this.images[index]) {
+        // Already requested/loaded — still let the caller move on.
+        if (onSettled) onSettled();
         return;
       }
 
@@ -244,28 +348,25 @@ export default {
             this.drawFrame(0);
             this.$emit("ready");
 
-            // Start remaining downloads only after frame 1 is visible.
-            if ("requestIdleCallback" in window) {
-              window.requestIdleCallback(
-                () => this.loadRemainingFrames(1),
-                { timeout: 250 }
-              );
-            } else {
-              window.setTimeout(
-                () => this.loadRemainingFrames(1),
-                80
-              );
-            }
+            // FIX: keep only a handful of frames downloading/decoding at
+            // once (a small worker pool) instead of either (a) trickling
+            // 5 in every idle-callback cycle — far too slow for long
+            // sequences, frames were still missing while scrolling — or
+            // (b) firing all frames at once, which saturates the main
+            // thread with simultaneous image decodes and starves the
+            // scroll/draw loop, making playback look like it's skipping
+            // between stills instead of running smoothly.
+            this.loadRemainingFrames();
           });
         }
 
-        const requestedIndex = Math.round(
-          this.targetFrame
-        );
+        const requestedIndex = Math.round(this.targetFrame);
 
         if (index === requestedIndex) {
           this.drawFrame(index);
         }
+
+        if (onSettled) onSettled();
       };
 
       image.onerror = () => {
@@ -274,60 +375,70 @@ export default {
          * individual frame fails.
          */
         console.warn(
-          `Scroll Hero frame failed: ${this.frames[index]}`
-        );
+    `Scroll Hero frame failed: ${this.frames[index]}`
+);
 
         if (index === 0) {
           this.loading = false;
           this.$emit("failed");
         }
+
+        if (onSettled) onSettled();
       };
 
       image.src = this.frames[index];
       this.images[index] = image;
     },
 
-    loadRemainingFrames(startIndex) {
-      let nextIndex = startIndex;
+    loadRemainingFrames() {
+      // Small worker pool: a bounded number of frames load/decode at the
+      // same time, refilling as each one finishes. Fast (several frames
+      // in flight at once, no artificial delay) without overwhelming the
+      // main thread the way loading everything at once did.
+      const concurrency = 4;
 
-      const loadBatch = () => {
-        if (
-          this.destroyed ||
-          nextIndex >= this.frames.length
+      const next = () => {
+        if (this.destroyed) return;
+
+        while (
+          this.activeLoads < concurrency &&
+          this.loadQueueIndex < this.frames.length
         ) {
-          return;
-        }
+          const index = this.loadQueueIndex++;
 
-        const batchEnd = Math.min(
-          nextIndex + 5,
-          this.frames.length
-        );
-
-        for (
-          let index = nextIndex;
-          index < batchEnd;
-          index++
-        ) {
-          this.loadFrame(index);
-        }
-
-        nextIndex = batchEnd;
-
-        if (nextIndex < this.frames.length) {
-          if ("requestIdleCallback" in window) {
-            window.requestIdleCallback(loadBatch, {
-              timeout: 600,
-            });
-          } else {
-            window.setTimeout(loadBatch, 80);
+          if (this.images[index]) {
+            continue;
           }
+
+          this.activeLoads++;
+
+          this.loadFrame(index, false, () => {
+            this.activeLoads--;
+            next();
+          });
         }
       };
 
-      loadBatch();
+      next();
     },
 
     handleScroll() {
+      // FIX: coalesce scroll/wheel/touchmove bursts into at most one
+      // update per animation frame instead of running the full
+      // getBoundingClientRect + state update on every single event.
+      if (this.scrollScheduled) {
+        return;
+      }
+
+      this.scrollScheduled = true;
+
+      requestAnimationFrame(() => {
+        this.scrollScheduled = false;
+        this.updateTargetFrame();
+      });
+    },
+
+    updateTargetFrame() {
       const hero = this.$refs.hero;
 
       if (!hero || !this.frames.length) {
@@ -371,47 +482,16 @@ export default {
         this.loadFrame(requestedIndex + 1, true);
       }
 
-      if (!this.animationRequest) {
-        this.animationRequest = requestAnimationFrame(
-          this.animateFrame
-        );
-      }
-    },
-
-    animateFrame() {
-      /*
-       * Smooth interpolation prevents sudden frame jumping.
-       */
-      this.currentFrame +=
-        (this.targetFrame - this.currentFrame) * 0.22;
-
-      const frameIndex = Math.max(
-        0,
-        Math.min(
-          this.frames.length - 1,
-          Math.round(this.currentFrame)
-        )
-      );
-
-      this.drawNearestAvailableFrame(frameIndex);
-
-      if (
-        Math.abs(
-          this.targetFrame - this.currentFrame
-        ) > 0.01
-      ) {
-        this.animationRequest = requestAnimationFrame(
-          this.animateFrame
-        );
-      } else {
-        this.currentFrame = this.targetFrame;
-
-        this.drawNearestAvailableFrame(
-          Math.round(this.currentFrame)
-        );
-
-        this.animationRequest = null;
-      }
+      // FIX: draw the frame that matches the scroll position directly,
+      // instead of chasing it through a separate lerp/rAF loop. That
+      // catch-up animation is what made playback look choppy — under any
+      // main-thread load (frames decoding, scroll events firing) the
+      // "current" value lagged behind the real scroll position, and it
+      // would visibly jump to catch up. Binding 1:1 to scroll (already
+      // throttled to one update per animation frame by handleScroll) is
+      // what makes a frame sequence read as smooth, continuous video.
+      this.currentFrame = this.targetFrame;
+      this.drawNearestAvailableFrame(requestedIndex);
     },
 
     drawNearestAvailableFrame(frameIndex) {
