@@ -53,9 +53,17 @@
                     </div>
                 </div>
 
-                <hr class="delivery-card__divider">
+                <hr
+                    v-if="deliverNowEnabled"
+                    class="delivery-card__divider"
+                >
 
-                <div class="delivery-time-row" role="button" tabindex="0" @click="openDeliveryTimeEdit"
+                <div
+                    v-if="deliverNowEnabled"
+                    class="delivery-time-row"
+                    role="button"
+                    tabindex="0"
+                    @click="openDeliveryTimeEdit"
                     @keyup.enter="openDeliveryTimeEdit">
                     <div class="d-flex align-items-center">
                         <span class="material-icons mr-2">event</span>
@@ -69,6 +77,54 @@
                             }}</span>
                     </div>
                 </div>
+
+                <hr
+    v-if="bookingNowEnabled"
+    class="delivery-card__divider"
+>
+
+<div
+    v-if="bookingNowEnabled"
+    class="delivery-time-row"
+    role="button"
+    tabindex="0"
+    @click="openDeliveryTimeEdit"
+    @keyup.enter="openDeliveryTimeEdit"
+>
+    <div class="d-flex align-items-center">
+
+        <span class="material-icons mr-2">
+            event
+        </span>
+
+        <span class="text-muted small">
+            {{ bookingNowLabel }}
+        </span>
+
+    </div>
+
+    <div class="arrival-time">
+
+        <strong
+            v-if="deliveryTimeValue"
+            class="delivery-time-row__value"
+        >
+            {{ deliveryTimeValue }}
+        </strong>
+
+        <span
+            v-else
+            class="delivery-field__prompt"
+        >
+            {{ chooseDeliveryTimeLabel }}
+        </span>
+
+        <span class="material-icons delivery-field__chevron">
+            {{ isRtl ? 'chevron_left' : 'chevron_right' }}
+        </span>
+
+    </div>
+</div>
 
             </div>
 
@@ -192,6 +248,8 @@ export default {
             loadingEarliestArrival: false,
             orderNowEnabled: true,
             orderNowText: "",
+            deliverNowEnabled: true,
+            bookingNowEnabled: true,
         };
     },
 
@@ -253,6 +311,12 @@ export default {
         deliveryTimeLabel() {
             return this.localizedLabel("Deliver Now", "التوصيل الآن");
         },
+        bookingNowLabel() {
+    return this.localizedLabel(
+        "Booking Now",
+        "الحجز الآن"
+    );
+},
         chooseDeliveryTimeLabel() {
             return this.localizedLabel("Choose delivery time", "اختر وقت التوصيل");
         },
@@ -327,6 +391,10 @@ export default {
                     this.orderNowEnabled =
                     response.data?.order_now_enabled !== false;
                     this.orderNowText = response.data?.order_now_text || "";
+                    this.deliverNowEnabled =
+                    response.data?.deliver_now_enabled !== false;
+                    this.bookingNowEnabled =
+    response.data?.booking_now_enabled !== false;
                     
                     if (response.data?.success && response.data?.shipping_time) {
                         this.earliestArrival = response.data.shipping_time;

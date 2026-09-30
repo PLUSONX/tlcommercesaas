@@ -48,6 +48,11 @@ class ShippingController extends Controller
                 'shippingTimes' => $this->shipping_repository->shippingTimes(),
                 'shipping_profiles' => $this->shipping_repository->shippingProfiles(),
                 'location_based_shipping_rates' => $this->shipping_repository->locationBasedShippingCosts(),
+                // 'deliverNowEnabled' => (int) (
+                //     DB::table('tl_com_ecommerce_settings')
+                //         ->where('key_name', 'enable_deliver_now')
+                //         ->value('key_value') ?? 1
+                // ) === 1,
             ]
         );
     }
@@ -662,39 +667,122 @@ class ShippingController extends Controller
     }
 
     public function updateOrderNowDisplay(Request $request)
-    {
-        try {
-            $request->validate([
-                'order_now_text' => 'nullable|string|max:100',
-            ]);
+{
+    try {
+        $request->validate([
+            'order_now_text' => 'nullable|string|max:100',
+        ]);
 
-            OrderNowDisplayConfig::save([
-                'enabled' => $request->has('order_now_enabled'),
-                'text' => $request->input('order_now_text', ''),
-            ]);
+        OrderNowDisplayConfig::save([
+            'enabled' => $request->has('order_now_enabled'),
+            'text' => $request->input('order_now_text', ''),
+        ]);
 
-            return redirect()
-                ->route('plugin.tlcommercecore.shipping.configuration')
-                ->with(
-                    'success',
-                    translate('Order Now display settings updated successfully')
-                );
+        return redirect()
+            ->route('plugin.tlcommercecore.shipping.configuration')
+            ->with(
+                'success',
+                translate('Order Now display settings updated successfully')
+            );
 
-        } catch (\Throwable $e) {
+    } catch (\Throwable $e) {
 
-            Log::error('Order Now display settings save failed', [
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
+        Log::error('Order Now display settings save failed', [
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ]);
 
-            return redirect()
-                ->route('plugin.tlcommercecore.shipping.configuration')
-                ->with(
-                    'error',
-                    'Order Now settings could not be saved: ' .
-                    $e->getMessage()
-                );
-        }
+        return redirect()
+            ->route('plugin.tlcommercecore.shipping.configuration')
+            ->with(
+                'error',
+                'Order Now settings could not be saved: ' .
+                $e->getMessage()
+            );
     }
+}
+    /**
+     * Update Deliver Now display setting.
+     */
+   public function updateDeliverNowDisplay(Request $request)
+{
+    try {
+
+        $enabled = $request->has('deliver_now_enabled') ? 1 : 0;
+
+        DB::table('tl_com_ecommerce_settings')->updateOrInsert(
+            [
+                'key_name' => 'enable_deliver_now',
+            ],
+            [
+                'key_value' => $enabled,
+            ]
+        );
+
+        return redirect()
+            ->route('plugin.tlcommercecore.shipping.configuration')
+            ->with(
+                'success',
+                translate('Deliver Now display settings updated successfully')
+            );
+
+    } catch (\Throwable $e) {
+
+        Log::error('Deliver Now display settings save failed', [
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ]);
+
+        return redirect()
+            ->route('plugin.tlcommercecore.shipping.configuration')
+            ->with(
+                'error',
+                'Deliver Now settings could not be saved: ' .
+                $e->getMessage()
+            );
+    }
+}
+
+public function updateBookingNowDisplay(Request $request)
+{
+    try {
+
+        $enabled = $request->has('booking_now_enabled') ? 1 : 0;
+
+        DB::table('tl_com_ecommerce_settings')->updateOrInsert(
+            [
+                'key_name' => 'enable_booking_now',
+            ],
+            [
+                'key_value' => $enabled,
+            ]
+        );
+
+        return redirect()
+            ->route('plugin.tlcommercecore.shipping.configuration')
+            ->with(
+                'success',
+                translate('Booking Now display settings updated successfully')
+            );
+
+    } catch (\Throwable $e) {
+
+        Log::error('Booking Now display settings save failed', [
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ]);
+
+        return redirect()
+            ->route('plugin.tlcommercecore.shipping.configuration')
+            ->with(
+                'error',
+                'Booking Now settings could not be saved: ' .
+                $e->getMessage()
+            );
+    }
+}
+
 }

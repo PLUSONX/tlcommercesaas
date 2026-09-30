@@ -213,66 +213,122 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($location_based_shipping_rates as $rate)
-                                    <tr>
-                                        <td>{{ $rate->title }}</td>
-                                        <td>{!! currencyExchange($rate->cost) !!}</td>
-                                        <td>
-                                            <div class="d-flex flex-wrap gap-10">
-                                                @forelse ($rate->countries as $country)
-                                                    <span class="badge badge-success">{{ $country->name }}</span>
-                                                @empty
-                                                    <p class="badge badge-danger">No Country</p>
-                                                @endforelse
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex flex-wrap gap-10">
-                                                @forelse ($rate->states as $state)
-                                                    <span class="badge badge-primary">{{ $state->name }}</span>
-                                                @empty
-                                                    <p class="badge badge-danger">No State</p>
-                                                @endforelse
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex flex-wrap gap-10">
-                                                @forelse ($rate->cities as $city)
-                                                    <span class="badge badge-info"> {{ $city->name }}</span>
-                                                @empty
-                                                    <p class="badge badge-danger">No City</p>
-                                                @endforelse
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="dropdown-button">
-                                                <a href="#" class="d-flex align-items-center justify-content-center"
-                                                    data-toggle="dropdown">
-                                                    <div class="menu-icon mr-0">
-                                                        <span></span>
-                                                        <span></span>
-                                                        <span></span>
-                                                    </div>
-                                                </a>
-                                                <div class="dropdown-menu">
-                                                    <a href="#" class="edit-rate" data-id="{{ $rate->id }}">
-                                                        {{ translate('Edit') }}
-                                                    </a>
-                                                    <a href="#" class="delete-rate" data-id="{{ $rate->id }}">
-                                                        {{ translate('Delete') }}
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6">
-                                            <p class="alert">No Items Found</p>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
+
+    @foreach ($location_based_shipping_rates as $rate)
+
+        <tr>
+
+            <td>
+                {{ $rate->title }}
+            </td>
+
+            <td>
+                {!! currencyExchange($rate->cost) !!}
+            </td>
+
+            <td>
+                <div class="d-flex flex-wrap gap-10">
+
+                    @forelse ($rate->countries as $country)
+
+                        <span class="badge badge-success">
+                            {{ $country->name }}
+                        </span>
+
+                    @empty
+
+                        <span class="badge badge-danger">
+                            No Country
+                        </span>
+
+                    @endforelse
+
+                </div>
+            </td>
+
+            <td>
+                <div class="d-flex flex-wrap gap-10">
+
+                    @forelse ($rate->states as $state)
+
+                        <span class="badge badge-primary">
+                            {{ $state->name }}
+                        </span>
+
+                    @empty
+
+                        <span class="badge badge-danger">
+                            No State
+                        </span>
+
+                    @endforelse
+
+                </div>
+            </td>
+
+            <td>
+                <div class="d-flex flex-wrap gap-10">
+
+                    @forelse ($rate->cities as $city)
+
+                        <span class="badge badge-info">
+                            {{ $city->name }}
+                        </span>
+
+                    @empty
+
+                        <span class="badge badge-danger">
+                            No City
+                        </span>
+
+                    @endforelse
+
+                </div>
+            </td>
+
+            <td>
+                <div class="dropdown-button">
+
+                    <a
+                        href="#"
+                        class="d-flex align-items-center justify-content-center"
+                        data-toggle="dropdown"
+                    >
+                        <div class="menu-icon mr-0">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </a>
+
+                    <div class="dropdown-menu">
+
+                        <a
+                            href="#"
+                            class="edit-rate"
+                            data-id="{{ $rate->id }}"
+                        >
+                            {{ translate('Edit') }}
+                        </a>
+
+                        <a
+                            href="#"
+                            class="delete-rate"
+                            data-id="{{ $rate->id }}"
+                        >
+                            {{ translate('Delete') }}
+                        </a>
+
+                    </div>
+
+                </div>
+            </td>
+
+        </tr>
+
+    @endforeach
+
+</tbody>
                         </table>
                     </div>
                 </div>
@@ -468,6 +524,132 @@
         </div>
     </div>
       
+ {{-- Deliver Now Display --}}
+@php
+    $deliverNowEnabled = (int) SettingsRepository::getEcommerceSetting(
+        'enable_deliver_now',
+        1
+    ) === 1;
+@endphp
+
+<div class="col-12">
+    <div class="card mb-30">
+
+        <div class="card-header bg-white py-3">
+            <h4 class="font-18 mb-0">
+                {{ translate('Deliver Now Display') }}
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <form
+                action="{{ route('plugin.tlcommercecore.shipping.deliver.now.display.update') }}"
+                method="POST"
+            >
+                @csrf
+
+                {{-- Show Deliver Now Row --}}
+                <div class="form-row mb-20">
+
+                    <label class="font-14 bold black d-block mb-2">
+                        {{ translate('Show Deliver Now Row') }}
+                    </label>
+
+                    <label class="order-now-switch">
+
+                        <input
+                            type="checkbox"
+                            name="deliver_now_enabled"
+                            value="1"
+                            {{ (string) $deliverNowEnabled === '1' ? 'checked' : '' }}
+                        >
+
+                        <span class="order-now-slider"></span>
+
+                    </label>
+
+                </div>
+
+                {{-- Save --}}
+                <div class="text-right">
+
+                    <button type="submit" class="btn long">
+                        {{ translate('Save') }}
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
+
+{{-- Booking Now Display --}}
+
+@php
+    $bookingNowEnabled = (int) SettingsRepository::getEcommerceSetting(
+        'enable_booking_now',
+        1
+    ) === 1;
+@endphp
+
+<div class="col-12">
+    <div class="card mb-30">
+
+        <div class="card-header bg-white py-3">
+            <h4 class="font-18 mb-0">
+                {{ translate('Booking Now Display') }}
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <form
+                action="{{ route('plugin.tlcommercecore.shipping.booking.now.display.update') }}"
+                method="POST"
+            >
+                @csrf
+
+                {{-- Show Booking Now Row --}}
+                <div class="form-row mb-20">
+
+                    <label class="font-14 bold black d-block mb-2">
+                        {{ translate('Show Booking Now Row') }}
+                    </label>
+
+                    <label class="order-now-switch">
+
+                        <input
+                            type="checkbox"
+                            name="booking_now_enabled"
+                            value="1"
+                            {{ $bookingNowEnabled ? 'checked' : '' }}
+                        >
+
+                        <span class="order-now-slider"></span>
+
+                    </label>
+
+                </div>
+
+                {{-- Save --}}
+                <div class="text-right">
+
+                    <button type="submit" class="btn long">
+                        {{ translate('Save') }}
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
 
         <style>
             .order-now-switch {
