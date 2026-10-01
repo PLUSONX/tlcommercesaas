@@ -312,6 +312,15 @@ router.afterEach(() => {
   });
 });
 
+// Studio Book Now: once the customer lands on the order-success page the booking
+// is already attached to the order, so clear the stored hold and its cookie.
+router.afterEach((to) => {
+  if (to.path.startsWith("/order-success")) {
+    try { localStorage.removeItem("tlcommerce_studio_booking_hold"); } catch (e) {}
+    try { document.cookie = "studio_booking_token=; path=/; max-age=0; SameSite=Lax"; } catch (e) {}
+  }
+});
+
 router.onError((err) => {
   if (isChunkLoadError(err)) {
     reloadOnceForChunkError();

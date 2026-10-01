@@ -37,6 +37,7 @@ use Plugin\TlcommerceCore\Http\Controllers\Payment\MercadoPagoController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\PayzahController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\MyFatoorahController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\UpaymentsController;
+use Plugin\TlcommerceCore\Http\Controllers\StudioBookingController;
 
 /**
  * Payzah payment
@@ -298,6 +299,16 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
             })->name('plugin.tlcommercecore.shipping.carrier.weight.range.input');
         });
 
+Route::get('/studio-booking', [StudioBookingController::class, 'index'])
+    ->name('plugin.tlcommercecore.shipping.studio.booking');
+Route::post('/studio-booking/settings', [StudioBookingController::class, 'updateSettings'])
+    ->name('plugin.tlcommercecore.shipping.studio.booking.settings.update');
+Route::post('/studio-booking/slots/generate', [StudioBookingController::class, 'generateSlots'])
+    ->name('plugin.tlcommercecore.shipping.studio.booking.slots.generate');
+Route::post('/studio-booking/slots/status', [StudioBookingController::class, 'updateSlotStatus'])
+    ->name('plugin.tlcommercecore.shipping.studio.booking.slots.status');
+Route::post('/studio-booking/slots/delete', [StudioBookingController::class, 'deleteSlot'])
+    ->name('plugin.tlcommercecore.shipping.studio.booking.slots.delete');
 
 
         Route::middleware(['can:Manage Locations'])->group(function () {

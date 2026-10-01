@@ -651,6 +651,10 @@
     </div>
 </div>
 
+<a href="{{ route('plugin.tlcommercecore.shipping.studio.booking') }}" class="btn long">
+    {{ translate('Studio Booking Schedule') }}
+</a>
+
         <style>
             .order-now-switch {
                 position: relative;

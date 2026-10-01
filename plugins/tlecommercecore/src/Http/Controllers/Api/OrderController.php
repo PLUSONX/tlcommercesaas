@@ -295,48 +295,46 @@ class OrderController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function earliestArrival(Request $request)
-    {
-        $orderNowDisplay = OrderNowDisplayConfig::get();
+public function earliestArrival(Request $request)
+{
+    $orderNowDisplay = OrderNowDisplayConfig::get();
 
-        $deliverNowEnabled = (int) (
-            DB::table('tl_com_ecommerce_settings')
-                ->where('key_name', 'enable_deliver_now')
-                ->value('key_value') ?? 1
-        ) === 1;
+    $deliverNowEnabled = (int) (
+        DB::table('tl_com_ecommerce_settings')
+            ->where('key_name', 'enable_deliver_now')
+            ->value('key_value') ?? 1
+    ) === 1;
 
-        $bookingNowEnabled = (int) (
-    DB::table('tl_com_ecommerce_settings')
-        ->where('key_name', 'enable_booking_now')
-        ->value('key_value') ?? 1
-) === 1;
+    $bookingNowEnabled = (int) (
+        DB::table('tl_com_ecommerce_settings')
+            ->where('key_name', 'enable_booking_now')
+            ->value('key_value') ?? 1
+    ) === 1;
 
-        try {
-            $data = $this->shipping_repository->earliestArrival(
-                $request->input('city_id'),
-                $request->input('state_id')
-            );
+    try {
+        $data = $this->shipping_repository->earliestArrival(
+            $request->input('city_id'),
+            $request->input('state_id')
+        );
 
-            $data['order_now_enabled'] = $orderNowDisplay['enabled'];
-            $data['order_now_text'] = $orderNowDisplay['text'];
-            $data['deliver_now_enabled'] = $deliverNowEnabled;
-            $data['booking_now_enabled'] = $bookingNowEnabled;
+        $data['order_now_enabled'] = $orderNowDisplay['enabled'];
+        $data['order_now_text'] = $orderNowDisplay['text'];
+        $data['deliver_now_enabled'] = $deliverNowEnabled;
+        $data['booking_now_enabled'] = $bookingNowEnabled;
 
-            return response()->json($data);
-        } catch (\Exception $e) {
-            return response()->json(
-                [
-                    'success' => false,
-                    'shipping_time' => null,
-                    'source' => null,
-                    'order_now_enabled' => $orderNowDisplay['enabled'],
-                    'order_now_text' => $orderNowDisplay['text'],
-                    'deliver_now_enabled' => $deliverNowEnabled,
-                    'booking_now_enabled' => $bookingNowEnabled,
-                ]
-            );
-        }
+        return response()->json($data);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'shipping_time' => null,
+            'source' => null,
+            'order_now_enabled' => $orderNowDisplay['enabled'],
+            'order_now_text' => $orderNowDisplay['text'],
+            'deliver_now_enabled' => $deliverNowEnabled,
+            'booking_now_enabled' => $bookingNowEnabled,
+        ]);
     }
+}
 
     /**
      * Will calculate Delivery Cost
@@ -560,25 +558,42 @@ class OrderController extends Controller
 
         //check  variant product available stock
         if ($product_details->has_variant == config('tlecommercecore.product_variant.variable')) {
-            $variantCode = $item['variant_code'] ?? '';
+    $variantCode = $item['variant_code'] ?? '';
 
-            if (!ProductAttribute::validateMultiSelectVariantCode($item['id'], $variantCode)) {
-                return config('settings.general_status.in_active');
-            }
+    if (!ProductAttribute::validateMultiSelectVariantCode($item['id'], $variantCode)) {
+        Log::warning('CartAvail: multi-select validation failed', ['id' => $item['id'], 'code' => $variantCode]);
+        return config('settings.general_status.in_active');
+    }
 
-            if ($variantCode === '') {
-                return config('settings.general_status.in_active');
-            }
+    if ($variantCode === '') {
+    // Product with a main price row and no required SKU variant: use its own stock
+    $single_price = SingleProductPrice::where('product_id', $item['id'])
+        ->select('quantity', 'product_id')->first();
 
-            $variant_price = ProductAttribute::resolveVariantPrice($item['id'], $variantCode);
+    if ($single_price == null || $single_price->quantity < $item['quantity']) {
+        Log::warning('CartAvail: empty variant_code and no stock on single price', ['id' => $item['id']]);
+        return config('settings.general_status.in_active');
+    }
 
-            if ($variant_price == null) {
-                return config('settings.general_status.in_active');
-            }
-            if ($variant_price->quantity < $item['quantity']) {
-                return config('settings.general_status.in_active');
-            }
-        }
+    return config('settings.general_status.active');
+}
+
+    $variant_price = ProductAttribute::resolveVariantPrice($item['id'], $variantCode);
+
+    if ($variant_price == null) {
+        Log::warning('CartAvail: no variant row', ['id' => $item['id'], 'code' => $variantCode]);
+        return config('settings.general_status.in_active');
+    }
+    if ($variant_price->quantity < $item['quantity']) {
+        Log::warning('CartAvail: low stock', [
+            'id' => $item['id'],
+            'code' => $variantCode,
+            'stock' => $variant_price->quantity,
+            'wanted' => $item['quantity'],
+        ]);
+        return config('settings.general_status.in_active');
+    }
+}
 
         //check  seller's product approval status when multivendor active
         // if (isActivePluging('multivendor') && $product_details->is_approved != config('settings.general_status.active')) {
