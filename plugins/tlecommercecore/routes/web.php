@@ -37,6 +37,7 @@ use Plugin\TlcommerceCore\Http\Controllers\Payment\MercadoPagoController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\PayzahController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\MyFatoorahController;
 use Plugin\TlcommerceCore\Http\Controllers\Payment\UpaymentsController;
+use Plugin\TlcommerceCore\Http\Controllers\StudioBookingController;
 
 /**
  * Payzah payment
@@ -255,6 +256,8 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
             Route::post('/store-new-shipping-time', [ShippingController::class, 'storeShippingTime'])->name('plugin.tlcommercecore.shipping.time.store');
             Route::post('/delete-shipping-time', [ShippingController::class, 'deleteShippingTime'])->name('plugin.tlcommercecore.shipping.time.delete')->middleware('demo');
             Route::post('/update-order-now-display',[ShippingController::class, 'updateOrderNowDisplay'])->name('plugin.tlcommercecore.shipping.order.now.display.update');
+            Route::post('update-deliver-now-display',[ShippingController::class, 'updateDeliverNowDisplay'])->name('plugin.tlcommercecore.shipping.deliver.now.display.update');
+            Route::post('update-booking-now-display',[ShippingController::class, 'updateBookingNowDisplay'])->name('plugin.tlcommercecore.shipping.booking.now.display.update');
 
             // Delivery scheduling (time slots)
             Route::post('/delivery-schedule/settings', [DeliveryScheduleController::class, 'updateSettings'])->name('plugin.tlcommercecore.delivery.schedule.settings.update');
@@ -296,6 +299,16 @@ Route::group(['middleware' => 'auth', 'prefix' => getAdminPrefix()], function ()
             })->name('plugin.tlcommercecore.shipping.carrier.weight.range.input');
         });
 
+Route::get('/studio-booking', [StudioBookingController::class, 'index'])
+    ->name('plugin.tlcommercecore.shipping.studio.booking');
+Route::post('/studio-booking/settings', [StudioBookingController::class, 'updateSettings'])
+    ->name('plugin.tlcommercecore.shipping.studio.booking.settings.update');
+Route::post('/studio-booking/slots/generate', [StudioBookingController::class, 'generateSlots'])
+    ->name('plugin.tlcommercecore.shipping.studio.booking.slots.generate');
+Route::post('/studio-booking/slots/status', [StudioBookingController::class, 'updateSlotStatus'])
+    ->name('plugin.tlcommercecore.shipping.studio.booking.slots.status');
+Route::post('/studio-booking/slots/delete', [StudioBookingController::class, 'deleteSlot'])
+    ->name('plugin.tlcommercecore.shipping.studio.booking.slots.delete');
 
 
         Route::middleware(['can:Manage Locations'])->group(function () {

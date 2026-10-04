@@ -21,7 +21,7 @@
               : 'col-12'">
               <!-- Cart -->
               <section id="checkout-cart" class="checkout-section mb-20" :class="sectionClass('cart')">
-                <cart-step @next-step="goToDetails" @checkout-items-synced="onCheckoutItemsSynced"></cart-step>
+                <cart-step ref="cartStep" @next-step="goToDetails" @checkout-items-synced="onCheckoutItemsSynced"></cart-step>
               </section>
 
               <!-- Shipping / Details -->
@@ -39,7 +39,7 @@
                   <delivery-shipping v-else ref="deliveryShipping" :enums="enums" :config="configuration"
                     :customer-address="customerAddress" :is-customer-login="isCustomerLogin"
                     :pickup-points="pickupPoints" @next-step="goToPayment" @previous-step="goToCart"
-                    @shipping-prep-updated="onShippingPrepUpdated"></delivery-shipping>
+                    @shipping-prep-updated="onShippingPrepUpdated" @booking-hours-selected="$refs.cartStep && $refs.cartStep.setQuantityFromHours($event)"></delivery-shipping>
                 </div>
               </section>
 

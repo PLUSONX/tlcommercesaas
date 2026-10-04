@@ -11,6 +11,7 @@ use Plugin\TlcommerceCore\Http\Controllers\Api\AnalyticsController;
 use Plugin\TlcommerceCore\Http\Controllers\Api\NotificationController;
 use Plugin\TlcommerceCore\Http\Controllers\Api\CustomerAddressController;
 use Plugin\TlcommerceCore\Http\Controllers\Api\CustomerWishlistController;
+use Plugin\TlcommerceCore\Http\Controllers\StudioBookingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,13 @@ Route::group(['prefix' => 'v1/ecommerce-core'], function () {
     Route::get('phone-codes', [SettingsController::class, 'phoneCodes']);
     Route::post('delivery-schedule/available-slots', [DeliveryScheduleController::class, 'availableSlots']);
     Route::post('analytics/track', [AnalyticsController::class, 'track']);
+
+    // Add these inside the existing Route::group(['prefix' => 'v1/ecommerce-core'], ...)
+Route::get('studio-booking/config', [StudioBookingController::class, 'config']);
+Route::post('studio-booking/available-slots', [StudioBookingController::class, 'availableSlots']);
+Route::post('studio-booking/hold', [StudioBookingController::class, 'hold']);
+Route::post('studio-booking/release', [StudioBookingController::class, 'release']);
+
     /**
      * Product routes
      * 

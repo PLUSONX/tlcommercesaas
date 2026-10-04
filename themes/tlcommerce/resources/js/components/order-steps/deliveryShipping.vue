@@ -122,7 +122,7 @@
             </div>
           </div>
           <delivery-time-selector
-            v-if="isSchedulingEnabled"
+            v-if="isSchedulingEnabled && deliverNowEnabled && deliverySchedulingEnabled"
             ref="deliveryTimeSelectorLoggedIn"
             :config="config"
             :enums="enums"
@@ -209,23 +209,21 @@
             </div>
           </div>
           <div class="form-group mb-20 col-lg-6">
-  <label class="font-weight-bold fz-12 mb-2">
-    {{ $t("Email") }}
-  </label>
-
-  <input
-    type="email"
-    v-bind:placeholder="$t('Email')"
-    v-model="guestCustomerInfo.email"
-    class="theme-input-style"
-  />
-
-  <div v-for="error in errors" :key="error.customer_email">
-    <p class="text-danger validation-error" v-if="error.customer_email">
-      {{ error.customer_email }}
-    </p>
-  </div>
-</div>
+            <label class="font-weight-bold fz-12 mb-2">
+              {{ $t("Email") }}
+              <span class="text-danger" v-if="
+                isActivePickupPoint ||
+                config?.enable_personal_info_guest_checkout == enums.status.ACTIVE
+              ">*</span>
+            </label>
+            <input type="email" v-bind:placeholder="$t('Email')" v-model="guestCustomerInfo.email"
+              class="theme-input-style" />
+            <div v-for="error in errors" :key="error.customer_email">
+              <p class="text-danger validation-error" v-if="error.customer_email">
+                {{ error.customer_email }}
+              </p>
+            </div>
+          </div>
           <div class="form-group mb-20 col-lg-6" v-if="
             config?.create_account_in_guest_checkout == enums.status.ACTIVE
           ">
@@ -277,23 +275,23 @@
               </p>
             </div>
           </div>
-          <!-- <div class="form-group mb-20 col-lg-6">
-      <label class="font-weight-bold fz-12 mb-2">
-        {{ $t("Email") }}
-      </label>
+          <div class="form-group mb-20 col-lg-6">
+  <label class="font-weight-bold fz-12 mb-2">
+    {{ $t("Email") }}
+  </label>
 
   <input
-        type="email"
-        v-bind:placeholder="$t('Email')"
-        v-model="guestCustomerInfo.email"
-        class="theme-input-style"
-      />
+    type="email"
+    v-bind:placeholder="$t('Email')"
+    v-model="guestCustomerInfo.email"
+    class="theme-input-style"
+  />
             <div v-for="error in errors" :key="error.shipping_email">
               <p class="text-danger validation-error" v-if="error.shipping_email">
                 {{ error.shipping_email }}
               </p>
             </div>
-          </div> -->
+          </div>
           <!-- <div
             class="form-group mb-20 col-lg-6"
             v-if="config?.enable_phone_in_checkout == enums.status.ACTIVE"
@@ -412,7 +410,7 @@
             </div>
           </div> -->
           <delivery-time-selector
-            v-if="isSchedulingEnabled"
+            v-if="isSchedulingEnabled && deliverNowEnabled && deliverySchedulingEnabled"
             ref="deliveryTimeSelectorGuest"
             :config="config"
             :enums="enums"
@@ -560,6 +558,15 @@
         <!--End Guest Billing Address-->
       </div>
       <!--End Guest Checkout -->
+
+      <!--Booking Time: shown and required only when backend Book Now is enabled-->
+      <booking-time-checkout
+        v-if="isActiveHomeDelivery && displayConfigLoaded && bookingNowEnabled"
+        ref="bookingTimeCheckout"
+        :config="config"
+        :enums="enums"
+        @hours-selected="$emit('booking-hours-selected', $event)"
+      />
     </template>
     <!--End Home delivery-->
 
@@ -820,6 +827,8 @@ import {
   CModalFooter,
 } from "@coreui/vue";
 import DeliveryTimeSelector from "./DeliveryTimeSelector.vue";
+import BookingTimeSelector from "./BookingTimeSelector.vue";
+import BookingTimeCheckout from "./BookingTimeCheckout.vue";
 import {
   isValidKuwaitMobile,
   KUWAIT_MOBILE_ERROR,
@@ -827,7 +836,7 @@ import {
 } from "@/utils/kuwaitPhone";
 export default {
   name: "deliveryShipping",
-  emits: ["next-step", "previous-step", "shipping-prep-updated"],
+  emits: ["next-step", "previous-step", "shipping-prep-updated", "booking-hours-selected"],
   components: {
     CModal,
     CModalHeader,
@@ -835,6 +844,8 @@ export default {
     CModalBody,
     CModalFooter,
     DeliveryTimeSelector,
+    BookingTimeSelector,
+    BookingTimeCheckout
   },
   props: {
     config: {
@@ -886,17 +897,41 @@ export default {
           (address) => address.default_billing === this.enums.status.ACTIVE
         ) || null,
       errors: [],
-      isRestoringShipping: false
+      isRestoringShipping: false,
+      bookingNowEnabled: false,
+      bookingSchedule: null,
+      deliverNowEnabled: false,
+      deliverySchedulingEnabled: false,
+      displayConfigLoaded: false,
     };
   },
   computed: {
     ...mapGetters('layout', ['isRtl']),
     isSchedulingEnabled() {
       return (
+        this.displayConfigLoaded &&
         this.isActiveHomeDelivery &&
         !this.isActivePickupPoint &&
-        this.config?.enable_delivery_scheduling == this.enums.status.ACTIVE
+        this.deliverNowEnabled &&
+        this.deliverySchedulingEnabled
       );
+    },
+    bookingTimeValue() {
+      const schedule = this.bookingSchedule;
+
+      if (!schedule?.schedule_date || !schedule?.start_time || !schedule?.end_time) {
+        return null;
+      }
+
+      const date = new Date(`${schedule.schedule_date}T00:00:00`);
+      const dateLabel = date.toLocaleDateString(undefined, {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+
+      return `${dateLabel} · ${this.formatBookingTime(schedule.start_time)} - ${this.formatBookingTime(schedule.end_time)}`;
     },
     kuwaitMobileHint() {
       return this.$t(KUWAIT_MOBILE_HINT);
@@ -906,6 +941,14 @@ export default {
     },
   },
   mounted() {
+
+    this.restoreBookingSchedule();
+        this._bookingExpiryTimer = setInterval(() => this.restoreBookingSchedule(), 30000);
+    this.fetchDisplayConfig();
+    this._displayConfigVisibilityHandler = () => {
+      if (document.visibilityState === "visible") this.fetchDisplayConfig();
+    };
+    document.addEventListener("visibilitychange", this._displayConfigVisibilityHandler);
 
     // console.log("shipping details test: ", this.$store.state.shippingDetails);
 
@@ -957,6 +1000,12 @@ export default {
       }
     }
 
+  },
+  beforeUnmount() {
+        if (this._bookingExpiryTimer) clearInterval(this._bookingExpiryTimer);
+    if (this._displayConfigVisibilityHandler) {
+      document.removeEventListener("visibilitychange", this._displayConfigVisibilityHandler);
+    }
   },
   watch: {
     "customerShippingInfo.id"() {
@@ -1036,6 +1085,111 @@ export default {
     },
   },
   methods: {
+    clearStudioBooking() {
+      try { localStorage.removeItem("tlcommerce_studio_booking_hold"); } catch (e) { /* ignore */ }
+      try { document.cookie = "studio_booking_token=; path=/; max-age=0; SameSite=Lax"; } catch (e) { /* ignore */ }
+    },
+    restoreBookingSchedule() {
+      try {
+        const stored = localStorage.getItem("tlcommerce_studio_booking_hold");
+        const booking = stored ? JSON.parse(stored) : null;
+        if (!booking?.booking_token) {
+          this.bookingSchedule = null;
+          return;
+        }
+        if (booking.expires_at) {
+          const expiresAt = new Date(booking.expires_at).getTime();
+          if (!Number.isNaN(expiresAt) && expiresAt <= Date.now()) {
+            this.clearStudioBooking();
+            this.bookingSchedule = null;
+            return;
+          }
+        }
+        this.bookingSchedule = booking;
+      } catch (error) {
+        this.bookingSchedule = null;
+      }
+    },
+    handleBookingReleased() {
+      this.bookingSchedule = null;
+    },
+    flagEnabled(value, fallback = false) {
+      if (value === undefined || value === null) return fallback;
+      return value === true || value === 1 || value === "1" || value === "true" || value === "enabled";
+    },
+        async fetchDisplayConfig() {
+      let payload = {};
+      try {
+        const response = await axios.get("/api/v1/ecommerce-core/studio-booking/config", {
+          headers: { Accept: "application/json" },
+        });
+        payload = response.data || {};
+      } catch (error) {
+        payload = {};
+      }
+
+      // Deliver Now flags come from the same endpoint the home page uses.
+      let arrival = null;
+      try {
+        const cityId = this.$store.state.shippingDetails?.city?.id || null;
+        const stateId = this.$store.state.shippingDetails?.state?.id || null;
+        const res = await axios.post("/api/v1/ecommerce-core/earliest-arrival", {
+          city_id: cityId,
+          state_id: stateId,
+        });
+        arrival = res.data || null;
+      } catch (error) {
+        arrival = null;
+      }
+
+      const deliverRaw =
+        arrival && arrival.deliver_now_enabled !== undefined
+          ? arrival.deliver_now_enabled
+          : payload.deliver_now_enabled;
+      this.deliverNowEnabled = this.flagEnabled(deliverRaw, false);
+      this.deliverySchedulingEnabled =
+        payload.delivery_scheduling_enabled !== undefined
+          ? this.flagEnabled(payload.delivery_scheduling_enabled, false)
+          : this.deliverNowEnabled;
+      const bookingRaw =
+        arrival && arrival.booking_now_enabled !== undefined
+          ? arrival.booking_now_enabled
+          : (payload.booking_now_enabled ?? payload.enabled);
+      this.bookingNowEnabled = this.flagEnabled(bookingRaw, false);
+      this.displayConfigLoaded = true;
+
+      // When Book Now is OFF, booking is completely optional/inactive.
+      // Remove any old hold so it cannot create a hidden requirement later.
+      if (!this.bookingNowEnabled) {
+        this.bookingSchedule = null;
+        this.clearStudioBooking();
+      }
+
+      if (!this.isSchedulingEnabled) {
+        this.$store.dispatch("storeDeliverySchedule", null);
+      }
+    },
+    // Backwards-compatible alias for older callers.
+    fetchBookingNowState() {
+      return this.fetchDisplayConfig();
+    },
+    openBookingTimeEdit() {
+      this.$refs.bookingTimeSelectorCheckout?.openEditModal();
+    },
+    handleBookingConfirmed(booking) {
+      this.bookingSchedule = booking || null;
+    },
+    formatBookingTime(value) {
+      const match = String(value || "").match(/^(\d{1,2}):(\d{2})/);
+      if (!match) return value || "";
+
+      let hour = Number(match[1]);
+      const minute = match[2];
+      const suffix = hour >= 12 ? "pm" : "am";
+      hour = hour % 12 || 12;
+
+      return `${hour}:${minute} ${suffix}`;
+    },
     getActiveDeliveryTimeSelector() {
       if (!this.isSchedulingEnabled) {
         return null;
@@ -1059,6 +1213,30 @@ export default {
         this.errors.push({ delivery_schedule: message });
         this.$toast.error(message);
       }
+      return valid;
+    },
+    validateBookingTime() {
+      // Book Now is required ONLY when the backend toggle is ON.
+      // If config is not loaded, Book Now is OFF, or this is not home delivery,
+      // do not create any required/error state.
+      if (!this.displayConfigLoaded || !this.bookingNowEnabled || !this.isActiveHomeDelivery) {
+        return true;
+      }
+
+      const bookingCheckout = this.$refs.bookingTimeCheckout;
+      const valid = Boolean(
+        bookingCheckout &&
+        typeof bookingCheckout.hasBookingSelection === "function" &&
+        bookingCheckout.hasBookingSelection()
+      );
+
+      if (!valid) {
+        const message = this.$t("Please select your booking hours before checkout.");
+        this.errors.push({ booking_time: message });
+        this.$toast.error(message);
+        bookingCheckout?.openEdit?.();
+      }
+
       return valid;
     },
     restoreGuestContactFromStore() {
@@ -1652,13 +1830,13 @@ export default {
           }
 
           //email validation
-          // if (
-          //   !this.guestShippingInfo.email &&
-          //   this.config?.enable_email_in_checkout == this.enums.status.ACTIVE &&
-          //   this.config?.email_required_in_checkout == this.enums.status.ACTIVE
-          // ) {
-          //   this.errors.push({ shipping_email: this.$t("Email is required") });
-          // }
+          if (
+            !this.guestShippingInfo.email &&
+            this.config?.enable_email_in_checkout == this.enums.status.ACTIVE &&
+            this.config?.email_required_in_checkout == this.enums.status.ACTIVE
+          ) {
+            this.errors.push({ shipping_email: this.$t("Email is required") });
+          }
 
           //Phone validation
           if (!this.guestShippingInfo.phone) {
@@ -1715,6 +1893,10 @@ export default {
         if (!this.validateDeliverySchedule()) {
           return false;
         }
+      }
+
+      if (!this.validateBookingTime()) {
+        return false;
       }
 
       //return result
@@ -2052,5 +2234,79 @@ export default {
 .delivery-shipping--rtl .cart-image.mr-10 {
   margin-right: 0;
   margin-inline-end: 10px;
+}
+
+.booking-time-section {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  padding-top: 20px;
+}
+
+.booking-time-summary {
+  align-items: center;
+  background: #f7f7f7;
+  border-radius: 8px;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding: 12px 16px;
+}
+
+.booking-time-summary__content {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+
+.booking-time-summary__content > span:last-child {
+  min-width: 0;
+}
+
+.booking-time-summary__icon {
+  color: rgba(0, 0, 0, 0.6);
+  flex-shrink: 0;
+  font-size: 18px;
+}
+
+.booking-time-prompt {
+  align-items: center;
+  background: #eef4ff;
+  border-radius: 8px;
+  color: #3b6fd8;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 12px 16px;
+}
+
+.booking-time-prompt:focus {
+  outline: none;
+}
+
+.delivery-shipping--rtl .booking-time-summary {
+  direction: ltr;
+  flex-direction: row-reverse;
+}
+
+.delivery-shipping--rtl .booking-time-summary__content {
+  direction: ltr;
+  flex-direction: row-reverse;
+}
+
+.delivery-shipping--rtl .booking-time-summary__content > span:last-child {
+  direction: rtl;
+  text-align: right;
+}
+
+.delivery-shipping--rtl .booking-time-prompt {
+  direction: ltr;
+  flex-direction: row-reverse;
+}
+
+.delivery-shipping--rtl .booking-time-prompt > span:last-child {
+  direction: rtl;
+  text-align: right;
 }
 </style>

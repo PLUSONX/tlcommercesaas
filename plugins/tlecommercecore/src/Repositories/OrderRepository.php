@@ -1897,6 +1897,11 @@ class OrderRepository
                 return false;
             }
 
+            if (!$this->attachStudioBookingForOrder($request, $order->id, (int) $order->payment_status)) {
+        DB::rollBack();
+        return false;
+    }
+
             DB::commit();
 
             if ($request['payment_id'] == config('tlecommercecore.payment_methods.bank')) {
@@ -2111,6 +2116,11 @@ class OrderRepository
                 DB::rollBack();
                 return false;
             }
+
+             if (!$this->attachStudioBookingForOrder($request, $order->id, (int) $order->payment_status)) {
+        DB::rollBack();
+        return false;
+    }
 
             $redirect_url = null;
             if ($customer_id != null) {
@@ -3373,8 +3383,12 @@ class OrderRepository
                 | Deduct stock when order is PAID + DELIVERED
                 |--------------------------------------------------------------------------
                 */
+
                 app(OrderStockService::class)
                     ->deductIfPaidAndDelivered((int) $order_id);
+
+                      app(\Plugin\TlcommerceCore\Http\Controllers\StudioBookingController::class)
+        ->syncBookingPaymentForOrder((int) $order_id, (int) $status);
 
                 return true;
             });
@@ -3936,6 +3950,26 @@ class OrderRepository
 
         return $result['success'];
     }
+
+    protected function attachStudioBookingForOrder($request, int $orderId, int $paymentStatus): bool
+    {
+        $bookingToken = $request->cookie('studio_booking_token')
+            ?: $request->input('studio_booking_token');
+
+        if (!$bookingToken) {
+            return true;
+        }
+
+        $paidStatus = (int) config('tlecommercecore.order_payment_status.paid');
+
+        return app(\Plugin\TlcommerceCore\Http\Controllers\StudioBookingController::class)
+            ->attachBookingToOrder(
+                (string) $bookingToken,
+                $orderId,
+                $paymentStatus === $paidStatus
+            );
+    }
+
 
     protected function attachDeliveryScheduleForOrder($request, int $orderId): bool
     {
