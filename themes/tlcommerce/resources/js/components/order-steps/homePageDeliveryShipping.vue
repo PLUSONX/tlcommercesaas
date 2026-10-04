@@ -419,6 +419,7 @@
             :enums="enums"
 
             @confirmed="handleBookingConfirmed"
+            @released="bookingSchedule = null"
 
         />
 

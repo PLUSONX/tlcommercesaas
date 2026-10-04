@@ -41,6 +41,7 @@
       :enums="enums"
       @confirmed="onConfirmed"
       @released="onReleased"
+      @cleared="onCleared"
     />
   </div>
 </template>
@@ -59,6 +60,7 @@ export default {
   props: {
     config: { type: Object, default: () => ({}) },
     enums: { type: Object, default: () => ({}) },
+    emits: ["hours-selected"],
   },
   data() {
     return {
@@ -198,9 +200,24 @@ export default {
     },
     onConfirmed(booking) {
       this.booking = booking || null;
+      if (!booking) return;
+
+      // 1 slot = 1 hour. Quantity always follows the number of hours chosen
+      // (more hours -> quantity goes up, fewer hours -> quantity goes down).
+      const hours = Math.max(1, Math.round(Number(booking.duration_minutes || 0) / 60));
+      this.syncCartQuantity(hours);
+    },
+    syncCartQuantity(hours) {
+      // Parent (DeliveryShipping / checkout page) updates the cart items.
+      this.$emit("hours-selected", hours);
     },
     onReleased() {
       this.booking = null;
+    },
+        onCleared() {
+      this.booking = null;
+      // quantity goes back to 1 (CartStep.setQuantityFromHours is already wired through DeliveryShipping)
+      this.$emit("hours-selected", 1);
     },
     formatTime(value) {
       const match = String(value || "").match(/^(\d{1,2}):(\d{2})/);

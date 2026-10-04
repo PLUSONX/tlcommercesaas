@@ -559,8 +559,14 @@
       </div>
       <!--End Guest Checkout -->
 
-      <!--Booking Time-->
-      <booking-time-checkout v-if="isActiveHomeDelivery" :config="config" :enums="enums" />
+      <!--Booking Time: shown and required only when backend Book Now is enabled-->
+      <booking-time-checkout
+        v-if="isActiveHomeDelivery && displayConfigLoaded && bookingNowEnabled"
+        ref="bookingTimeCheckout"
+        :config="config"
+        :enums="enums"
+        @hours-selected="$emit('booking-hours-selected', $event)"
+      />
     </template>
     <!--End Home delivery-->
 
@@ -830,7 +836,7 @@ import {
 } from "@/utils/kuwaitPhone";
 export default {
   name: "deliveryShipping",
-  emits: ["next-step", "previous-step", "shipping-prep-updated"],
+  emits: ["next-step", "previous-step", "shipping-prep-updated", "booking-hours-selected"],
   components: {
     CModal,
     CModalHeader,
@@ -1145,8 +1151,19 @@ export default {
         payload.delivery_scheduling_enabled !== undefined
           ? this.flagEnabled(payload.delivery_scheduling_enabled, false)
           : this.deliverNowEnabled;
-      this.bookingNowEnabled = this.flagEnabled(payload.booking_now_enabled ?? payload.enabled, false);
+      const bookingRaw =
+        arrival && arrival.booking_now_enabled !== undefined
+          ? arrival.booking_now_enabled
+          : (payload.booking_now_enabled ?? payload.enabled);
+      this.bookingNowEnabled = this.flagEnabled(bookingRaw, false);
       this.displayConfigLoaded = true;
+
+      // When Book Now is OFF, booking is completely optional/inactive.
+      // Remove any old hold so it cannot create a hidden requirement later.
+      if (!this.bookingNowEnabled) {
+        this.bookingSchedule = null;
+        this.clearStudioBooking();
+      }
 
       if (!this.isSchedulingEnabled) {
         this.$store.dispatch("storeDeliverySchedule", null);
@@ -1196,6 +1213,30 @@ export default {
         this.errors.push({ delivery_schedule: message });
         this.$toast.error(message);
       }
+      return valid;
+    },
+    validateBookingTime() {
+      // Book Now is required ONLY when the backend toggle is ON.
+      // If config is not loaded, Book Now is OFF, or this is not home delivery,
+      // do not create any required/error state.
+      if (!this.displayConfigLoaded || !this.bookingNowEnabled || !this.isActiveHomeDelivery) {
+        return true;
+      }
+
+      const bookingCheckout = this.$refs.bookingTimeCheckout;
+      const valid = Boolean(
+        bookingCheckout &&
+        typeof bookingCheckout.hasBookingSelection === "function" &&
+        bookingCheckout.hasBookingSelection()
+      );
+
+      if (!valid) {
+        const message = this.$t("Please select your booking hours before checkout.");
+        this.errors.push({ booking_time: message });
+        this.$toast.error(message);
+        bookingCheckout?.openEdit?.();
+      }
+
       return valid;
     },
     restoreGuestContactFromStore() {
@@ -1852,6 +1893,10 @@ export default {
         if (!this.validateDeliverySchedule()) {
           return false;
         }
+      }
+
+      if (!this.validateBookingTime()) {
+        return false;
       }
 
       //return result

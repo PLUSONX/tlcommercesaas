@@ -218,6 +218,10 @@ export default {
       customer_id: (state) => state.customerInfo != null ? state.customerInfo.id : null,
       config: (state) => state.siteSettings,
       couponDiscounts: (state) => state.couponDiscount ? state.couponDiscount : [],
+      // computed
+      cartStoreKey() {
+        return JSON.stringify((this.$store.state.cart || []).map(i => [i.uid, parseInt(i.quantity) || 0, i.max_item]));
+      },
     }),
 
     ...mapGetters('layout', ['isFeaturePaneLayout', 'isMobile', 'isRtl']),
@@ -346,8 +350,28 @@ export default {
       this.checkMinimumOrderAmount();
       this.syncCheckoutItems();
     },
+    // watch (next to totalUnitPrice)
+    cartStoreKey() {
+      const map = {};
+      (this.$store.state.cart || []).forEach(i => { map[i.uid] = i; });
+      this.tableData.forEach(item => {
+        const s = map[item.uid];
+        if (!s) return;
+        const q = parseInt(s.quantity) || 0;
+        if (q >= 1 && parseInt(item.quantity) !== q) item.quantity = q;
+        if (parseInt(s.max_item) > parseInt(item.max_item)) item.max_item = s.max_item;
+      });
+    },
   },
   methods: {
+    hasActiveBooking() {
+    try {
+        const b = JSON.parse(localStorage.getItem("tlcommerce_studio_booking_hold") || "null");
+        return !!b?.booking_token;
+    } catch (e) {
+        return false;
+    }
+},
     //Select or deselect sector button
     selectOrDeselectButton() {
       const data = this.tableData;
@@ -480,7 +504,7 @@ export default {
         this.removeItem(tdata.uid);
         return;
       }
-      if (qty > tdata.max_item) {
+      if (qty > tdata.max_item && !this.hasActiveBooking()) {
         tdata.quantity = tdata.max_item;
       } else {
         tdata.quantity = qty;
@@ -517,7 +541,7 @@ export default {
       for (let i = 0; i < data.length; i++) {
         const item = data[i];
         if (item.uid === id) {
-          if (item.quantity > 0 && item.quantity < item.max_item) {
+          if (item.quantity > 0 && (item.quantity < item.max_item || this.hasActiveBooking())) {
             item.quantity++;
             this.updateCartItems(item);
           } else {
@@ -571,6 +595,29 @@ export default {
         this.syncCheckoutItems();
       }
     },
+
+    /**
+ * Called when the customer confirms studio hours.
+ * Quantity follows the number of hours chosen (3 hours = qty 3, 2 hours = qty 2).
+ * Price updates because totals are unitPrice x quantity.
+ */
+setQuantityFromHours(hours) {
+  const target = Math.max(1, parseInt(hours) || 1);
+
+  this.tableData.forEach((item) => {
+    if (item.is_available != 1) return;
+
+    const qty = Math.max(target, this.effectiveMinItem(item));
+    if (parseInt(item.quantity) === qty) return;
+
+    item.quantity = qty;
+    // keep the cart's own limit in step so + / typing don't snap it back
+    if (!isNaN(parseInt(item.max_item)) && parseInt(item.max_item) < qty) {
+      item.max_item = qty;
+    }
+    this.updateCartItems(item);
+  });
+},
 
     /**
      * Remove item from cart
