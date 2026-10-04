@@ -399,6 +399,7 @@
                                 <th class="font-16">{{ translate('Order Date') }}</th>
                                 <th class="font-16">{{ translate('Customer') }}</th>
                                 <th class="font-16 text-center" style="padding: 0px !important; width: 80px !important;">{{ translate('Products') }}</th>
+                                <th class="font-16 text-center" style="padding: 0px !important; width: 80px !important;">{{ translate('Hours') }}</th>
                                 <th class="font-16 text-center" style="padding: 0px !important; width: 80px !important;">{{ translate('Amount') }}</th>
                                 <th class="font-16 text-center" >{{ translate('Payment') }}</th>
                                 <th class="font-16 text-center">{{ translate('Order') }}</th>
