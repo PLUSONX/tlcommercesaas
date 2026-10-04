@@ -3953,8 +3953,9 @@ class OrderRepository
 
     protected function attachStudioBookingForOrder($request, int $orderId, int $paymentStatus): bool
     {
-        $bookingToken = $request->cookie('studio_booking_token')
-            ?: $request->input('studio_booking_token');
+                $bookingToken = $request->cookie('studio_booking_token')
+            ?: $request->input('studio_booking_token')
+            ?: $request->header('X-Studio-Booking-Token');
 
         if (!$bookingToken) {
             return true;

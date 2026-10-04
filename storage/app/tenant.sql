@@ -4463,6 +4463,87 @@ INSERT INTO `tl_theme_option_settings` (`id`, `theme_id`, `option_name`, `field_
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tl_com_studio_booking_slots`
+--
+
+CREATE TABLE `tl_com_studio_booking_slots` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `schedule_date` date NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `duration_minutes` int unsigned NOT NULL DEFAULT 60,
+  `status` varchar(20) NOT NULL DEFAULT 'available',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+
+  PRIMARY KEY (`id`),
+
+  UNIQUE KEY `studio_booking_slot_unique` (
+    `schedule_date`,
+    `start_time`,
+    `end_time`
+  ),
+
+  KEY `studio_booking_slots_date_index` (`schedule_date`),
+  KEY `studio_booking_slots_status_index` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+--
+-- Table structure for table `tl_com_studio_bookings`
+--
+
+CREATE TABLE `tl_com_studio_bookings` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `booking_token` varchar(100) NOT NULL,
+  `customer_id` bigint unsigned DEFAULT NULL,
+  `order_id` bigint unsigned DEFAULT NULL,
+  `schedule_date` date NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `duration_minutes` int unsigned NOT NULL DEFAULT 60,
+  `status` varchar(20) NOT NULL DEFAULT 'held',
+  `expires_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+
+  PRIMARY KEY (`id`),
+
+  UNIQUE KEY `studio_booking_token_unique` (`booking_token`),
+
+  KEY `studio_bookings_customer_index` (`customer_id`),
+  KEY `studio_bookings_order_index` (`order_id`),
+  KEY `studio_bookings_date_time_index` (
+    `schedule_date`,
+    `start_time`,
+    `end_time`
+  ),
+  KEY `studio_bookings_status_index` (`status`),
+  KEY `studio_bookings_expiry_index` (`expires_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
+UPDATE `tl_com_ecommerce_settings`
+SET
+  `key_value` = '0',
+  `updated_at` = NOW()
+WHERE `key_name` = 'enable_booking_now';
+
+INSERT INTO `tl_com_ecommerce_settings`
+(`key_name`, `key_value`, `created_at`, `updated_at`)
+SELECT
+  'enable_booking_now',
+  '0',
+  NOW(),
+  NOW()
+WHERE NOT EXISTS (
+  SELECT 1
+  FROM `tl_com_ecommerce_settings`
+  WHERE `key_name` = 'enable_booking_now'
+);
+
+--
 -- Table structure for table `tl_theme_sidebars`
 --
 

@@ -5,6 +5,22 @@
         )
         : [];
 
+            // Studio "Book Now" hours per order (read-only, one query for the whole page)
+            $studio_booking_hours = [];
+            if ($orders->count() > 0) {
+                try {
+                    $studio_booking_hours = \Plugin\TlcommerceCore\Models\StudioBooking::query()
+                        ->whereIn('order_id', $orders->pluck('id')->map(fn ($id) => (int) $id)->all())
+                        ->where('status', '!=', 'cancelled')
+                        ->selectRaw('order_id, SUM(duration_minutes) as total_minutes')
+                        ->groupBy('order_id')
+                        ->pluck('total_minutes', 'order_id')
+                        ->all();
+                } catch (\Throwable $e) {
+                    $studio_booking_hours = [];   // never break the orders list
+                }
+            }
+
     $delivery_status_timestamps = [];
     $delivery_status_timestamp_displays = [];
     $order_created_displays = [];
@@ -110,6 +126,20 @@
                 @endif
             </td>
             <td class="text-center" style="width: 20px;">{{ $order->total_product }}</td>
+                        @php
+                $studio_minutes = (float) ($studio_booking_hours[$order->id] ?? 0);
+                $studio_hours = $studio_minutes > 0 ? round($studio_minutes / 60, 1) : null;
+                $studio_hours_text = $studio_hours !== null
+                    ? rtrim(rtrim(number_format($studio_hours, 1, '.', ''), '0'), '.')
+                    : null;
+            @endphp
+            <td class="text-center" style="width: 20px;">
+                @if ($studio_hours !== null)
+                    {{ $studio_hours_text }} {{ $studio_hours == 1 ? translate('Hour') : translate('Hours') }}
+                @else
+                    <span class="text-muted">{{ translate('N/A') }}</span>
+                @endif
+            </td>
             <td class="text-center" style="width: 20px;">{!! currencyExchange($order->total_payable_amount) !!}</td>
 
            <td class="text-center">
@@ -291,7 +321,7 @@
     @endforeach
 @else
     <tr>
-        <td colspan="8">
+        <td colspan="9">
             <p class="alert alert-danger text-center">{{ translate('Nothing found') }}</p>
         </td>
     </tr>

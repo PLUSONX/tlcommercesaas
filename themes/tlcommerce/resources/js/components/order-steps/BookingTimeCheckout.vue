@@ -68,6 +68,17 @@ export default {
       booking: null,
     };
   },
+    watch: {
+    // Send the selected booking with every request (including the order request) as a header,
+    // so checkout does not depend only on the cookie.
+    booking(value) {
+      if (value && value.booking_token) {
+        axios.defaults.headers.common["X-Studio-Booking-Token"] = value.booking_token;
+      } else {
+        delete axios.defaults.headers.common["X-Studio-Booking-Token"];
+      }
+    },
+  },
   computed: {
     ...mapGetters("layout", ["isRtl"]),
     title() { return this.localized("Booking Time", "وقت الحجز"); },
@@ -101,8 +112,9 @@ export default {
     };
     document.addEventListener("visibilitychange", this._visibilityHandler);
   },
-  beforeUnmount() {
+    beforeUnmount() {
     document.removeEventListener("visibilitychange", this._visibilityHandler);
+    delete axios.defaults.headers.common["X-Studio-Booking-Token"];
   },
   methods: {
     localized(en, ar) {
@@ -197,6 +209,19 @@ export default {
     },
     openEdit() {
       this.$refs.selector?.openEditModal();
+    },
+        /** Used by DeliveryShipping.validateBookingTime() before checkout. */
+    hasBookingSelection() {
+      if (this.booking && this.booking.booking_token) return true;
+      // verify() may still be running right after the page opens: trust the saved selection;
+      // the server re-checks the hours when the order is placed.
+      return !!this.readStored();
+    },
+        /** Number of hours of the customer's selected booking (0 = none). */
+    getBookingHours() {
+      const b = this.booking || this.readStored();
+      const h = Math.round(Number(b?.duration_minutes || 0) / 60);
+      return h > 0 ? h : 0;
     },
     onConfirmed(booking) {
       this.booking = booking || null;

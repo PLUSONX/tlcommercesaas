@@ -1215,29 +1215,45 @@ export default {
       }
       return valid;
     },
-    validateBookingTime() {
+        validateBookingTime() {
       // Book Now is required ONLY when the backend toggle is ON.
-      // If config is not loaded, Book Now is OFF, or this is not home delivery,
-      // do not create any required/error state.
       if (!this.displayConfigLoaded || !this.bookingNowEnabled || !this.isActiveHomeDelivery) {
         return true;
       }
 
       const bookingCheckout = this.$refs.bookingTimeCheckout;
-      const valid = Boolean(
+
+      // 1) hours must be selected
+      const hasBooking = Boolean(
         bookingCheckout &&
         typeof bookingCheckout.hasBookingSelection === "function" &&
         bookingCheckout.hasBookingSelection()
       );
 
-      if (!valid) {
+      if (!hasBooking) {
         const message = this.$t("Please select your booking hours before checkout.");
         this.errors.push({ booking_time: message });
         this.$toast.error(message);
         bookingCheckout?.openEdit?.();
+        return false;
       }
 
-      return valid;
+      // 2) every item being checked out must have quantity == booked hours
+      const hours = bookingCheckout.getBookingHours ? bookingCheckout.getBookingHours() : 0;
+      const items = this.$store.state.checkoutItems || [];
+      const mismatch = hours > 0 && items.some((item) => (parseInt(item.quantity) || 0) !== hours);
+
+      if (mismatch) {
+        const message =
+          this.$t("Quantity and booking hours must match. Please review your booking time.") +
+          " (" + hours + ")";
+        this.errors.push({ booking_time: message });
+        this.$toast.error(message);
+        bookingCheckout?.openEdit?.();   // opens the calendar on the customer's chosen hours
+        return false;
+      }
+
+      return true;
     },
     restoreGuestContactFromStore() {
       const stored = this.$store.state.guestCustomerInfo;
