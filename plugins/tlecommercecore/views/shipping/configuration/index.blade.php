@@ -651,6 +651,67 @@
     </div>
 </div>
 
+{{-- Delivery Location Display --}}
+
+@php
+    $deliveryLocationEnabled = (int) SettingsRepository::getEcommerceSetting(
+        'enable_delivery_location',
+        1
+    ) === 1;
+@endphp
+
+<div class="col-12">
+    <div class="card mb-30">
+
+        <div class="card-header bg-white py-3">
+            <h4 class="font-18 mb-0">
+                {{ translate('Delivery Location Display') }}
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <form
+                action="{{ route('plugin.tlcommercecore.shipping.delivery.location.display.update') }}"
+                method="POST"
+            >
+                @csrf
+
+                <div class="form-row mb-20">
+
+                    <label class="font-14 bold black d-block mb-2">
+                        {{ translate('Show Select Delivery Location Row') }}
+                    </label>
+
+                    <label class="order-now-switch">
+
+                        <input
+                            type="checkbox"
+                            name="delivery_location_enabled"
+                            value="1"
+                            {{ $deliveryLocationEnabled ? 'checked' : '' }}
+                        >
+
+                        <span class="order-now-slider"></span>
+
+                    </label>
+
+                </div>
+
+                <div class="text-right">
+
+                    <button type="submit" class="btn long">
+                        {{ translate('Save') }}
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+</div>
 <a href="{{ route('plugin.tlcommercecore.shipping.studio.booking') }}" class="btn long">
     {{ translate('Studio Booking Schedule') }}
 </a>

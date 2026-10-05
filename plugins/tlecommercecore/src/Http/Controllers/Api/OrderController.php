@@ -311,6 +311,12 @@ public function earliestArrival(Request $request)
             ->value('key_value') ?? 1
     ) === 1;
 
+    $deliveryLocationEnabled = (int) (
+        DB::table('tl_com_ecommerce_settings')
+            ->where('key_name', 'enable_delivery_location')
+            ->value('key_value') ?? 1
+    ) === 1;
+
     try {
         $data = $this->shipping_repository->earliestArrival(
             $request->input('city_id'),
@@ -321,6 +327,8 @@ public function earliestArrival(Request $request)
         $data['order_now_text'] = $orderNowDisplay['text'];
         $data['deliver_now_enabled'] = $deliverNowEnabled;
         $data['booking_now_enabled'] = $bookingNowEnabled;
+        $data['delivery_location_enabled'] = $deliveryLocationEnabled;
+        
 
         return response()->json($data);
     } catch (\Exception $e) {
@@ -332,6 +340,7 @@ public function earliestArrival(Request $request)
             'order_now_text' => $orderNowDisplay['text'],
             'deliver_now_enabled' => $deliverNowEnabled,
             'booking_now_enabled' => $bookingNowEnabled,
+            'delivery_location_enabled' => $deliveryLocationEnabled,
         ]);
     }
 }

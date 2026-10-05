@@ -19,6 +19,7 @@
 
 
             <div v-if="!isCustomerLogin" class="delivery-card">
+                <template v-if="deliveryLocationEnabled">
 
 
 
@@ -119,6 +120,7 @@
 
 
                 <hr class="delivery-card__divider">
+                </template>
 
 
 
@@ -908,6 +910,8 @@ export default {
             bookingNowEnabled: false,
 
 
+            deliveryLocationEnabled: true,
+
 
             bookingSchedule: null,
 
@@ -1677,6 +1681,9 @@ formatTime(value) {
 
 
                     response.data?.deliver_now_enabled !== false;
+
+                    this.deliveryLocationEnabled =
+                    response.data?.delivery_location_enabled !== false;
 
                     if (Object.prototype.hasOwnProperty.call(response.data || {}, "booking_now_enabled")) {
                         const bookingEnabled = response.data.booking_now_enabled;

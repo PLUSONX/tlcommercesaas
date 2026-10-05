@@ -785,4 +785,48 @@ public function updateBookingNowDisplay(Request $request)
     }
 }
 
+ /**
+     * Update Delivery Location display setting.
+     */
+    public function updateDeliveryLocationDisplay(Request $request)
+    {
+        try {
+
+            $enabled = $request->has('delivery_location_enabled') ? 1 : 0;
+
+            DB::table('tl_com_ecommerce_settings')->updateOrInsert(
+                [
+                    'key_name' => 'enable_delivery_location',
+                ],
+                [
+                    'key_value' => $enabled,
+                ]
+            );
+
+            return redirect()
+                ->route('plugin.tlcommercecore.shipping.configuration')
+                ->with(
+                    'success',
+                    translate('Delivery Location display settings updated successfully')
+                );
+
+        } catch (\Throwable $e) {
+
+            Log::error('Delivery Location display settings save failed', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return redirect()
+                ->route('plugin.tlcommercecore.shipping.configuration')
+                ->with(
+                    'error',
+                    'Delivery Location settings could not be saved: ' .
+                    $e->getMessage()
+                );
+        }
+    }
+
+
 }
