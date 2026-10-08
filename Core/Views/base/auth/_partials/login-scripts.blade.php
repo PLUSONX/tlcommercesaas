@@ -35,13 +35,35 @@
 
         syncDeviceToken();
 
+        function getSubmitBtn() {
+            if (!loginForm) {
+                return document.getElementById(idPrefix + 'submitBtn');
+            }
+            return document.getElementById(idPrefix + 'submitBtn') ||
+                loginForm.querySelector('.login-submit-btn') ||
+                loginForm.querySelector('[type="submit"]');
+        }
+
+        function resetLoginSubmitState() {
+            const submitBtn = getSubmitBtn();
+            if (!submitBtn) {
+                return;
+            }
+            submitBtn.classList.remove('is-loading');
+            submitBtn.disabled = false;
+            submitBtn.removeAttribute('aria-busy');
+        }
+
+        // Browser Back restores this page from bfcache with the spinner still on.
+        window.addEventListener('pageshow', function() {
+            resetLoginSubmitState();
+        });
+
         if (loginForm) {
             loginForm.addEventListener('submit', function(e) {
                 syncDeviceToken();
 
-                const submitBtn = document.getElementById(idPrefix + 'submitBtn') ||
-                    loginForm.querySelector('.login-submit-btn') ||
-                    loginForm.querySelector('[type="submit"]');
+                const submitBtn = getSubmitBtn();
 
                 if (submitBtn && submitBtn.classList.contains('is-loading')) {
                     e.preventDefault();
